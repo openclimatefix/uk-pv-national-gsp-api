@@ -27,7 +27,7 @@ class MultipleGSP(BaseModel):
 
 @app.get("/")
 def read_root():
-    return {"title": "Nowcasting Forecast", "verion": version}
+    return {"title": "Nowcasting Forecast", "version": version}
 
 
 @app.get("/latest/")
