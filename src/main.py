@@ -4,7 +4,7 @@ from typing import List
 from datetime import datetime, timezone, timedelta
 import numpy as np
 
-version = '0.0.1'
+version = '0.1'
 
 app = FastAPI()
 
@@ -30,7 +30,7 @@ def read_root():
     return {"title": "Nowcasting Forecast", "version": version}
 
 
-@app.get("/latest/")
+@app.get("/v0/latest/")
 def get_latest() -> MultipleGSP:
     """
     Current this produces a dummy array
