@@ -34,7 +34,7 @@ def read_root():
             "documentation": " go to /docs/ to see documentation"}
 
 
-@app.get("/v0/latest/")
+@app.get("/v0/latest/", response_model=MultipleGSP)
 def get_latest() -> MultipleGSP:
     """
     Current this produces a dummy array

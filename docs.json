@@ -1,0 +1,107 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "NowcastingApp",
+        "contact": {
+            "name": "Open Climate Fix"
+        },
+        "version": "0.1"
+    },
+    "paths": {
+        "/": {
+            "get": {
+                "summary": "Read Root",
+                "operationId": "read_root__get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v0/latest/": {
+            "get": {
+                "summary": "Get Latest",
+                "description": "Current this produces a dummy array\n\n:return: Forecast of solar generation for different gsp for the next 2 hours",
+                "operationId": "get_latest_v0_latest__get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MultipleGSP"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "MultipleGSP": {
+                "title": "MultipleGSP",
+                "required": [
+                    "gsps"
+                ],
+                "type": "object",
+                "properties": {
+                    "gsps": {
+                        "title": "Gsps",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/OneGSP"
+                        }
+                    }
+                }
+            },
+            "OneForecast": {
+                "title": "OneForecast",
+                "required": [
+                    "generation_mw",
+                    "datetime_utc"
+                ],
+                "type": "object",
+                "properties": {
+                    "generation_mw": {
+                        "title": "Generation Mw",
+                        "type": "number"
+                    },
+                    "datetime_utc": {
+                        "title": "Datetime Utc",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "OneGSP": {
+                "title": "OneGSP",
+                "required": [
+                    "gsp_id",
+                    "forecasts"
+                ],
+                "type": "object",
+                "properties": {
+                    "gsp_id": {
+                        "title": "Gsp Id",
+                        "type": "integer"
+                    },
+                    "forecasts": {
+                        "title": "Forecasts",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/OneForecast"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
