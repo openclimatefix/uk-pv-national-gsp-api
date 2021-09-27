@@ -6,7 +6,9 @@ import numpy as np
 
 version = '0.1'
 
-app = FastAPI()
+app = FastAPI(title="NowcastingApp",
+              version=version,
+              contact={"name": "Open Climate Fix"})
 
 thirty_minutes = timedelta(minutes=30)
 
@@ -27,7 +29,9 @@ class MultipleGSP(BaseModel):
 
 @app.get("/")
 def read_root():
-    return {"title": "Nowcasting Forecast", "version": version}
+    return {"title": "Nowcasting Forecast",
+            "version": version,
+            "documentation": " go to /docs/ to see documentation"}
 
 
 @app.get("/v0/latest/")
