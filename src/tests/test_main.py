@@ -12,7 +12,7 @@ def test_read_main():
 
 
 def test_read_latest():
-    response = client.get("/latest")
+    response = client.get("/v0/latest")
     assert response.status_code == 200
 
     r = MultipleGSP(**response.json())
