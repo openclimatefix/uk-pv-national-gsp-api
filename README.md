@@ -11,21 +11,14 @@ The api is using FastAPI - https://fastapi.tiangolo.com/
 
 Documentation can be viewed by going to `/docs`. This is automatically produced from the code.
 
-# Setup
-
-Create a virtual environment
-```python3 -m venv ./venv ```
-
-and activate with
-``` source venv/activation/bin```
-
-and install the requirements
-``` pip install -r requirements.txt ```
 
 # Local start up
 
-Use ```uvicorn main:app --reload ``` 
-to start up on a local host
+1. Make sure docker is installed on your system.
+2. Use ```docker-compose up ``` 
+   in the main directory to start up the application.
+3. You will now be able to access it on ```http://localhost:80```   
+
 
 ## Contributors ✨
 
