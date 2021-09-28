@@ -14,11 +14,23 @@ Documentation can be viewed by going to `/docs`. This is automatically produced 
 
 # Local start up
 
+This can be done it two differen ways, with python, or docker
+
+## Python
+
+
+Create a virtual environment ```python3 -m venv ./venv ```
+and activate with ``` source venv/activation/bin```
+Install the requirements ``` pip install -r requirements.txt ```
+and use ```uvicorn main:app --reload ``` 
+to start up on a local host
+
+## Docker
+
 1. Make sure docker is installed on your system.
 2. Use ```docker-compose up ``` 
    in the main directory to start up the application.
 3. You will now be able to access it on ```http://localhost:80```   
-
 
 ## Contributors ✨
 
