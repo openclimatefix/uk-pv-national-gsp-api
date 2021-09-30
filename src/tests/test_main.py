@@ -1,10 +1,7 @@
-import sys
-from os import path
-sys.path.append("./")
 from fastapi.testclient import TestClient
-from test_utils import get_every_minute
+from tests.test_utils import get_every_minute
 from datetime import datetime
-from src.main import app, version, MultipleGSP, floor_30_minutes_dt
+from main import app, version, MultipleGSP, floor_30_minutes_dt
 
 client = TestClient(app)
 
@@ -40,4 +37,3 @@ def test_floor_30_minutes():
             assert floor_minute.minute == 0
         else:
             assert floor_minute.minute == 30
-            
