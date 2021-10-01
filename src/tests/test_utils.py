@@ -1,9 +1,9 @@
-from datetime import datetime, timezone, timedelta
-import numpy as np
+from datetime import datetime, timezone
 
 # Used constants
 LOWER_LIMIT_MINUTE = 0
 UPPER_LIMIT_MINUTE = 60
+
 
 def get_every_minute():
     """
@@ -18,7 +18,7 @@ def get_every_minute():
     Returns:
         list: list containing current hour with every possible minute
     """
-    time_now = now = datetime.now(timezone.utc)
+    time_now = datetime.now(timezone.utc)
     list_of_times = []
     minutes = 0
     while minutes >= LOWER_LIMIT_MINUTE and minutes < UPPER_LIMIT_MINUTE:
