@@ -14,21 +14,25 @@ thirty_minutes = timedelta(minutes=30)
 
 
 class OneForecast(BaseModel):
+    """ One Forecast of generation at one timestamp """
     generation_mw: float
     datetime_utc: datetime
 
 
 class OneGSP(BaseModel):
+    """ Forecast for one gsp, there are forecast for several timestamps """
     gsp_id: int
     forecasts: List[OneForecast]
 
 
 class MultipleGSP(BaseModel):
+    """ Forecasts for multiple GSP """
     gsps: List[OneGSP]
 
 
 @app.get("/")
 def read_root():
+    """ Default root """
     return {"title": "Nowcasting Forecast",
             "version": version,
             "documentation": " go to /docs/ to see documentation"}
@@ -41,7 +45,6 @@ def get_latest() -> MultipleGSP:
 
     :return: Forecast of solar generation for different gsp for the next 2 hours
     """
-
     # get datetime right now
     now = datetime.now(timezone.utc)
     now_floor_30 = floor_30_minutes_dt(dt=now)

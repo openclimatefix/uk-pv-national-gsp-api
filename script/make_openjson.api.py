@@ -1,8 +1,9 @@
-# Script to make schema of api
-#
-# 1. run the app locally
-# 2. save as json
-#
+"""
+Script to make schema of api
+
+1. run the app locally
+2. save as json
+"""
 
 import requests
 import json
