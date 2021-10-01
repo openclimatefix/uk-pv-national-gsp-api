@@ -1,7 +1,9 @@
-from fastapi.testclient import TestClient
-from tests.test_utils import get_every_minute
 from datetime import datetime
+
+from fastapi.testclient import TestClient
+
 from main import app, version, MultipleGSP, floor_30_minutes_dt
+from tests.test_utils import get_every_minute
 
 client = TestClient(app)
 

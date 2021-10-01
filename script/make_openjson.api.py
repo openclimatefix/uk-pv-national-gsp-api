@@ -5,8 +5,9 @@ Script to make schema of api
 2. save as json
 """
 
-import requests
 import json
+
+import requests
 
 # get schema
 r = requests.get("http://127.0.0.1:8000/openapi.json")

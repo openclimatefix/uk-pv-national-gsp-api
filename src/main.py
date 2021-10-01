@@ -1,9 +1,10 @@
 """ Main FastAPI app """
+from datetime import datetime, timezone, timedelta
+from typing import List
+
+import numpy as np
 from fastapi import FastAPI
 from pydantic import BaseModel
-from typing import List
-from datetime import datetime, timezone, timedelta
-import numpy as np
 
 version = '0.1'
 
