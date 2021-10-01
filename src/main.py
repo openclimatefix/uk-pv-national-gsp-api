@@ -1,5 +1,5 @@
 """ Main FastAPI app """
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List
 
 import numpy as np
