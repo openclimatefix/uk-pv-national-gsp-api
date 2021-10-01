@@ -6,5 +6,5 @@ jobs:
     steps:
     - name: checkout source repo
       uses: actions/checkout@v2
-    - name: Linting + Pytest
+    - name: Linting with Pylinter
       uses: alexanderdamiani/pylinter@v1.2.0
