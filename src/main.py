@@ -27,11 +27,11 @@ class ForecastedValue(BaseModel):
         ..., ge=0, description="The forecasted value in MW"
     )
 
-    @validator('effective_time')
+    @validator("effective_time")
     def datetime_must_have_timezone(cls, v: datetime):
-        """ Enforce that 'effective_time' must have a timezone """
+        """Enforce that 'effective_time' must have a timezone"""
         if v.tzinfo is None:
-            raise ValueError(f'effective_time must have a timezone, {v}')
+            raise ValueError(f"effective_time must have a timezone, {v}")
         return v
 
 
@@ -63,14 +63,14 @@ class Forecast(BaseModel):
     )
     forecasted_values: List[ForecastedValue] = Field(
         ...,
-        description="List of forecasted value objects. E" "ach value has the datestamp and a value",
+        description="List of forecasted value objects. Each value has the datestamp and a value",
     )
 
-    @validator('forecast_creation_time')
+    @validator("forecast_creation_time")
     def datetime_must_have_timezone(cls, v: datetime):
-        """ Enforce that 'forecast_creation_time' must have a timezone """
+        """Enforce that 'forecast_creation_time' must have a timezone"""
         if v.tzinfo is None:
-            raise ValueError(f'forecast_creation_time must have a timezone, {v}')
+            raise ValueError(f"forecast_creation_time must have a timezone, {v}")
         return v
 
 
