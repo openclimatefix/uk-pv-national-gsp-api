@@ -1,7 +1,7 @@
 """ Main FastAPI app """
-from uuid import UUID, uuid4
 from datetime import datetime, timedelta, timezone
 from typing import List
+from uuid import UUID, uuid4
 
 import numpy as np
 from fastapi import FastAPI
