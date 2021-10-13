@@ -2,7 +2,7 @@ from datetime import datetime
 
 from fastapi.testclient import TestClient
 
-from main import MultipleGSP, app, _floor_30_minutes_dt, version
+from main import ManyForecasts, app, _floor_30_minutes_dt, version
 from tests.test_utils import get_every_minute
 
 client = TestClient(app)
@@ -15,11 +15,11 @@ def test_read_main():
 
 
 def test_read_latest():
-    response = client.get("/v0/latest")
+    response = client.get("/v0/forecasts/gsp")
     assert response.status_code == 200
 
-    r = MultipleGSP(**response.json())
-    assert len(r.gsps) == 339
+    r = ManyForecasts(**response.json())
+    assert len(r.forecasts) == 10
 
 
 def test_floor_30_minutes():

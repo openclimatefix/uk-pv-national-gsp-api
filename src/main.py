@@ -1,7 +1,7 @@
 """ Main FastAPI app """
-from uuid import UUID,uuid4
+from uuid import UUID, uuid4
 from datetime import datetime, timedelta, timezone
-from typing import List, Optional
+from typing import List
 
 import numpy as np
 from fastapi import FastAPI
@@ -64,7 +64,7 @@ class ManyForecasts(BaseModel):
 
 
 def create_dummy_forecast(gsp_id):
-    """ Create a dummy forecast for a given gsp"""
+    """Create a dummy forecast for a given gsp"""
     # get datetime right now
     now = datetime.now(timezone.utc)
     now_floor_30 = _floor_30_minutes_dt(dt=now)
@@ -82,14 +82,21 @@ def create_dummy_forecast(gsp_id):
     )
 
     # make a location object
-    location = Location(location_id=uuid4(), label='dummy_label', additional_information=additional_information)
+    location = Location(
+        location_id=uuid4(), label="dummy_label", additional_information=additional_information
+    )
 
     # create a list of forecast values
     forecasted_values = [
-        ForecastedValue(pv_power_generation_megawatts=0, effective_time=datetime_utc) for datetime_utc in datetimes_utc
+        ForecastedValue(pv_power_generation_megawatts=0, effective_time=datetime_utc)
+        for datetime_utc in datetimes_utc
     ]
 
-    return Forecast(location=location, forecast_creation_time=forecast_creation_time, forecasted_values=forecasted_values)
+    return Forecast(
+        location=location,
+        forecast_creation_time=forecast_creation_time,
+        forecasted_values=forecasted_values,
+    )
 
 
 @app.get("/")
@@ -107,15 +114,13 @@ def get_forecast_gsp(gsp_id) -> Forecast:
     """
     Get one forecast for a specific GSP id
     """
-
     # just make dummy data for the moment
     return create_dummy_forecast(gsp_id=gsp_id)
 
 
 @app.get("/v0/forecasts/gsp", response_model=ManyForecasts)
 def get_forecasts() -> ManyForecasts:
-    """ Get the latest information for all available forecasts"""
-
+    """Get the latest information for all available forecasts"""
     return ManyForecasts(forecasts=[create_dummy_forecast(gsp_id) for gsp_id in range(10)])
 
 
