@@ -2,7 +2,7 @@ from datetime import datetime
 
 from fastapi.testclient import TestClient
 
-from main import MultipleGSP, app, floor_30_minutes_dt, version
+from main import MultipleGSP, app, _floor_30_minutes_dt, version
 from tests.test_utils import get_every_minute
 
 client = TestClient(app)
@@ -32,10 +32,10 @@ def test_floor_30_minutes():
     input = datetime.fromisoformat("2021-09-30 12:15:05")
     expected_output = datetime.fromisoformat("2021-09-30 12:00:00")
 
-    assert floor_30_minutes_dt(input) == expected_output  # Basic control test
+    assert _floor_30_minutes_dt(input) == expected_output  # Basic control test
 
     for time in list_of_time:
-        floor_minute = floor_30_minutes_dt(time)
+        floor_minute = _floor_30_minutes_dt(time)
         if time.minute < 30:
             assert floor_minute.minute == 0
         else:

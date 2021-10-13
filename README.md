@@ -22,7 +22,7 @@ This can be done it two differen ways, with python, or docker
 Create a virtual environment ```python3 -m venv ./venv ```
 and activate with ``` source venv/activation/bin```
 Install the requirements ``` pip install -r requirements.txt ```
-and use ```uvicorn main:app --reload ``` 
+and use ```cd src && uvicorn main:app --reload ``` 
 to start up on a local host
 
 ## Docker
