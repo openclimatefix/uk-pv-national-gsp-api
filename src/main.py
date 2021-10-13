@@ -5,7 +5,7 @@ from uuid import UUID, uuid4
 
 import numpy as np
 from fastapi import FastAPI
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 
 version = "0.1.0"
 
@@ -22,19 +22,26 @@ https://docs.google.com/document/d/17ZCLMAbRIYdfYGshhyp_2xQy3yN6sSfEKJ0itrgO6Vc/
 class ForecastedValue(BaseModel):
     """One Forecast of generation at one timestamp"""
 
-    effective_time: datetime
-    pv_power_generation_megawatts: float
+    effective_time: datetime = Field(..., description="The time for the forecasted value")
+    pv_power_generation_megawatts: float = Field(
+        ..., ge=0, description="The forecasted value in MW"
+    )
 
-    # TODO Enforce that effective_time has a timezone
+    @validator('effective_time')
+    def datetime_must_have_timezone(cls, v: datetime):
+        """ Enforce that 'effective_time' must have a timezone """
+        if v.tzinfo is None:
+            raise ValueError(f'effective_time must have a timezone, {v}')
+        return v
 
 
 class AdditionalInformation(BaseModel):
     """Used internally to better describe a Location"""
 
-    gsp_id: int
-    gsp_name: str
-    gsp_group: str
-    region_name: str
+    gsp_id: int = Field(..., description="The Grid Supply Point (GSP) id")
+    gsp_name: str = Field(..., description="The GSP name")
+    gsp_group: str = Field(..., description="The GSP group name")
+    region_name: str = Field(..., description="The GSP region name")
 
 
 class Location(BaseModel):
@@ -50,17 +57,30 @@ class Location(BaseModel):
 class Forecast(BaseModel):
     """A single Forecast"""
 
-    location: Location
-    forecast_creation_time: datetime
-    forecasted_values: List[ForecastedValue]
+    location: Location = Field(..., description="The location object for this forecaster")
+    forecast_creation_time: datetime = Field(
+        ..., description="The time when the forecaster was made"
+    )
+    forecasted_values: List[ForecastedValue] = Field(
+        ...,
+        description="List of forecasted value objects. E" "ach value has the datestamp and a value",
+    )
 
-    # TODO Enforce that forecast_creation_time has a timezone
+    @validator('forecast_creation_time')
+    def datetime_must_have_timezone(cls, v: datetime):
+        """ Enforce that 'forecast_creation_time' must have a timezone """
+        if v.tzinfo is None:
+            raise ValueError(f'forecast_creation_time must have a timezone, {v}')
+        return v
 
 
 class ManyForecasts(BaseModel):
     """Many Forecasts"""
 
-    forecasts: List[Forecast]
+    forecasts: List[Forecast] = Field(
+        ...,
+        description="List of forecasts for different GSPs",
+    )
 
 
 def create_dummy_forecast(gsp_id):
