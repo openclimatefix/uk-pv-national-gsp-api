@@ -9,13 +9,12 @@ from pydantic import BaseModel, Field, validator
 
 version = "0.1.0"
 
-app = FastAPI(title="NowcastingApp", version=version, contact={"name": "Open Climate Fix"})
+app = FastAPI(title="Nowcasting API", version=version, contact={"name": "Open Climate Fix"})
 
 thirty_minutes = timedelta(minutes=30)
 
 
 """
-https://docs.google.com/document/d/17ZCLMAbRIYdfYGshhyp_2xQy3yN6sSfEKJ0itrgO6Vc/edit#heading=h.qlg5bissv8iw
 """
 
 
