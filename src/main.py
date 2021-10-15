@@ -29,7 +29,9 @@ class ForecastedValue(BaseModel):
         ..., ge=0, description="The forecasted value in MW"
     )
 
-    _normalize_effective_time = validator('effective_time', allow_reuse=True)(datetime_must_have_timezone)
+    _normalize_effective_time = validator("effective_time", allow_reuse=True)(
+        datetime_must_have_timezone
+    )
 
 
 class AdditionalInformation(BaseModel):
@@ -63,7 +65,9 @@ class Forecast(BaseModel):
         description="List of forecasted value objects. Each value has the datestamp and a value",
     )
 
-    _normalize_forecast_creation_time = validator('forecast_creation_time', allow_reuse=True)(datetime_must_have_timezone)
+    _normalize_forecast_creation_time = validator("forecast_creation_time", allow_reuse=True)(
+        datetime_must_have_timezone
+    )
 
 
 class ManyForecasts(BaseModel):
