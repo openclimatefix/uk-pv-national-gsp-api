@@ -14,8 +14,11 @@ app = FastAPI(title="Nowcasting API", version=version, contact={"name": "Open Cl
 thirty_minutes = timedelta(minutes=30)
 
 
-"""
-"""
+def datetime_must_have_timezone(cls, v: datetime):
+    """Enforce that this variable must have a timezone"""
+    if v.tzinfo is None:
+        raise ValueError(f"{v} must have a timezone")
+    return v
 
 
 class ForecastedValue(BaseModel):
@@ -26,12 +29,7 @@ class ForecastedValue(BaseModel):
         ..., ge=0, description="The forecasted value in MW"
     )
 
-    @validator("effective_time")
-    def datetime_must_have_timezone(cls, v: datetime):
-        """Enforce that 'effective_time' must have a timezone"""
-        if v.tzinfo is None:
-            raise ValueError(f"effective_time must have a timezone, {v}")
-        return v
+    _normalize_effective_time = validator('effective_time', allow_reuse=True)(datetime_must_have_timezone)
 
 
 class AdditionalInformation(BaseModel):
@@ -65,12 +63,7 @@ class Forecast(BaseModel):
         description="List of forecasted value objects. Each value has the datestamp and a value",
     )
 
-    @validator("forecast_creation_time")
-    def datetime_must_have_timezone(cls, v: datetime):
-        """Enforce that 'forecast_creation_time' must have a timezone"""
-        if v.tzinfo is None:
-            raise ValueError(f"forecast_creation_time must have a timezone, {v}")
-        return v
+    _normalize_forecast_creation_time = validator('forecast_creation_time', allow_reuse=True)(datetime_must_have_timezone)
 
 
 class ManyForecasts(BaseModel):
