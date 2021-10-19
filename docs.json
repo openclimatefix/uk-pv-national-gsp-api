@@ -1,16 +1,17 @@
 {
     "openapi": "3.0.2",
     "info": {
-        "title": "NowcastingApp",
+        "title": "Nowcasting API",
         "contact": {
             "name": "Open Climate Fix"
         },
-        "version": "0.1"
+        "version": "0.1.0"
     },
     "paths": {
         "/": {
             "get": {
                 "summary": "Read Root",
+                "description": "Default root",
                 "operationId": "read_root__get",
                 "responses": {
                     "200": {
@@ -24,18 +25,57 @@
                 }
             }
         },
-        "/v0/latest/": {
+        "/v0/forecasts/gsp/{gsp_id}": {
             "get": {
-                "summary": "Get Latest",
-                "description": "Current this produces a dummy array\n\n:return: Forecast of solar generation for different gsp for the next 2 hours",
-                "operationId": "get_latest_v0_latest__get",
+                "summary": "Get Forecast Gsp",
+                "description": "Get one forecast for a specific GSP id",
+                "operationId": "get_forecast_gsp_v0_forecasts_gsp__gsp_id__get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Gsp Id"
+                        },
+                        "name": "gsp_id",
+                        "in": "path"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful Response",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/MultipleGSP"
+                                    "$ref": "#/components/schemas/Forecast"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v0/forecasts/gsp": {
+            "get": {
+                "summary": "Get Forecasts",
+                "description": "Get the latest information for all available forecasts",
+                "operationId": "get_forecasts_v0_forecasts_gsp_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ManyForecasts"
                                 }
                             }
                         }
@@ -46,59 +86,183 @@
     },
     "components": {
         "schemas": {
-            "MultipleGSP": {
-                "title": "MultipleGSP",
-                "required": [
-                    "gsps"
-                ],
-                "type": "object",
-                "properties": {
-                    "gsps": {
-                        "title": "Gsps",
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/OneGSP"
-                        }
-                    }
-                }
-            },
-            "OneForecast": {
-                "title": "OneForecast",
-                "required": [
-                    "generation_mw",
-                    "datetime_utc"
-                ],
-                "type": "object",
-                "properties": {
-                    "generation_mw": {
-                        "title": "Generation Mw",
-                        "type": "number"
-                    },
-                    "datetime_utc": {
-                        "title": "Datetime Utc",
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                }
-            },
-            "OneGSP": {
-                "title": "OneGSP",
+            "AdditionalInformation": {
+                "title": "AdditionalInformation",
                 "required": [
                     "gsp_id",
-                    "forecasts"
+                    "gsp_name",
+                    "gsp_group",
+                    "region_name"
                 ],
                 "type": "object",
                 "properties": {
                     "gsp_id": {
                         "title": "Gsp Id",
-                        "type": "integer"
+                        "type": "integer",
+                        "description": "The Grid Supply Point (GSP) id"
                     },
+                    "gsp_name": {
+                        "title": "Gsp Name",
+                        "type": "string",
+                        "description": "The GSP name"
+                    },
+                    "gsp_group": {
+                        "title": "Gsp Group",
+                        "type": "string",
+                        "description": "The GSP group name"
+                    },
+                    "region_name": {
+                        "title": "Region Name",
+                        "type": "string",
+                        "description": "The GSP region name"
+                    }
+                },
+                "description": "Used internally to better describe a Location"
+            },
+            "Forecast": {
+                "title": "Forecast",
+                "required": [
+                    "location",
+                    "forecast_creation_time",
+                    "forecasted_values"
+                ],
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "title": "Location",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/Location"
+                            }
+                        ],
+                        "description": "The location object for this forecaster"
+                    },
+                    "forecast_creation_time": {
+                        "title": "Forecast Creation Time",
+                        "type": "string",
+                        "description": "The time when the forecaster was made",
+                        "format": "date-time"
+                    },
+                    "forecasted_values": {
+                        "title": "Forecasted Values",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ForecastedValue"
+                        },
+                        "description": "List of forecasted value objects. Each value has the datestamp and a value"
+                    }
+                },
+                "description": "A single Forecast"
+            },
+            "ForecastedValue": {
+                "title": "ForecastedValue",
+                "required": [
+                    "effective_time",
+                    "pv_power_generation_megawatts"
+                ],
+                "type": "object",
+                "properties": {
+                    "effective_time": {
+                        "title": "Effective Time",
+                        "type": "string",
+                        "description": "The time for the forecasted value",
+                        "format": "date-time"
+                    },
+                    "pv_power_generation_megawatts": {
+                        "title": "Pv Power Generation Megawatts",
+                        "minimum": 0.0,
+                        "type": "number",
+                        "description": "The forecasted value in MW"
+                    }
+                },
+                "description": "One Forecast of generation at one timestamp"
+            },
+            "HTTPValidationError": {
+                "title": "HTTPValidationError",
+                "type": "object",
+                "properties": {
+                    "detail": {
+                        "title": "Detail",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        }
+                    }
+                }
+            },
+            "Location": {
+                "title": "Location",
+                "required": [
+                    "location_id",
+                    "label",
+                    "additional_information"
+                ],
+                "type": "object",
+                "properties": {
+                    "location_id": {
+                        "title": "Location Id",
+                        "type": "string",
+                        "description": "OCF-created id for location",
+                        "format": "uuid"
+                    },
+                    "label": {
+                        "title": "Label",
+                        "type": "string",
+                        "description": "User-defined name for the location"
+                    },
+                    "additional_information": {
+                        "title": "Additional Information",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/AdditionalInformation"
+                            }
+                        ],
+                        "description": "E.g. Existing GSP properties"
+                    }
+                },
+                "description": "Location that the forecast is for"
+            },
+            "ManyForecasts": {
+                "title": "ManyForecasts",
+                "required": [
+                    "forecasts"
+                ],
+                "type": "object",
+                "properties": {
                     "forecasts": {
                         "title": "Forecasts",
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/OneForecast"
+                            "$ref": "#/components/schemas/Forecast"
+                        },
+                        "description": "List of forecasts for different GSPs"
+                    }
+                },
+                "description": "Many Forecasts"
+            },
+            "ValidationError": {
+                "title": "ValidationError",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "type": "object",
+                "properties": {
+                    "loc": {
+                        "title": "Location",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
                         }
+                    },
+                    "msg": {
+                        "title": "Message",
+                        "type": "string"
+                    },
+                    "type": {
+                        "title": "Error Type",
+                        "type": "string"
                     }
                 }
             }
