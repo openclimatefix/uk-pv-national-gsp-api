@@ -30,10 +30,9 @@ def convert_to_camelcase(snake_str):
 
 
 class EnhancedBaseModel(BaseModel):
-    """Ensures that attribute names are returned in camelCase even though
-    they follow snake_case in pydantic"""
+    """Ensures that attribute names are returned in camelCase"""
 
-    class Config:
+    class Config:  # noqa: D106
         alias_generator = convert_to_camelcase
         allow_population_by_field_name = True
 
