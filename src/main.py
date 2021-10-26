@@ -48,7 +48,7 @@ class ForecastedValue(EnhancedBaseModel):
     )
 
 
-class AdditionalInformation(EnhancedBaseModel):
+class AdditionalLocationInformation(EnhancedBaseModel):
     """Used internally to better describe a Location"""
 
     gsp_id: int = Field(..., description="The Grid Supply Point (GSP) id")
@@ -62,9 +62,25 @@ class Location(EnhancedBaseModel):
 
     location_id: UUID = Field(..., description="OCF-created id for location")
     label: str = Field(..., description="User-defined name for the location")
-    additional_information: AdditionalInformation = Field(
+    additional_information: AdditionalLocationInformation = Field(
         ..., description="E.g. Existing GSP properties"
     )
+
+
+class InputDataLastUpdated(EnhancedBaseModel):
+    """Information about the input data that was used to create the forecast"""
+
+    gsp: datetime = Field(..., description="The time when the input GSP data was last updated")
+    nwp: datetime = Field(..., description="The time when the input NWP data was last updated")
+    pv: datetime = Field(..., description="The time when the input PV data was last updated")
+    satellite: datetime = Field(
+        ..., description="The time when the input satellite data was last updated"
+    )
+
+    _normalize_gsp = validator("gsp", allow_reuse=True)(datetime_must_have_timezone)
+    _normalize_nwp = validator("nwp", allow_reuse=True)(datetime_must_have_timezone)
+    _normalize_pv = validator("pv", allow_reuse=True)(datetime_must_have_timezone)
+    _normalize_satellite = validator("satellite", allow_reuse=True)(datetime_must_have_timezone)
 
 
 class Forecast(EnhancedBaseModel):
@@ -77,6 +93,9 @@ class Forecast(EnhancedBaseModel):
     forecasted_values: List[ForecastedValue] = Field(
         ...,
         description="List of forecasted value objects. Each value has the datestamp and a value",
+    )
+    input_data_last_updated: InputDataLastUpdated = Field(
+        ..., description="Information about the input data that was used to create the forecast"
     )
 
     _normalize_forecast_creation_time = validator("forecast_creation_time", allow_reuse=True)(
@@ -98,36 +117,41 @@ def create_dummy_forecast(gsp_id):
     # get datetime right now
     now = datetime.now(timezone.utc)
     now_floor_30 = _floor_30_minutes_dt(dt=now)
-    forecast_creation_time = now_floor_30 - timedelta(minutes=30)
 
     # make list of datetimes that the forecast is for
     datetimes_utc = [now_floor_30 + i * thirty_minutes for i in range(4)]
 
-    # make additional information object
-    additional_information = AdditionalInformation(
+    additional_information = AdditionalLocationInformation(
         gsp_id=gsp_id,
         gsp_name="dummy_gsp_name",
         gsp_group="dummy_gsp_group",
         region_name="dummy_region_name",
     )
 
-    # make a location object
     location = Location(
         location_id=uuid4(),
         label="dummy_label",
         additional_information=additional_information,
     )
 
-    # create a list of forecast values
+    input_data_last_updated = InputDataLastUpdated(
+        gsp=now_floor_30,
+        nwp=now_floor_30,
+        pv=now_floor_30,
+        satellite=now_floor_30,
+    )
+
     forecasted_values = [
         ForecastedValue(pv_power_generation_megawatts=0, effective_time=datetime_utc)
         for datetime_utc in datetimes_utc
     ]
 
+    forecast_creation_time = now_floor_30 - timedelta(minutes=30)
     return Forecast(
         location=location,
         forecast_creation_time=forecast_creation_time,
         forecasted_values=forecasted_values,
+        input_data_last_updated=input_data_last_updated,
     )
 
 
