@@ -2,7 +2,8 @@ from datetime import datetime
 
 from fastapi.testclient import TestClient
 
-from main import ManyForecasts, _floor_30_minutes_dt, app, version
+from main import (ManyForecasts, _floor_30_minutes_dt, app,
+                  convert_to_camelcase, version)
 from tests.test_utils import get_every_minute
 
 client = TestClient(app)
@@ -40,3 +41,8 @@ def test_floor_30_minutes():
             assert floor_minute.minute == 0
         else:
             assert floor_minute.minute == 30
+
+
+def test_convert_to_camelcase():
+    assert convert_to_camelcase("foo_bar") == "fooBar"
+    assert convert_to_camelcase("foo_bar_baz") == "fooBarBaz"

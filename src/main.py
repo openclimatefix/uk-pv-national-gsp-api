@@ -9,7 +9,9 @@ from pydantic import BaseModel, Field, validator
 
 version = "0.1.0"
 
-app = FastAPI(title="Nowcasting API", version=version, contact={"name": "Open Climate Fix"})
+app = FastAPI(
+    title="Nowcasting API", version=version, contact={"name": "Open Climate Fix"}
+)
 
 thirty_minutes = timedelta(minutes=30)
 
@@ -21,10 +23,26 @@ def datetime_must_have_timezone(cls, v: datetime):
     return v
 
 
-class ForecastedValue(BaseModel):
+def convert_to_camelcase(snake_str: str) -> str:
+    """Converts a given snake_case string into camelCase"""
+    first, *others = snake_str.split("_")
+    return "".join([first.lower(), *map(str.title, others)])
+
+
+class EnhancedBaseModel(BaseModel):
+    """Ensures that attribute names are returned in camelCase"""
+
+    class Config:  # noqa: D106
+        alias_generator = convert_to_camelcase
+        allow_population_by_field_name = True
+
+
+class ForecastedValue(EnhancedBaseModel):
     """One Forecast of generation at one timestamp"""
 
-    effective_time: datetime = Field(..., description="The time for the forecasted value")
+    effective_time: datetime = Field(
+        ..., description="The time for the forecasted value"
+    )
     pv_power_generation_megawatts: float = Field(
         ..., ge=0, description="The forecasted value in MW"
     )
@@ -34,7 +52,7 @@ class ForecastedValue(BaseModel):
     )
 
 
-class AdditionalInformation(BaseModel):
+class AdditionalInformation(EnhancedBaseModel):
     """Used internally to better describe a Location"""
 
     gsp_id: int = Field(..., description="The Grid Supply Point (GSP) id")
@@ -43,7 +61,7 @@ class AdditionalInformation(BaseModel):
     region_name: str = Field(..., description="The GSP region name")
 
 
-class Location(BaseModel):
+class Location(EnhancedBaseModel):
     """Location that the forecast is for"""
 
     location_id: UUID = Field(..., description="OCF-created id for location")
@@ -53,10 +71,12 @@ class Location(BaseModel):
     )
 
 
-class Forecast(BaseModel):
+class Forecast(EnhancedBaseModel):
     """A single Forecast"""
 
-    location: Location = Field(..., description="The location object for this forecaster")
+    location: Location = Field(
+        ..., description="The location object for this forecaster"
+    )
     forecast_creation_time: datetime = Field(
         ..., description="The time when the forecaster was made"
     )
@@ -65,12 +85,12 @@ class Forecast(BaseModel):
         description="List of forecasted value objects. Each value has the datestamp and a value",
     )
 
-    _normalize_forecast_creation_time = validator("forecast_creation_time", allow_reuse=True)(
-        datetime_must_have_timezone
-    )
+    _normalize_forecast_creation_time = validator(
+        "forecast_creation_time", allow_reuse=True
+    )(datetime_must_have_timezone)
 
 
-class ManyForecasts(BaseModel):
+class ManyForecasts(EnhancedBaseModel):
     """Many Forecasts"""
 
     forecasts: List[Forecast] = Field(
@@ -99,7 +119,9 @@ def create_dummy_forecast(gsp_id):
 
     # make a location object
     location = Location(
-        location_id=uuid4(), label="dummy_label", additional_information=additional_information
+        location_id=uuid4(),
+        label="dummy_label",
+        additional_information=additional_information,
     )
 
     # create a list of forecast values
@@ -137,7 +159,9 @@ def get_forecast_gsp(gsp_id) -> Forecast:
 @app.get("/v0/forecasts/gsp", response_model=ManyForecasts)
 def get_forecasts() -> ManyForecasts:
     """Get the latest information for all available forecasts"""
-    return ManyForecasts(forecasts=[create_dummy_forecast(gsp_id) for gsp_id in range(10)])
+    return ManyForecasts(
+        forecasts=[create_dummy_forecast(gsp_id) for gsp_id in range(10)]
+    )
 
 
 def _floor_30_minutes_dt(dt):
