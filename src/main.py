@@ -38,14 +38,15 @@ class EnhancedBaseModel(BaseModel):
 class ForecastValue(EnhancedBaseModel):
     """One Forecast of generation at one timestamp"""
 
-    effective_time: datetime = Field(..., description="The time for the forecasted value")
+    target_time: datetime = Field(
+        ...,
+        description="The target time that the forecast is produced for",
+    )
     expected_pv_power_generation_megawatts: float = Field(
         ..., ge=0, description="The forecasted value in MW"
     )
 
-    _normalize_effective_time = validator("effective_time", allow_reuse=True)(
-        datetime_must_have_timezone
-    )
+    _normalize_target_time = validator("target_time", allow_reuse=True)(datetime_must_have_timezone)
 
 
 class AdditionalLocationInformation(EnhancedBaseModel):
@@ -95,7 +96,8 @@ class Forecast(EnhancedBaseModel):
         description="List of forecasted value objects. Each value has the datestamp and a value",
     )
     input_data_last_updated: InputDataLastUpdated = Field(
-        ..., description="Information about the input data that was used to create the forecast"
+        ...,
+        description="Information about the input data that was used to create the forecast",
     )
 
     _normalize_forecast_creation_time = validator("forecast_creation_time", allow_reuse=True)(
@@ -128,7 +130,7 @@ def _create_dummy_forecast_for_location(location: Location):
     )
 
     forecast_values = [
-        ForecastValue(expected_pv_power_generation_megawatts=0, effective_time=datetime_utc)
+        ForecastValue(expected_pv_power_generation_megawatts=0, target_time=datetime_utc)
         for datetime_utc in datetimes_utc
     ]
 
