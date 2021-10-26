@@ -35,7 +35,7 @@ class EnhancedBaseModel(BaseModel):
         allow_population_by_field_name = True
 
 
-class ForecastedValue(EnhancedBaseModel):
+class ForecastValue(EnhancedBaseModel):
     """One Forecast of generation at one timestamp"""
 
     effective_time: datetime = Field(..., description="The time for the forecasted value")
@@ -90,7 +90,7 @@ class Forecast(EnhancedBaseModel):
     forecast_creation_time: datetime = Field(
         ..., description="The time when the forecaster was made"
     )
-    forecasted_values: List[ForecastedValue] = Field(
+    forecast_values: List[ForecastValue] = Field(
         ...,
         description="List of forecasted value objects. Each value has the datestamp and a value",
     )
@@ -141,8 +141,8 @@ def create_dummy_forecast(gsp_id):
         satellite=now_floor_30,
     )
 
-    forecasted_values = [
-        ForecastedValue(pv_power_generation_megawatts=0, effective_time=datetime_utc)
+    forecast_values = [
+        ForecastValue(pv_power_generation_megawatts=0, effective_time=datetime_utc)
         for datetime_utc in datetimes_utc
     ]
 
@@ -150,7 +150,7 @@ def create_dummy_forecast(gsp_id):
     return Forecast(
         location=location,
         forecast_creation_time=forecast_creation_time,
-        forecasted_values=forecasted_values,
+        forecast_values=forecast_values,
         input_data_last_updated=input_data_last_updated,
     )
 
