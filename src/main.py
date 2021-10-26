@@ -1,6 +1,6 @@
 """ Main FastAPI app """
 from datetime import datetime, timedelta, timezone
-from typing import List
+from typing import List, Optional
 from uuid import UUID, uuid4
 
 import numpy as np
@@ -51,10 +51,10 @@ class ForecastValue(EnhancedBaseModel):
 class AdditionalLocationInformation(EnhancedBaseModel):
     """Used internally to better describe a Location"""
 
-    gsp_id: int = Field(..., description="The Grid Supply Point (GSP) id")
-    gsp_name: str = Field(..., description="The GSP name")
-    gsp_group: str = Field(..., description="The GSP group name")
-    region_name: str = Field(..., description="The GSP region name")
+    gsp_id: Optional[int] = Field(None, description="The Grid Supply Point (GSP) id")
+    gsp_name: Optional[str] = Field(None, description="The GSP name")
+    gsp_group: Optional[str] = Field(None, description="The GSP group name")
+    region_name: Optional[str] = Field(..., description="The GSP region name")
 
 
 class Location(EnhancedBaseModel):
@@ -112,27 +112,13 @@ class ManyForecasts(EnhancedBaseModel):
     )
 
 
-def create_dummy_forecast(gsp_id):
-    """Create a dummy forecast for a given gsp"""
+def _create_dummy_forecast_for_location(location: Location):
     # get datetime right now
     now = datetime.now(timezone.utc)
     now_floor_30 = _floor_30_minutes_dt(dt=now)
 
     # make list of datetimes that the forecast is for
     datetimes_utc = [now_floor_30 + i * thirty_minutes for i in range(4)]
-
-    additional_information = AdditionalLocationInformation(
-        gsp_id=gsp_id,
-        gsp_name="dummy_gsp_name",
-        gsp_group="dummy_gsp_group",
-        region_name="dummy_region_name",
-    )
-
-    location = Location(
-        location_id=uuid4(),
-        label="dummy_label",
-        additional_information=additional_information,
-    )
 
     input_data_last_updated = InputDataLastUpdated(
         gsp=now_floor_30,
@@ -155,6 +141,39 @@ def create_dummy_forecast(gsp_id):
     )
 
 
+def _create_dummy_national_forecast():
+    """Create a dummy forecast for the national level"""
+    additional_information = AdditionalLocationInformation(
+        region_name="national_GB",
+    )
+
+    location = Location(
+        location_id=uuid4(),
+        label="GB (National)",
+        additional_information=additional_information,
+    )
+
+    return _create_dummy_forecast_for_location(location=location)
+
+
+def _create_dummy_gsp_forecast(gsp_id):
+    """Create a dummy forecast for a given GSP"""
+    additional_information = AdditionalLocationInformation(
+        gsp_id=gsp_id,
+        gsp_name="dummy_gsp_name",
+        gsp_group="dummy_gsp_group",
+        region_name="dummy_region_name",
+    )
+
+    location = Location(
+        location_id=uuid4(),
+        label="dummy_label",
+        additional_information=additional_information,
+    )
+
+    return _create_dummy_forecast_for_location(location=location)
+
+
 @app.get("/")
 def read_root():
     """Default root"""
@@ -167,17 +186,20 @@ def read_root():
 
 @app.get("/v0/forecasts/GB/pv/gsp/{gsp_id}", response_model=Forecast)
 def get_forecast_gsp(gsp_id) -> Forecast:
-    """
-    Get one forecast for a specific GSP id
-    """
-    # just make dummy data for the moment
-    return create_dummy_forecast(gsp_id=gsp_id)
+    """Get one forecast for a specific GSP id"""
+    return _create_dummy_gsp_forecast(gsp_id=gsp_id)
 
 
 @app.get("/v0/forecasts/GB/pv/gsp", response_model=ManyForecasts)
 def get_forecasts() -> ManyForecasts:
     """Get the latest information for all available forecasts"""
-    return ManyForecasts(forecasts=[create_dummy_forecast(gsp_id) for gsp_id in range(10)])
+    return ManyForecasts(forecasts=[_create_dummy_gsp_forecast(gsp_id) for gsp_id in range(10)])
+
+
+@app.get("/v0/forecasts/GB/pv/national", response_model=Forecast)
+def get_forecast_national() -> Forecast:
+    """Get an aggregated forecast at the national level"""
+    return _create_dummy_national_forecast()
 
 
 def _floor_30_minutes_dt(dt):
