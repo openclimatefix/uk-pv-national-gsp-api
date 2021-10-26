@@ -1,36 +1,46 @@
-# Nowcasting Api
+# Nowcasting API
+
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+
 [![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
+
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
+
 API for hosting nowcasting solar predictions.  
 Will just return 'dummy' numbers until about mid-2022!
 
-The api is using FastAPI - https://fastapi.tiangolo.com/
+We use [FastAPI](https://fastapi.tiangolo.com/).
 
 # Documentation
 
-Documentation can be viewed by going to `/docs`. This is automatically produced from the code.
+Documentation can be viewed at `/docs`. This is automatically generated from the code.
 
+# Setup and Run
 
-# Local start up
-
-This can be done it two differen ways, with python, or docker
+This can be done it two differen ways: With Python or with Docker.
 
 ## Python
 
+### Create a virtual env
 
-Create a virtual environment ```python3 -m venv ./venv ```
-and activate with ``` source venv/activation/bin```
-Install the requirements ``` pip install -r requirements.txt ```
-and use ```cd src && uvicorn main:app --reload ``` 
-to start up on a local host
+```bash
+python3 -m venv ./venv
+source venv/bin/activate
+```
+
+### Install Requirements and Run
+
+```bash
+pip install -r requirements.txt
+cd src && uvicorn main:app --reload
+```
 
 ## Docker
 
 1. Make sure docker is installed on your system.
-2. Use ```docker-compose up ``` 
+2. Use `docker-compose up `
    in the main directory to start up the application.
-3. You will now be able to access it on ```http://localhost:80```   
+3. You will now be able to access it on `http://localhost:80`
 
 ## Contributors ✨
 
