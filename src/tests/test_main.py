@@ -15,7 +15,7 @@ def test_read_main():
 
 
 def test_read_latest():
-    response = client.get("/v0/forecasts/gsp")
+    response = client.get("/v0/forecasts/GB/pv/gsp")
     assert response.status_code == 200
 
     r = ManyForecasts(**response.json())
