@@ -6,7 +6,7 @@
 
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-API for hosting nowcasting solar predictions.  
+API for hosting nowcasting solar predictions.
 Will just return 'dummy' numbers until about mid-2022!
 
 We use [FastAPI](https://fastapi.tiangolo.com/).
@@ -42,7 +42,18 @@ cd src && uvicorn main:app --reload
    in the main directory to start up the application.
 3. You will now be able to access it on `http://localhost:80`
 
-## Contributors ✨
+# Development
+
+We use `pre-commit` to manage various pre-commit hooks. All hooks are also run
+as Actions when code is pushed to GitHub.
+
+You can run the formatters and linters locally. To do that:
+
+1. [Install pre-commit](https://pre-commit.com/#install)
+2. Check the install worked via `pre-commit --version`
+3. Install the git hooks script via `pre-commit install`
+
+# Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
