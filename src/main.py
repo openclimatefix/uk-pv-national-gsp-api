@@ -39,7 +39,7 @@ class ForecastValue(EnhancedBaseModel):
     """One Forecast of generation at one timestamp"""
 
     effective_time: datetime = Field(..., description="The time for the forecasted value")
-    pv_power_generation_megawatts: float = Field(
+    expected_pv_power_generation_megawatts: float = Field(
         ..., ge=0, description="The forecasted value in MW"
     )
 
@@ -142,7 +142,7 @@ def create_dummy_forecast(gsp_id):
     )
 
     forecast_values = [
-        ForecastValue(pv_power_generation_megawatts=0, effective_time=datetime_utc)
+        ForecastValue(expected_pv_power_generation_megawatts=0, effective_time=datetime_utc)
         for datetime_utc in datetimes_utc
     ]
 
