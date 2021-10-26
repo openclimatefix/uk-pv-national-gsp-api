@@ -2,4 +2,4 @@ name: Lint Python
 on: [push]
 jobs:
   call-run-python-linters:
-    uses: openclimatefix/.github/workflows/python-lint.yml@main
+    uses: openclimatefix/.github/.github/workflows/python-lint.yml@main
