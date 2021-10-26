@@ -9,9 +9,7 @@ from pydantic import BaseModel, Field, validator
 
 version = "0.1.0"
 
-app = FastAPI(
-    title="Nowcasting API", version=version, contact={"name": "Open Climate Fix"}
-)
+app = FastAPI(title="Nowcasting API", version=version, contact={"name": "Open Climate Fix"})
 
 thirty_minutes = timedelta(minutes=30)
 
@@ -40,9 +38,7 @@ class EnhancedBaseModel(BaseModel):
 class ForecastedValue(EnhancedBaseModel):
     """One Forecast of generation at one timestamp"""
 
-    effective_time: datetime = Field(
-        ..., description="The time for the forecasted value"
-    )
+    effective_time: datetime = Field(..., description="The time for the forecasted value")
     pv_power_generation_megawatts: float = Field(
         ..., ge=0, description="The forecasted value in MW"
     )
@@ -74,9 +70,7 @@ class Location(EnhancedBaseModel):
 class Forecast(EnhancedBaseModel):
     """A single Forecast"""
 
-    location: Location = Field(
-        ..., description="The location object for this forecaster"
-    )
+    location: Location = Field(..., description="The location object for this forecaster")
     forecast_creation_time: datetime = Field(
         ..., description="The time when the forecaster was made"
     )
@@ -85,9 +79,9 @@ class Forecast(EnhancedBaseModel):
         description="List of forecasted value objects. Each value has the datestamp and a value",
     )
 
-    _normalize_forecast_creation_time = validator(
-        "forecast_creation_time", allow_reuse=True
-    )(datetime_must_have_timezone)
+    _normalize_forecast_creation_time = validator("forecast_creation_time", allow_reuse=True)(
+        datetime_must_have_timezone
+    )
 
 
 class ManyForecasts(EnhancedBaseModel):
@@ -159,9 +153,7 @@ def get_forecast_gsp(gsp_id) -> Forecast:
 @app.get("/v0/forecasts/gsp", response_model=ManyForecasts)
 def get_forecasts() -> ManyForecasts:
     """Get the latest information for all available forecasts"""
-    return ManyForecasts(
-        forecasts=[create_dummy_forecast(gsp_id) for gsp_id in range(10)]
-    )
+    return ManyForecasts(forecasts=[create_dummy_forecast(gsp_id) for gsp_id in range(10)])
 
 
 def _floor_30_minutes_dt(dt):
