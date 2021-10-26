@@ -165,7 +165,7 @@ def read_root():
     }
 
 
-@app.get("/v0/forecasts/gsp/{gsp_id}", response_model=Forecast)
+@app.get("/v0/forecasts/GB/gsp/{gsp_id}", response_model=Forecast)
 def get_forecast_gsp(gsp_id) -> Forecast:
     """
     Get one forecast for a specific GSP id
@@ -174,7 +174,7 @@ def get_forecast_gsp(gsp_id) -> Forecast:
     return create_dummy_forecast(gsp_id=gsp_id)
 
 
-@app.get("/v0/forecasts/gsp", response_model=ManyForecasts)
+@app.get("/v0/forecasts/GB/gsp", response_model=ManyForecasts)
 def get_forecasts() -> ManyForecasts:
     """Get the latest information for all available forecasts"""
     return ManyForecasts(forecasts=[create_dummy_forecast(gsp_id) for gsp_id in range(10)])
