@@ -38,7 +38,7 @@ cd src && uvicorn main:app --reload
 ## Docker
 
 1. Make sure docker is installed on your system.
-2. Use `docker-compose up `
+2. Use `docker-compose up`
    in the main directory to start up the application.
 3. You will now be able to access it on `http://localhost:80`
 
