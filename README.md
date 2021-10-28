@@ -53,6 +53,16 @@ You can run the formatters and linters locally. To do that:
 2. Check the install worked via `pre-commit --version`
 3. Install the git hooks script via `pre-commit install`
 
+# Deployment
+
+This API is temporarily deployed on AWS Elastic Beanstalk.
+We will move it to a more stable service once the API matures.
+
+```bash
+eb init
+eb deploy --message="Add message here"
+```
+
 # Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
