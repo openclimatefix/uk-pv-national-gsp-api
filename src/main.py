@@ -8,8 +8,23 @@ from fastapi import FastAPI
 from pydantic import BaseModel, Field, validator
 
 version = "0.1.0"
-
-app = FastAPI(title="Nowcasting API", version=version, contact={"name": "Open Climate Fix"})
+description = """
+The Nowcasting API is still under development. It only returns fake results.
+"""
+app = FastAPI(
+    title="Nowcasting API",
+    version=version,
+    description=description,
+    contact={
+        "name": "Open Climate Fix",
+        "url": "https://openclimatefix.org",
+        "email": "info@openclimatefix.org",
+    },
+    license_info={
+        "name": "MIT License",
+        "url": "https://github.com/openclimatefix/nowcasting_api/blob/main/LICENSE",
+    },
+)
 
 thirty_minutes = timedelta(minutes=30)
 
@@ -177,29 +192,30 @@ def _create_dummy_gsp_forecast(gsp_id):
 
 
 @app.get("/")
-def read_root():
-    """Default root"""
+def get_api_information():
+    """Get information about the API itself"""
     return {
         "title": "Nowcasting API",
         "version": version,
-        "documentation": " go to /docs/ to see documentation",
+        "description": description,
+        "documentation": "https://api.nowcasting.io/docs",
     }
 
 
 @app.get("/v0/forecasts/GB/pv/gsp/{gsp_id}", response_model=Forecast)
-def get_forecast_gsp(gsp_id) -> Forecast:
+def get_forecasts_for_a_specific_gsp(gsp_id) -> Forecast:
     """Get one forecast for a specific GSP id"""
     return _create_dummy_gsp_forecast(gsp_id=gsp_id)
 
 
 @app.get("/v0/forecasts/GB/pv/gsp", response_model=ManyForecasts)
-def get_forecasts() -> ManyForecasts:
+def get_all_available_forecasts() -> ManyForecasts:
     """Get the latest information for all available forecasts"""
     return ManyForecasts(forecasts=[_create_dummy_gsp_forecast(gsp_id) for gsp_id in range(10)])
 
 
 @app.get("/v0/forecasts/GB/pv/national", response_model=Forecast)
-def get_forecast_national() -> Forecast:
+def get_nationally_aggregated_forecasts() -> Forecast:
     """Get an aggregated forecast at the national level"""
     return _create_dummy_national_forecast()
 
