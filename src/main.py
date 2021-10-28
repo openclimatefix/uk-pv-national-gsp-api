@@ -7,7 +7,7 @@ import numpy as np
 from fastapi import FastAPI
 from pydantic import BaseModel, Field, validator
 
-version = "0.1.0"
+version = "0.1.1"
 description = """
 The Nowcasting API is still under development. It only returns fake results.
 """
