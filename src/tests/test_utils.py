@@ -1,3 +1,4 @@
+""" Utils functions for test """
 from datetime import datetime, timezone
 
 # Used constants
@@ -7,8 +8,7 @@ UPPER_LIMIT_MINUTE = 60
 
 def get_every_minute():
     """
-    Generate every possible minute in an hour time frame and add every time with
-    the possible minutes
+    Generate every possible minute in an hour time frame
 
     Example: Start with current hour when program is run, so for example the
     current hour is 12:05:18, it will reset to 12:00:18 and add to list every minute
@@ -21,7 +21,7 @@ def get_every_minute():
     time_now = datetime.now(timezone.utc)
     list_of_times = []
     minutes = 0
-    while minutes >= LOWER_LIMIT_MINUTE and minutes < UPPER_LIMIT_MINUTE:
+    while (minutes >= LOWER_LIMIT_MINUTE) and (minutes < UPPER_LIMIT_MINUTE):
         time_minutes = time_now.replace(minute=minutes)
         list_of_times.append(time_minutes)
         minutes += 1
