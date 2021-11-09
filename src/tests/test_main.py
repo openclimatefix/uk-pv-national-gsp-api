@@ -1,3 +1,4 @@
+""" Test for main app """
 from datetime import datetime
 
 from fastapi.testclient import TestClient
@@ -9,14 +10,14 @@ client = TestClient(app)
 
 
 def test_read_main():
-    """ Check main route works """
+    """Check main route works"""
     response = client.get("/")
     assert response.status_code == 200
     assert response.json()["version"] == version
 
 
 def test_read_latest():
-    """ Check main GB/pv/gsp route works """
+    """Check main GB/pv/gsp route works"""
     response = client.get("/v0/forecasts/GB/pv/gsp")
     assert response.status_code == 200
 
@@ -46,6 +47,6 @@ def test_floor_30_minutes():
 
 
 def test_convert_to_camelcase():
-    """ Test convert to camelcase works """
+    """Test convert to camelcase works"""
     assert convert_to_camelcase("foo_bar") == "fooBar"
     assert convert_to_camelcase("foo_bar_baz") == "fooBarBaz"
