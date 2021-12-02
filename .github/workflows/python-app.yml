@@ -3,9 +3,11 @@ name: Python package
 on: [push, pull_request]
 jobs:
   call-run-python-tests:
-    uses: openclimatefix/.github/.github/workflows/python-test.yml@pytest-non-package
+    uses: openclimatefix/.github/.github/workflows/python-test.yml@codecov
     with:
       # 0 means don't use pytest-xdist
       pytest_numcpus: "4"
       # pytest-cov looks at this folder
       pytest_cov_dir: "src"
+      # codecov secret
+      code_cov_secret: ${{ secrets.CODECOV_TOKEN }}
