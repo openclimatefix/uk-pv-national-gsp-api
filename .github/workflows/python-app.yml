@@ -11,4 +11,4 @@ jobs:
       pytest_cov_dir: "src"
     secrets:
       # codecov secret
-      code_cov_secret: ${{ secrets.CODECOV_TOKEN }} 
+      code_cov_secret: ${{ secrets.CODECOV_TOKEN }}
