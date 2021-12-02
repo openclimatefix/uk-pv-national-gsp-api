@@ -5,7 +5,7 @@ jobs:
   call-run-python-tests:
     uses: openclimatefix/.github/.github/workflows/python-test.yml@pytest-non-package
     with:
-      # 0 means don't use pytest-xdist 
+      # 0 means don't use pytest-xdist
       pytest_numcpus: "4"
       # pytest-cov looks at this folder
       pytest_cov_dir: "src"
