@@ -8,6 +8,7 @@
 
 [![codecov](https://codecov.io/gh/openclimatefix/nowcasting_api/branch/main/graph/badge.svg?token=W7L3X72M1O)](https://codecov.io/gh/openclimatefix/nowcasting_api)
 
+
 API for hosting nowcasting solar predictions.
 Will just return 'dummy' numbers until about mid-2022!
 
