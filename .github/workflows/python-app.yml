@@ -9,6 +9,3 @@ jobs:
       pytest_numcpus: "4"
       # pytest-cov looks at this folder
       pytest_cov_dir: "src"
-    secrets:
-      # codecov secret
-      code_cov_secret: ${{ secrets.CODECOV_TOKEN }}
