@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field, validator
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(name)s %(levelname)s:%(message)s')
 logger = logging.getLogger(__name__)
 
-version = "0.1.1"
+version = "0.1.2"
 description = """
 The Nowcasting API is still under development. It only returns fake results.
 """
