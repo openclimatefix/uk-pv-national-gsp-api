@@ -209,7 +209,7 @@ def _create_dummy_gsp_forecast(gsp_id):
 def get_api_information():
     """Get information about the API itself"""
 
-    logger.debug(f'Route / has be called')
+    logger.info(f'Route / has be called')
 
     return {
         "title": "Nowcasting API",
@@ -223,7 +223,7 @@ def get_api_information():
 def get_forecasts_for_a_specific_gsp(gsp_id) -> Forecast:
     """Get one forecast for a specific GSP id"""
 
-    logger.debug(f'Get forecasts for gsp id {gsp_id}')
+    logger.info(f'Get forecasts for gsp id {gsp_id}')
 
     return _create_dummy_gsp_forecast(gsp_id=gsp_id)
 
@@ -232,7 +232,7 @@ def get_forecasts_for_a_specific_gsp(gsp_id) -> Forecast:
 def get_all_available_forecasts() -> ManyForecasts:
     """Get the latest information for all available forecasts"""
 
-    logger.debug(f'Get forecasts for all gsps')
+    logger.info(f'Get forecasts for all gsps')
 
     return ManyForecasts(forecasts=[_create_dummy_gsp_forecast(gsp_id) for gsp_id in range(10)])
 
