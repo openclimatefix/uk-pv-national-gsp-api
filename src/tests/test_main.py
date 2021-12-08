@@ -23,6 +23,7 @@ def test_read_latest_gsp():
 
     r = Forecast(**response.json())
 
+
 def test_read_latest():
     """Check main GB/pv/gsp route works"""
     response = client.get("/v0/forecasts/GB/pv/gsp")
