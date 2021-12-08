@@ -1,10 +1,10 @@
 """ Main FastAPI app """
+import logging
 from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 from uuid import UUID, uuid4
 
 import numpy as np
-import logging
 from fastapi import FastAPI
 from pydantic import BaseModel, Field, validator
 
