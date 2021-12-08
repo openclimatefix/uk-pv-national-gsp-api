@@ -4,8 +4,12 @@ from typing import List, Optional
 from uuid import UUID, uuid4
 
 import numpy as np
+import logging
 from fastapi import FastAPI
 from pydantic import BaseModel, Field, validator
+
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(name)s %(levelname)s:%(message)s')
+logger = logging.getLogger(__name__)
 
 version = "0.1.1"
 description = """
@@ -132,6 +136,8 @@ class ManyForecasts(EnhancedBaseModel):
 
 
 def _create_dummy_forecast_for_location(location: Location):
+    logger.debug(f'Creating dummy forecast for location {location}')
+
     # get datetime right now
     now = datetime.now(timezone.utc)
     now_floor_30 = _floor_30_minutes_dt(dt=now)
@@ -162,6 +168,9 @@ def _create_dummy_forecast_for_location(location: Location):
 
 def _create_dummy_national_forecast():
     """Create a dummy forecast for the national level"""
+
+    logger.debug(f'Creating dummy forecast')
+
     additional_information = AdditionalLocationInformation(
         region_name="national_GB",
     )
@@ -177,6 +186,9 @@ def _create_dummy_national_forecast():
 
 def _create_dummy_gsp_forecast(gsp_id):
     """Create a dummy forecast for a given GSP"""
+
+    logger.debug(f'Creating dummy forecast for {gsp_id=}')
+
     additional_information = AdditionalLocationInformation(
         gsp_id=gsp_id,
         gsp_name="dummy_gsp_name",
@@ -196,6 +208,9 @@ def _create_dummy_gsp_forecast(gsp_id):
 @app.get("/")
 def get_api_information():
     """Get information about the API itself"""
+
+    logger.debug(f'Route / has be called')
+
     return {
         "title": "Nowcasting API",
         "version": version,
@@ -207,18 +222,27 @@ def get_api_information():
 @app.get("/v0/forecasts/GB/pv/gsp/{gsp_id}", response_model=Forecast)
 def get_forecasts_for_a_specific_gsp(gsp_id) -> Forecast:
     """Get one forecast for a specific GSP id"""
+
+    logger.debug(f'Get forecasts for gsp id {gsp_id}')
+
     return _create_dummy_gsp_forecast(gsp_id=gsp_id)
 
 
 @app.get("/v0/forecasts/GB/pv/gsp", response_model=ManyForecasts)
 def get_all_available_forecasts() -> ManyForecasts:
     """Get the latest information for all available forecasts"""
+
+    logger.debug(f'Get forecasts for all gsps')
+
     return ManyForecasts(forecasts=[_create_dummy_gsp_forecast(gsp_id) for gsp_id in range(10)])
 
 
 @app.get("/v0/forecasts/GB/pv/national", response_model=Forecast)
 def get_nationally_aggregated_forecasts() -> Forecast:
     """Get an aggregated forecast at the national level"""
+
+    logger.debug(f'Get national forecasts')
+
     return _create_dummy_national_forecast()
 
 
