@@ -8,7 +8,7 @@ import numpy as np
 from fastapi import FastAPI
 from pydantic import BaseModel, Field, validator
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(name)s %(levelname)s:%(message)s')
+logging.basicConfig(level=logging.DEBUG, format="%(asctime)s %(name)s %(levelname)s:%(message)s")
 logger = logging.getLogger(__name__)
 
 version = "0.1.2"
@@ -136,7 +136,7 @@ class ManyForecasts(EnhancedBaseModel):
 
 
 def _create_dummy_forecast_for_location(location: Location):
-    logger.debug(f'Creating dummy forecast for location {location}')
+    logger.debug(f"Creating dummy forecast for location {location}")
 
     # get datetime right now
     now = datetime.now(timezone.utc)
@@ -169,7 +169,7 @@ def _create_dummy_forecast_for_location(location: Location):
 def _create_dummy_national_forecast():
     """Create a dummy forecast for the national level"""
 
-    logger.debug('Creating dummy forecast')
+    logger.debug("Creating dummy forecast")
 
     additional_information = AdditionalLocationInformation(
         region_name="national_GB",
@@ -187,7 +187,7 @@ def _create_dummy_national_forecast():
 def _create_dummy_gsp_forecast(gsp_id):
     """Create a dummy forecast for a given GSP"""
 
-    logger.debug(f'Creating dummy forecast for {gsp_id=}')
+    logger.debug(f"Creating dummy forecast for {gsp_id=}")
 
     additional_information = AdditionalLocationInformation(
         gsp_id=gsp_id,
@@ -209,7 +209,7 @@ def _create_dummy_gsp_forecast(gsp_id):
 def get_api_information():
     """Get information about the API itself"""
 
-    logger.info('Route / has be called')
+    logger.info("Route / has be called")
 
     return {
         "title": "Nowcasting API",
@@ -223,7 +223,7 @@ def get_api_information():
 def get_forecasts_for_a_specific_gsp(gsp_id) -> Forecast:
     """Get one forecast for a specific GSP id"""
 
-    logger.info(f'Get forecasts for gsp id {gsp_id}')
+    logger.info(f"Get forecasts for gsp id {gsp_id}")
 
     return _create_dummy_gsp_forecast(gsp_id=gsp_id)
 
@@ -232,7 +232,7 @@ def get_forecasts_for_a_specific_gsp(gsp_id) -> Forecast:
 def get_all_available_forecasts() -> ManyForecasts:
     """Get the latest information for all available forecasts"""
 
-    logger.info('Get forecasts for all gsps')
+    logger.info("Get forecasts for all gsps")
 
     return ManyForecasts(forecasts=[_create_dummy_gsp_forecast(gsp_id) for gsp_id in range(10)])
 
@@ -241,7 +241,7 @@ def get_all_available_forecasts() -> ManyForecasts:
 def get_nationally_aggregated_forecasts() -> Forecast:
     """Get an aggregated forecast at the national level"""
 
-    logger.debug('Get national forecasts')
+    logger.debug("Get national forecasts")
 
     return _create_dummy_national_forecast()
 
