@@ -8,7 +8,6 @@ import numpy as np
 from fastapi import FastAPI
 from pydantic import BaseModel, Field, validator
 
-logging.basicConfig(format="%(asctime)s %(name)s %(levelname)s:%(message)s")
 logger = logging.getLogger(__name__)
 
 version = "0.1.2"
