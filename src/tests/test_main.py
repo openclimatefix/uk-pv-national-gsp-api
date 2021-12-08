@@ -21,7 +21,8 @@ def test_read_latest_gsp():
     response = client.get("/v0/forecasts/GB/pv/gsp/1")
     assert response.status_code == 200
 
-    r = Forecast(**response.json())
+    _ = Forecast(**response.json())
+
 
 def test_read_latest():
     """Check main GB/pv/gsp route works"""
@@ -37,7 +38,7 @@ def test_read_latest_national():
     response = client.get("/v0/forecasts/GB/pv/national")
     assert response.status_code == 200
 
-    r = Forecast(**response.json())
+    _ = Forecast(**response.json())
 
 
 def test_floor_30_minutes():
