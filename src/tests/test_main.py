@@ -3,7 +3,7 @@ from datetime import datetime
 
 from fastapi.testclient import TestClient
 
-from main import ManyForecasts, _floor_30_minutes_dt, app, convert_to_camelcase, version
+from main import Forecast, ManyForecasts, _floor_30_minutes_dt, app, convert_to_camelcase, version
 from tests.test_utils import get_every_minute
 
 client = TestClient(app)
@@ -16,6 +16,14 @@ def test_read_main():
     assert response.json()["version"] == version
 
 
+def test_read_latest_gsp():
+    """Check main GB/pv/gsp/{gsp_id} route works"""
+    response = client.get("/v0/forecasts/GB/pv/gsp/1")
+    assert response.status_code == 200
+
+    _ = Forecast(**response.json())
+
+
 def test_read_latest():
     """Check main GB/pv/gsp route works"""
     response = client.get("/v0/forecasts/GB/pv/gsp")
@@ -23,6 +31,14 @@ def test_read_latest():
 
     r = ManyForecasts(**response.json())
     assert len(r.forecasts) == 10
+
+
+def test_read_latest_national():
+    """Check main GB/pv/national route works"""
+    response = client.get("/v0/forecasts/GB/pv/national")
+    assert response.status_code == 200
+
+    _ = Forecast(**response.json())
 
 
 def test_floor_30_minutes():
