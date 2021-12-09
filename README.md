@@ -61,6 +61,8 @@ You can run the formatters and linters locally. To do that:
 This API is temporarily deployed on AWS Elastic Beanstalk.
 We will move it to a more stable service once the API matures.
 
+If you want to deploy a new release, then please adjust the version in `docker-compose.yml`. 
+
 ```bash
 eb init
 eb deploy --message="Add message here"
