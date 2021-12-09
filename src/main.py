@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
-version = "0.1.3"
+version = "0.1.4"
 description = """
 The Nowcasting API is still under development. It only returns fake results.
 """
