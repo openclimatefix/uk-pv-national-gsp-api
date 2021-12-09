@@ -2,9 +2,10 @@ version: "3"
 
 services:
   api:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    #    build:
+    #      context: .
+    #      dockerfile: Dockerfile
+    image: openclimatefix/nowcasting_api:0.1.3
     container_name: nowcasting_api
     command: ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "80"]
     ports:
