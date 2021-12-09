@@ -205,7 +205,7 @@ def _create_dummy_gsp_forecast(gsp_id):
 
 
 @app.get("/")
-def get_api_information():
+async def get_api_information():
     """Get information about the API itself"""
 
     logger.info("Route / has be called")
@@ -219,7 +219,7 @@ def get_api_information():
 
 
 @app.get("/v0/forecasts/GB/pv/gsp/{gsp_id}", response_model=Forecast)
-def get_forecasts_for_a_specific_gsp(gsp_id) -> Forecast:
+async def get_forecasts_for_a_specific_gsp(gsp_id) -> Forecast:
     """Get one forecast for a specific GSP id"""
 
     logger.info(f"Get forecasts for gsp id {gsp_id}")
@@ -228,7 +228,7 @@ def get_forecasts_for_a_specific_gsp(gsp_id) -> Forecast:
 
 
 @app.get("/v0/forecasts/GB/pv/gsp", response_model=ManyForecasts)
-def get_all_available_forecasts() -> ManyForecasts:
+async def get_all_available_forecasts() -> ManyForecasts:
     """Get the latest information for all available forecasts"""
 
     logger.info("Get forecasts for all gsps")
@@ -237,7 +237,7 @@ def get_all_available_forecasts() -> ManyForecasts:
 
 
 @app.get("/v0/forecasts/GB/pv/national", response_model=Forecast)
-def get_nationally_aggregated_forecasts() -> Forecast:
+async def get_nationally_aggregated_forecasts() -> Forecast:
     """Get an aggregated forecast at the national level"""
 
     logger.debug("Get national forecasts")
