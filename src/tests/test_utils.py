@@ -1,7 +1,10 @@
 """ Utils functions for test """
 from datetime import datetime, timezone
+import pytest
 
 # Used constants
+from utils import floor_30_minutes_dt, convert_to_camelcase, datetime_must_have_timezone
+
 LOWER_LIMIT_MINUTE = 0
 UPPER_LIMIT_MINUTE = 60
 
@@ -26,3 +29,44 @@ def get_every_minute():
         list_of_times.append(time_minutes)
         minutes += 1
     return list_of_times
+
+
+def test_datetime_must_have_timezone():
+    """ Test function datetime_must_have_timezone"""
+
+    time_now = datetime.now(timezone.utc)
+
+    # check functions works
+    datetime_must_have_timezone(None, time_now)
+
+    with pytest.raises(Exception):
+        time_now = datetime.now()
+        datetime_must_have_timezone(None, time_now)
+
+
+
+def test_floor_30_minutes():
+    """
+    Test if floor_30_minutes_dt method works by testing against every minute in a hour
+
+    For minutes in range [0, 30) => Will floor to 0 minutes
+    For minutes in range [30, 60) => Will floor to 30 minutes
+    """
+    list_of_time = get_every_minute()
+    input = datetime.fromisoformat("2021-09-30 12:15:05")
+    expected_output = datetime.fromisoformat("2021-09-30 12:00:00")
+
+    assert floor_30_minutes_dt(input) == expected_output  # Basic control test
+
+    for time in list_of_time:
+        floor_minute = floor_30_minutes_dt(time)
+        if time.minute < 30:
+            assert floor_minute.minute == 0
+        else:
+            assert floor_minute.minute == 30
+
+
+def test_convert_to_camelcase():
+    """Test convert to camelcase works"""
+    assert convert_to_camelcase("foo_bar") == "fooBar"
+    assert convert_to_camelcase("foo_bar_baz") == "fooBarBaz"
