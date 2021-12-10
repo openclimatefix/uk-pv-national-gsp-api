@@ -231,5 +231,3 @@ async def get_nationally_aggregated_forecasts() -> Forecast:
     logger.debug("Get national forecasts")
 
     return _create_dummy_national_forecast()
-
-
