@@ -37,5 +37,3 @@ def test_read_latest_national():
     assert response.status_code == 200
 
     _ = Forecast(**response.json())
-
-

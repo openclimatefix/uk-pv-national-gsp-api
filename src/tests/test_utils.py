@@ -32,7 +32,7 @@ def get_every_minute():
 
 
 def test_datetime_must_have_timezone():
-    """ Test function datetime_must_have_timezone"""
+    """Test function datetime_must_have_timezone"""
 
     time_now = datetime.now(timezone.utc)
 
@@ -42,7 +42,6 @@ def test_datetime_must_have_timezone():
     with pytest.raises(Exception):
         time_now = datetime.now()
         datetime_must_have_timezone(None, time_now)
-
 
 
 def test_floor_30_minutes():
