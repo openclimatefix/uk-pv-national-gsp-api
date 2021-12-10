@@ -1,9 +1,10 @@
 """ Utils functions for test """
 from datetime import datetime, timezone
+
 import pytest
 
 # Used constants
-from utils import floor_30_minutes_dt, convert_to_camelcase, datetime_must_have_timezone
+from utils import convert_to_camelcase, datetime_must_have_timezone, floor_30_minutes_dt
 
 LOWER_LIMIT_MINUTE = 0
 UPPER_LIMIT_MINUTE = 60
