@@ -40,7 +40,7 @@ def test_datetime_must_have_timezone():
     # check functions works
     datetime_must_have_timezone(None, time_now)
 
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         time_now = datetime.now()
         datetime_must_have_timezone(None, time_now)
 
