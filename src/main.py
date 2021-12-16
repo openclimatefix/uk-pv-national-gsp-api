@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 version = "0.1.5"
 description = """
-The Nowcasting API is still under development. It only returns zeroes for now.
+The Nowcasting API is still under development. It only returns zeros for now.
 """
 app = FastAPI(
     title="Nowcasting API",
