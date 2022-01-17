@@ -3,3 +3,4 @@ uvicorn[standard]
 pydantic
 numpy
 requests
+nowcasting_forecast

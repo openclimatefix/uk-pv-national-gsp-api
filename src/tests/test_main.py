@@ -2,7 +2,8 @@
 
 from fastapi.testclient import TestClient
 
-from main import Forecast, ManyForecasts, app, version
+from main import app, version
+from models import Forecast, ManyForecasts
 
 client = TestClient(app)
 
