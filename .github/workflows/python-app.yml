@@ -1,11 +1,11 @@
 name: Python package
 
-on: 
+on:
   push:
   pull_request:
   # Runs cronjob every Monday at 12 PM
   schedule:
-    - cron: '0 12 * * 1'
+    - cron: "0 12 * * 1"
 
 jobs:
   call-run-python-tests:
