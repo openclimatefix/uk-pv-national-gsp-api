@@ -1,6 +1,12 @@
 name: Python package
 
-on: [push, pull_request]
+on: 
+  push:
+  pull_request:
+  # Runs cronjob every Monday at 12 PM
+  schedule:
+    - cron: '0 12 * * 1'
+
 jobs:
   call-run-python-tests:
     uses: openclimatefix/.github/.github/workflows/python-test.yml@main
