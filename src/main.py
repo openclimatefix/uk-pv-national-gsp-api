@@ -1,11 +1,14 @@
 """ Main FastAPI app """
 import logging
+import os
 from datetime import timedelta
 
 from fastapi import FastAPI
 
 from dummy import create_dummy_national_forecast, create_dummy_gsp_forecast
 from models import Forecast, ManyForecasts
+
+from nowcasting_forecast.database.connection import DatabaseConnection
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +32,14 @@ app = FastAPI(
 )
 
 thirty_minutes = timedelta(minutes=30)
+
+
+# Dependency
+def get_db():
+    connection = DatabaseConnection(url=os.environ['DB_URL'])
+
+    with connection.get_session() as s:
+        yield s
 
 
 @app.get("/")

@@ -1,9 +1,13 @@
 from datetime import datetime, timezone, timedelta
 from uuid import uuid4
+import logging
 
-from main import logger, thirty_minutes
 from models import ForecastValue, AdditionalLocationInformation, Location, InputDataLastUpdated, Forecast
 from utils import floor_30_minutes_dt
+
+logger = logging.getLogger(__name__)
+
+thirty_minutes = timedelta(minutes=30)
 
 
 def create_dummy_forecast_for_location(location: Location):
