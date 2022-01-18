@@ -32,7 +32,6 @@ app = FastAPI(
 )
 
 origins =[
-    "http://localhost:3002",  # TODO: Remove this in production and only allow in dev
     "https://app.nowcasting.io"
 ]
 app.add_middleware(
