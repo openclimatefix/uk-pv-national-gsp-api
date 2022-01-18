@@ -6,6 +6,7 @@ from uuid import UUID, uuid4
 
 from fastapi import FastAPI
 from pydantic import BaseModel, Field, validator
+from fastapi.middleware.cors import CORSMiddleware
 
 from utils import convert_to_camelcase, datetime_must_have_timezone, floor_30_minutes_dt
 
@@ -28,6 +29,18 @@ app = FastAPI(
         "name": "MIT License",
         "url": "https://github.com/openclimatefix/nowcasting_api/blob/main/LICENSE",
     },
+)
+
+origins =[
+    "http://localhost:3002",  # TODO: Remove this in production and only allow in dev
+    "https://app.nowcasting.io"
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins =origins,
+    allow_credentials= True,
+    allow_methods =["*"],
+    allow_headers=["*"],
 )
 
 thirty_minutes = timedelta(minutes=30)
