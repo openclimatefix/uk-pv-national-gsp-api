@@ -1,5 +1,5 @@
+""" Create dummy forecasts for testing """
 from datetime import datetime, timezone, timedelta
-from uuid import uuid4
 import logging
 
 from nowcasting_forecast.database.models import (
@@ -15,7 +15,8 @@ logger = logging.getLogger(__name__)
 thirty_minutes = timedelta(minutes=30)
 
 
-def create_dummy_forecast_for_location(location: Location):
+def create_dummy_forecast_for_location(location: Location) -> Forecast:
+    """Create dummy forecast for one location"""
     logger.debug(f"Creating dummy forecast for location {location}")
 
     # get datetime right now
@@ -46,7 +47,7 @@ def create_dummy_forecast_for_location(location: Location):
     )
 
 
-def create_dummy_national_forecast():
+def create_dummy_national_forecast() -> Forecast:
     """Create a dummy forecast for the national level"""
 
     logger.debug("Creating dummy forecast")

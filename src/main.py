@@ -39,6 +39,7 @@ thirty_minutes = timedelta(minutes=30)
 
 # Dependency
 def get_session():
+    """Get database settion"""
     connection = DatabaseConnection(url=os.getenv("DB_URL", "not_set"))
 
     with connection.get_session() as s:
