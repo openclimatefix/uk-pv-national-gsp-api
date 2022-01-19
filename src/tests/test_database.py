@@ -15,4 +15,3 @@ def test_get_forecasts_for_a_specific_gsp_from_database(db_session, forecasts):
     gsp_id = 1
 
     _ = get_forecasts_for_a_specific_gsp_from_database(gsp_id=gsp_id, session=db_session)
-

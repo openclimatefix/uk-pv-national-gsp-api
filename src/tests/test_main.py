@@ -10,7 +10,6 @@ from nowcasting_forecast.database.fake import make_fake_forecasts
 client = TestClient(app)
 
 
-
 def test_read_main():
     """Check main route works"""
     response = client.get("/")

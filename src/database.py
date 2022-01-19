@@ -6,6 +6,7 @@ from nowcasting_forecast.database.models import Forecast, ManyForecasts
 
 from sqlalchemy.orm.session import Session
 
+
 def get_forecasts_from_database(session: Session) -> ManyForecasts:
 
     # sql almacy objects
@@ -14,7 +15,7 @@ def get_forecasts_from_database(session: Session) -> ManyForecasts:
         for gsp_id in range(0, 338)
     ]
 
-     # change to pydantic objects
+    # change to pydantic objects
     forecasts = [Forecast.from_orm(forecast) for forecast in forecasts]
 
     # return as many forecasts
@@ -28,5 +29,5 @@ def get_forecasts_for_a_specific_gsp_from_database(session: Session, gsp_id) -> 
 
     return Forecast.from_orm(forecast)
 
-# TODO load fprecast and make national
 
+# TODO load fprecast and make national

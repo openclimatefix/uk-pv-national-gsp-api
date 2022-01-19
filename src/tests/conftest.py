@@ -36,7 +36,7 @@ def db_connection():
 
     with tempfile.NamedTemporaryFile(suffix="db") as tmp:
         url = f"sqlite:///{tmp.name}.db"
-        os.environ['DB_URL'] = url
+        os.environ["DB_URL"] = url
         connection = DatabaseConnection(url=url)
         Base.metadata.create_all(connection.engine)
 

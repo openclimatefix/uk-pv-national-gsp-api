@@ -39,7 +39,7 @@ thirty_minutes = timedelta(minutes=30)
 
 # Dependency
 def get_session():
-    connection = DatabaseConnection(url=os.getenv('DB_URL', 'not_set'))
+    connection = DatabaseConnection(url=os.getenv("DB_URL", "not_set"))
 
     with connection.get_session() as s:
         yield s
@@ -60,12 +60,14 @@ async def get_api_information():
 
 
 @app.get("/v0/forecasts/GB/pv/gsp/{gsp_id}", response_model=Forecast)
-async def get_forecasts_for_a_specific_gsp(gsp_id, session: Session = Depends(get_session)) -> Forecast:
+async def get_forecasts_for_a_specific_gsp(
+    gsp_id, session: Session = Depends(get_session)
+) -> Forecast:
     """Get one forecast for a specific GSP id"""
 
     logger.info(f"Get forecasts for gsp id {gsp_id}")
 
-    if int(os.getenv('FAKE',0)):
+    if int(os.getenv("FAKE", 0)):
         return create_dummy_gsp_forecast(gsp_id=gsp_id)
 
     else:
@@ -77,7 +79,7 @@ async def get_all_available_forecasts(session: Session = Depends(get_session)) -
     """Get the latest information for all available forecasts"""
 
     logger.info("Get forecasts for all gsps")
-    if int(os.getenv('FAKE', 0)):
+    if int(os.getenv("FAKE", 0)):
         return ManyForecasts(forecasts=[create_dummy_gsp_forecast(gsp_id) for gsp_id in range(10)])
     else:
         return get_forecasts_from_database(session=session)

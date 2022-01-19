@@ -2,7 +2,12 @@ from datetime import datetime, timezone, timedelta
 from uuid import uuid4
 import logging
 
-from nowcasting_forecast.database.models import ForecastValue, Location, InputDataLastUpdated, Forecast
+from nowcasting_forecast.database.models import (
+    ForecastValue,
+    Location,
+    InputDataLastUpdated,
+    Forecast,
+)
 from utils import floor_30_minutes_dt
 
 logger = logging.getLogger(__name__)
