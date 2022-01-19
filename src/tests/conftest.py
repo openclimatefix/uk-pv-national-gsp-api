@@ -1,12 +1,11 @@
 """ Pytest fixitures for tests """
+import os
 import tempfile
 
 import pytest
-import os
-
 from nowcasting_forecast.database.connection import DatabaseConnection
-from nowcasting_forecast.database.models import Base
 from nowcasting_forecast.database.fake import make_fake_forecast, make_fake_forecasts
+from nowcasting_forecast.database.models import Base
 
 
 @pytest.fixture

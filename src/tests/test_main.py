@@ -1,9 +1,9 @@
 """ Test for main app """
 
 from fastapi.testclient import TestClient
-
-from main import app, version, get_session
 from nowcasting_forecast.database.models import Forecast, ManyForecasts
+
+from main import app, get_session, version
 
 client = TestClient(app)
 

@@ -2,8 +2,8 @@
 
 from fastapi.testclient import TestClient
 
-from main import app
 from database import get_forecasts_for_a_specific_gsp_from_database
+from main import app
 
 client = TestClient(app)
 

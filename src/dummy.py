@@ -1,13 +1,14 @@
 """ Create dummy forecasts for testing """
-from datetime import datetime, timezone, timedelta
 import logging
+from datetime import datetime, timedelta, timezone
 
 from nowcasting_forecast.database.models import (
-    ForecastValue,
-    Location,
-    InputDataLastUpdated,
     Forecast,
+    ForecastValue,
+    InputDataLastUpdated,
+    Location,
 )
+
 from utils import floor_30_minutes_dt
 
 logger = logging.getLogger(__name__)

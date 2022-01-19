@@ -1,10 +1,6 @@
 """ Functions to read from the database and format """
-from nowcasting_forecast.database.read import get_latest_forecast
-
-
 from nowcasting_forecast.database.models import Forecast, ManyForecasts
-
-
+from nowcasting_forecast.database.read import get_latest_forecast
 from sqlalchemy.orm.session import Session
 
 

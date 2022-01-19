@@ -4,13 +4,12 @@ import os
 from datetime import timedelta
 
 from fastapi import Depends, FastAPI
+from nowcasting_forecast.database.connection import DatabaseConnection
+from nowcasting_forecast.database.models import Forecast, ManyForecasts
 from sqlalchemy.orm.session import Session
 
-from dummy import create_dummy_national_forecast, create_dummy_gsp_forecast
-from nowcasting_forecast.database.models import Forecast, ManyForecasts
 from database import get_forecasts_for_a_specific_gsp_from_database, get_forecasts_from_database
-
-from nowcasting_forecast.database.connection import DatabaseConnection
+from dummy import create_dummy_gsp_forecast, create_dummy_national_forecast
 
 logger = logging.getLogger(__name__)
 
