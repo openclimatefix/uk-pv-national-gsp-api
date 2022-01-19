@@ -18,7 +18,7 @@ Documentation can be viewed at `/docs`. This is automatically generated from the
 
 # Setup and Run
 
-This can be done it two differen ways: With Python or with Docker.
+This can be done it two different ways: With Python or with Docker.
 
 ## Python
 
