@@ -9,16 +9,6 @@ from nowcasting_forecast.database.models import Base
 
 
 @pytest.fixture
-def forecast(db_session):
-    """Pytest fixture of one fake forecast"""
-    # create and add
-    f = make_fake_forecast(gsp_id=1)
-    db_session.add(f)
-
-    return f
-
-
-@pytest.fixture
 def forecasts(db_session):
     """Pytest fixture of 338 fake forecasts"""
     # create

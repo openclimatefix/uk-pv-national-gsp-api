@@ -62,17 +62,3 @@ def create_dummy_national_forecast() -> Forecast:
 
     return create_dummy_forecast_for_location(location=location)
 
-
-def create_dummy_gsp_forecast(gsp_id):
-    """Create a dummy forecast for a given GSP"""
-
-    logger.debug(f"Creating dummy forecast for {gsp_id=}")
-
-    location = Location(
-        label="GB (National)",
-        gsp_name="dummy_gsp_name",
-        gsp_group="dummy_gsp_group",
-        region_name="dummy_region_name",
-    )
-
-    return create_dummy_forecast_for_location(location=location)

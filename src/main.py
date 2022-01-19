@@ -1,15 +1,13 @@
 """ Main FastAPI app """
 import logging
-import os
 from datetime import timedelta
 
 from fastapi import Depends, FastAPI
-from nowcasting_forecast.database.connection import DatabaseConnection
 from nowcasting_forecast.database.models import Forecast, ManyForecasts
 from sqlalchemy.orm.session import Session
 
-from database import get_forecasts_for_a_specific_gsp_from_database, get_forecasts_from_database
-from dummy import create_dummy_gsp_forecast, create_dummy_national_forecast
+from database import get_forecasts_for_a_specific_gsp_from_database, get_forecasts_from_database, get_session
+from dummy import create_dummy_national_forecast
 
 logger = logging.getLogger(__name__)
 
@@ -36,12 +34,6 @@ thirty_minutes = timedelta(minutes=30)
 
 
 # Dependency
-def get_session():
-    """Get database settion"""
-    connection = DatabaseConnection(url=os.getenv("DB_URL", "not_set"))
-
-    with connection.get_session() as s:
-        yield s
 
 
 @app.get("/")
@@ -66,11 +58,7 @@ async def get_forecasts_for_a_specific_gsp(
 
     logger.info(f"Get forecasts for gsp id {gsp_id}")
 
-    if int(os.getenv("FAKE", 0)):
-        return create_dummy_gsp_forecast(gsp_id=gsp_id)
-
-    else:
-        return get_forecasts_for_a_specific_gsp_from_database(session=session, gsp_id=gsp_id)
+    return get_forecasts_for_a_specific_gsp_from_database(session=session, gsp_id=gsp_id)
 
 
 @app.get("/v0/forecasts/GB/pv/gsp", response_model=ManyForecasts)
@@ -78,10 +66,8 @@ async def get_all_available_forecasts(session: Session = Depends(get_session)) -
     """Get the latest information for all available forecasts"""
 
     logger.info("Get forecasts for all gsps")
-    if int(os.getenv("FAKE", 0)):
-        return ManyForecasts(forecasts=[create_dummy_gsp_forecast(gsp_id) for gsp_id in range(10)])
-    else:
-        return get_forecasts_from_database(session=session)
+
+    return get_forecasts_from_database(session=session)
 
 
 @app.get("/v0/forecasts/GB/pv/national", response_model=Forecast)
@@ -89,5 +75,4 @@ async def get_nationally_aggregated_forecasts() -> Forecast:
     """Get an aggregated forecast at the national level"""
 
     logger.debug("Get national forecasts")
-
     return create_dummy_national_forecast()

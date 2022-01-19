@@ -1,10 +1,10 @@
 """ Test for main app """
-
 from fastapi.testclient import TestClient
 from nowcasting_forecast.database.fake import make_fake_forecasts
 from nowcasting_forecast.database.models import Forecast, ManyForecasts
 
-from main import app, get_session, version
+from main import app, version
+from database import get_session
 
 client = TestClient(app)
 
