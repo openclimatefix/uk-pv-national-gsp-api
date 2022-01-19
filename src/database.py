@@ -37,4 +37,5 @@ def get_session():
     with connection.get_session() as s:
         yield s
 
+
 # TODO load fprecast and make national

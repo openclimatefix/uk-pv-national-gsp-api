@@ -3,8 +3,8 @@ from fastapi.testclient import TestClient
 from nowcasting_forecast.database.fake import make_fake_forecasts
 from nowcasting_forecast.database.models import Forecast, ManyForecasts
 
-from main import app, version
 from database import get_session
+from main import app, version
 
 client = TestClient(app)
 

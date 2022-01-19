@@ -61,4 +61,3 @@ def create_dummy_national_forecast() -> Forecast:
     )
 
     return create_dummy_forecast_for_location(location=location)
-
