@@ -4,3 +4,5 @@ pydantic
 numpy
 requests
 nowcasting_forecast
+sqlalchemy
+psycopg2-binary

@@ -2,7 +2,7 @@ from datetime import datetime, timezone, timedelta
 from uuid import uuid4
 import logging
 
-from models import ForecastValue, AdditionalLocationInformation, Location, InputDataLastUpdated, Forecast
+from nowcasting_forecast.database.models import ForecastValue, Location, InputDataLastUpdated, Forecast
 from utils import floor_30_minutes_dt
 
 logger = logging.getLogger(__name__)
@@ -28,7 +28,7 @@ def create_dummy_forecast_for_location(location: Location):
     )
 
     forecast_values = [
-        ForecastValue(expected_pv_power_generation_megawatts=0, target_time=datetime_utc)
+        ForecastValue(expected_power_generation_megawatts=0, target_time=datetime_utc)
         for datetime_utc in datetimes_utc
     ]
 
@@ -46,14 +46,11 @@ def create_dummy_national_forecast():
 
     logger.debug("Creating dummy forecast")
 
-    additional_information = AdditionalLocationInformation(
-        region_name="national_GB",
-    )
-
     location = Location(
-        location_id=uuid4(),
         label="GB (National)",
-        additional_information=additional_information,
+        region_name="national_GB",
+        gsp_name="dummy_gsp_name",
+        gsp_group="dummy_gsp_group",
     )
 
     return create_dummy_forecast_for_location(location=location)
@@ -64,17 +61,11 @@ def create_dummy_gsp_forecast(gsp_id):
 
     logger.debug(f"Creating dummy forecast for {gsp_id=}")
 
-    additional_information = AdditionalLocationInformation(
-        gsp_id=gsp_id,
+    location = Location(
+        label="GB (National)",
         gsp_name="dummy_gsp_name",
         gsp_group="dummy_gsp_group",
         region_name="dummy_region_name",
-    )
-
-    location = Location(
-        location_id=uuid4(),
-        label="dummy_label",
-        additional_information=additional_information,
     )
 
     return create_dummy_forecast_for_location(location=location)

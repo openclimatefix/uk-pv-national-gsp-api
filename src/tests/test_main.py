@@ -2,10 +2,13 @@
 
 from fastapi.testclient import TestClient
 
-from main import app, version
-from models import Forecast, ManyForecasts
+import os
+from main import app, version, get_session
+from nowcasting_forecast.database.models import Forecast, ManyForecasts
+from nowcasting_forecast.database.fake import make_fake_forecasts
 
 client = TestClient(app)
+
 
 
 def test_read_main():
@@ -15,21 +18,27 @@ def test_read_main():
     assert response.json()["version"] == version
 
 
-def test_read_latest_gsp():
+def test_read_latest_one_gsp(db_session, forecasts):
     """Check main GB/pv/gsp/{gsp_id} route works"""
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
     response = client.get("/v0/forecasts/GB/pv/gsp/1")
     assert response.status_code == 200
 
     _ = Forecast(**response.json())
 
 
-def test_read_latest():
+def test_read_latest_all_gsp(db_session, forecasts):
     """Check main GB/pv/gsp route works"""
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
     response = client.get("/v0/forecasts/GB/pv/gsp")
     assert response.status_code == 200
 
     r = ManyForecasts(**response.json())
-    assert len(r.forecasts) == 10
+    assert len(r.forecasts) == 338
 
 
 def test_read_latest_national():
