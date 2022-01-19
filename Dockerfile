@@ -4,4 +4,6 @@ COPY . /app
 
 WORKDIR /app
 
+RUN export PYTHONPATH=$PYTHONPATH:./src
+
 RUN pip install -r requirements.txt
