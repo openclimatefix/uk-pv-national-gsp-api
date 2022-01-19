@@ -2,9 +2,8 @@
 
 from fastapi.testclient import TestClient
 
-from main import app, version
+from main import app
 from database import get_forecasts_for_a_specific_gsp_from_database
-from nowcasting_forecast.database.fake import make_fake_forecasts
 
 client = TestClient(app)
 

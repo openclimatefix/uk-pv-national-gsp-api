@@ -1,9 +1,6 @@
 """ Utils functions for test """
 from datetime import datetime, timezone
 
-import pytest
-
-# Used constants
 from utils import floor_30_minutes_dt
 
 LOWER_LIMIT_MINUTE = 0
