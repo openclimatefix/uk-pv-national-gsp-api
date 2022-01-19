@@ -32,7 +32,7 @@ def forecasts(db_session):
 def db_connection():
     """Pytest fixture for a database connection"""
     with tempfile.NamedTemporaryFile(suffix="db") as tmp:
-        url = f"sqlite:///{tmp.name}.db"
+        url = f"sqlite:///{tmp.name}.db?check_same_thread=False"
         os.environ["DB_URL"] = url
         connection = DatabaseConnection(url=url)
         Base.metadata.create_all(connection.engine)
