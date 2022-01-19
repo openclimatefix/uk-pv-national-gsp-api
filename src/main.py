@@ -15,7 +15,7 @@ from dummy import create_dummy_national_forecast
 
 logger = logging.getLogger(__name__)
 
-version = "0.1.5"
+version = "0.1.6"
 description = """
 The Nowcasting API is still under development. It only returns zeros for now.
 """
