@@ -72,8 +72,6 @@ eb init
 eb deploy --message="Add message here"
 ```
 
-export PYTHONPATH=$PYTHONPATH:./src
-
 # Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
