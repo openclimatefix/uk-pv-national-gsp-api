@@ -9,6 +9,7 @@ from sqlalchemy.orm.session import Session
 from database import (
     get_forecasts_for_a_specific_gsp_from_database,
     get_forecasts_from_database,
+    get_latest_national_forecast_from_database,
     get_session,
 )
 from dummy import create_dummy_national_forecast
@@ -75,8 +76,8 @@ async def get_all_available_forecasts(session: Session = Depends(get_session)) -
 
 
 @app.get("/v0/forecasts/GB/pv/national", response_model=Forecast)
-async def get_nationally_aggregated_forecasts() -> Forecast:
+async def get_nationally_aggregated_forecasts(session: Session = Depends(get_session)) -> Forecast:
     """Get an aggregated forecast at the national level"""
 
     logger.debug("Get national forecasts")
-    return create_dummy_national_forecast()
+    return get_latest_national_forecast_from_database(session=session)

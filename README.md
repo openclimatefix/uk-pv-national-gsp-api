@@ -36,6 +36,12 @@ pip install -r requirements.txt
 cd src && uvicorn main:app --reload
 ```
 
+### Local pytest
+
+To run local pytests you need to 
+1. add src to python path `export PYTHONPATH=$PYTHONPATH:./src`
+2. run pytests: `pytest`
+
 ## Docker
 
 1. Make sure docker is installed on your system.
@@ -65,6 +71,8 @@ If you want to deploy a new release, then please adjust the version in `docker-c
 eb init
 eb deploy --message="Add message here"
 ```
+
+export PYTHONPATH=$PYTHONPATH:./src
 
 # Contributors ✨
 

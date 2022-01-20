@@ -1,6 +1,6 @@
 """ Test for main app """
 from fastapi.testclient import TestClient
-from nowcasting_forecast.database.fake import make_fake_forecasts
+from nowcasting_forecast.database.fake import make_fake_forecasts, make_fake_national_forecast
 from nowcasting_forecast.database.models import Forecast, ManyForecasts
 
 from database import get_session
@@ -45,8 +45,14 @@ def test_read_latest_all_gsp(db_session):
     assert len(r.forecasts) == 338
 
 
-def test_read_latest_national():
+def test_read_latest_national(db_session):
     """Check main GB/pv/national route works"""
+
+    forecast = make_fake_national_forecast()
+    db_session.add(forecast)
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
     response = client.get("/v0/forecasts/GB/pv/national")
     assert response.status_code == 200
 
