@@ -10,6 +10,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 def get_forecasts_from_database(session: Session) -> ManyForecasts:
     """Get forecasts from database for all GSPs"""
     # sql almacy objects
@@ -42,9 +43,9 @@ def get_session():
 
 
 def get_latest_national_forecast_from_database(session: Session) -> Forecast:
-    """ Get the national level forecast from the database """
+    """Get the national level forecast from the database"""
 
-    logger.debug('Getting latest national forecast')
+    logger.debug("Getting latest national forecast")
 
     forecast = get_latest_national_forecast(session=session)
     logger.debug(forecast)
