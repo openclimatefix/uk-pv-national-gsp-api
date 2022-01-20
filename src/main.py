@@ -5,6 +5,7 @@ from datetime import timedelta
 from fastapi import Depends, FastAPI
 from nowcasting_forecast.database.models import Forecast, ManyForecasts
 from sqlalchemy.orm.session import Session
+from fastapi.middleware.cors import CORSMiddleware
 
 from database import (
     get_forecasts_for_a_specific_gsp_from_database,
@@ -32,6 +33,15 @@ app = FastAPI(
         "name": "MIT License",
         "url": "https://github.com/openclimatefix/nowcasting_api/blob/main/LICENSE",
     },
+)
+
+origins = ["https://app.nowcasting.io"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 thirty_minutes = timedelta(minutes=30)
