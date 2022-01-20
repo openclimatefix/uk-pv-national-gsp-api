@@ -1,12 +1,11 @@
 """ Functions to read from the database and format """
+import logging
 import os
 
 from nowcasting_forecast.database.connection import DatabaseConnection
 from nowcasting_forecast.database.models import Forecast, ManyForecasts
 from nowcasting_forecast.database.read import get_latest_forecast, get_latest_national_forecast
 from sqlalchemy.orm.session import Session
-
-import logging
 
 logger = logging.getLogger(__name__)
 
