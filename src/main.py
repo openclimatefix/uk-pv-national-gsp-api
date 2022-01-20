@@ -12,7 +12,6 @@ from database import (
     get_latest_national_forecast_from_database,
     get_session,
 )
-from dummy import create_dummy_national_forecast
 
 logger = logging.getLogger(__name__)
 
