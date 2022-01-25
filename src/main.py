@@ -3,9 +3,9 @@ import logging
 from datetime import timedelta
 
 from fastapi import Depends, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from nowcasting_forecast.database.models import Forecast, ManyForecasts
 from sqlalchemy.orm.session import Session
-from fastapi.middleware.cors import CORSMiddleware
 
 from database import (
     get_forecasts_for_a_specific_gsp_from_database,
