@@ -2,6 +2,8 @@
 import logging
 from datetime import timedelta
 
+import geopandas as gpd
+
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from nowcasting_forecast.database.models import Forecast, ManyForecasts
@@ -13,6 +15,8 @@ from database import (
     get_latest_national_forecast_from_database,
     get_session,
 )
+
+from gsp import get_gsp_boundaries_from_eso
 
 logger = logging.getLogger(__name__)
 
@@ -75,6 +79,15 @@ async def get_forecasts_for_a_specific_gsp(
     return get_forecasts_for_a_specific_gsp_from_database(session=session, gsp_id=gsp_id)
 
 
+@app.get("/v0/forecasts/GB/pv/gsp_boundaries")
+async def get_gsp_boundaries() -> str:
+    """Get one gsp boundary for a specific GSP id"""
+
+    logger.info(f"Geting all GSP boundary")
+
+    return get_gsp_boundaries_from_eso().to_json()
+
+
 @app.get("/v0/forecasts/GB/pv/gsp", response_model=ManyForecasts)
 async def get_all_available_forecasts(session: Session = Depends(get_session)) -> ManyForecasts:
     """Get the latest information for all available forecasts"""
@@ -90,3 +103,4 @@ async def get_nationally_aggregated_forecasts(session: Session = Depends(get_ses
 
     logger.debug("Get national forecasts")
     return get_latest_national_forecast_from_database(session=session)
+

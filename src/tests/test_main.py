@@ -57,3 +57,17 @@ def test_read_latest_national(db_session):
     assert response.status_code == 200
 
     _ = Forecast(**response.json())
+
+
+def test_gsp_boundaries(db_session):
+    """Check main GB/pv/national route works"""
+
+    forecast = make_fake_national_forecast()
+    db_session.add(forecast)
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = client.get("/v0/forecasts/GB/pv/gsp_boundaries")
+    assert response.status_code == 200
+
+
