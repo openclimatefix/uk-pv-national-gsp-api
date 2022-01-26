@@ -90,7 +90,11 @@ async def get_gsp_boundaries() -> str:
 
 @app.get("/v0/forecasts/GB/pv/gsp", response_model=ManyForecasts)
 async def get_all_available_forecasts(session: Session = Depends(get_session)) -> ManyForecasts:
-    """Get the latest information for all available forecasts"""
+    """Get the latest information for all available forecasts
+
+    This is a wrapper around the dataset in
+    'https://data.nationalgrideso.com/system/gis-boundaries-for-gb-grid-supply-points'
+    """
 
     logger.info("Get forecasts for all gsps")
 
