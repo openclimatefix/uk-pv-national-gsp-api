@@ -2,7 +2,6 @@
 import logging
 from datetime import timedelta
 
-import geopandas as gpd
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from nowcasting_forecast.database.models import Forecast, ManyForecasts
@@ -81,7 +80,7 @@ async def get_forecasts_for_a_specific_gsp(
 async def get_gsp_boundaries() -> str:
     """Get one gsp boundary for a specific GSP id"""
 
-    logger.info(f"Geting all GSP boundary")
+    logger.info("Getting all GSP boundary")
 
     return get_gsp_boundaries_from_eso().to_json()
 
