@@ -3,7 +3,6 @@ import logging
 from datetime import timedelta
 
 import geopandas as gpd
-
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from nowcasting_forecast.database.models import Forecast, ManyForecasts
@@ -15,7 +14,6 @@ from database import (
     get_latest_national_forecast_from_database,
     get_session,
 )
-
 from gsp import get_gsp_boundaries_from_eso
 
 logger = logging.getLogger(__name__)
