@@ -78,7 +78,11 @@ async def get_forecasts_for_a_specific_gsp(
 
 @app.get("/v0/forecasts/GB/pv/gsp_boundaries")
 async def get_gsp_boundaries() -> str:
-    """Get one gsp boundary for a specific GSP id"""
+    """Get one gsp boundary for a specific GSP id
+
+    This is a wrapper around the dataset in
+    'https://data.nationalgrideso.com/system/gis-boundaries-for-gb-grid-supply-points'
+    """
 
     logger.info("Getting all GSP boundary")
 
@@ -87,11 +91,7 @@ async def get_gsp_boundaries() -> str:
 
 @app.get("/v0/forecasts/GB/pv/gsp", response_model=ManyForecasts)
 async def get_all_available_forecasts(session: Session = Depends(get_session)) -> ManyForecasts:
-    """Get the latest information for all available forecasts
-
-    This is a wrapper around the dataset in
-    'https://data.nationalgrideso.com/system/gis-boundaries-for-gb-grid-supply-points'
-    """
+    """Get the latest information for all available forecasts"""
 
     logger.info("Get forecasts for all gsps")
 
