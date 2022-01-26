@@ -107,4 +107,3 @@ async def get_nationally_aggregated_forecasts(session: Session = Depends(get_ses
 
     logger.debug("Get national forecasts")
     return get_latest_national_forecast_from_database(session=session)
-
