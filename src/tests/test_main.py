@@ -69,3 +69,4 @@ def test_gsp_boundaries(db_session):
 
     response = client.get("/v0/forecasts/GB/pv/gsp_boundaries")
     assert response.status_code == 200
+    assert len(response.json()) > 0
