@@ -36,7 +36,7 @@ app = FastAPI(
     },
 )
 
-origins = os.getenv('ORIGINS', 'https://app.nowcasting.io').split(',')
+origins = os.getenv("ORIGINS", "https://app.nowcasting.io").split(",")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
