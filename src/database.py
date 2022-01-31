@@ -4,7 +4,7 @@ import os
 
 from nowcasting_forecast.database.connection import DatabaseConnection
 from nowcasting_forecast.database.models import Forecast, ManyForecasts
-from nowcasting_forecast.database.read import get_latest_forecast, get_latest_national_forecast
+from nowcasting_forecast.database.read import get_latest_forecast, get_latest_national_forecast, get_all_gsp_ids_latest_forecast
 from sqlalchemy.orm.session import Session
 
 logger = logging.getLogger(__name__)
@@ -12,11 +12,8 @@ logger = logging.getLogger(__name__)
 
 def get_forecasts_from_database(session: Session) -> ManyForecasts:
     """Get forecasts from database for all GSPs"""
-    # sql almacy objects
-    forecasts = [
-        get_forecasts_for_a_specific_gsp_from_database(session=session, gsp_id=gsp_id)
-        for gsp_id in range(0, 338)
-    ]
+    # sql sqlalchemy objects
+    forecasts = get_all_gsp_ids_latest_forecast(session=session)
 
     # change to pydantic objects
     forecasts = [Forecast.from_orm(forecast) for forecast in forecasts]
