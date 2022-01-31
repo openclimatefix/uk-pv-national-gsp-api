@@ -1,5 +1,6 @@
 """ Main FastAPI app """
 import logging
+import os
 from datetime import timedelta
 
 from fastapi import Depends, FastAPI
@@ -35,7 +36,7 @@ app = FastAPI(
     },
 )
 
-origins = ["https://app.nowcasting.io"]
+origins = os.getenv('ORIGINS','https://app.nowcasting.io').split(',')
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
