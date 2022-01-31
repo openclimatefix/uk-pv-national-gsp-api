@@ -84,7 +84,7 @@ async def get_gsp_boundaries() -> str:
     'https://data.nationalgrideso.com/system/gis-boundaries-for-gb-grid-supply-points'
     """
 
-    logger.info("Getting all GSP boundary")
+    logger.info("Getting all GSP boundaries")
 
     return get_gsp_boundaries_from_eso().to_json()
 
