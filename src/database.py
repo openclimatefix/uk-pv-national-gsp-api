@@ -4,7 +4,11 @@ import os
 
 from nowcasting_forecast.database.connection import DatabaseConnection
 from nowcasting_forecast.database.models import Forecast, ManyForecasts
-from nowcasting_forecast.database.read import get_latest_forecast, get_latest_national_forecast, get_all_gsp_ids_latest_forecast
+from nowcasting_forecast.database.read import (
+    get_all_gsp_ids_latest_forecast,
+    get_latest_forecast,
+    get_latest_national_forecast,
+)
 from sqlalchemy.orm.session import Session
 
 logger = logging.getLogger(__name__)
