@@ -1,5 +1,6 @@
 """ Main FastAPI app """
 import logging
+import os
 from datetime import timedelta
 
 from fastapi import Depends, FastAPI
@@ -17,7 +18,7 @@ from gsp import get_gsp_boundaries_from_eso
 
 logger = logging.getLogger(__name__)
 
-version = "0.1.9"
+version = "0.1.10"
 description = """
 The Nowcasting API is still under development. It only returns zeros for now.
 """
@@ -36,7 +37,7 @@ app = FastAPI(
     },
 )
 
-origins = ["https://app.nowcasting.io"]
+origins = os.getenv("ORIGINS", "https://app.nowcasting.io").split(",")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
