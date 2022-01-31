@@ -17,7 +17,7 @@ from database import (
 
 logger = logging.getLogger(__name__)
 
-version = "0.1.10"
+version = "0.1.11"
 description = """
 The Nowcasting API is still under development. It only returns zeros for now.
 """
