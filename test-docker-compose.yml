@@ -1,0 +1,32 @@
+version: "3"
+
+services:
+  postgres:
+    image: postgres:13.4
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        TESTING: 1
+    environment:
+      - DB_URL=postgresql://postgres:postgres@postgres:5432/postgres
+      - GIT_PYTHON_REFRESH=quiet
+      - LOG_LEVEL=DEBUG
+    command: >
+      bash -c "pytest --cov=./src
+      && coverage report -m
+      && coverage xml
+      && cp .coverage ./src/tests/
+      && cp coverage.xml ./src/tests/"
+    depends_on:
+      - "postgres"
+    volumes:
+      - ./src/:/app/src
