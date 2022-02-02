@@ -18,7 +18,7 @@ from gsp import get_latitude_longitude_gsp_boundaries_from_eso
 
 logger = logging.getLogger(__name__)
 
-version = "0.1.13"
+version = "0.1.14"
 description = """
 The Nowcasting API is still under development. It only returns zeros for now.
 """
