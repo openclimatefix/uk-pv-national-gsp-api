@@ -14,6 +14,7 @@ from database import (
     get_latest_national_forecast_from_database,
     get_session,
 )
+from gsp import get_latitude_longitude_gsp_boundaries_from_eso
 
 logger = logging.getLogger(__name__)
 
@@ -74,6 +75,21 @@ async def get_forecasts_for_a_specific_gsp(
     logger.info(f"Get forecasts for gsp id {gsp_id}")
 
     return get_forecasts_for_a_specific_gsp_from_database(session=session, gsp_id=gsp_id)
+
+
+@app.get("/v0/forecasts/GB/pv/gsp_boundaries")
+async def get_gsp_boundaries() -> str:
+    """Get one gsp boundary for a specific GSP id
+
+    This is a wrapper around the dataset in
+    'https://data.nationalgrideso.com/system/gis-boundaries-for-gb-grid-supply-points'
+
+    The returned object is in EPSG:4326 i.e latitude and longitude
+    """
+
+    logger.info("Getting all GSP boundaries")
+
+    return get_latitude_longitude_gsp_boundaries_from_eso().to_json()
 
 
 @app.get("/v0/forecasts/GB/pv/gsp", response_model=ManyForecasts)
