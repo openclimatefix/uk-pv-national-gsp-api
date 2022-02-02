@@ -83,6 +83,8 @@ async def get_gsp_boundaries() -> str:
 
     This is a wrapper around the dataset in
     'https://data.nationalgrideso.com/system/gis-boundaries-for-gb-grid-supply-points'
+
+    The returned object is in EPSG:4326 i.e latitude and longitude
     """
 
     logger.info("Getting all GSP boundaries")
