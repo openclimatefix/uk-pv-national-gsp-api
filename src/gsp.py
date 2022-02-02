@@ -3,7 +3,7 @@ import geopandas as gpd
 from nowcasting_dataset.data_sources.gsp.eso import get_gsp_metadata_from_eso
 
 
-def get_latitude_longitude_gsp_boundaries_from_eso() -> gpd.GeoDataFrame:
+def get_gsp_boundaries_from_eso_wgs84() -> gpd.GeoDataFrame:
     """Get GSP boundaries in lat/lon format (EPSG:4326)"""
 
     # get gsp boundaries
