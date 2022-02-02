@@ -14,7 +14,7 @@ from database import (
     get_latest_national_forecast_from_database,
     get_session,
 )
-from gsp import get_gsp_boundaries_from_eso
+from gsp import get_latitude_longitude_gsp_boundaries_from_eso
 
 logger = logging.getLogger(__name__)
 
@@ -87,7 +87,7 @@ async def get_gsp_boundaries() -> str:
 
     logger.info("Getting all GSP boundaries")
 
-    return get_gsp_boundaries_from_eso().to_json()
+    return get_latitude_longitude_gsp_boundaries_from_eso().to_json()
 
 
 @app.get("/v0/forecasts/GB/pv/gsp", response_model=ManyForecasts)
