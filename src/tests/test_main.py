@@ -19,7 +19,7 @@ def test_read_main():
 def test_read_latest_one_gsp(db_session):
     """Check main GB/pv/gsp/{gsp_id} route works"""
 
-    forecasts = make_fake_forecasts(gsp_ids=list(range(0, 10)))
+    forecasts = make_fake_forecasts(gsp_ids=list(range(0, 10)), session=db_session)
     db_session.add_all(forecasts)
 
     app.dependency_overrides[get_session] = lambda: db_session
@@ -33,7 +33,7 @@ def test_read_latest_one_gsp(db_session):
 def test_read_latest_all_gsp(db_session):
     """Check main GB/pv/gsp route works"""
 
-    forecasts = make_fake_forecasts(gsp_ids=list(range(0, 338)))
+    forecasts = make_fake_forecasts(gsp_ids=list(range(0, 338)), session=db_session)
     db_session.add_all(forecasts)
 
     app.dependency_overrides[get_session] = lambda: db_session
