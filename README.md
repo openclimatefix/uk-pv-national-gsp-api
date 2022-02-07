@@ -39,7 +39,7 @@ cd src && uvicorn main:app --reload
 ### Local pytest
 
 To run local pytests you need to
-1. add src to python path `export PYTHONPATH=$PYTHONPATH:./src`
+1. add `src` to python path `export PYTHONPATH=$PYTHONPATH:./src`
 2. run pytests: `pytest`
 
 ## Docker
