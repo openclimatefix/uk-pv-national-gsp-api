@@ -3,16 +3,16 @@ import os
 import tempfile
 
 import pytest
-from nowcasting_forecast.database.connection import DatabaseConnection
-from nowcasting_forecast.database.fake import make_fake_forecasts
-from nowcasting_forecast.database.models import Base
+from nowcasting_datamodel.connection import DatabaseConnection
+from nowcasting_datamodel.fake import make_fake_forecasts
+from nowcasting_datamodel.models import Base
 
 
 @pytest.fixture
 def forecasts(db_session):
     """Pytest fixture of 338 fake forecasts"""
     # create
-    f = make_fake_forecasts(gsp_ids=list(range(0, 338)))
+    f = make_fake_forecasts(gsp_ids=list(range(0, 338)), session=db_session)
     db_session.add_all(f)
 
     return f
