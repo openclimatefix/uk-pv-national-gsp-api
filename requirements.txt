@@ -6,3 +6,4 @@ requests
 nowcasting_datamodel==0.0.3
 sqlalchemy
 psycopg2-binary
+geopandas
