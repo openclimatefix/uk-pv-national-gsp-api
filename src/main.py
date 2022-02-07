@@ -5,7 +5,7 @@ from datetime import timedelta
 
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from nowcasting_forecast.database.models import Forecast, ManyForecasts
+from nowcasting_datamodel.models import Forecast, ManyForecasts
 from sqlalchemy.orm.session import Session
 
 from database import (
