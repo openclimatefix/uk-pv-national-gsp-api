@@ -12,7 +12,7 @@ from nowcasting_datamodel.models import Base
 def forecasts(db_session):
     """Pytest fixture of 338 fake forecasts"""
     # create
-    f = make_fake_forecasts(gsp_ids=list(range(0, 338)),session=db_session)
+    f = make_fake_forecasts(gsp_ids=list(range(0, 338)), session=db_session)
     db_session.add_all(f)
 
     return f
