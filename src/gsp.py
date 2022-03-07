@@ -13,6 +13,6 @@ def get_gsp_boundaries_from_eso_wgs84() -> gpd.GeoDataFrame:
     boundaries = boundaries.to_crs(4326)
 
     # fill nans
-    boundaries = boundaries.fillna('')
+    boundaries = boundaries.fillna("")
 
     return boundaries
