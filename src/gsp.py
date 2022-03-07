@@ -12,4 +12,7 @@ def get_gsp_boundaries_from_eso_wgs84() -> gpd.GeoDataFrame:
     # change to lat/lon - https://epsg.io/4326
     boundaries = boundaries.to_crs(4326)
 
+    # fill nans
+    boundaries = boundaries.fillna('')
+
     return boundaries
