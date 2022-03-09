@@ -78,7 +78,7 @@ async def get_forecasts_for_a_specific_gsp(
 
 
 @app.get("/v0/forecasts/GB/pv/gsp_boundaries")
-async def get_gsp_boundaries() -> str:
+async def get_gsp_boundaries() -> dict:
     """Get one gsp boundary for a specific GSP id
 
     This is a wrapper around the dataset in
@@ -89,7 +89,7 @@ async def get_gsp_boundaries() -> str:
 
     logger.info("Getting all GSP boundaries")
 
-    return get_gsp_boundaries_from_eso_wgs84().to_json()
+    return get_gsp_boundaries_from_eso_wgs84().to_dict()
 
 
 @app.get("/v0/forecasts/GB/pv/gsp", response_model=ManyForecasts)
