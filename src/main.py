@@ -5,6 +5,7 @@ from datetime import timedelta
 
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from nowcasting_datamodel.models import Forecast, ManyForecasts
 from sqlalchemy.orm.session import Session
 
@@ -107,3 +108,9 @@ async def get_nationally_aggregated_forecasts(session: Session = Depends(get_ses
 
     logger.debug("Get national forecasts")
     return get_latest_national_forecast_from_database(session=session)
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def get_favicon() -> FileResponse:
+    """Get favicon"""
+    return FileResponse("src/favicon.ico")
