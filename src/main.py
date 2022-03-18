@@ -19,7 +19,7 @@ from gsp import get_gsp_boundaries_from_eso_wgs84
 
 logger = logging.getLogger(__name__)
 
-version = "0.1.19"
+version = "0.1.20"
 description = """
 The Nowcasting API is still under development. It only returns zeros for now.
 """
