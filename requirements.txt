@@ -8,3 +8,4 @@ nowcasting_dataset==3.1.59
 sqlalchemy
 psycopg2-binary
 geopandas
+aiofiles
