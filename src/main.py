@@ -5,7 +5,8 @@ from datetime import timedelta
 
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from nowcasting_forecast.database.models import Forecast, ManyForecasts
+from fastapi.responses import FileResponse
+from nowcasting_datamodel.models import Forecast, ManyForecasts
 from sqlalchemy.orm.session import Session
 
 from database import (
@@ -14,10 +15,11 @@ from database import (
     get_latest_national_forecast_from_database,
     get_session,
 )
+from gsp import get_gsp_boundaries_from_eso_wgs84
 
 logger = logging.getLogger(__name__)
 
-version = "0.1.12"
+version = "0.1.20"
 description = """
 The Nowcasting API is still under development. It only returns zeros for now.
 """
@@ -76,6 +78,21 @@ async def get_forecasts_for_a_specific_gsp(
     return get_forecasts_for_a_specific_gsp_from_database(session=session, gsp_id=gsp_id)
 
 
+@app.get("/v0/forecasts/GB/pv/gsp_boundaries")
+async def get_gsp_boundaries() -> dict:
+    """Get one gsp boundary for a specific GSP id
+
+    This is a wrapper around the dataset in
+    'https://data.nationalgrideso.com/system/gis-boundaries-for-gb-grid-supply-points'
+
+    The returned object is in EPSG:4326 i.e latitude and longitude
+    """
+
+    logger.info("Getting all GSP boundaries")
+
+    return get_gsp_boundaries_from_eso_wgs84().to_dict()
+
+
 @app.get("/v0/forecasts/GB/pv/gsp", response_model=ManyForecasts)
 async def get_all_available_forecasts(session: Session = Depends(get_session)) -> ManyForecasts:
     """Get the latest information for all available forecasts"""
@@ -91,3 +108,9 @@ async def get_nationally_aggregated_forecasts(session: Session = Depends(get_ses
 
     logger.debug("Get national forecasts")
     return get_latest_national_forecast_from_database(session=session)
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def get_favicon() -> FileResponse:
+    """Get favicon"""
+    return FileResponse("src/favicon.ico")

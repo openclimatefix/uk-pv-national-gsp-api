@@ -3,6 +3,9 @@ uvicorn[standard]
 pydantic
 numpy
 requests
-nowcasting_forecast
+nowcasting_datamodel==0.0.6
+nowcasting_dataset==3.1.59
 sqlalchemy
 psycopg2-binary
+geopandas
+aiofiles
