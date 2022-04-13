@@ -1,14 +1,13 @@
 """ Expose PV data """
 
 import logging
-from typing import List
-
 from datetime import datetime, timedelta
+from typing import List
 
 from fastapi import APIRouter, Depends
 from nowcasting_datamodel.models import PVYield
-from sqlalchemy.orm.session import Session
 from nowcasting_datamodel.read.read_pv import get_latest_pv_yield, get_pv_systems
+from sqlalchemy.orm.session import Session
 
 from database import get_session_pv
 

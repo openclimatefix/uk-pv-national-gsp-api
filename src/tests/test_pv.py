@@ -1,14 +1,9 @@
 """ Test for main app """
-from fastapi.testclient import TestClient
-
 from datetime import datetime
-from freezegun import freeze_time
 
-from nowcasting_datamodel.models import (
-    PVSystemSQL,
-    PVYield,
-    PVSystem,
-)
+from fastapi.testclient import TestClient
+from freezegun import freeze_time
+from nowcasting_datamodel.models import PVSystem, PVSystemSQL, PVYield
 
 from database import get_session
 from main import app
