@@ -15,6 +15,7 @@ from database import (
     get_session,
 )
 from gsp import router as gsp_router
+from pv import router as pv_router
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +55,7 @@ v0_route = "/v0/forecasts/GB/pv"
 
 
 app.include_router(gsp_router, prefix=f"{v0_route}")
+app.include_router(pv_router, prefix=f"{v0_route}")
 
 
 @app.get("/")
