@@ -49,6 +49,14 @@ To run local pytests you need to
    in the main directory to start up the application.
 3. You will now be able to access it on `http://localhost:80`
 
+### Tests
+
+TO run tests use the following command
+```bash
+docker-compose -f test-docker-compose.yml build
+docker-compose -f test-docker-compose.yml run api
+```
+
 # Development
 
 We use `pre-commit` to manage various pre-commit hooks. All hooks are also run
