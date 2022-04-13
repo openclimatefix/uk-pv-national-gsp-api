@@ -9,4 +9,4 @@ sqlalchemy
 psycopg2-binary
 geopandas
 aiofiles
-pytest
+pytest-cov
