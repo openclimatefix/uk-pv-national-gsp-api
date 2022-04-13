@@ -10,12 +10,10 @@ from nowcasting_datamodel.models import Forecast, ManyForecasts
 from sqlalchemy.orm.session import Session
 
 from database import (
-    get_forecasts_for_a_specific_gsp_from_database,
     get_forecasts_from_database,
     get_latest_national_forecast_from_database,
     get_session,
 )
-from gsp import get_gsp_boundaries_from_eso_wgs84
 from gsp import router as gsp_router
 
 logger = logging.getLogger(__name__)
