@@ -42,6 +42,14 @@ def get_session():
         yield s
 
 
+def get_session_pv():
+    """Get database sessions to pv database"""
+    connection = DatabaseConnection(url=os.getenv("DB_URL_PV", "not_set"))
+
+    with connection.get_session() as s:
+        yield s
+
+
 def get_latest_national_forecast_from_database(session: Session) -> Forecast:
     """Get the national level forecast from the database"""
 
