@@ -4,7 +4,7 @@ import os
 
 from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.models import Forecast, ManyForecasts
-from nowcasting_datamodel.read import (
+from nowcasting_datamodel.read.read import (
     get_all_gsp_ids_latest_forecast,
     get_latest_forecast,
     get_latest_national_forecast,

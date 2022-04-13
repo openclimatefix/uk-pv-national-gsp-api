@@ -5,7 +5,7 @@ import tempfile
 import pytest
 from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.fake import make_fake_forecasts
-from nowcasting_datamodel.models import Base
+from nowcasting_datamodel.models.base import Base_Forecast
 
 
 @pytest.fixture
@@ -26,7 +26,7 @@ def db_connection():
         url = f"sqlite:///{tmp.name}.db?check_same_thread=False"
         os.environ["DB_URL"] = url
         connection = DatabaseConnection(url=url)
-        Base.metadata.create_all(connection.engine)
+        Base_Forecast.metadata.create_all(connection.engine)
 
         yield connection
 
