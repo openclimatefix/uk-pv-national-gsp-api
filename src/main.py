@@ -10,12 +10,11 @@ from nowcasting_datamodel.models import Forecast, ManyForecasts
 from sqlalchemy.orm.session import Session
 
 from database import (
-    get_forecasts_for_a_specific_gsp_from_database,
     get_forecasts_from_database,
     get_latest_national_forecast_from_database,
     get_session,
 )
-from gsp import get_gsp_boundaries_from_eso_wgs84
+from gsp import router as gsp_router
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +50,10 @@ thirty_minutes = timedelta(minutes=30)
 
 
 # Dependency
+v0_route = "/v0/forecasts/GB/pv"
+
+
+app.include_router(gsp_router, prefix=f"{v0_route}")
 
 
 @app.get("/")
@@ -67,33 +70,7 @@ async def get_api_information():
     }
 
 
-@app.get("/v0/forecasts/GB/pv/gsp/{gsp_id}", response_model=Forecast)
-async def get_forecasts_for_a_specific_gsp(
-    gsp_id, session: Session = Depends(get_session)
-) -> Forecast:
-    """Get one forecast for a specific GSP id"""
-
-    logger.info(f"Get forecasts for gsp id {gsp_id}")
-
-    return get_forecasts_for_a_specific_gsp_from_database(session=session, gsp_id=gsp_id)
-
-
-@app.get("/v0/forecasts/GB/pv/gsp_boundaries")
-async def get_gsp_boundaries() -> dict:
-    """Get one gsp boundary for a specific GSP id
-
-    This is a wrapper around the dataset in
-    'https://data.nationalgrideso.com/system/gis-boundaries-for-gb-grid-supply-points'
-
-    The returned object is in EPSG:4326 i.e latitude and longitude
-    """
-
-    logger.info("Getting all GSP boundaries")
-
-    return get_gsp_boundaries_from_eso_wgs84().to_dict()
-
-
-@app.get("/v0/forecasts/GB/pv/gsp", response_model=ManyForecasts)
+@app.get(v0_route + "/gsp", response_model=ManyForecasts)
 async def get_all_available_forecasts(session: Session = Depends(get_session)) -> ManyForecasts:
     """Get the latest information for all available forecasts"""
 
@@ -102,7 +79,7 @@ async def get_all_available_forecasts(session: Session = Depends(get_session)) -
     return get_forecasts_from_database(session=session)
 
 
-@app.get("/v0/forecasts/GB/pv/national", response_model=Forecast)
+@app.get(v0_route + "/national", response_model=Forecast)
 async def get_nationally_aggregated_forecasts(session: Session = Depends(get_session)) -> Forecast:
     """Get an aggregated forecast at the national level"""
 
