@@ -1,4 +1,4 @@
-# """ Expose PV data """
+""" Expose PV data """
 #
 # import logging
 # from datetime import datetime, timedelta
