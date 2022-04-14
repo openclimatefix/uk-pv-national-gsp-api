@@ -1,6 +1,6 @@
 """Get GSP boundary data from eso """
-import logging
 import json
+import logging
 
 import geopandas as gpd
 from fastapi import APIRouter, Depends
