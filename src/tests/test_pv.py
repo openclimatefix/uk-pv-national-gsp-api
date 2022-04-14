@@ -50,7 +50,7 @@ def test_read_latest_pv(db_session):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = client.get("/v0/forecasts/GB/pv/pv_latest")
+    response = client.get("/v0/GB/solar/pv/pv_latest")
     assert response.status_code == 200
 
     r_json = response.json()

@@ -3,17 +3,10 @@ import logging
 import os
 from datetime import timedelta
 
-from fastapi import Depends, FastAPI
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
-from nowcasting_datamodel.models import Forecast, ManyForecasts
-from sqlalchemy.orm.session import Session
 
-from database import (
-    get_forecasts_from_database,
-    get_latest_national_forecast_from_database,
-    get_session,
-)
 from gsp import router as gsp_router
 from pv import router as pv_router
 
@@ -51,11 +44,11 @@ thirty_minutes = timedelta(minutes=30)
 
 
 # Dependency
-v0_route = "/v0/forecasts/GB/pv"
+v0_route = "/v0/GB/solar"
 
 
-app.include_router(gsp_router, prefix=f"{v0_route}")
-app.include_router(pv_router, prefix=f"{v0_route}")
+app.include_router(gsp_router, prefix=f"{v0_route}/gsp")
+app.include_router(pv_router, prefix=f"{v0_route}/pv")
 
 
 @app.get("/")
@@ -70,23 +63,6 @@ async def get_api_information():
         "description": description,
         "documentation": "https://api.nowcasting.io/docs",
     }
-
-
-@app.get(v0_route + "/gsp", response_model=ManyForecasts)
-async def get_all_available_forecasts(session: Session = Depends(get_session)) -> ManyForecasts:
-    """Get the latest information for all available forecasts"""
-
-    logger.info("Get forecasts for all gsps")
-
-    return get_forecasts_from_database(session=session)
-
-
-@app.get(v0_route + "/national", response_model=Forecast)
-async def get_nationally_aggregated_forecasts(session: Session = Depends(get_session)) -> Forecast:
-    """Get an aggregated forecast at the national level"""
-
-    logger.debug("Get national forecasts")
-    return get_latest_national_forecast_from_database(session=session)
 
 
 @app.get("/favicon.ico", include_in_schema=False)
