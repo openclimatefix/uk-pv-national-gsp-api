@@ -97,4 +97,3 @@ def test_read_truth_one_gsp(db_session):
 
     r_json = response.json()
     _ = [GSPYield(**gsp_yield) for gsp_yield in r_json]
-
