@@ -1,16 +1,16 @@
 """ Test for main app """
-from datetime import datetime
-
-from fastapi.testclient import TestClient
-from freezegun import freeze_time
-from nowcasting_datamodel.models import PVSystem, PVSystemSQL, PVYield
-
-from database import get_session
-from main import app
-
-client = TestClient(app)
-
-
+# from datetime import datetime
+#
+# from fastapi.testclient import TestClient
+# from freezegun import freeze_time
+# from nowcasting_datamodel.models import PVSystem, PVSystemSQL, PVYield
+#
+# from database import get_session
+# from main import app
+#
+# client = TestClient(app)
+#
+#
 # @freeze_time("2022-01-02")
 # def test_read_latest_pv(db_session):
 #     """Check main pv route works"""

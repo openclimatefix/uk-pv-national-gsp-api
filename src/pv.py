@@ -1,21 +1,21 @@
-""" Expose PV data """
-
-import logging
-from datetime import datetime, timedelta
-from typing import List
-
-from fastapi import APIRouter, Depends
-from nowcasting_datamodel.models import PVYield
-from nowcasting_datamodel.read.read_pv import get_latest_pv_yield, get_pv_systems
-from sqlalchemy.orm.session import Session
-
-from database import get_session_pv
-
-logger = logging.getLogger(__name__)
-
-
-router = APIRouter()
-
+# """ Expose PV data """
+#
+# import logging
+# from datetime import datetime, timedelta
+# from typing import List
+#
+# from fastapi import APIRouter, Depends
+# from nowcasting_datamodel.models import PVYield
+# from nowcasting_datamodel.read.read_pv import get_latest_pv_yield, get_pv_systems
+# from sqlalchemy.orm.session import Session
+#
+# from database import get_session_pv
+#
+# logger = logging.getLogger(__name__)
+#
+#
+# router = APIRouter()
+#
 
 # @router.get("/pv_latest", response_model=List[PVYield])
 # def get_latest_pv_data(session: Session = Depends(get_session_pv)) -> List[PVYield]:
