@@ -8,8 +8,12 @@ from nowcasting_dataset.data_sources.gsp.eso import get_gsp_metadata_from_eso
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.session import Session
 
-from database import get_forecasts_for_a_specific_gsp_from_database, get_session, get_forecasts_from_database, \
-    get_latest_national_forecast_from_database
+from database import (
+    get_forecasts_for_a_specific_gsp_from_database,
+    get_session,
+    get_forecasts_from_database,
+    get_latest_national_forecast_from_database,
+)
 
 
 logger = logging.getLogger(__name__)
