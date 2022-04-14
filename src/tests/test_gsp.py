@@ -88,13 +88,11 @@ def test_read_truth_one_gsp(db_session):
     gsp_yield_3_sql.location = gsp_sql_2
 
     # add to database
-    db_session.add_all([gsp_yield_1_sql,gsp_yield_2_sql,gsp_yield_3_sql,gsp_sql_1,gsp_sql_2])
+    db_session.add_all([gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_sql_1, gsp_sql_2])
 
     app.dependency_overrides[get_session] = lambda: db_session
 
     response = client.get("/v0/GB/solar/gsp/truth/one_gsp/1")
     assert response.status_code == 200
-
-    
 
     _ = Forecast(**response.json())
