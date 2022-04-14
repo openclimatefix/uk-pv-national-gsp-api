@@ -2,7 +2,7 @@
 import logging
 import os
 from datetime import datetime, timedelta, timezone
-from typing import List
+from typing import List, Optional
 
 from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.models import Forecast, GSPYield, ManyForecasts
@@ -64,7 +64,7 @@ def get_latest_national_forecast_from_database(session: Session) -> Forecast:
 
 
 def get_truth_values_for_a_specific_gsp_from_database(
-    session: Session, gsp_id: int, regime: str = "in-day"
+    session: Session, gsp_id: int, regime: Optional[str] = "in-day"
 ) -> List[GSPYield]:
     """
     Get the truth value for one gsp for yesterday and today
