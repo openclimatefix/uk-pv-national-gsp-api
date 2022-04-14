@@ -1,5 +1,6 @@
 """Get GSP boundary data from eso """
 import logging
+import json
 
 import geopandas as gpd
 from fastapi import APIRouter, Depends
@@ -61,7 +62,11 @@ async def get_gsp_boundaries() -> dict:
 
     logger.info("Getting all GSP boundaries")
 
-    return get_gsp_boundaries_from_eso_wgs84().to_dict()
+    json_string = get_gsp_boundaries_from_eso_wgs84().to_json()
+
+    json.loads(json_string)
+
+    return json.loads(json_string)
 
 
 @router.get("/forecast/all", response_model=ManyForecasts)
