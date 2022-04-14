@@ -63,7 +63,9 @@ def get_latest_national_forecast_from_database(session: Session) -> Forecast:
     return Forecast.from_orm(forecast)
 
 
-def get_truth_values_for_a_specific_gsp_from_database(session:Session, gsp_id:int, regime:str = "in-day") -> List[GSPYield]:
+def get_truth_values_for_a_specific_gsp_from_database(
+    session: Session, gsp_id: int, regime: str = "in-day"
+) -> List[GSPYield]:
     """
     Get the truth value for one gsp for yesterday and today
 
@@ -74,6 +76,11 @@ def get_truth_values_for_a_specific_gsp_from_database(session:Session, gsp_id:in
     """
 
     yesterday_start_datetime = datetime.now(tz=timezone.utc).date() - timedelta(days=1)
-    yesterday_start_datetime= datetime.combine(yesterday_start_datetime, datetime.min.time())
+    yesterday_start_datetime = datetime.combine(yesterday_start_datetime, datetime.min.time())
 
-    return get_gsp_yield(session=session, gsp_ids=[gsp_id],start_datetime_utc=yesterday_start_datetime,regime=regime)
+    return get_gsp_yield(
+        session=session,
+        gsp_ids=[gsp_id],
+        start_datetime_utc=yesterday_start_datetime,
+        regime=regime,
+    )
