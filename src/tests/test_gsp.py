@@ -1,8 +1,8 @@
 """ Test for main app """
 from datetime import datetime
-from freezegun import freeze_time
 
 from fastapi.testclient import TestClient
+from freezegun import freeze_time
 from nowcasting_datamodel.fake import make_fake_forecasts, make_fake_national_forecast
 from nowcasting_datamodel.models import Forecast, GSPYield, Location, LocationSQL, ManyForecasts
 
