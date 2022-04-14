@@ -5,7 +5,6 @@ import geopandas as gpd
 from fastapi import APIRouter, Depends
 from nowcasting_datamodel.models import Forecast, ManyForecasts
 from nowcasting_dataset.data_sources.gsp.eso import get_gsp_metadata_from_eso
-from sqlalchemy.orm import Session
 from sqlalchemy.orm.session import Session
 
 from database import (

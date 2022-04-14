@@ -4,7 +4,7 @@ from nowcasting_datamodel.fake import make_fake_forecasts, make_fake_national_fo
 from nowcasting_datamodel.models import Forecast, ManyForecasts
 
 from database import get_session
-from main import app, version
+from main import app
 
 client = TestClient(app)
 
