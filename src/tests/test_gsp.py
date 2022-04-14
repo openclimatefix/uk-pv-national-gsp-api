@@ -1,5 +1,6 @@
 """ Test for main app """
 from datetime import datetime
+from freezegun import freeze_time
 
 from fastapi.testclient import TestClient
 from nowcasting_datamodel.fake import make_fake_forecasts, make_fake_national_forecast
@@ -67,6 +68,7 @@ def test_gsp_boundaries(db_session):
     assert len(response.json()) > 0
 
 
+@freeze_time("2022-01-01")
 def test_read_truth_one_gsp(db_session):
     """Check main GB/pv/gsp/{gsp_id} route works"""
 
@@ -76,7 +78,7 @@ def test_read_truth_one_gsp(db_session):
     gsp_yield_2 = GSPYield(datetime_utc=datetime(2022, 1, 1), solar_generation_kw=2)
     gsp_yield_2_sql = gsp_yield_2.to_orm()
 
-    gsp_yield_3 = GSPYield(datetime_utc=datetime(2022, 1, 1), solar_generation_kw=2)
+    gsp_yield_3 = GSPYield(datetime_utc=datetime(2022, 1, 1), solar_generation_kw=3)
     gsp_yield_3_sql = gsp_yield_3.to_orm()
 
     gsp_sql_1: LocationSQL = Location(gsp_id=1, label="GSP_1", status_interval_minutes=5).to_orm()
@@ -96,4 +98,5 @@ def test_read_truth_one_gsp(db_session):
     assert response.status_code == 200
 
     r_json = response.json()
+    assert len(r_json) == 2
     _ = [GSPYield(**gsp_yield) for gsp_yield in r_json]

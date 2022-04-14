@@ -60,7 +60,7 @@ async def get_truths_for_a_specific_gsp(
     If regime is not specific, the latest gsp yield is loaded.
     """
 
-    logger.info(f"Get truth values for gsp id {gsp_id}")
+    logger.info(f"Get truth values for gsp id {gsp_id} and regime {regime}")
 
     return get_truth_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=gsp_id, regime=regime
