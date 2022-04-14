@@ -1,10 +1,11 @@
 """Get GSP boundary data from eso """
 import json
 import logging
+from typing import List, Optional
 
 import geopandas as gpd
 from fastapi import APIRouter, Depends
-from nowcasting_datamodel.models import Forecast, ManyForecasts
+from nowcasting_datamodel.models import Forecast, GSPYield, ManyForecasts
 from nowcasting_dataset.data_sources.gsp.eso import get_gsp_metadata_from_eso
 from sqlalchemy.orm.session import Session
 
@@ -13,6 +14,7 @@ from database import (
     get_forecasts_from_database,
     get_latest_national_forecast_from_database,
     get_session,
+    get_truth_values_for_a_specific_gsp_from_database,
 )
 
 logger = logging.getLogger(__name__)
@@ -40,14 +42,29 @@ def get_gsp_boundaries_from_eso_wgs84() -> gpd.GeoDataFrame:
 async def get_forecasts_for_a_specific_gsp(
     gsp_id, session: Session = Depends(get_session)
 ) -> Forecast:
-    """Get one forecast for a specific GSP id
-
-    If 'gsp_id' is None, all forecast for all GSPs are returned
-    """
+    """Get one forecast for a specific GSP id"""
 
     logger.info(f"Get forecasts for gsp id {gsp_id}")
 
     return get_forecasts_for_a_specific_gsp_from_database(session=session, gsp_id=gsp_id)
+
+
+@router.get("/truth/one_gsp/{gsp_id}/", response_model=List[GSPYield])
+async def get_truths_for_a_specific_gsp(
+    gsp_id: int, regime: Optional[str] = None, session: Session = Depends(get_session)
+) -> List[GSPYield]:
+    """Get truth values for a specific GSP id, for yesterday and today
+
+    Regime can "in-day" or "day-after",
+    as new values are calculated around midnight when more data is available.
+    If regime is not specific, the latest gsp yield is loaded.
+    """
+
+    logger.info(f"Get truth values for gsp id {gsp_id}")
+
+    return get_truth_values_for_a_specific_gsp_from_database(
+        session=session, gsp_id=gsp_id, regime=regime
+    )
 
 
 @router.get("/gsp_boundaries")
