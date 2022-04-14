@@ -3,11 +3,16 @@ import logging
 
 import geopandas as gpd
 from fastapi import APIRouter, Depends
-from nowcasting_datamodel.models import Forecast
+from nowcasting_datamodel.models import Forecast, ManyForecasts
 from nowcasting_dataset.data_sources.gsp.eso import get_gsp_metadata_from_eso
 from sqlalchemy.orm.session import Session
 
-from database import get_forecasts_for_a_specific_gsp_from_database, get_session
+from database import (
+    get_forecasts_for_a_specific_gsp_from_database,
+    get_forecasts_from_database,
+    get_latest_national_forecast_from_database,
+    get_session,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -30,11 +35,14 @@ def get_gsp_boundaries_from_eso_wgs84() -> gpd.GeoDataFrame:
     return boundaries
 
 
-@router.get("/gsp/{gsp_id}", response_model=Forecast)
+@router.get("/forecast/one_gsp/{gsp_id}", response_model=Forecast)
 async def get_forecasts_for_a_specific_gsp(
     gsp_id, session: Session = Depends(get_session)
 ) -> Forecast:
-    """Get one forecast for a specific GSP id"""
+    """Get one forecast for a specific GSP id
+
+    If 'gsp_id' is None, all forecast for all GSPs are returned
+    """
 
     logger.info(f"Get forecasts for gsp id {gsp_id}")
 
@@ -54,3 +62,20 @@ async def get_gsp_boundaries() -> dict:
     logger.info("Getting all GSP boundaries")
 
     return get_gsp_boundaries_from_eso_wgs84().to_dict()
+
+
+@router.get("/forecast/all", response_model=ManyForecasts)
+async def get_all_available_forecasts(session: Session = Depends(get_session)) -> ManyForecasts:
+    """Get the latest information for all available forecasts"""
+
+    logger.info("Get forecasts for all gsps")
+
+    return get_forecasts_from_database(session=session)
+
+
+@router.get("/forecast/national", response_model=Forecast)
+async def get_nationally_aggregated_forecasts(session: Session = Depends(get_session)) -> Forecast:
+    """Get an aggregated forecast at the national level"""
+
+    logger.debug("Get national forecasts")
+    return get_latest_national_forecast_from_database(session=session)
