@@ -43,10 +43,10 @@ def get_gsp_boundaries_from_eso_wgs84() -> gpd.GeoDataFrame:
 @router.get(
     "/forecast/one_gsp/{gsp_id}",
     response_model=Forecast,
-    dependencies=[Depends(get_auth_implicit_scheme)],
+    dependencies=[Depends(get_auth_implicit_scheme())],
 )
 async def get_forecasts_for_a_specific_gsp(
-    gsp_id, session: Session = Depends(get_session), user: Auth0User = Security(get_user)
+    gsp_id, session: Session = Depends(get_session), user: Auth0User = Security(get_user())
 ) -> Forecast:
     """Get one forecast for a specific GSP id"""
 
@@ -64,7 +64,7 @@ async def get_truths_for_a_specific_gsp(
     gsp_id: int,
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
-    user: Auth0User = Security(get_user),
+    user: Auth0User = Security(get_user()),
 ) -> List[GSPYield]:
     """Get truth values for a specific GSP id, for yesterday and today
 
@@ -81,7 +81,7 @@ async def get_truths_for_a_specific_gsp(
 
 
 @router.get("/gsp_boundaries", dependencies=[Depends(get_auth_implicit_scheme)])
-async def get_gsp_boundaries(user: Auth0User = Security(get_user)) -> dict:
+async def get_gsp_boundaries(user: Auth0User = Security(get_user())) -> dict:
     """Get one gsp boundary for a specific GSP id
 
     This is a wrapper around the dataset in
@@ -104,7 +104,7 @@ async def get_gsp_boundaries(user: Auth0User = Security(get_user)) -> dict:
 )
 async def get_all_available_forecasts(
     session: Session = Depends(get_session),
-    user: Auth0User = Security(get_user),
+    user: Auth0User = Security(get_user()),
 ) -> ManyForecasts:
     """Get the latest information for all available forecasts"""
 
@@ -118,7 +118,7 @@ async def get_all_available_forecasts(
 )
 async def get_nationally_aggregated_forecasts(
     session: Session = Depends(get_session),
-    user: Auth0User = Security(get_user),
+    user: Auth0User = Security(get_user()),
 ) -> Forecast:
     """Get an aggregated forecast at the national level"""
 
