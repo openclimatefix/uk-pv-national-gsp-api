@@ -1,3 +1,4 @@
+""" Authentical  objects """
 import os
 from fastapi_auth0 import Auth0
 

@@ -73,7 +73,3 @@ async def get_favicon() -> FileResponse:
     """Get favicon"""
     return FileResponse("src/favicon.ico")
 
-
-@app.get("/secure", dependencies=[Depends(auth.implicit_scheme)])
-async def get_secure(user: Auth0User = Security(auth.get_user)):
-    return {"message": f"{user}"}
