@@ -19,14 +19,18 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("/pv_latest", response_model=List[PVYield], dependencies=[Depends(auth.implicit_scheme)])
-def get_latest_pv_data(session: Session = Depends(get_session_pv), user: Auth0User = Security(auth.get_user)) -> List[PVYield]:
+@router.get(
+    "/pv_latest", response_model=List[PVYield], dependencies=[Depends(auth.implicit_scheme)]
+)
+def get_latest_pv_data(
+    session: Session = Depends(get_session_pv), user: Auth0User = Security(auth.get_user)
+) -> List[PVYield]:
     """Get Latest PV data from specific pv sites
 
     Only provide PV data received within the last 1 hour
     """
 
-    logger.debug(f'Getting PV latest data for {user}')
+    logger.debug(f"Getting PV latest data for {user}")
 
     # get latest pv data
     pv_systems_sql = get_pv_systems(session=session)
