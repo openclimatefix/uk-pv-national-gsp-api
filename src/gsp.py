@@ -4,7 +4,8 @@ import logging
 from typing import List, Optional
 
 import geopandas as gpd
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Security
+from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.models import Forecast, GSPYield, ManyForecasts
 from nowcasting_dataset.data_sources.gsp.eso import get_gsp_metadata_from_eso
 from sqlalchemy.orm.session import Session
@@ -16,6 +17,7 @@ from database import (
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
 )
+from auth_utils import auth
 
 logger = logging.getLogger(__name__)
 
@@ -38,20 +40,31 @@ def get_gsp_boundaries_from_eso_wgs84() -> gpd.GeoDataFrame:
     return boundaries
 
 
-@router.get("/forecast/one_gsp/{gsp_id}", response_model=Forecast)
+@router.get(
+    "/forecast/one_gsp/{gsp_id}",
+    response_model=Forecast,
+    dependencies=[Depends(auth.implicit_scheme)],
+)
 async def get_forecasts_for_a_specific_gsp(
-    gsp_id, session: Session = Depends(get_session)
+    gsp_id, session: Session = Depends(get_session), user: Auth0User = Security(auth.get_user)
 ) -> Forecast:
     """Get one forecast for a specific GSP id"""
 
-    logger.info(f"Get forecasts for gsp id {gsp_id}")
+    logger.info(f"Get forecasts for gsp id {gsp_id} for user {user}")
 
     return get_forecasts_for_a_specific_gsp_from_database(session=session, gsp_id=gsp_id)
 
 
-@router.get("/truth/one_gsp/{gsp_id}/", response_model=List[GSPYield])
+@router.get(
+    "/truth/one_gsp/{gsp_id}/",
+    response_model=List[GSPYield],
+    dependencies=[Depends(auth.implicit_scheme)],
+)
 async def get_truths_for_a_specific_gsp(
-    gsp_id: int, regime: Optional[str] = None, session: Session = Depends(get_session)
+    gsp_id: int,
+    regime: Optional[str] = None,
+    session: Session = Depends(get_session),
+    user: Auth0User = Security(auth.get_user),
 ) -> List[GSPYield]:
     """Get truth values for a specific GSP id, for yesterday and today
 
@@ -60,15 +73,15 @@ async def get_truths_for_a_specific_gsp(
     If regime is not specific, the latest gsp yield is loaded.
     """
 
-    logger.info(f"Get truth values for gsp id {gsp_id} and regime {regime}")
+    logger.info(f"Get truth values for gsp id {gsp_id} and regime {regime} for {user}")
 
     return get_truth_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=gsp_id, regime=regime
     )
 
 
-@router.get("/gsp_boundaries")
-async def get_gsp_boundaries() -> dict:
+@router.get("/gsp_boundaries", dependencies=[Depends(auth.implicit_scheme)])
+async def get_gsp_boundaries(user: Auth0User = Security(auth.get_user)) -> dict:
     """Get one gsp boundary for a specific GSP id
 
     This is a wrapper around the dataset in
@@ -77,7 +90,7 @@ async def get_gsp_boundaries() -> dict:
     The returned object is in EPSG:4326 i.e latitude and longitude
     """
 
-    logger.info("Getting all GSP boundaries")
+    logger.info(f"Getting all GSP boundaries for {user}")
 
     json_string = get_gsp_boundaries_from_eso_wgs84().to_json()
 

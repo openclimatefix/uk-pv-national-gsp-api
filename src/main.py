@@ -3,10 +3,12 @@ import logging
 import os
 from datetime import timedelta
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, Security
+from fastapi_auth0 import Auth0User
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
+from auth_utils import auth
 from gsp import router as gsp_router
 
 # from pv import router as pv_router
@@ -70,3 +72,8 @@ async def get_api_information():
 async def get_favicon() -> FileResponse:
     """Get favicon"""
     return FileResponse("src/favicon.ico")
+
+
+@app.get("/secure", dependencies=[Depends(auth.implicit_scheme)])
+async def get_secure(user: Auth0User = Security(auth.get_user)):
+    return {"message": f"{user}"}
