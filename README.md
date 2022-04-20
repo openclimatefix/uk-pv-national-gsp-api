@@ -76,11 +76,11 @@ Deployment of this service is now done through terraform cloud.
 
 - `AUTH0_DOMAIN` - The Auth0 domain which can be collected from the Applications/Applications tab. It should be something like
 'XXXXXXX.eu.auth0.com'
-- AUTH0_API_AUDIENCE - THE Auth0 api audience, this can collected from the Applications/APIs tab. It should be something like
-'https://XXXXXXXXXX.eu.auth0.com/api/v2/'
+- AUTH0_API_AUDIENCE - THE Auth0 api audience, this can be collected from the Applications/APIs tab. It should be something like
+`https://XXXXXXXXXX.eu.auth0.com/api/v2/`
 - DB_URL- The Forecast database URL used to get GSP forecast data
 - DB_URL_PV - The PV database URL, used to get PV data
-- ORIGINS - Set websites that can be used CORS authentication.
+- `ORIGINS` - Endpoints that are valid CORS origins. See [FastAPI documentation](https://fastapi.tiangolo.com/tutorial/cors/).
 
 
 
