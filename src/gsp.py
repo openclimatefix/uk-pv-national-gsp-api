@@ -99,18 +99,18 @@ async def get_gsp_boundaries(user: Auth0User = Security(auth.get_user)) -> dict:
     return json.loads(json_string)
 
 
-@router.get("/forecast/all", response_model=ManyForecasts)
-async def get_all_available_forecasts(session: Session = Depends(get_session)) -> ManyForecasts:
+@router.get("/forecast/all", response_model=ManyForecasts, dependencies=[Depends(auth.implicit_scheme)])
+async def get_all_available_forecasts(session: Session = Depends(get_session), user: Auth0User = Security(auth.get_user),) -> ManyForecasts:
     """Get the latest information for all available forecasts"""
 
-    logger.info("Get forecasts for all gsps")
+    logger.info(f"Get forecasts for all gsps for {user}")
 
     return get_forecasts_from_database(session=session)
 
 
-@router.get("/forecast/national", response_model=Forecast)
-async def get_nationally_aggregated_forecasts(session: Session = Depends(get_session)) -> Forecast:
+@router.get("/forecast/national", response_model=Forecast, dependencies=[Depends(auth.implicit_scheme)])
+async def get_nationally_aggregated_forecasts(session: Session = Depends(get_session), user: Auth0User = Security(auth.get_user),) -> Forecast:
     """Get an aggregated forecast at the national level"""
 
-    logger.debug("Get national forecasts")
+    logger.debug(f"Get national forecasts for {user}")
     return get_latest_national_forecast_from_database(session=session)
