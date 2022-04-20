@@ -8,7 +8,7 @@ from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.fake import make_fake_forecasts
 from nowcasting_datamodel.models.base import Base_Forecast, Base_PV
 
-from auth_utils import get_user
+from auth_utils import get_auth_implicit_scheme, get_user
 from database import get_session
 from main import app
 
@@ -57,13 +57,8 @@ def api_client(db_session):
     """
     client = TestClient(app)
 
-    def get_user_override():
-        return None
-
-    def get_session_override():
-        return db_session
-
-    app.dependency_overrides[get_user] = get_user_override
-    app.dependency_overrides[get_session] = get_session_override
+    app.dependency_overrides[get_auth_implicit_scheme] = lambda: None
+    app.dependency_overrides[get_user] = lambda: None
+    app.dependency_overrides[get_session] = lambda: db_session
 
     return client

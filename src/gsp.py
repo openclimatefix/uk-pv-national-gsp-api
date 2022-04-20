@@ -10,7 +10,7 @@ from nowcasting_datamodel.models import Forecast, GSPYield, ManyForecasts
 from nowcasting_dataset.data_sources.gsp.eso import get_gsp_metadata_from_eso
 from sqlalchemy.orm.session import Session
 
-from auth_utils import auth, get_user
+from auth_utils import get_auth_implicit_scheme, get_user
 from database import (
     get_forecasts_for_a_specific_gsp_from_database,
     get_forecasts_from_database,
@@ -43,7 +43,7 @@ def get_gsp_boundaries_from_eso_wgs84() -> gpd.GeoDataFrame:
 @router.get(
     "/forecast/one_gsp/{gsp_id}",
     response_model=Forecast,
-    dependencies=[Depends(auth.implicit_scheme)],
+    dependencies=[Depends(get_auth_implicit_scheme)],
 )
 async def get_forecasts_for_a_specific_gsp(
     gsp_id, session: Session = Depends(get_session), user: Auth0User = Security(get_user)
@@ -58,7 +58,7 @@ async def get_forecasts_for_a_specific_gsp(
 @router.get(
     "/truth/one_gsp/{gsp_id}/",
     response_model=List[GSPYield],
-    dependencies=[Depends(auth.implicit_scheme)],
+    dependencies=[Depends(get_auth_implicit_scheme)],
 )
 async def get_truths_for_a_specific_gsp(
     gsp_id: int,
@@ -80,7 +80,7 @@ async def get_truths_for_a_specific_gsp(
     )
 
 
-@router.get("/gsp_boundaries", dependencies=[Depends(auth.implicit_scheme)])
+@router.get("/gsp_boundaries", dependencies=[Depends(get_auth_implicit_scheme)])
 async def get_gsp_boundaries(user: Auth0User = Security(get_user)) -> dict:
     """Get one gsp boundary for a specific GSP id
 
@@ -100,7 +100,7 @@ async def get_gsp_boundaries(user: Auth0User = Security(get_user)) -> dict:
 
 
 @router.get(
-    "/forecast/all", response_model=ManyForecasts, dependencies=[Depends(auth.implicit_scheme)]
+    "/forecast/all", response_model=ManyForecasts, dependencies=[Depends(get_auth_implicit_scheme)]
 )
 async def get_all_available_forecasts(
     session: Session = Depends(get_session),
@@ -114,7 +114,7 @@ async def get_all_available_forecasts(
 
 
 @router.get(
-    "/forecast/national", response_model=Forecast, dependencies=[Depends(auth.implicit_scheme)]
+    "/forecast/national", response_model=Forecast, dependencies=[Depends(get_auth_implicit_scheme)]
 )
 async def get_nationally_aggregated_forecasts(
     session: Session = Depends(get_session),
