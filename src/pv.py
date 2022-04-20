@@ -25,7 +25,7 @@ def get_latest_pv_data(session: Session = Depends(get_session_pv), user: Auth0Us
 
     Only provide PV data received within the last 1 hour
     """
-    
+
     logger.debug(f'Getting PV latest data for {user}')
 
     # get latest pv data
