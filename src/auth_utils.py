@@ -25,7 +25,7 @@ def get_auth():
 def get_auth_implicit_scheme():
     """Get authentical implicit scheme - this can be mocked in tests
 
-        If AUTH0_DOMAIN or AUTH0_API_AUDIENCE has been set, a empty None is returned.
+    If AUTH0_DOMAIN or AUTH0_API_AUDIENCE has been set, a empty None is returned.
     This is useful for testing
     """
     auth = get_auth()
