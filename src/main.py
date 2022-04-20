@@ -48,7 +48,7 @@ v0_route = "/v0/GB/solar"
 
 
 app.include_router(gsp_router, prefix=f"{v0_route}/gsp")
-# app.include_router(pv_router, prefix=f"{v0_route}/pv")
+app.include_router(pv_router, prefix=f"{v0_route}/pv")
 
 
 @app.get("/")
