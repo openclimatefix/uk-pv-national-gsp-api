@@ -72,4 +72,3 @@ async def get_api_information():
 async def get_favicon() -> FileResponse:
     """Get favicon"""
     return FileResponse("src/favicon.ico")
-
