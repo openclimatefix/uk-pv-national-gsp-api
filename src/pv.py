@@ -10,8 +10,8 @@ from nowcasting_datamodel.models import PVYield
 from nowcasting_datamodel.read.read_pv import get_latest_pv_yield, get_pv_systems
 from sqlalchemy.orm.session import Session
 
-from database import get_session_pv
 from auth_utils import auth
+from database import get_session_pv
 
 logger = logging.getLogger(__name__)
 

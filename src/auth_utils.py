@@ -1,5 +1,6 @@
 """ Authentical  objects """
 import os
+
 from fastapi_auth0 import Auth0
 
 domain = os.getenv("AUTH0_DOMAIN")

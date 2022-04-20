@@ -10,6 +10,7 @@ from nowcasting_datamodel.models import Forecast, GSPYield, ManyForecasts
 from nowcasting_dataset.data_sources.gsp.eso import get_gsp_metadata_from_eso
 from sqlalchemy.orm.session import Session
 
+from auth_utils import auth
 from database import (
     get_forecasts_for_a_specific_gsp_from_database,
     get_forecasts_from_database,
@@ -17,7 +18,6 @@ from database import (
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
 )
-from auth_utils import auth
 
 logger = logging.getLogger(__name__)
 

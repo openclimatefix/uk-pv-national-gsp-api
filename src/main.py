@@ -3,15 +3,12 @@ import logging
 import os
 from datetime import timedelta
 
-from fastapi import FastAPI, Depends, Security
-from fastapi_auth0 import Auth0User
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
-from auth_utils import auth
 from gsp import router as gsp_router
-
-# from pv import router as pv_router
+from pv import router as pv_router
 
 logger = logging.getLogger(__name__)
 
