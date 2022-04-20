@@ -3,9 +3,13 @@ import os
 import tempfile
 
 import pytest
+from fastapi.testclient import TestClient
 from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.fake import make_fake_forecasts
 from nowcasting_datamodel.models.base import Base_Forecast, Base_PV
+
+from auth_utils import get_user
+from main import app
 
 
 @pytest.fixture
@@ -42,3 +46,15 @@ def db_session(db_connection):
         yield s
 
         s.rollback()
+
+
+@pytest.fixture()
+def api_client():
+    client = TestClient(app)
+
+    def get_user_override():
+        return None
+
+    app.dependency_overrides[get_user] = get_user_override
+
+    return client

@@ -10,7 +10,7 @@ from nowcasting_datamodel.models import PVYield
 from nowcasting_datamodel.read.read_pv import get_latest_pv_yield, get_pv_systems
 from sqlalchemy.orm.session import Session
 
-from auth_utils import auth
+from auth_utils import auth, get_user
 from database import get_session_pv
 
 logger = logging.getLogger(__name__)
@@ -23,7 +23,7 @@ router = APIRouter()
     "/pv_latest", response_model=List[PVYield], dependencies=[Depends(auth.implicit_scheme)]
 )
 def get_latest_pv_data(
-    session: Session = Depends(get_session_pv), user: Auth0User = Security(auth.get_user)
+    session: Session = Depends(get_session_pv), user: Auth0User = Security(get_user)
 ) -> List[PVYield]:
     """Get Latest PV data from specific pv sites
 

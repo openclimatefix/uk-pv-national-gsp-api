@@ -12,7 +12,7 @@ client = TestClient(app)
 
 
 @freeze_time("2022-01-02")
-def test_read_latest_pv(db_session):
+def test_read_latest_pv(db_session, api_client):
     """Check main pv route works"""
 
     pv_yield_1 = PVYield(datetime_utc=datetime(2022, 1, 2), solar_generation_kw=1)
@@ -50,7 +50,7 @@ def test_read_latest_pv(db_session):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = client.get("/v0/GB/solar/pv/pv_latest")
+    response = api_client.get("/v0/GB/solar/pv/pv_latest")
     assert response.status_code == 200
 
     r_json = response.json()

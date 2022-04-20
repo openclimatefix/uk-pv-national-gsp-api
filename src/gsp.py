@@ -10,7 +10,7 @@ from nowcasting_datamodel.models import Forecast, GSPYield, ManyForecasts
 from nowcasting_dataset.data_sources.gsp.eso import get_gsp_metadata_from_eso
 from sqlalchemy.orm.session import Session
 
-from auth_utils import auth
+from auth_utils import auth, get_user
 from database import (
     get_forecasts_for_a_specific_gsp_from_database,
     get_forecasts_from_database,
@@ -46,7 +46,7 @@ def get_gsp_boundaries_from_eso_wgs84() -> gpd.GeoDataFrame:
     dependencies=[Depends(auth.implicit_scheme)],
 )
 async def get_forecasts_for_a_specific_gsp(
-    gsp_id, session: Session = Depends(get_session), user: Auth0User = Security(auth.get_user)
+    gsp_id, session: Session = Depends(get_session), user: Auth0User = Security(get_user)
 ) -> Forecast:
     """Get one forecast for a specific GSP id"""
 
@@ -64,7 +64,7 @@ async def get_truths_for_a_specific_gsp(
     gsp_id: int,
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
-    user: Auth0User = Security(auth.get_user),
+    user: Auth0User = Security(get_user),
 ) -> List[GSPYield]:
     """Get truth values for a specific GSP id, for yesterday and today
 
@@ -81,7 +81,7 @@ async def get_truths_for_a_specific_gsp(
 
 
 @router.get("/gsp_boundaries", dependencies=[Depends(auth.implicit_scheme)])
-async def get_gsp_boundaries(user: Auth0User = Security(auth.get_user)) -> dict:
+async def get_gsp_boundaries(user: Auth0User = Security(get_user)) -> dict:
     """Get one gsp boundary for a specific GSP id
 
     This is a wrapper around the dataset in
@@ -104,7 +104,7 @@ async def get_gsp_boundaries(user: Auth0User = Security(auth.get_user)) -> dict:
 )
 async def get_all_available_forecasts(
     session: Session = Depends(get_session),
-    user: Auth0User = Security(auth.get_user),
+    user: Auth0User = Security(get_user),
 ) -> ManyForecasts:
     """Get the latest information for all available forecasts"""
 
@@ -118,7 +118,7 @@ async def get_all_available_forecasts(
 )
 async def get_nationally_aggregated_forecasts(
     session: Session = Depends(get_session),
-    user: Auth0User = Security(auth.get_user),
+    user: Auth0User = Security(get_user),
 ) -> Forecast:
     """Get an aggregated forecast at the national level"""
 
