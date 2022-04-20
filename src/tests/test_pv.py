@@ -48,8 +48,6 @@ def test_read_latest_pv(db_session, api_client):
 
     db_session.commit()
 
-    app.dependency_overrides[get_session] = lambda: db_session
-
     response = api_client.get("/v0/GB/solar/pv/pv_latest")
     assert response.status_code == 200
 

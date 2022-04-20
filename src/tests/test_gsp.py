@@ -15,8 +15,6 @@ def test_read_latest_one_gsp(db_session, api_client):
     forecasts = make_fake_forecasts(gsp_ids=list(range(0, 10)), session=db_session)
     db_session.add_all(forecasts)
 
-    app.dependency_overrides[get_session] = lambda: db_session
-
     response = api_client.get("/v0/GB/solar/gsp/forecast/one_gsp/1")
     assert response.status_code == 200
 
@@ -44,8 +42,6 @@ def test_read_latest_national(db_session, api_client):
     forecast = make_fake_national_forecast()
     db_session.add(forecast)
 
-    app.dependency_overrides[get_session] = lambda: db_session
-
     response = api_client.get("/v0/GB/solar/gsp/forecast/national")
     assert response.status_code == 200
 
@@ -57,8 +53,6 @@ def test_gsp_boundaries(db_session, api_client):
 
     forecast = make_fake_national_forecast()
     db_session.add(forecast)
-
-    app.dependency_overrides[get_session] = lambda: db_session
 
     response = api_client.get("/v0/GB/solar/gsp/gsp_boundaries")
     assert response.status_code == 200
@@ -88,8 +82,6 @@ def test_read_truth_one_gsp(db_session, api_client):
 
     # add to database
     db_session.add_all([gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_sql_1, gsp_sql_2])
-
-    app.dependency_overrides[get_session] = lambda: db_session
 
     response = api_client.get("/v0/GB/solar/gsp/truth/one_gsp/1")
     assert response.status_code == 200
