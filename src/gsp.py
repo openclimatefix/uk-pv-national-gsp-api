@@ -58,7 +58,7 @@ async def get_forecasts_for_a_specific_gsp(
 @router.get(
     "/truth/one_gsp/{gsp_id}/",
     response_model=List[GSPYield],
-    dependencies=[Depends(get_auth_implicit_scheme)],
+    dependencies=[Depends(get_auth_implicit_scheme())],
 )
 async def get_truths_for_a_specific_gsp(
     gsp_id: int,
@@ -80,7 +80,7 @@ async def get_truths_for_a_specific_gsp(
     )
 
 
-@router.get("/gsp_boundaries", dependencies=[Depends(get_auth_implicit_scheme)])
+@router.get("/gsp_boundaries", dependencies=[Depends(get_auth_implicit_scheme())])
 async def get_gsp_boundaries(user: Auth0User = Security(get_user())) -> dict:
     """Get one gsp boundary for a specific GSP id
 
@@ -100,7 +100,7 @@ async def get_gsp_boundaries(user: Auth0User = Security(get_user())) -> dict:
 
 
 @router.get(
-    "/forecast/all", response_model=ManyForecasts, dependencies=[Depends(get_auth_implicit_scheme)]
+    "/forecast/all", response_model=ManyForecasts, dependencies=[Depends(get_auth_implicit_scheme())]
 )
 async def get_all_available_forecasts(
     session: Session = Depends(get_session),
@@ -114,7 +114,7 @@ async def get_all_available_forecasts(
 
 
 @router.get(
-    "/forecast/national", response_model=Forecast, dependencies=[Depends(get_auth_implicit_scheme)]
+    "/forecast/national", response_model=Forecast, dependencies=[Depends(get_auth_implicit_scheme())]
 )
 async def get_nationally_aggregated_forecasts(
     session: Session = Depends(get_session),
