@@ -100,7 +100,9 @@ async def get_gsp_boundaries(user: Auth0User = Security(get_user())) -> dict:
 
 
 @router.get(
-    "/forecast/all", response_model=ManyForecasts, dependencies=[Depends(get_auth_implicit_scheme())]
+    "/forecast/all",
+    response_model=ManyForecasts,
+    dependencies=[Depends(get_auth_implicit_scheme())],
 )
 async def get_all_available_forecasts(
     session: Session = Depends(get_session),
@@ -114,7 +116,9 @@ async def get_all_available_forecasts(
 
 
 @router.get(
-    "/forecast/national", response_model=Forecast, dependencies=[Depends(get_auth_implicit_scheme())]
+    "/forecast/national",
+    response_model=Forecast,
+    dependencies=[Depends(get_auth_implicit_scheme())],
 )
 async def get_nationally_aggregated_forecasts(
     session: Session = Depends(get_session),
