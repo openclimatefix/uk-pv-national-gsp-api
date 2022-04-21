@@ -10,4 +10,4 @@ psycopg2-binary
 geopandas
 aiofiles
 pytest-cov
-fastapi-auth0
+fastapi-auth0==0.3.0
