@@ -51,7 +51,7 @@ async def get_forecasts_for_a_specific_gsp(
 
 
 @router.get("/forecast/latest/{gsp_id}", response_model=List[ForecastValue])
-async def get_forecasts_for_a_specific_gsp(
+async def get_latest_forecasts_for_a_specific_gsp(
     gsp_id: int, session: Session = Depends(get_session)
 ) -> List[ForecastValue]:
     """Get the latest forecasts for a specific GSP id for today and yesterday"""

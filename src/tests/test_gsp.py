@@ -114,7 +114,7 @@ def test_read_truth_one_gsp(db_session):
 
 
 @freeze_time("2022-01-01")
-def test_read_truth_one_gsp(db_session):
+def test_read_forecast_one_gsp(db_session):
     """Check main GB/pv/gsp/{gsp_id} route works"""
 
     forecast_value_1 = ForecastValue(
@@ -148,9 +148,12 @@ def test_read_truth_one_gsp(db_session):
     assert response.status_code == 200
 
     r_json = response.json()
-    # two forecast are from 'make_fake_forecast', the other two are 'forecast_value_1' and 'forecast_value_3'
-    # 'forecast_value_2' is not included as it has the same target time as 'forecast_value_3'
-    # 'forecast_value_1' is not included as it has the same target time as one in 'make_fake_forecast'
+    # two forecast are from 'make_fake_forecast',
+    # the other two are 'forecast_value_1' and 'forecast_value_3'
+    # 'forecast_value_2' is not included as it has the same target time as
+    # 'forecast_value_3'
+    # 'forecast_value_1' is not included as it has the same target time as
+    # one in 'make_fake_forecast'
 
     assert len(r_json) == 3
     _ = [ForecastValue(**forecast_value) for forecast_value in r_json]
