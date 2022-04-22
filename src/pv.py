@@ -25,7 +25,8 @@ auth = get_auth()
     "/pv_latest", response_model=List[PVYield], dependencies=[Depends(get_auth_implicit_scheme())]
 )
 def get_latest_pv_data(
-    session: Session = Depends(get_session_pv), user: Auth0User = Security(auth.get_user, scopes=["read:pv"])
+    session: Session = Depends(get_session_pv),
+    user: Auth0User = Security(auth.get_user, scopes=["read:pv"]),
 ) -> List[PVYield]:
     """Get Latest PV data from specific pv sites
 

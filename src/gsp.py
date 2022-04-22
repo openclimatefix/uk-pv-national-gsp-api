@@ -46,7 +46,9 @@ def get_gsp_boundaries_from_eso_wgs84() -> gpd.GeoDataFrame:
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 async def get_forecasts_for_a_specific_gsp(
-    gsp_id, session: Session = Depends(get_session), user: Auth0User = Security(get_user(), scopes=["read:gsp"])
+    gsp_id,
+    session: Session = Depends(get_session),
+    user: Auth0User = Security(get_user(), scopes=["read:gsp"]),
 ) -> Forecast:
     """Get one forecast for a specific GSP id"""
 
