@@ -3,8 +3,8 @@ from datetime import datetime
 
 from fastapi.testclient import TestClient
 from freezegun import freeze_time
-from nowcasting_datamodel.fake import make_fake_forecasts, make_fake_national_forecast
-from nowcasting_datamodel.models import Forecast, GSPYield, Location, LocationSQL, ManyForecasts
+from nowcasting_datamodel.fake import make_fake_forecasts, make_fake_national_forecast, make_fake_forecast
+from nowcasting_datamodel.models import Forecast, GSPYield, Location, LocationSQL, ManyForecasts, ForecastValue
 
 from database import get_session
 from main import app
@@ -100,3 +100,39 @@ def test_read_truth_one_gsp(db_session):
     r_json = response.json()
     assert len(r_json) == 2
     _ = [GSPYield(**gsp_yield) for gsp_yield in r_json]
+
+
+@freeze_time("2022-01-01")
+def test_read_truth_one_gsp(db_session):
+    """Check main GB/pv/gsp/{gsp_id} route works"""
+
+    forecast_value_1 = ForecastValue(target_time=datetime(2022, 1, 2), expected_power_generation_megawatts=1)
+    forecast_value_1_sql = forecast_value_1.to_orm()
+
+    forecast_value_2 = ForecastValue(target_time=datetime(2022, 1, 1), expected_power_generation_megawatts=2)
+    forecast_value_2_sql = forecast_value_2.to_orm()
+
+    forecast_value_3 = ForecastValue(target_time=datetime(2022, 1, 1), expected_power_generation_megawatts=3)
+    forecast_value_3_sql = forecast_value_3.to_orm()
+
+    forecast = make_fake_forecast(gsp_id=1, session=db_session, t0_datetime_utc=datetime(2022, 1, 1))
+    forecast.forecast_values.append(forecast_value_1_sql)
+    forecast.forecast_values.append(forecast_value_2_sql)
+    forecast.forecast_values.append(forecast_value_3_sql)
+
+    # add to database
+    db_session.add_all([forecast])
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = client.get("/v0/GB/solar/gsp/forecast/latest/1")
+    assert response.status_code == 200
+
+    r_json = response.json()
+    # two forecast are from 'make_fake_forecast', the other two are 'forecast_value_1' and 'forecast_value_3'
+    # 'forecast_value_2' is not included as it has the same target time as 'forecast_value_3'
+    # 'forecast_value_1' is not included as it has the same target time as one in 'make_fake_forecast'
+
+    assert len(r_json) == 3
+    _ = [ForecastValue(**forecast_value) for forecast_value in r_json]
+
