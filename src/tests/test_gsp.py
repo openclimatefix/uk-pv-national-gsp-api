@@ -123,7 +123,7 @@ def test_read_forecast_one_gsp(db_session):
     forecast_value_1_sql = forecast_value_1.to_orm()
 
     forecast_value_2 = ForecastValue(
-        target_time=datetime(2022, 6, 1,1), expected_power_generation_megawatts=2
+        target_time=datetime(2022, 6, 1, 1), expected_power_generation_megawatts=2
     )
     forecast_value_2_sql = forecast_value_2.to_orm()
 
