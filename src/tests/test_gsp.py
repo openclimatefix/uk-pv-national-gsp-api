@@ -123,7 +123,7 @@ def test_read_forecast_one_gsp(db_session):
     forecast_value_1_sql = forecast_value_1.to_orm()
 
     forecast_value_2 = ForecastValue(
-        target_time=datetime(2022, 6, 1), expected_power_generation_megawatts=2
+        target_time=datetime(2022, 6, 1,1), expected_power_generation_megawatts=2
     )
     forecast_value_2_sql = forecast_value_2.to_orm()
 
@@ -154,5 +154,5 @@ def test_read_forecast_one_gsp(db_session):
     # 'forecast_value_3'
     for i in r_json:
         print(i)
-    assert len(r_json) == 2
+    assert len(r_json) == 3
     _ = [ForecastValue(**forecast_value) for forecast_value in r_json]
