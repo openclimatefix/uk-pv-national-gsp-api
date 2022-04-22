@@ -5,13 +5,14 @@ from typing import List, Optional
 
 import geopandas as gpd
 from fastapi import APIRouter, Depends
-from nowcasting_datamodel.models import Forecast, GSPYield, ManyForecasts
+from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield, ManyForecasts
 from nowcasting_dataset.data_sources.gsp.eso import get_gsp_metadata_from_eso
 from sqlalchemy.orm.session import Session
 
 from database import (
     get_forecasts_for_a_specific_gsp_from_database,
     get_forecasts_from_database,
+    get_latest_forecast_values_for_a_specific_gsp_from_database,
     get_latest_national_forecast_from_database,
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
@@ -40,13 +41,26 @@ def get_gsp_boundaries_from_eso_wgs84() -> gpd.GeoDataFrame:
 
 @router.get("/forecast/one_gsp/{gsp_id}", response_model=Forecast)
 async def get_forecasts_for_a_specific_gsp(
-    gsp_id, session: Session = Depends(get_session)
+    gsp_id: int, session: Session = Depends(get_session)
 ) -> Forecast:
     """Get one forecast for a specific GSP id"""
 
     logger.info(f"Get forecasts for gsp id {gsp_id}")
 
     return get_forecasts_for_a_specific_gsp_from_database(session=session, gsp_id=gsp_id)
+
+
+@router.get("/forecast/latest/{gsp_id}", response_model=List[ForecastValue])
+async def get_latest_forecasts_for_a_specific_gsp(
+    gsp_id: int, session: Session = Depends(get_session)
+) -> List[ForecastValue]:
+    """Get the latest forecasts for a specific GSP id for today and yesterday"""
+
+    logger.info(f"Get forecasts for gsp id {gsp_id}")
+
+    return get_latest_forecast_values_for_a_specific_gsp_from_database(
+        session=session, gsp_id=gsp_id
+    )
 
 
 @router.get("/truth/one_gsp/{gsp_id}/", response_model=List[GSPYield])
