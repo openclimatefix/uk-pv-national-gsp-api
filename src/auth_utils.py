@@ -19,7 +19,11 @@ def get_auth():
     if domain == "not-set" or api_audience == "notset":
         logger.warning('"AUTH0_DOMAIN" and "AUTH0_API_AUDIENCE" need to be set ')
         return None
-    return Auth0(domain=domain, api_audience=api_audience)
+    return Auth0(
+        domain=domain,
+        api_audience=api_audience,
+        scopes={"read:pv": "Read PV data", "read:gsp": "Read GSP forecasts and truths"},
+    )
 
 
 def get_auth_implicit_scheme():
