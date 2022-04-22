@@ -23,9 +23,14 @@ def db_connection():
     """Pytest fixture for a database connection"""
     with tempfile.NamedTemporaryFile(suffix="db") as tmp:
         # set url option to not check same thread, this solves an error seen in testing
-        url = f"sqlite:///{tmp.name}.db?check_same_thread=False"
-        os.environ["DB_URL"] = url
-        os.environ["DB_URL_PV"] = url
+
+        if ("DB_URL" not in os.environ) and ("DB_URL_PV" not in os.environ):
+            url = f"sqlite:///{tmp.name}.db?check_same_thread=False"
+            os.environ["DB_URL"] = url
+            os.environ["DB_URL_PV"] = url
+        else:
+            url = os.environ["DB_URL"]
+
         connection = DatabaseConnection(url=url)
         Base_Forecast.metadata.create_all(connection.engine)
         Base_PV.metadata.create_all(connection.engine)

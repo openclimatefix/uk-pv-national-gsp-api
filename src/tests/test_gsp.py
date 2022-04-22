@@ -113,27 +113,27 @@ def test_read_truth_one_gsp(db_session):
     _ = [GSPYield(**gsp_yield) for gsp_yield in r_json]
 
 
-@freeze_time("2022-01-01")
+@freeze_time("2022-06-01")
 def test_read_forecast_one_gsp(db_session):
     """Check main GB/pv/gsp/{gsp_id} route works"""
 
     forecast_value_1 = ForecastValue(
-        target_time=datetime(2022, 1, 2), expected_power_generation_megawatts=1
+        target_time=datetime(2022, 6, 2), expected_power_generation_megawatts=1
     )
     forecast_value_1_sql = forecast_value_1.to_orm()
 
     forecast_value_2 = ForecastValue(
-        target_time=datetime(2022, 1, 1), expected_power_generation_megawatts=2
+        target_time=datetime(2022, 6, 1), expected_power_generation_megawatts=2
     )
     forecast_value_2_sql = forecast_value_2.to_orm()
 
     forecast_value_3 = ForecastValue(
-        target_time=datetime(2022, 1, 1), expected_power_generation_megawatts=3
+        target_time=datetime(2022, 6, 1), expected_power_generation_megawatts=3
     )
     forecast_value_3_sql = forecast_value_3.to_orm()
 
     forecast = make_fake_forecast(
-        gsp_id=1, session=db_session, t0_datetime_utc=datetime(2022, 1, 1)
+        gsp_id=1, session=db_session, t0_datetime_utc=datetime(2020, 1, 1)
     )
     forecast.forecast_values.append(forecast_value_1_sql)
     forecast.forecast_values.append(forecast_value_2_sql)
@@ -148,12 +148,11 @@ def test_read_forecast_one_gsp(db_session):
     assert response.status_code == 200
 
     r_json = response.json()
-    # two forecast are from 'make_fake_forecast',
-    # the other two are 'forecast_value_1' and 'forecast_value_3'
+    # no forecast are from 'make_fake_forecast', as these are for 2020
+    # the two are 'forecast_value_1' and 'forecast_value_3'
     # 'forecast_value_2' is not included as it has the same target time as
     # 'forecast_value_3'
-    # 'forecast_value_1' is not included as it has the same target time as
-    # one in 'make_fake_forecast'
-
-    assert len(r_json) == 3
+    for i in r_json:
+        print(i)
+    assert len(r_json) == 2
     _ = [ForecastValue(**forecast_value) for forecast_value in r_json]
