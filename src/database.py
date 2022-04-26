@@ -21,9 +21,11 @@ logger = logging.getLogger(__name__)
 def get_forecasts_from_database(session: Session) -> ManyForecasts:
     """Get forecasts from database for all GSPs"""
     # get the latest forecast for all gsps.
-    # To speed up read time we only look at the last day of results. 
+    # To speed up read time we only look at the last day of results.
     yesterday_start_datetime = datetime.now(tz=timezone.utc) - timedelta(days=1)
-    forecasts = get_all_gsp_ids_latest_forecast(session=session, start_created_utc=yesterday_start_datetime)
+    forecasts = get_all_gsp_ids_latest_forecast(
+        session=session, start_created_utc=yesterday_start_datetime
+    )
 
     # change to pydantic objects
     forecasts = [Forecast.from_orm(forecast) for forecast in forecasts]
