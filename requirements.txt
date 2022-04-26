@@ -3,7 +3,7 @@ uvicorn[standard]
 pydantic
 numpy
 requests
-nowcasting_datamodel==0.0.40
+nowcasting_datamodel==0.0.42
 nowcasting_dataset==3.1.59
 sqlalchemy
 psycopg2-binary
