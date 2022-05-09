@@ -5,20 +5,14 @@ from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 from nowcasting_datamodel.connection import DatabaseConnection
-from nowcasting_datamodel.models import (
-    Forecast,
-    ForecastValue,
-    GSPYield,
-    ManyForecasts,
-    Location,
-)
+from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield, Location, ManyForecasts
 from nowcasting_datamodel.read.read import (
     get_all_gsp_ids_latest_forecast,
+    get_all_locations,
     get_forecast_values,
     get_latest_forecast,
     get_latest_national_forecast,
     get_location,
-    get_all_locations,
 )
 from nowcasting_datamodel.read.read_gsp import get_gsp_yield
 from sqlalchemy.orm.session import Session

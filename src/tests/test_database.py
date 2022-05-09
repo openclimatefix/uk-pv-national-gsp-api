@@ -1,6 +1,6 @@
 """ Test for main app """
 
-from database import get_forecasts_for_a_specific_gsp_from_database, get_session, get_gsp_system
+from database import get_forecasts_for_a_specific_gsp_from_database, get_gsp_system, get_session
 
 
 def test_get_session():
