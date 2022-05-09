@@ -13,6 +13,7 @@ from nowcasting_datamodel.read.read import (
     get_latest_forecast,
     get_latest_national_forecast,
     get_location,
+    national_gb_label,
 )
 from nowcasting_datamodel.read.read_gsp import get_gsp_yield
 from sqlalchemy.orm.session import Session
@@ -125,9 +126,18 @@ def get_gsp_system(session: Session, gsp_id: Optional[int] = None) -> List[Locat
     """
 
     if gsp_id is not None:
-        gsp_systems = [get_location(session=session, gsp_id=gsp_id)]
+
+        # adjust label for nation location
+        if gsp_id == 0:
+            label = national_gb_label
+        else:
+            label = None
+
+        # get one system
+        gsp_systems = [get_location(session=session, gsp_id=gsp_id, label=label)]
 
     else:
         gsp_systems = get_all_locations(session=session)
 
+    # change to pydantic object
     return [Location.from_orm(gsp_system) for gsp_system in gsp_systems]
