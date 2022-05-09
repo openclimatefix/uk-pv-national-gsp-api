@@ -169,5 +169,5 @@ def test_get_gsp_systems(db_session):
     response = client.get("v0/GB/solar/gsp/gsp_systems")
     assert response.status_code == 200
 
-    locations = [Location(**l) for l in response.json()]
+    locations = [Location(**location) for location in response.json()]
     assert len(locations) == 10
