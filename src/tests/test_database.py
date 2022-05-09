@@ -1,6 +1,7 @@
 """ Test for main app """
 
 from database import get_forecasts_for_a_specific_gsp_from_database, get_gsp_system, get_session
+from nowcasting_datamodel.read.read import national_gb_label
 
 
 def test_get_session():
@@ -32,3 +33,10 @@ def test_get_gsp_system_one(db_session, forecasts):
     """Check get gsp system works for one system"""
     a = get_gsp_system(session=db_session, gsp_id=1)
     assert len(a) == 1
+
+
+def test_get_gsp_system_one_national(db_session, forecasts):
+    """Check get gsp system works for one system"""
+    a = get_gsp_system(session=db_session, gsp_id=0)
+    assert len(a) == 1
+    assert a[0].label == national_gb_label
