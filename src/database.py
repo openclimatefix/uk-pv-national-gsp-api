@@ -13,7 +13,7 @@ from nowcasting_datamodel.read.read import (
     get_latest_forecast,
     get_latest_national_forecast,
     get_location,
-    national_gb_label
+    national_gb_label,
 )
 from nowcasting_datamodel.read.read_gsp import get_gsp_yield
 from sqlalchemy.orm.session import Session
