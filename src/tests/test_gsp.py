@@ -156,3 +156,18 @@ def test_read_forecast_one_gsp(db_session):
         print(i)
     assert len(r_json) == 3
     _ = [ForecastValue(**forecast_value) for forecast_value in r_json]
+
+
+def test_get_gsp_systems(db_session):
+    """Check main GB/pv/gsp route works"""
+
+    forecasts = make_fake_forecasts(gsp_ids=list(range(0, 10)), session=db_session)
+    db_session.add_all(forecasts)
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = client.get("v0/GB/solar/gsp/gsp_systems")
+    assert response.status_code == 200
+
+    locations = [Location(**location) for location in response.json()]
+    assert len(locations) == 10

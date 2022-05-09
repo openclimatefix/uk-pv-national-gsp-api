@@ -5,12 +5,14 @@ from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 from nowcasting_datamodel.connection import DatabaseConnection
-from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield, ManyForecasts
+from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield, Location, ManyForecasts
 from nowcasting_datamodel.read.read import (
     get_all_gsp_ids_latest_forecast,
+    get_all_locations,
     get_forecast_values,
     get_latest_forecast,
     get_latest_national_forecast,
+    get_location,
 )
 from nowcasting_datamodel.read.read_gsp import get_gsp_yield
 from sqlalchemy.orm.session import Session
@@ -111,3 +113,21 @@ def get_truth_values_for_a_specific_gsp_from_database(
         start_datetime_utc=yesterday_start_datetime,
         regime=regime,
     )
+
+
+def get_gsp_system(session: Session, gsp_id: Optional[int] = None) -> List[Location]:
+    """
+    Get gsp system details
+
+    :param session:
+    :param gsp_id: optional input. If None, get all systems
+    :return:
+    """
+
+    if gsp_id is not None:
+        gsp_systems = [get_location(session=session, gsp_id=gsp_id)]
+
+    else:
+        gsp_systems = get_all_locations(session=session)
+
+    return [Location.from_orm(gsp_system) for gsp_system in gsp_systems]
