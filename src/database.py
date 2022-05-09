@@ -2,7 +2,7 @@
 import logging
 import os
 from datetime import datetime, timedelta, timezone
-from typing import List, Optional, Union
+from typing import List, Optional
 
 from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.models import (
@@ -10,7 +10,6 @@ from nowcasting_datamodel.models import (
     ForecastValue,
     GSPYield,
     ManyForecasts,
-    LocationSQL,
     Location,
 )
 from nowcasting_datamodel.read.read import (
