@@ -4,6 +4,7 @@ pydantic
 numpy
 requests
 nowcasting_datamodel==0.0.49
+rasterio==1.3a4
 nowcasting_dataset==3.1.59
 sqlalchemy
 psycopg2-binary
