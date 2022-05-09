@@ -1,11 +1,17 @@
 """Get GSP boundary data from eso """
 import json
 import logging
-from typing import List, Optional
+from typing import List, Optional, Union
 
 import geopandas as gpd
 from fastapi import APIRouter, Depends
-from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield, ManyForecasts
+from nowcasting_datamodel.models import (
+    Forecast,
+    ForecastValue,
+    GSPYield,
+    ManyForecasts,
+    Location,
+)
 from nowcasting_dataset.data_sources.gsp.eso import get_gsp_metadata_from_eso
 from sqlalchemy.orm.session import Session
 
@@ -16,6 +22,7 @@ from database import (
     get_latest_national_forecast_from_database,
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
+    get_gsp_system,
 )
 
 logger = logging.getLogger(__name__)
@@ -81,6 +88,23 @@ async def get_truths_for_a_specific_gsp(
     )
 
 
+@router.get("/forecast/all", response_model=ManyForecasts)
+async def get_all_available_forecasts(session: Session = Depends(get_session)) -> ManyForecasts:
+    """Get the latest information for all available forecasts"""
+
+    logger.info("Get forecasts for all gsps")
+
+    return get_forecasts_from_database(session=session)
+
+
+@router.get("/forecast/national", response_model=Forecast)
+async def get_nationally_aggregated_forecasts(session: Session = Depends(get_session)) -> Forecast:
+    """Get an aggregated forecast at the national level"""
+
+    logger.debug("Get national forecasts")
+    return get_latest_national_forecast_from_database(session=session)
+
+
 @router.get("/gsp_boundaries")
 async def get_gsp_boundaries() -> dict:
     """Get one gsp boundary for a specific GSP id
@@ -100,18 +124,16 @@ async def get_gsp_boundaries() -> dict:
     return json.loads(json_string)
 
 
-@router.get("/forecast/all", response_model=ManyForecasts)
-async def get_all_available_forecasts(session: Session = Depends(get_session)) -> ManyForecasts:
-    """Get the latest information for all available forecasts"""
+@router.get("/gsp_systems", response_model=List[Location])
+async def get_systems(
+    session: Session = Depends(get_session), gsp_id: Optional[int] = None
+) -> List[Location]:
+    """
+    Get gsp system details.
 
-    logger.info("Get forecasts for all gsps")
+    Provide gsp_id to just return one gsp system, otherwise all are returned
+    """
 
-    return get_forecasts_from_database(session=session)
+    logger.info(f"Get GSP systems for {gsp_id=}")
 
-
-@router.get("/forecast/national", response_model=Forecast)
-async def get_nationally_aggregated_forecasts(session: Session = Depends(get_session)) -> Forecast:
-    """Get an aggregated forecast at the national level"""
-
-    logger.debug("Get national forecasts")
-    return get_latest_national_forecast_from_database(session=session)
+    return get_gsp_system(session=session, gsp_id=gsp_id)
