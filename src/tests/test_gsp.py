@@ -158,6 +158,7 @@ client = TestClient(app)
 #     _ = [ForecastValue(**forecast_value) for forecast_value in r_json]
 #
 
+
 def test_get_gsp_systems(db_session):
     """Check main GB/pv/gsp route works"""
 

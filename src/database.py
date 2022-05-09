@@ -11,7 +11,7 @@ from nowcasting_datamodel.models import (
     GSPYield,
     ManyForecasts,
     LocationSQL,
-Location,
+    Location,
 )
 from nowcasting_datamodel.read.read import (
     get_all_gsp_ids_latest_forecast,
@@ -122,9 +122,7 @@ def get_truth_values_for_a_specific_gsp_from_database(
     )
 
 
-def get_gsp_system(
-    session: Session, gsp_id: Optional[int] = None
-) -> List[Location]:
+def get_gsp_system(session: Session, gsp_id: Optional[int] = None) -> List[Location]:
     """
     Get gsp system details
 
