@@ -21,11 +21,11 @@ def test_get_gsp_system_none(db_session):
     assert len(a) == 0
 
 
-def test_get_gsp_system_all(db_session,forecasts):
+def test_get_gsp_system_all(db_session, forecasts):
     a = get_gsp_system(session=db_session)
     assert len(a) == 338
 
 
-def test_get_gsp_system_one(db_session,forecasts):
+def test_get_gsp_system_one(db_session, forecasts):
     a = get_gsp_system(session=db_session, gsp_id=1)
     assert len(a) == 1
