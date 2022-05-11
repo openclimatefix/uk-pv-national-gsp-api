@@ -55,7 +55,7 @@ def test_read_latest_all_gsp(db_session):
 def test_read_latest_national(db_session):
     """Check main GB/pv/national route works"""
 
-    forecast = make_fake_national_forecast()
+    forecast = make_fake_national_forecast(session=db_session)
     db_session.add(forecast)
 
     app.dependency_overrides[get_session] = lambda: db_session
@@ -69,7 +69,7 @@ def test_read_latest_national(db_session):
 def test_gsp_boundaries(db_session):
     """Check main GB/pv/national route works"""
 
-    forecast = make_fake_national_forecast()
+    forecast = make_fake_national_forecast(session=db_session)
     db_session.add(forecast)
 
     app.dependency_overrides[get_session] = lambda: db_session
