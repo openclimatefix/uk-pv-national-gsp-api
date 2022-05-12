@@ -31,7 +31,10 @@ def get_forecasts_from_database(session: Session) -> ManyForecasts:
         datetime.now(tz=timezone.utc) - timedelta(hours=12)
     )
     forecasts = get_all_gsp_ids_latest_forecast(
-        session=session, start_created_utc=yesterday_start_datetime
+        session=session,
+        start_created_utc=yesterday_start_datetime,
+        start_target_time=yesterday_start_datetime,
+        preload_children=True,
     )
 
     # change to pydantic objects
