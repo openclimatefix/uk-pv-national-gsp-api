@@ -87,14 +87,17 @@ async def get_all_available_forecasts(normalize: Optional[bool] = False, session
     """Get the latest information for all available forecasts
 
     There is an option to normalize the forecasts by gsp capacity
+    This currently takes a long time
     """
 
     logger.info("Get forecasts for all gsps")
 
     forecasts = get_forecasts_from_database(session=session)
 
+    logger.debug(f'Normalizing {normalize}')
     if normalize:
         forecasts.normalize()
+        logger.debug('Normalizing: done')
 
     return forecasts
 
