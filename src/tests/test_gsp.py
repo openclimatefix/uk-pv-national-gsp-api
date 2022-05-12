@@ -59,7 +59,11 @@ def test_read_latest_all_gsp(db_session):
 def test_read_latest_all_gsp_normalized(db_session):
     """Check main GB/pv/gsp route works"""
 
-    forecasts = make_fake_forecasts(gsp_ids=list(range(0, 10)), session=db_session)
+    forecasts = make_fake_forecasts(
+        gsp_ids=list(range(0, 10)),
+        session=db_session,
+        t0_datetime_utc=datetime.now(tz=timezone.utc),
+    )
     db_session.add_all(forecasts)
 
     app.dependency_overrides[get_session] = lambda: db_session
