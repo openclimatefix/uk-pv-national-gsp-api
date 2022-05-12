@@ -1,9 +1,10 @@
 """ Main FastAPI app """
 import logging
 import os
+import time
 from datetime import timedelta
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
@@ -40,6 +41,18 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    """Add process time into response object header"""
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = str(time.time() - start_time)
+    logger.debug(f"Process Time {process_time}")
+    response.headers["X-Process-Time"] = process_time
+    return response
+
 
 thirty_minutes = timedelta(minutes=30)
 

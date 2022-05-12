@@ -18,14 +18,18 @@ from nowcasting_datamodel.read.read import (
 from nowcasting_datamodel.read.read_gsp import get_gsp_yield
 from sqlalchemy.orm.session import Session
 
+from utils import floor_30_minutes_dt
+
 logger = logging.getLogger(__name__)
 
 
 def get_forecasts_from_database(session: Session) -> ManyForecasts:
     """Get forecasts from database for all GSPs"""
     # get the latest forecast for all gsps.
-    # To speed up read time we only look at the last day of results.
-    yesterday_start_datetime = datetime.now(tz=timezone.utc) - timedelta(days=1)
+    # To speed up read time we only look at the last 12 hours of results, and take floor 30 mins
+    yesterday_start_datetime = floor_30_minutes_dt(
+        datetime.now(tz=timezone.utc) - timedelta(hours=12)
+    )
     forecasts = get_all_gsp_ids_latest_forecast(
         session=session, start_created_utc=yesterday_start_datetime
     )
