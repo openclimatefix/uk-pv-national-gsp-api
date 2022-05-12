@@ -34,7 +34,7 @@ def get_forecasts_from_database(session: Session) -> ManyForecasts:
         session=session,
         start_created_utc=yesterday_start_datetime,
         start_target_time=yesterday_start_datetime,
-        preload_children=True,
+        # preload_children=True,
     )
 
     # change to pydantic objects
