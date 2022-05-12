@@ -26,8 +26,9 @@ def get_forecasts_from_database(session: Session) -> ManyForecasts:
     """Get forecasts from database for all GSPs"""
     # get the latest forecast for all gsps.
     # To speed up read time we only look at the last 12 hours of results, and take floor 30 mins
-    yesterday_start_datetime \
-        = floor_30_minutes_dt(datetime.now(tz=timezone.utc) - timedelta(hours=12))
+    yesterday_start_datetime = floor_30_minutes_dt(
+        datetime.now(tz=timezone.utc) - timedelta(hours=12)
+    )
     forecasts = get_all_gsp_ids_latest_forecast(
         session=session, start_created_utc=yesterday_start_datetime
     )
