@@ -17,6 +17,7 @@ from nowcasting_datamodel.read.read import (
 )
 from nowcasting_datamodel.read.read_gsp import get_gsp_yield
 from sqlalchemy.orm.session import Session
+
 from utils import floor_30_minutes_dt
 
 logger = logging.getLogger(__name__)
