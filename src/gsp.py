@@ -94,10 +94,10 @@ async def get_all_available_forecasts(normalize: Optional[bool] = False, session
 
     forecasts = get_forecasts_from_database(session=session)
 
-    logger.debug(f'Normalizing {normalize}')
+    logger.debug(f"Normalizing {normalize}")
     if normalize:
         forecasts.normalize()
-        logger.debug('Normalizing: done')
+        logger.debug("Normalizing: done")
 
     return forecasts
 
