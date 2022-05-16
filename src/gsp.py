@@ -68,11 +68,15 @@ async def get_latest_forecasts_for_a_specific_gsp(
 async def get_truths_for_a_specific_gsp(
     gsp_id: int, regime: Optional[str] = None, session: Session = Depends(get_session)
 ) -> List[GSPYield]:
-    """Get truth values for a specific GSP id, for yesterday and today
+    """Get PV live values for a specific GSP id, for yesterday and today
 
+    See https://www.solar.sheffield.ac.uk/pvlive/ for more details.
     Regime can "in-day" or "day-after",
     as new values are calculated around midnight when more data is available.
     If regime is not specific, the latest gsp yield is loaded.
+
+    The 'truth' is because our Forecast is trying to predict the PV live 'day-after' value.
+    The truth for the OCF forecast is PV Live 'day-after'
     """
 
     logger.info(f"Get truth values for gsp id {gsp_id} and regime {regime}")
