@@ -70,7 +70,7 @@ async def get_truths_for_a_specific_gsp(
 ) -> List[GSPYield]:
     """Get PV live values for a specific GSP id, for yesterday and today
 
-    See https://www.solar.sheffield.ac.uk/pvlive/ for more details. 
+    See https://www.solar.sheffield.ac.uk/pvlive/ for more details.
     Regime can "in-day" or "day-after",
     as new values are calculated around midnight when more data is available.
     If regime is not specific, the latest gsp yield is loaded.
