@@ -54,6 +54,7 @@ def test_read_latest_all_gsp(db_session):
 
     r = ManyForecasts(**response.json())
     assert len(r.forecasts) == 10
+    assert len(r.forecasts[0].forecast_values) == 2
 
 
 def test_read_latest_all_gsp_normalized(db_session):
