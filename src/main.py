@@ -14,7 +14,7 @@ from gsp import router as gsp_router
 
 logger = logging.getLogger(__name__)
 
-version = "0.1.37"
+version = "0.1.38"
 description = """
 The Nowcasting API is still under development. It only returns zeros for now.
 """
