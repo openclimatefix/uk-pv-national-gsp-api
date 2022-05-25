@@ -18,4 +18,6 @@ def test_read_latest_status(db_session):
     response = client.get("/v0/GB/solar/status")
     assert response.status_code == 200
 
-    _ = Status(**response.json())
+    returned_status = Status(**response.json())
+    assert returned_status.message == status.message
+    assert returned_status.status == status.status
