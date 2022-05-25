@@ -3,10 +3,19 @@ from datetime import datetime, timezone
 
 from fastapi.testclient import TestClient
 from freezegun import freeze_time
-from nowcasting_datamodel.fake import (make_fake_forecast, make_fake_forecasts,
-                                       make_fake_national_forecast)
-from nowcasting_datamodel.models import (Forecast, ForecastValue, GSPYield,
-                                         Location, LocationSQL, ManyForecasts)
+from nowcasting_datamodel.fake import (
+    make_fake_forecast,
+    make_fake_forecasts,
+    make_fake_national_forecast,
+)
+from nowcasting_datamodel.models import (
+    Forecast,
+    ForecastValue,
+    GSPYield,
+    Location,
+    LocationSQL,
+    ManyForecasts,
+)
 
 from database import get_session
 from main import app
