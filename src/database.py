@@ -5,13 +5,21 @@ from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 from nowcasting_datamodel.connection import DatabaseConnection
-from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield, Location, ManyForecasts
+from nowcasting_datamodel.models import (
+    Forecast,
+    ForecastValue,
+    GSPYield,
+    Location,
+    ManyForecasts,
+    Status,
+)
 from nowcasting_datamodel.read.read import (
     get_all_gsp_ids_latest_forecast,
     get_all_locations,
     get_forecast_values,
     get_latest_forecast,
     get_latest_national_forecast,
+    get_latest_status,
     get_location,
     national_gb_label,
 )
@@ -21,6 +29,16 @@ from sqlalchemy.orm.session import Session
 from utils import floor_30_minutes_dt
 
 logger = logging.getLogger(__name__)
+
+
+def get_latest_status_from_database(session: Session) -> Status:
+    """Get latest status from database"""
+    latest_status = get_latest_status(session)
+
+    # convert to PyDantic object
+    latest_status = Status.from_orm(latest_status)
+
+    return latest_status
 
 
 def get_forecasts_from_database(session: Session) -> ManyForecasts:
