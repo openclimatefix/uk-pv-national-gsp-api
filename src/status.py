@@ -14,8 +14,8 @@ router = APIRouter()
 
 
 @router.get("/status", response_model=Status)
-async def get_nationally_aggregated_forecasts(session: Session = Depends(get_session)) -> Status:
-    """Get an aggregated forecast at the national level"""
+async def get_status(session: Session = Depends(get_session)) -> Status:
+    """Get the status of the solar forecasts"""
 
     logger.debug("Get status")
     return get_latest_status_from_database(session=session)
