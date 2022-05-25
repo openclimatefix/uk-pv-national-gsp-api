@@ -5,7 +5,14 @@ from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 from nowcasting_datamodel.connection import DatabaseConnection
-from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield, Location, ManyForecasts, Status
+from nowcasting_datamodel.models import (
+    Forecast,
+    ForecastValue,
+    GSPYield,
+    Location,
+    ManyForecasts,
+    Status,
+)
 from nowcasting_datamodel.read.read import (
     get_all_gsp_ids_latest_forecast,
     get_all_locations,
@@ -32,6 +39,7 @@ def get_latest_status_from_database(session: Session) -> Status:
     latest_status = Status.from_orm(latest_status)
 
     return latest_status
+
 
 def get_forecasts_from_database(session: Session) -> ManyForecasts:
     """Get forecasts from database for all GSPs"""
