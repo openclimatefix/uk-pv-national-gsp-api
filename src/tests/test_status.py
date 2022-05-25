@@ -7,6 +7,7 @@ from main import app
 
 client = TestClient(app)
 
+
 def test_read_latest_national(db_session):
     """Check main GB/pv/status route works"""
     status = Status(message="Good", status="ok").to_orm()
