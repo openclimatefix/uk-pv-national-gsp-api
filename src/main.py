@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
 from gsp import router as gsp_router
+from status import router as status_router
 
 # from pv import router as pv_router
 
@@ -62,6 +63,7 @@ v0_route = "/v0/GB/solar"
 
 
 app.include_router(gsp_router, prefix=f"{v0_route}/gsp")
+app.include_router(status_router, prefix=f"{v0_route}")
 # app.include_router(pv_router, prefix=f"{v0_route}/pv")
 
 

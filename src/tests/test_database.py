@@ -2,7 +2,8 @@
 
 from nowcasting_datamodel.read.read import national_gb_label
 
-from database import get_forecasts_for_a_specific_gsp_from_database, get_gsp_system, get_session
+from database import (get_forecasts_for_a_specific_gsp_from_database,
+                      get_gsp_system, get_session)
 
 
 def test_get_session():
