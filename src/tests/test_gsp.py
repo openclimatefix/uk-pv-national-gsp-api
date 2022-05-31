@@ -77,6 +77,7 @@ def test_read_latest_all_gsp_normalized(db_session):
     assert len(r.forecasts) == 10
     assert r.forecasts[0].forecast_values[0].expected_power_generation_megawatts <= 1
 
+
 def test_read_latest_all_gsp_historic(db_session):
     """Check main GB/pv/gsp route works"""
 
@@ -86,7 +87,7 @@ def test_read_latest_all_gsp_historic(db_session):
         t0_datetime_utc=datetime.now(tz=timezone.utc),
     )
     db_session.add_all(forecasts)
-    update_all_forecast_latest(forecasts=forecasts,session=db_session)
+    update_all_forecast_latest(forecasts=forecasts, session=db_session)
 
     app.dependency_overrides[get_session] = lambda: db_session
 
