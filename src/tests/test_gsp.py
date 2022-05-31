@@ -24,6 +24,7 @@ from main import app
 client = TestClient(app)
 
 
+@freeze_time("2022-01-01")
 def test_read_latest_one_gsp(db_session):
     """Check main GB/pv/gsp/{gsp_id} route works"""
 
