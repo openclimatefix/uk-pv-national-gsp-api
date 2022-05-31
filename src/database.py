@@ -76,12 +76,26 @@ def get_forecasts_from_database(
     return ManyForecasts(forecasts=forecasts)
 
 
-def get_forecasts_for_a_specific_gsp_from_database(session: Session, gsp_id) -> Forecast:
+def get_forecasts_for_a_specific_gsp_from_database(
+    session: Session, gsp_id, historic: Optional[bool] = False
+) -> Forecast:
     """Get forecasts for on GSP from database"""
-    # get forecast from database
-    forecast = get_latest_forecast(session=session, gsp_id=gsp_id)
 
-    return Forecast.from_orm(forecast)
+    yesterday_start_datetime = datetime.now(tz=timezone.utc).date() - timedelta(days=1)
+    yesterday_start_datetime = datetime.combine(yesterday_start_datetime, datetime.min.time())
+
+    # get forecast from database
+    forecast = get_latest_forecast(
+        session=session,
+        gsp_id=gsp_id,
+        historic=historic,
+        start_target_time=yesterday_start_datetime,
+    )
+
+    if historic:
+        return Forecast.from_orm_latest(forecast)
+    else:
+        return Forecast.from_orm(forecast)
 
 
 def get_latest_forecast_values_for_a_specific_gsp_from_database(
