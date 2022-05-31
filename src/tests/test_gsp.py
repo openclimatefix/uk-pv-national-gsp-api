@@ -1,5 +1,5 @@
 """ Test for main app """
-from datetime import datetime
+from datetime import datetime, timezone
 
 from fastapi.testclient import TestClient
 from freezegun import freeze_time
@@ -16,6 +16,7 @@ from nowcasting_datamodel.models import (
     LocationSQL,
     ManyForecasts,
 )
+from nowcasting_datamodel.update import update_all_forecast_latest
 
 from database import get_session
 from main import app
@@ -40,7 +41,11 @@ def test_read_latest_one_gsp(db_session):
 def test_read_latest_all_gsp(db_session):
     """Check main GB/pv/gsp route works"""
 
-    forecasts = make_fake_forecasts(gsp_ids=list(range(0, 10)), session=db_session)
+    forecasts = make_fake_forecasts(
+        gsp_ids=list(range(0, 10)),
+        session=db_session,
+        t0_datetime_utc=datetime.now(tz=timezone.utc),
+    )
     db_session.add_all(forecasts)
 
     app.dependency_overrides[get_session] = lambda: db_session
@@ -50,12 +55,54 @@ def test_read_latest_all_gsp(db_session):
 
     r = ManyForecasts(**response.json())
     assert len(r.forecasts) == 10
+    assert len(r.forecasts[0].forecast_values) == 2
+
+
+def test_read_latest_all_gsp_normalized(db_session):
+    """Check main GB/pv/gsp route works"""
+
+    forecasts = make_fake_forecasts(
+        gsp_ids=list(range(0, 10)),
+        session=db_session,
+        t0_datetime_utc=datetime.now(tz=timezone.utc),
+    )
+    db_session.add_all(forecasts)
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = client.get("/v0/GB/solar/gsp/forecast/all/?normalize=True")
+    assert response.status_code == 200
+
+    r = ManyForecasts(**response.json())
+    assert len(r.forecasts) == 10
+    assert r.forecasts[0].forecast_values[0].expected_power_generation_megawatts <= 1
+
+
+def test_read_latest_all_gsp_historic(db_session):
+    """Check main GB/pv/gsp route works"""
+
+    forecasts = make_fake_forecasts(
+        gsp_ids=list(range(0, 10)),
+        session=db_session,
+        t0_datetime_utc=datetime.now(tz=timezone.utc),
+    )
+    db_session.add_all(forecasts)
+    update_all_forecast_latest(forecasts=forecasts, session=db_session)
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = client.get("/v0/GB/solar/gsp/forecast/all/?historic=True")
+    assert response.status_code == 200
+
+    r = ManyForecasts(**response.json())
+    assert len(r.forecasts) == 10
+    assert r.forecasts[0].forecast_values[0].expected_power_generation_megawatts <= 1
 
 
 def test_read_latest_national(db_session):
     """Check main GB/pv/national route works"""
 
-    forecast = make_fake_national_forecast()
+    forecast = make_fake_national_forecast(session=db_session)
     db_session.add(forecast)
 
     app.dependency_overrides[get_session] = lambda: db_session
@@ -69,7 +116,7 @@ def test_read_latest_national(db_session):
 def test_gsp_boundaries(db_session):
     """Check main GB/pv/national route works"""
 
-    forecast = make_fake_national_forecast()
+    forecast = make_fake_national_forecast(session=db_session)
     db_session.add(forecast)
 
     app.dependency_overrides[get_session] = lambda: db_session

@@ -5,33 +5,72 @@ from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 from nowcasting_datamodel.connection import DatabaseConnection
-from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield, Location, ManyForecasts
+from nowcasting_datamodel.models import (
+    Forecast,
+    ForecastValue,
+    GSPYield,
+    Location,
+    ManyForecasts,
+    Status,
+)
 from nowcasting_datamodel.read.read import (
     get_all_gsp_ids_latest_forecast,
     get_all_locations,
     get_forecast_values,
     get_latest_forecast,
     get_latest_national_forecast,
+    get_latest_status,
     get_location,
     national_gb_label,
 )
 from nowcasting_datamodel.read.read_gsp import get_gsp_yield
 from sqlalchemy.orm.session import Session
 
+from utils import floor_30_minutes_dt
+
 logger = logging.getLogger(__name__)
 
 
-def get_forecasts_from_database(session: Session) -> ManyForecasts:
+def get_latest_status_from_database(session: Session) -> Status:
+    """Get latest status from database"""
+    latest_status = get_latest_status(session)
+
+    # convert to PyDantic object
+    latest_status = Status.from_orm(latest_status)
+
+    return latest_status
+
+
+def get_forecasts_from_database(
+    session: Session, historic: Optional[bool] = False
+) -> ManyForecasts:
     """Get forecasts from database for all GSPs"""
     # get the latest forecast for all gsps.
-    # To speed up read time we only look at the last day of results.
-    yesterday_start_datetime = datetime.now(tz=timezone.utc) - timedelta(days=1)
-    forecasts = get_all_gsp_ids_latest_forecast(
-        session=session, start_created_utc=yesterday_start_datetime
+    # To speed up read time we only look at the last 12 hours of results, and take floor 30 mins
+    yesterday_start_datetime = floor_30_minutes_dt(
+        datetime.now(tz=timezone.utc) - timedelta(hours=12)
     )
 
+    if historic:
+        forecasts = get_all_gsp_ids_latest_forecast(
+            session=session,
+            start_target_time=yesterday_start_datetime,
+            preload_children=True,
+            historic=True,
+        )
+    else:
+        forecasts = get_all_gsp_ids_latest_forecast(
+            session=session,
+            start_created_utc=yesterday_start_datetime,
+            start_target_time=yesterday_start_datetime,
+            preload_children=True,
+        )
+
     # change to pydantic objects
-    forecasts = [Forecast.from_orm(forecast) for forecast in forecasts]
+    if historic:
+        forecasts = [Forecast.from_orm_latest(forecast) for forecast in forecasts]
+    else:
+        forecasts = [Forecast.from_orm(forecast) for forecast in forecasts]
 
     # return as many forecasts
     return ManyForecasts(forecasts=forecasts)
