@@ -88,17 +88,20 @@ async def get_truths_for_a_specific_gsp(
 
 @router.get("/forecast/all", response_model=ManyForecasts)
 async def get_all_available_forecasts(
-    normalize: Optional[bool] = False, session: Session = Depends(get_session)
+    normalize: Optional[bool] = False,
+    historic: Optional[bool] = False,
+    session: Session = Depends(get_session),
 ) -> ManyForecasts:
     """Get the latest information for all available forecasts
 
     There is an option to normalize the forecasts by gsp capacity
-    This currently takes a long time
+    There is also an option to pull historic data.
+        This will the load the latest forecast value for each target time.
     """
 
     logger.info("Get forecasts for all gsps")
 
-    forecasts = get_forecasts_from_database(session=session)
+    forecasts = get_forecasts_from_database(session=session, historic=historic)
 
     logger.debug(f"Normalizing {normalize}")
     if normalize:

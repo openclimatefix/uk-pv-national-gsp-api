@@ -41,22 +41,36 @@ def get_latest_status_from_database(session: Session) -> Status:
     return latest_status
 
 
-def get_forecasts_from_database(session: Session) -> ManyForecasts:
+def get_forecasts_from_database(
+    session: Session, historic: Optional[bool] = False
+) -> ManyForecasts:
     """Get forecasts from database for all GSPs"""
     # get the latest forecast for all gsps.
     # To speed up read time we only look at the last 12 hours of results, and take floor 30 mins
     yesterday_start_datetime = floor_30_minutes_dt(
         datetime.now(tz=timezone.utc) - timedelta(hours=12)
     )
-    forecasts = get_all_gsp_ids_latest_forecast(
-        session=session,
-        start_created_utc=yesterday_start_datetime,
-        start_target_time=yesterday_start_datetime,
-        preload_children=True,
-    )
+
+    if historic:
+        forecasts = get_all_gsp_ids_latest_forecast(
+            session=session,
+            start_target_time=yesterday_start_datetime,
+            preload_children=True,
+            historic=True,
+        )
+    else:
+        forecasts = get_all_gsp_ids_latest_forecast(
+            session=session,
+            start_created_utc=yesterday_start_datetime,
+            start_target_time=yesterday_start_datetime,
+            preload_children=True,
+        )
 
     # change to pydantic objects
-    forecasts = [Forecast.from_orm(forecast) for forecast in forecasts]
+    if historic:
+        forecasts = [Forecast.from_orm_latest(forecast) for forecast in forecasts]
+    else:
+        forecasts = [Forecast.from_orm(forecast) for forecast in forecasts]
 
     # return as many forecasts
     return ManyForecasts(forecasts=forecasts)
