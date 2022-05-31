@@ -88,7 +88,7 @@ async def get_truths_for_a_specific_gsp(
 
 @router.get("/forecast/all", response_model=ManyForecasts)
 async def get_all_available_forecasts(
-    normalize: Optional[bool] = False, historic: Optional[str] = False, session: Session = Depends(get_session)
+    normalize: Optional[bool] = False, historic: Optional[bool] = False, session: Session = Depends(get_session)
 ) -> ManyForecasts:
     """Get the latest information for all available forecasts
 
