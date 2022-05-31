@@ -88,7 +88,9 @@ async def get_truths_for_a_specific_gsp(
 
 @router.get("/forecast/all", response_model=ManyForecasts)
 async def get_all_available_forecasts(
-    normalize: Optional[bool] = False, historic: Optional[bool] = False, session: Session = Depends(get_session)
+    normalize: Optional[bool] = False,
+    historic: Optional[bool] = False,
+    session: Session = Depends(get_session),
 ) -> ManyForecasts:
     """Get the latest information for all available forecasts
 
@@ -99,7 +101,7 @@ async def get_all_available_forecasts(
 
     logger.info("Get forecasts for all gsps")
 
-    forecasts = get_forecasts_from_database(session=session,historic=historic)
+    forecasts = get_forecasts_from_database(session=session, historic=historic)
 
     logger.debug(f"Normalizing {normalize}")
     if normalize:

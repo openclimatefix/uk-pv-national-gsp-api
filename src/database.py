@@ -41,7 +41,9 @@ def get_latest_status_from_database(session: Session) -> Status:
     return latest_status
 
 
-def get_forecasts_from_database(session: Session, historic: Optional[bool] = False) -> ManyForecasts:
+def get_forecasts_from_database(
+    session: Session, historic: Optional[bool] = False
+) -> ManyForecasts:
     """Get forecasts from database for all GSPs"""
     # get the latest forecast for all gsps.
     # To speed up read time we only look at the last 12 hours of results, and take floor 30 mins
@@ -54,7 +56,7 @@ def get_forecasts_from_database(session: Session, historic: Optional[bool] = Fal
             session=session,
             start_target_time=yesterday_start_datetime,
             preload_children=True,
-            historic=True
+            historic=True,
         )
     else:
         forecasts = get_all_gsp_ids_latest_forecast(
