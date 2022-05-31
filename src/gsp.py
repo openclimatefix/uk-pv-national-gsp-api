@@ -42,7 +42,9 @@ def get_gsp_boundaries_from_eso_wgs84() -> gpd.GeoDataFrame:
 
 @router.get("/forecast/one_gsp/{gsp_id}", response_model=Forecast)
 async def get_forecasts_for_a_specific_gsp(
-    gsp_id: int, session: Session = Depends(get_session), historic: Optional[bool] = False,
+    gsp_id: int,
+    session: Session = Depends(get_session),
+    historic: Optional[bool] = False,
 ) -> Forecast:
     """Get one forecast for a specific GSP id
 
@@ -52,7 +54,9 @@ async def get_forecasts_for_a_specific_gsp(
 
     logger.info(f"Get forecasts for gsp id {gsp_id}")
 
-    return get_forecasts_for_a_specific_gsp_from_database(session=session, gsp_id=gsp_id, historic=historic)
+    return get_forecasts_for_a_specific_gsp_from_database(
+        session=session, gsp_id=gsp_id, historic=historic
+    )
 
 
 @router.get("/forecast/latest/{gsp_id}", response_model=List[ForecastValue])

@@ -10,7 +10,7 @@ def test_get_session():
     _ = next(get_session())
 
 
-@freeze_time('2022-01-01')
+@freeze_time("2022-01-01")
 def test_get_forecasts_for_a_specific_gsp_from_database(db_session, forecasts):
     """Check main route works"""
 
