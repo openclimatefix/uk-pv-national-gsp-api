@@ -46,12 +46,13 @@ def get_forecasts_from_database(
 ) -> ManyForecasts:
     """Get forecasts from database for all GSPs"""
     # get the latest forecast for all gsps.
-    # To speed up read time we only look at the last 12 hours of results, and take floor 30 mins
-    yesterday_start_datetime = floor_30_minutes_dt(
-        datetime.now(tz=timezone.utc) - timedelta(hours=12)
-    )
 
     if historic:
+
+        # get at most 2 days of data.
+        yesterday_start_datetime = datetime.now(tz=timezone.utc).date() - timedelta(days=1)
+        yesterday_start_datetime = datetime.combine(yesterday_start_datetime, datetime.min.time())
+
         forecasts = get_all_gsp_ids_latest_forecast(
             session=session,
             start_target_time=yesterday_start_datetime,
@@ -59,6 +60,11 @@ def get_forecasts_from_database(
             historic=True,
         )
     else:
+        # To speed up read time we only look at the last 12 hours of results, and take floor 30 mins
+        yesterday_start_datetime = floor_30_minutes_dt(
+            datetime.now(tz=timezone.utc) - timedelta(hours=12)
+        )
+
         forecasts = get_all_gsp_ids_latest_forecast(
             session=session,
             start_created_utc=yesterday_start_datetime,
@@ -91,6 +97,8 @@ def get_forecasts_for_a_specific_gsp_from_database(
         historic=historic,
         start_target_time=yesterday_start_datetime,
     )
+
+    logger.debug("Found latest forecasts")
 
     if historic:
         return Forecast.from_orm_latest(forecast)
