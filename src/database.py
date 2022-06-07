@@ -98,7 +98,7 @@ def get_forecasts_for_a_specific_gsp_from_database(
         start_target_time=yesterday_start_datetime,
     )
 
-    logger.debug(f'Found latest forecasts')
+    logger.debug('Found latest forecasts')
 
     if historic:
         return Forecast.from_orm_latest(forecast)
