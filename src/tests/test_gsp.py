@@ -153,7 +153,7 @@ def test_read_truth_one_gsp(db_session):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = client.get("/v0/GB/solar/gsp/truth/one_gsp/1")
+    response = client.get("/v0/GB/solar/gsp/pvlive/one_gsp/1")
     assert response.status_code == 200
 
     r_json = response.json()

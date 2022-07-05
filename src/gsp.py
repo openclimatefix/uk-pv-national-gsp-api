@@ -72,7 +72,7 @@ async def get_latest_forecasts_for_a_specific_gsp(
     )
 
 
-@router.get("/truth/one_gsp/{gsp_id}/", response_model=List[GSPYield])
+@router.get("/pvlive/one_gsp/{gsp_id}/", response_model=List[GSPYield])
 async def get_truths_for_a_specific_gsp(
     gsp_id: int, regime: Optional[str] = None, session: Session = Depends(get_session)
 ) -> List[GSPYield]:
@@ -83,8 +83,7 @@ async def get_truths_for_a_specific_gsp(
     as new values are calculated around midnight when more data is available.
     If regime is not specific, the latest gsp yield is loaded.
 
-    The 'truth' is because our Forecast is trying to predict the PV live 'day-after' value.
-    The truth for the OCF forecast is PV Live 'day-after'
+    The OCF Forecast is trying to predict the PV live 'day-after' value.
     """
 
     logger.info(f"Get truth values for gsp id {gsp_id} and regime {regime}")
