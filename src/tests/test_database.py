@@ -1,5 +1,5 @@
 """ Test for main app """
-
+from freezegun import freeze_time
 from nowcasting_datamodel.read.read import national_gb_label
 
 from database import get_forecasts_for_a_specific_gsp_from_database, get_gsp_system, get_session
@@ -10,6 +10,7 @@ def test_get_session():
     _ = next(get_session())
 
 
+@freeze_time("2022-01-01")
 def test_get_forecasts_for_a_specific_gsp_from_database(db_session, forecasts):
     """Check main route works"""
 

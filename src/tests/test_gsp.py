@@ -24,6 +24,7 @@ from main import app
 client = TestClient(app)
 
 
+@freeze_time("2022-01-01")
 def test_read_latest_one_gsp(db_session):
     """Check main GB/pv/gsp/{gsp_id} route works"""
 
@@ -96,6 +97,7 @@ def test_read_latest_all_gsp_historic(db_session):
 
     r = ManyForecasts(**response.json())
     assert len(r.forecasts) == 10
+    assert len(r.forecasts[0].forecast_values) == 2
     assert r.forecasts[0].forecast_values[0].expected_power_generation_megawatts <= 1
 
 
@@ -152,7 +154,7 @@ def test_read_truth_one_gsp(db_session):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = client.get("/v0/GB/solar/gsp/truth/one_gsp/1")
+    response = client.get("/v0/GB/solar/gsp/pvlive/one_gsp/1")
     assert response.status_code == 200
 
     r_json = response.json()

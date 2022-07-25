@@ -42,13 +42,21 @@ def get_gsp_boundaries_from_eso_wgs84() -> gpd.GeoDataFrame:
 
 @router.get("/forecast/one_gsp/{gsp_id}", response_model=Forecast)
 async def get_forecasts_for_a_specific_gsp(
-    gsp_id: int, session: Session = Depends(get_session)
+    gsp_id: int,
+    session: Session = Depends(get_session),
+    historic: Optional[bool] = False,
 ) -> Forecast:
-    """Get one forecast for a specific GSP id"""
+    """Get one forecast for a specific GSP id
+
+    There is an option to get historic forecast also.
+    This gets the latest forecast for each target time for yesterday and toady.
+    """
 
     logger.info(f"Get forecasts for gsp id {gsp_id}")
 
-    return get_forecasts_for_a_specific_gsp_from_database(session=session, gsp_id=gsp_id)
+    return get_forecasts_for_a_specific_gsp_from_database(
+        session=session, gsp_id=gsp_id, historic=historic
+    )
 
 
 @router.get("/forecast/latest/{gsp_id}", response_model=List[ForecastValue])
@@ -64,7 +72,7 @@ async def get_latest_forecasts_for_a_specific_gsp(
     )
 
 
-@router.get("/truth/one_gsp/{gsp_id}/", response_model=List[GSPYield])
+@router.get("/pvlive/one_gsp/{gsp_id}/", response_model=List[GSPYield])
 async def get_truths_for_a_specific_gsp(
     gsp_id: int, regime: Optional[str] = None, session: Session = Depends(get_session)
 ) -> List[GSPYield]:
@@ -75,8 +83,7 @@ async def get_truths_for_a_specific_gsp(
     as new values are calculated around midnight when more data is available.
     If regime is not specific, the latest gsp yield is loaded.
 
-    The 'truth' is because our Forecast is trying to predict the PV live 'day-after' value.
-    The truth for the OCF forecast is PV Live 'day-after'
+    The OCF Forecast is trying to predict the PV live 'day-after' value.
     """
 
     logger.info(f"Get truth values for gsp id {gsp_id} and regime {regime}")

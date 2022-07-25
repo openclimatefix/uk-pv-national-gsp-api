@@ -1,10 +1,10 @@
+opencv-contrib-python-headless==4.5.5.64
 fastapi
 uvicorn[standard]
 pydantic
 numpy
 requests
-rasterio==1.3a4
-nowcasting_datamodel==1.0.8
+nowcasting_datamodel==1.1.19
 nowcasting_dataset==3.1.59
 sqlalchemy
 psycopg2-binary
