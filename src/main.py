@@ -15,7 +15,7 @@ from status import router as status_router
 
 logger = logging.getLogger(__name__)
 
-version = "0.2.17"
+version = "0.2.18"
 description = """
 The Nowcasting API is still under development.
 """
