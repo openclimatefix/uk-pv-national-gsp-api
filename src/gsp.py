@@ -45,17 +45,25 @@ async def get_forecasts_for_a_specific_gsp(
     gsp_id: int,
     session: Session = Depends(get_session),
     historic: Optional[bool] = False,
+    forecast_horizon_minutes: Optional[int] = None
 ) -> Forecast:
-    """Get one forecast for a specific GSP id
+    """
+    Get one forecast for a specific GSP id.
 
-    There is an option to get historic forecast also.
-    This gets the latest forecast for each target time for yesterday and toady.
+     This gets the latest forecast for each target time for yesterday and toady.
+
+    :param gsp_id: The gsp id of the forecast you want
+    :param session: sql session (this is done automatically)
+    :param historic: There is an option to get historic forecast also.
+    :param forecast_horizon_minutes: Optional forecast horizon in miutes. I.e 35 minutess, means
+        get the lastest foecast made 35 minutes before the target time.
+    :return: Forecast object
     """
 
     logger.info(f"Get forecasts for gsp id {gsp_id}")
 
     return get_forecasts_for_a_specific_gsp_from_database(
-        session=session, gsp_id=gsp_id, historic=historic
+        session=session, gsp_id=gsp_id, historic=historic, forecast_horizon_minutes=forecast_horizon_minutes
     )
 
 

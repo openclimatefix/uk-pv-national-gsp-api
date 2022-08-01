@@ -83,7 +83,7 @@ def get_forecasts_from_database(
 
 
 def get_forecasts_for_a_specific_gsp_from_database(
-    session: Session, gsp_id, historic: Optional[bool] = False
+    session: Session, gsp_id, historic: Optional[bool] = False, forecast_horizon_minutes: Optional[int] = None
 ) -> Forecast:
     """Get forecasts for on GSP from database"""
 
@@ -96,6 +96,7 @@ def get_forecasts_for_a_specific_gsp_from_database(
         gsp_id=gsp_id,
         historic=historic,
         start_target_time=yesterday_start_datetime,
+        forecast_horizon_minutes=forecast_horizon_minutes
     )
 
     logger.debug("Found latest forecasts")

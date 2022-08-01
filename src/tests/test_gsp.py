@@ -101,6 +101,40 @@ def test_read_latest_all_gsp_historic(db_session):
     assert r.forecasts[0].forecast_values[0].expected_power_generation_megawatts <= 1
 
 
+def test_read_latest_all_gsp_forecast_horizon(db_session):
+    """Check main GB/pv/gsp route works"""
+
+    t0_datetime_utc = datetime(2022,7,1,12,tzinfo=timezone.utc)
+    created_utc = datetime(2022, 7, 1, 11,tzinfo=timezone.utc)
+
+    forecasts = make_fake_forecasts(
+        gsp_ids=list(range(0, 10)),
+        session=db_session,
+        t0_datetime_utc=t0_datetime_utc,
+    )
+    forecasts[0].forecast_values[0].created_utc = created_utc
+    forecasts[0].forecast_values[1].created_utc = created_utc
+    db_session.add_all(forecasts)
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    # no forecast are made 3 horus before target time
+    response = client.get("/v0/GB/solar/gsp/forecast/one_gsp/0?forecast_horizon_minutes=180")
+    assert response.status_code == 200
+
+    r = ManyForecasts(**response.json())
+    print(r.forecasts[0].forecast_values)
+    # print(r.forecasts[0].forecast_values[0].created_utc)
+    assert len(r.forecasts) == 0
+
+    response = client.get("/v0/GB/solar/gsp/forecast/one_gsp/0?forecast_horizon_minutes=119")
+    assert response.status_code == 200
+
+    r = ManyForecasts(**response.json())
+    assert len(r.forecasts) == 1
+    assert len(r.forecasts[0].forecast_values) == 2
+
+
 def test_read_latest_national(db_session):
     """Check main GB/pv/national route works"""
 
