@@ -45,7 +45,6 @@ async def get_forecasts_for_a_specific_gsp(
     gsp_id: int,
     session: Session = Depends(get_session),
     historic: Optional[bool] = False,
-    forecast_horizon_minutes: Optional[int] = None,
 ) -> Forecast:
     """
     Get one forecast for a specific GSP id.
@@ -55,12 +54,10 @@ async def get_forecasts_for_a_specific_gsp(
     :param gsp_id: The gsp id of the forecast you want
     :param session: sql session (this is done automatically)
     :param historic: There is an option to get historic forecast also.
-    :param forecast_horizon_minutes: Optional forecast horizon in miutes. I.e 35 minutess, means
-        get the lastest foecast made 35 minutes before the target time.
     :return: Forecast object
     """
 
-    logger.info(f"Get forecasts for gsp id {gsp_id}")
+    logger.info(f"Get forecasts for gsp id {gsp_id} with {historic=}")
 
     return get_forecasts_for_a_specific_gsp_from_database(
         session=session,
@@ -83,7 +80,7 @@ async def get_latest_forecasts_for_a_specific_gsp(
         get the latest forecast made 35 minutes before the target time.
     """
 
-    logger.info(f"Get forecasts for gsp id {gsp_id}")
+    logger.info(f"Get forecasts for gsp id {gsp_id} with {forecast_horizon_minutes=}")
 
     return get_latest_forecast_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=gsp_id, forecast_horizon_minutes=forecast_horizon_minutes
@@ -104,7 +101,7 @@ async def get_truths_for_a_specific_gsp(
     The OCF Forecast is trying to predict the PV live 'day-after' value.
     """
 
-    logger.info(f"Get truth values for gsp id {gsp_id} and regime {regime}")
+    logger.info(f"Get PV Live estimates values for gsp id {gsp_id} and regime {regime}")
 
     return get_truth_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=gsp_id, regime=regime
@@ -124,7 +121,7 @@ async def get_all_available_forecasts(
         This will the load the latest forecast value for each target time.
     """
 
-    logger.info("Get forecasts for all gsps")
+    logger.info(f"Get forecasts for all gsps. The options are  {normalize=} and {historic=}")
 
     forecasts = get_forecasts_from_database(session=session, historic=historic)
 
