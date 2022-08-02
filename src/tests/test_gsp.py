@@ -119,20 +119,19 @@ def test_read_latest_all_gsp_forecast_horizon(db_session):
     app.dependency_overrides[get_session] = lambda: db_session
 
     # no forecast are made 3 horus before target time
-    response = client.get("/v0/GB/solar/gsp/forecast/one_gsp/0?forecast_horizon_minutes=180")
+    response = client.get("/v0/GB/solar/gsp/forecast/latest/0?forecast_horizon_minutes=180")
     assert response.status_code == 200
 
-    r = ManyForecasts(**response.json())
-    print(r.forecasts[0].forecast_values)
+    r = [ForecastValue (**f) for f in response.json()]
+
     # print(r.forecasts[0].forecast_values[0].created_utc)
-    assert len(r.forecasts) == 0
+    assert len(r) == 0
 
-    response = client.get("/v0/GB/solar/gsp/forecast/one_gsp/0?forecast_horizon_minutes=119")
+    response = client.get("/v0/GB/solar/gsp/forecast/latest/0?forecast_horizon_minutes=119")
     assert response.status_code == 200
 
     r = ManyForecasts(**response.json())
-    assert len(r.forecasts) == 1
-    assert len(r.forecasts[0].forecast_values) == 2
+    assert len(r) == 2
 
 
 def test_read_latest_national(db_session):
