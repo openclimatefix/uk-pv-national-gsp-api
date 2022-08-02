@@ -101,6 +101,7 @@ def test_read_latest_all_gsp_historic(db_session):
     assert r.forecasts[0].forecast_values[0].expected_power_generation_megawatts <= 1
 
 
+@freeze_time("2022-07-01 10:00:00")
 def test_read_latest_all_gsp_forecast_horizon(db_session):
     """Check main GB/pv/gsp route works"""
 
