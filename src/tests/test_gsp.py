@@ -105,7 +105,7 @@ def test_read_latest_all_gsp_forecast_horizon(db_session):
     """Check main GB/pv/gsp route works"""
 
     t0_datetime_utc = datetime(2022, 7, 1, 12, tzinfo=timezone.utc)
-    created_utc = datetime(2022, 7, 1, 11, tzinfo=timezone.utc)
+    created_utc = datetime(2022, 7, 1, 10, tzinfo=timezone.utc)
 
     forecasts = make_fake_forecasts(
         gsp_ids=list(range(0, 10)),
