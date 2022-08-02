@@ -104,8 +104,8 @@ def test_read_latest_all_gsp_historic(db_session):
 def test_read_latest_all_gsp_forecast_horizon(db_session):
     """Check main GB/pv/gsp route works"""
 
-    t0_datetime_utc = datetime(2022,7,1,12,tzinfo=timezone.utc)
-    created_utc = datetime(2022, 7, 1, 11,tzinfo=timezone.utc)
+    t0_datetime_utc = datetime(2022, 7, 1, 12, tzinfo=timezone.utc)
+    created_utc = datetime(2022, 7, 1, 11, tzinfo=timezone.utc)
 
     forecasts = make_fake_forecasts(
         gsp_ids=list(range(0, 10)),
@@ -122,7 +122,7 @@ def test_read_latest_all_gsp_forecast_horizon(db_session):
     response = client.get("/v0/GB/solar/gsp/forecast/latest/0?forecast_horizon_minutes=180")
     assert response.status_code == 200
 
-    r = [ForecastValue (**f) for f in response.json()]
+    r = [ForecastValue(**f) for f in response.json()]
 
     # print(r.forecasts[0].forecast_values[0].created_utc)
     assert len(r) == 0

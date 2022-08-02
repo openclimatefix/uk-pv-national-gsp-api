@@ -1,6 +1,5 @@
 """ Pytest fixitures for tests """
 import os
-import tempfile
 
 import pytest
 from nowcasting_datamodel.connection import DatabaseConnection
@@ -41,7 +40,6 @@ def db_connection():
 @pytest.fixture(scope="function", autouse=True)
 def db_session(db_connection):
     """Creates a new database session for a test."""
-
 
     connection = db_connection.engine.connect()
     t = connection.begin()
