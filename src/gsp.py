@@ -66,7 +66,6 @@ async def get_forecasts_for_a_specific_gsp(
         session=session,
         gsp_id=gsp_id,
         historic=historic,
-        forecast_horizon_minutes=forecast_horizon_minutes,
     )
 
 

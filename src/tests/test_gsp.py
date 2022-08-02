@@ -130,7 +130,7 @@ def test_read_latest_all_gsp_forecast_horizon(db_session):
     response = client.get("/v0/GB/solar/gsp/forecast/latest/0?forecast_horizon_minutes=119")
     assert response.status_code == 200
 
-    r = ManyForecasts(**response.json())
+    r = [ForecastValue(**f) for f in response.json()]
     assert len(r) == 2
 
 
