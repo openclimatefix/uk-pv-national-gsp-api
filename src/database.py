@@ -107,13 +107,15 @@ def get_forecasts_for_a_specific_gsp_from_database(
 
 
 def get_latest_forecast_values_for_a_specific_gsp_from_database(
-    session: Session, gsp_id
+    session: Session, gsp_id: int, forecast_horizon_minutes: Optional[int] = None
 ) -> List[ForecastValue]:
     """
     Get the forecast values for yesterday and today for one gsp
 
     :param session: sqlalchemy session
     :param gsp_id: gsp id, 0 is national
+    :param forecast_horizon_minutes: Optional forecast horizon in minutes. I.e 35 minutes, means
+        get the latest forecast made 35 minutes before the target time.
     :return: list of latest forecat values
     """
 
@@ -125,6 +127,7 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
         gsp_id=gsp_id,
         start_datetime=yesterday_start_datetime,
         only_return_latest=True,
+        forecast_horizon_minutes=forecast_horizon_minutes,
     )
 
 

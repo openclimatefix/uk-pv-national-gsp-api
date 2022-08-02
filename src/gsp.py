@@ -46,29 +46,44 @@ async def get_forecasts_for_a_specific_gsp(
     session: Session = Depends(get_session),
     historic: Optional[bool] = False,
 ) -> Forecast:
-    """Get one forecast for a specific GSP id
+    """
+    Get one forecast for a specific GSP id.
 
-    There is an option to get historic forecast also.
-    This gets the latest forecast for each target time for yesterday and toady.
+     This gets the latest forecast for each target time for yesterday and toady.
+
+    :param gsp_id: The gsp id of the forecast you want
+    :param session: sql session (this is done automatically)
+    :param historic: There is an option to get historic forecast also.
+    :return: Forecast object
     """
 
-    logger.info(f"Get forecasts for gsp id {gsp_id}")
+    logger.info(f"Get forecasts for gsp id {gsp_id} with {historic=}")
 
     return get_forecasts_for_a_specific_gsp_from_database(
-        session=session, gsp_id=gsp_id, historic=historic
+        session=session,
+        gsp_id=gsp_id,
+        historic=historic,
     )
 
 
 @router.get("/forecast/latest/{gsp_id}", response_model=List[ForecastValue])
 async def get_latest_forecasts_for_a_specific_gsp(
-    gsp_id: int, session: Session = Depends(get_session)
+    gsp_id: int,
+    session: Session = Depends(get_session),
+    forecast_horizon_minutes: Optional[int] = None,
 ) -> List[ForecastValue]:
-    """Get the latest forecasts for a specific GSP id for today and yesterday"""
+    """Get the latest forecasts for a specific GSP id for today and yesterday
 
-    logger.info(f"Get forecasts for gsp id {gsp_id}")
+    :param gsp_id: The gsp id of the forecast you want
+    :param session: sql session (this is done automatically)
+    :param forecast_horizon_minutes: Optional forecast horizon in minutes. I.e 35 minutes, means
+        get the latest forecast made 35 minutes before the target time.
+    """
+
+    logger.info(f"Get forecasts for gsp id {gsp_id} with {forecast_horizon_minutes=}")
 
     return get_latest_forecast_values_for_a_specific_gsp_from_database(
-        session=session, gsp_id=gsp_id
+        session=session, gsp_id=gsp_id, forecast_horizon_minutes=forecast_horizon_minutes
     )
 
 
@@ -86,7 +101,7 @@ async def get_truths_for_a_specific_gsp(
     The OCF Forecast is trying to predict the PV live 'day-after' value.
     """
 
-    logger.info(f"Get truth values for gsp id {gsp_id} and regime {regime}")
+    logger.info(f"Get PV Live estimates values for gsp id {gsp_id} and regime {regime}")
 
     return get_truth_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=gsp_id, regime=regime
@@ -106,7 +121,7 @@ async def get_all_available_forecasts(
         This will the load the latest forecast value for each target time.
     """
 
-    logger.info("Get forecasts for all gsps")
+    logger.info(f"Get forecasts for all gsps. The options are  {normalize=} and {historic=}")
 
     forecasts = get_forecasts_from_database(session=session, historic=historic)
 

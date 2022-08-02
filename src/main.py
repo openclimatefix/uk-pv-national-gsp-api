@@ -12,7 +12,10 @@ from gsp import router as gsp_router
 from status import router as status_router
 
 # from pv import router as pv_router
-
+logging.basicConfig(
+    level=getattr(logging, os.getenv("LOGLEVEL", "DEBUG")),
+    format="[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s",
+)
 logger = logging.getLogger(__name__)
 
 version = "0.2.18"

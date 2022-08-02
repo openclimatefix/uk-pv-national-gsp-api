@@ -40,7 +40,10 @@ cd src && uvicorn main:app --reload
 
 To run local pytests you need to
 1. add `src` to python path `export PYTHONPATH=$PYTHONPATH:./src`
-2. run pytests: `pytest`
+2. You will need to set `export DB_URL='sqlite:///test.db`
+3. run pytests: `pytest`, but
+'src/tests/test_gsp.py::test_read_latest_all_gsp_forecast_horizon'
+will fail as it needs a postgres database
 
 ## Docker
 
