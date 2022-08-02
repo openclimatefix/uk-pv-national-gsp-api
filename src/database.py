@@ -107,8 +107,7 @@ def get_forecasts_for_a_specific_gsp_from_database(
 
 
 def get_latest_forecast_values_for_a_specific_gsp_from_database(
-    session: Session, gsp_id:int,
-    forecast_horizon_minutes: Optional[int] = None
+    session: Session, gsp_id: int, forecast_horizon_minutes: Optional[int] = None
 ) -> List[ForecastValue]:
     """
     Get the forecast values for yesterday and today for one gsp
@@ -128,7 +127,7 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
         gsp_id=gsp_id,
         start_datetime=yesterday_start_datetime,
         only_return_latest=True,
-        forecast_horizon_minutes=forecast_horizon_minutes
+        forecast_horizon_minutes=forecast_horizon_minutes,
     )
 
 
