@@ -67,7 +67,6 @@ app.include_router(status_router, prefix=f"{v0_route}")
 # app.include_router(pv_router, prefix=f"{v0_route}/pv")
 
 
-
 @app.get("/")
 async def get_api_information():
     """Get information about the API itself"""
