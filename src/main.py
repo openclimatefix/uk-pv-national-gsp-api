@@ -1,20 +1,23 @@
 """ Main FastAPI app """
 import logging
 import os
+import time
 from datetime import timedelta
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
 from gsp import router as gsp_router
-from pv import router as pv_router
+from status import router as status_router
+
+# from pv import router as pv_router
 
 logger = logging.getLogger(__name__)
 
-version = "0.1.24"
+version = "0.2.18"
 description = """
-The Nowcasting API is still under development. It only returns zeros for now.
+The Nowcasting API is still under development.
 """
 app = FastAPI(
     title="Nowcasting API",
@@ -40,6 +43,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    """Add process time into response object header"""
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = str(time.time() - start_time)
+    logger.debug(f"Process Time {process_time}")
+    response.headers["X-Process-Time"] = process_time
+    return response
+
+
 thirty_minutes = timedelta(minutes=30)
 
 
@@ -48,7 +63,9 @@ v0_route = "/v0/GB/solar"
 
 
 app.include_router(gsp_router, prefix=f"{v0_route}/gsp")
-app.include_router(pv_router, prefix=f"{v0_route}/pv")
+app.include_router(status_router, prefix=f"{v0_route}")
+# app.include_router(pv_router, prefix=f"{v0_route}/pv")
+
 
 
 @app.get("/")
