@@ -11,6 +11,7 @@ from nowcasting_datamodel.fake import (
 from nowcasting_datamodel.models import (
     Forecast,
     ForecastValue,
+    ForecastValueLatest,
     GSPYield,
     Location,
     LocationSQL,
@@ -200,27 +201,27 @@ def test_read_truth_one_gsp(db_session):
 def test_read_forecast_one_gsp(db_session):
     """Check main GB/pv/gsp/{gsp_id} route works"""
 
-    forecast_value_1 = ForecastValue(
-        target_time=datetime(2022, 6, 2), expected_power_generation_megawatts=1
+    forecast_value_1 = ForecastValueLatest(
+        target_time=datetime(2022, 6, 2), expected_power_generation_megawatts=1, gsp_id=1
     )
     forecast_value_1_sql = forecast_value_1.to_orm()
 
-    forecast_value_2 = ForecastValue(
-        target_time=datetime(2022, 6, 1, 1), expected_power_generation_megawatts=2
+    forecast_value_2 = ForecastValueLatest(
+        target_time=datetime(2022, 6, 1, 1), expected_power_generation_megawatts=2, gsp_id=1
     )
     forecast_value_2_sql = forecast_value_2.to_orm()
 
-    forecast_value_3 = ForecastValue(
-        target_time=datetime(2022, 6, 1), expected_power_generation_megawatts=3
+    forecast_value_3 = ForecastValueLatest(
+        target_time=datetime(2022, 6, 1), expected_power_generation_megawatts=3, gsp_id=1
     )
     forecast_value_3_sql = forecast_value_3.to_orm()
 
     forecast = make_fake_forecast(
         gsp_id=1, session=db_session, t0_datetime_utc=datetime(2020, 1, 1)
     )
-    forecast.forecast_values.append(forecast_value_1_sql)
-    forecast.forecast_values.append(forecast_value_2_sql)
-    forecast.forecast_values.append(forecast_value_3_sql)
+    forecast.forecast_values_latest.append(forecast_value_1_sql)
+    forecast.forecast_values_latest.append(forecast_value_2_sql)
+    forecast.forecast_values_latest.append(forecast_value_3_sql)
 
     # add to database
     db_session.add_all([forecast])
