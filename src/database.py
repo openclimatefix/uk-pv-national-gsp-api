@@ -124,9 +124,9 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
     yesterday_start_datetime = datetime.combine(yesterday_start_datetime, datetime.min.time())
 
     if forecast_horizon_minutes is None:
-        return get_forecast_values_latest(session=session,
-            gsp_id=gsp_id,
-            start_datetime=yesterday_start_datetime)
+        return get_forecast_values_latest(
+            session=session, gsp_id=gsp_id, start_datetime=yesterday_start_datetime
+        )
 
     return get_forecast_values(
         session=session,
