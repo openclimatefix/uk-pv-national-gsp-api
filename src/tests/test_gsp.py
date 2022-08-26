@@ -33,7 +33,7 @@ def test_read_latest_one_gsp(db_session):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = client.get("/v0/GB/solar/gsp/forecast/one_gsp/1")
+    response = client.get("/v0/GB/solar/forecast/1")
     assert response.status_code == 200
 
     _ = Forecast(**response.json())
@@ -51,7 +51,7 @@ def test_read_latest_all_gsp(db_session):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = client.get("/v0/GB/solar/gsp/forecast/all")
+    response = client.get("/v0/GB/solar/forecast/all")
     assert response.status_code == 200
 
     r = ManyForecasts(**response.json())
@@ -71,7 +71,7 @@ def test_read_latest_all_gsp_normalized(db_session):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = client.get("/v0/GB/solar/gsp/forecast/all/?normalize=True")
+    response = client.get("/v0/GB/solar/forecast/all/?normalize=True")
     assert response.status_code == 200
 
     r = ManyForecasts(**response.json())
@@ -92,7 +92,7 @@ def test_read_latest_all_gsp_historic(db_session):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = client.get("/v0/GB/solar/gsp/forecast/all/?historic=True")
+    response = client.get("/v0/GB/solar/forecast/all/?historic=True")
     assert response.status_code == 200
 
     r = ManyForecasts(**response.json())
@@ -120,7 +120,7 @@ def test_read_latest_all_gsp_forecast_horizon(db_session):
     app.dependency_overrides[get_session] = lambda: db_session
 
     # no forecast are made 3 horus before target time
-    response = client.get("/v0/GB/solar/gsp/forecast/latest/0?forecast_horizon_minutes=180")
+    response = client.get("/v0/GB/solar/forecast/forecast_values/0?forecast_horizon_minutes=180")
     assert response.status_code == 200
 
     r = [ForecastValue(**f) for f in response.json()]
@@ -128,7 +128,7 @@ def test_read_latest_all_gsp_forecast_horizon(db_session):
     # print(r.forecasts[0].forecast_values[0].created_utc)
     assert len(r) == 0
 
-    response = client.get("/v0/GB/solar/gsp/forecast/latest/0?forecast_horizon_minutes=119")
+    response = client.get("/v0/GB/solar/forecast/forecast_values/0?forecast_horizon_minutes=119")
     assert response.status_code == 200
 
     r = [ForecastValue(**f) for f in response.json()]
@@ -143,7 +143,7 @@ def test_read_latest_national(db_session):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = client.get("/v0/GB/solar/gsp/forecast/national")
+    response = client.get("/v0/GB/solar/forecast/national")
     assert response.status_code == 200
 
     _ = Forecast(**response.json())
@@ -188,7 +188,7 @@ def test_read_truth_one_gsp(db_session):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = client.get("/v0/GB/solar/gsp/pvlive/one_gsp/1")
+    response = client.get("/v0/GB/solar/pvlive/1")
     assert response.status_code == 200
 
     r_json = response.json()
@@ -227,7 +227,7 @@ def test_read_forecast_one_gsp(db_session):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = client.get("/v0/GB/solar/gsp/forecast/latest/1")
+    response = client.get("/v0/GB/solar/forecast/forecast_values/1")
     assert response.status_code == 200
 
     r_json = response.json()
