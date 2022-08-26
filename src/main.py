@@ -8,10 +8,10 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
-from forecast import router as forecast_router
-from pvlive import router as pvlive_router
-from gsp import router as gsp_router
-from status import router as status_router
+from routes.forecast import router as forecast_router
+from routes.pvlive import router as pvlive_router
+from routes.gsp import router as gsp_router
+from routes.status import router as status_router
 
 # from pv import router as pv_router
 logging.basicConfig(
