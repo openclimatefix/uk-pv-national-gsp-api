@@ -8,6 +8,8 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
+from forecast import router as forecast_router
+from pvlive import router as pvlive_router
 from gsp import router as gsp_router
 from status import router as status_router
 
@@ -64,7 +66,8 @@ thirty_minutes = timedelta(minutes=30)
 # Dependency
 v0_route = "/v0/GB/solar"
 
-
+app.include_router(forecast_router, prefix=f"{v0_route}/forecast")
+app.include_router(pvlive_router, prefix=f"{v0_route}/pvlive")
 app.include_router(gsp_router, prefix=f"{v0_route}/gsp")
 app.include_router(status_router, prefix=f"{v0_route}")
 # app.include_router(pv_router, prefix=f"{v0_route}/pv")
