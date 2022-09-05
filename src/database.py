@@ -17,6 +17,7 @@ from nowcasting_datamodel.read.read import (
     get_all_gsp_ids_latest_forecast,
     get_all_locations,
     get_forecast_values,
+    get_forecast_values_latest,
     get_latest_forecast,
     get_latest_national_forecast,
     get_latest_status,
@@ -121,6 +122,11 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
 
     yesterday_start_datetime = datetime.now(tz=timezone.utc).date() - timedelta(days=1)
     yesterday_start_datetime = datetime.combine(yesterday_start_datetime, datetime.min.time())
+
+    if forecast_horizon_minutes is None:
+        return get_forecast_values_latest(
+            session=session, gsp_id=gsp_id, start_datetime=yesterday_start_datetime
+        )
 
     return get_forecast_values(
         session=session,
