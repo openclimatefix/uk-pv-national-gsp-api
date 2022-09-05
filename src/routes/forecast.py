@@ -98,6 +98,3 @@ async def get_latest_forecasts_for_a_specific_gsp(
     return get_latest_forecast_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=gsp_id, forecast_horizon_minutes=forecast_horizon_minutes
     )
-
-
-

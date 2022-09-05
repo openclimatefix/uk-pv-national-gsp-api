@@ -36,4 +36,3 @@ async def get_truths_for_a_specific_gsp(
     return get_truth_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=gsp_id, regime=regime
     )
-
