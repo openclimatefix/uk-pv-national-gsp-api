@@ -50,7 +50,7 @@ def get_gsp_boundaries_from_eso_wgs84() -> gpd.GeoDataFrame:
 async def get_forecasts_for_a_specific_gsp(
     gsp_id: int,
     session: Session = Depends(get_session),
-    user: Auth0User = Security(get_user(), scopes=["read:gsp"]),
+    user: Auth0User = Security(get_user()),
     historic: Optional[bool] = False,
 ) -> Forecast:
     """
@@ -64,7 +64,7 @@ async def get_forecasts_for_a_specific_gsp(
     :return: Forecast object
     """
 
-    logger.info(f"Get forecasts for gsp id {gsp_id} with {historic=}")
+    logger.info(f"Get forecasts for gsp id {gsp_id} with {historic=} for user {user}")
 
     return get_forecasts_for_a_specific_gsp_from_database(
         session=session,
@@ -82,7 +82,7 @@ async def get_latest_forecasts_for_a_specific_gsp(
     gsp_id: int,
     session: Session = Depends(get_session),
     forecast_horizon_minutes: Optional[int] = None,
-    user: Auth0User = Security(get_user(), scopes=["read:gsp"]),
+    user: Auth0User = Security(get_user()),
 ) -> List[ForecastValue]:
     """Get the latest forecasts for a specific GSP id for today and yesterday
 
@@ -109,7 +109,7 @@ async def get_truths_for_a_specific_gsp(
     gsp_id: int,
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
-    user: Auth0User = Security(get_user(), scopes=["read:gsp"]),
+    user: Auth0User = Security(get_user()),
 ) -> List[GSPYield]:
     """Get PV live values for a specific GSP id, for yesterday and today
 
@@ -138,7 +138,7 @@ async def get_all_available_forecasts(
     normalize: Optional[bool] = False,
     historic: Optional[bool] = False,
     session: Session = Depends(get_session),
-    user: Auth0User = Security(get_user(), scopes=["read:gsp"]),
+    user: Auth0User = Security(get_user()),
 ) -> ManyForecasts:
     """Get the latest information for all available forecasts
 
@@ -167,7 +167,7 @@ async def get_all_available_forecasts(
 )
 async def get_nationally_aggregated_forecasts(
     session: Session = Depends(get_session),
-    user: Auth0User = Security(get_user(), scopes=["read:gsp"]),
+    user: Auth0User = Security(get_user()),
 ) -> Forecast:
     """Get an aggregated forecast at the national level"""
 
@@ -176,7 +176,7 @@ async def get_nationally_aggregated_forecasts(
 
 
 @router.get("/gsp_boundaries", dependencies=[Depends(get_auth_implicit_scheme())])
-async def get_gsp_boundaries(user: Auth0User = Security(get_user(), scopes=["read:gsp"])) -> dict:
+async def get_gsp_boundaries(user: Auth0User = Security(get_user())) -> dict:
     """Get one gsp boundary for a specific GSP id
 
     This is a wrapper around the dataset in
@@ -202,7 +202,7 @@ async def get_gsp_boundaries(user: Auth0User = Security(get_user(), scopes=["rea
 async def get_systems(
     session: Session = Depends(get_session),
     gsp_id: Optional[int] = None,
-    user: Auth0User = Security(get_user(), scopes=["read:gsp"]),
+    user: Auth0User = Security(get_user()),
 ) -> List[Location]:
     """
     Get gsp system details.
