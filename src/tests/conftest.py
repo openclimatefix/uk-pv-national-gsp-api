@@ -58,6 +58,7 @@ def db_session(db_connection):
         t.rollback()
         connection.close()
 
+
 @pytest.fixture()
 def api_client(db_session):
     """Get API test client
@@ -71,4 +72,3 @@ def api_client(db_session):
     app.dependency_overrides[get_session] = lambda: db_session
 
     return client
-
