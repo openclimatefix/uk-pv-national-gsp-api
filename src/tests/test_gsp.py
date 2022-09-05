@@ -24,7 +24,6 @@ from main import app
 
 @freeze_time("2022-01-01")
 def test_read_latest_one_gsp(db_session, api_client):
-
     """Check main GB/pv/gsp/{gsp_id} route works"""
 
     forecasts = make_fake_forecasts(gsp_ids=list(range(0, 10)), session=db_session)
