@@ -1,6 +1,5 @@
 """ Pytest fixitures for tests """
 import os
-import tempfile
 
 import pytest
 from fastapi.testclient import TestClient
@@ -26,22 +25,29 @@ def forecasts(db_session):
 @pytest.fixture
 def db_connection():
     """Pytest fixture for a database connection"""
-    with tempfile.NamedTemporaryFile(suffix="db") as tmp:
-        # set url option to not check same thread, this solves an error seen in testing
+    # with tempfile.NamedTemporaryFile(suffix="db") as tmp:
+    #     set url option to not check same thread, this solves an error seen in testing
 
-        url = f"sqlite:///{tmp.name}.db?check_same_thread=False"
-        os.environ["DB_URL"] = url
-        os.environ["DB_URL_PV"] = url
-        connection = DatabaseConnection(url=url)
-        Base_Forecast.metadata.create_all(connection.engine)
-        Base_PV.metadata.create_all(connection.engine)
+    # url = f"sqlite:///{tmp.name}.db?check_same_thread=False"
+    # os.environ["DB_URL"] = url
+    # os.environ["DB_URL_PV"] = url
+    url = os.environ["DB_URL"]
+    connection = DatabaseConnection(url=url)
+    Base_Forecast.metadata.create_all(connection.engine)
+    Base_PV.metadata.create_all(connection.engine)
 
-        yield connection
+    yield connection
+
+    Base_Forecast.metadata.drop_all(connection.engine)
+    Base_PV.metadata.drop_all(connection.engine)
 
 
 @pytest.fixture(scope="function", autouse=True)
 def db_session(db_connection):
     """Creates a new database session for a test."""
+
+    connection = db_connection.engine.connect()
+    t = connection.begin()
 
     with db_connection.get_session() as s:
         s.begin()
@@ -49,6 +55,8 @@ def db_session(db_connection):
 
         s.rollback()
 
+        t.rollback()
+        connection.close()
 
 @pytest.fixture()
 def api_client(db_session):
@@ -63,3 +71,4 @@ def api_client(db_session):
     app.dependency_overrides[get_session] = lambda: db_session
 
     return client
+
