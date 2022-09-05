@@ -22,7 +22,6 @@ def get_auth():
     return Auth0(
         domain=domain,
         api_audience=api_audience,
-        scopes={"read:pv": "Read PV data", "read:gsp": "Read GSP forecasts and truths"},
     )
 
 
