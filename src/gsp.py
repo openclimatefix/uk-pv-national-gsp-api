@@ -92,8 +92,9 @@ async def get_latest_forecasts_for_a_specific_gsp(
         get the latest forecast made 35 minutes before the target time.
     """
 
-    logger.info(f"Get forecasts for gsp id {gsp_id} with {forecast_horizon_minutes=} for user {user}")
-
+    logger.info(
+        f"Get forecasts for gsp id {gsp_id} with {forecast_horizon_minutes=} for user {user}"
+    )
 
     return get_latest_forecast_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=gsp_id, forecast_horizon_minutes=forecast_horizon_minutes
@@ -121,8 +122,9 @@ async def get_truths_for_a_specific_gsp(
     The OCF Forecast is trying to predict the PV live 'day-after' value.
     """
 
-    logger.info(f"Get PV Live estimates values for gsp id {gsp_id} and regime {regime} for user {user}")
-
+    logger.info(
+        f"Get PV Live estimates values for gsp id {gsp_id} and regime {regime} for user {user}"
+    )
 
     return get_truth_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=gsp_id, regime=regime
@@ -147,8 +149,9 @@ async def get_all_available_forecasts(
         This will the load the latest forecast value for each target time.
     """
 
-    logger.info(f"Get forecasts for all gsps. The options are  {normalize=} and {historic=} for user {user}")
-
+    logger.info(
+        f"Get forecasts for all gsps. The options are  {normalize=} and {historic=} for user {user}"
+    )
 
     forecasts = get_forecasts_from_database(session=session, historic=historic)
 
