@@ -18,7 +18,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-version = "0.2.21"
+version = "0.2.22"
 description = """
 The Nowcasting API is still under development.
 """
