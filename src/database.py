@@ -45,7 +45,7 @@ def get_latest_status_from_database(session: Session) -> Status:
 def get_forecasts_from_database(
     session: Session, historic: Optional[bool] = False
 ) -> ManyForecasts:
-    """Get forecasts from database for all GSPs"""
+    """# Get forecasts from database for all GSPs"""
     # get the latest forecast for all gsps.
 
     if historic:

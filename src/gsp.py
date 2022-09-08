@@ -47,14 +47,13 @@ async def get_forecasts_for_a_specific_gsp(
     historic: Optional[bool] = False,
 ) -> Forecast:
     """
-    Get one forecast for a specific GSP id.
-
-     This gets the latest forecast for each target time for yesterday and toady.
-
-    :param gsp_id: The gsp id of the forecast you want
-    :param session: sql session (this is done automatically)
-    :param historic: There is an option to get historic forecast also.
-    :return: Forecast object
+    # Get one forecast for a specific GSP id.
+    ### Get the PV forecast for each target time (30-minute intervals) for yesterday and today.
+    ## Metadata for the forecast object:
+    - gsp_id: The gsp id of the forecast you want
+    - session: sql session (this is done automatically)
+    - historic: There is an option to get historic forecast also.
+    - Forecast object
     """
 
     logger.info(f"Get forecasts for gsp id {gsp_id} with {historic=}")
@@ -92,8 +91,7 @@ async def get_truths_for_a_specific_gsp(
     gsp_id: int, regime: Optional[str] = None, session: Session = Depends(get_session)
 ) -> List[GSPYield]:
     """Get PV live values for a specific GSP id, for yesterday and today
-
-    See https://www.solar.sheffield.ac.uk/pvlive/ for more details.
+    See [Sheffield Solar PV_Live](https://www.solar.sheffield.ac.uk/pvlive/) for more details.
     Regime can "in-day" or "day-after",
     as new values are calculated around midnight when more data is available.
     If regime is not specific, the latest gsp yield is loaded.

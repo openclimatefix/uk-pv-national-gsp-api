@@ -20,7 +20,20 @@ logger = logging.getLogger(__name__)
 
 version = "0.2.22"
 description = """
-# The Nowcasting API is still under development.
+As part of Open Climate Fix’s [open source project](https://github.com/openclimatefix), the Nowcasting API is still under development.
+
+#### General Overview
+
+__Nowcasting__ essentially means __forecasting for the next few hours__. 
+OCF has built a predictive model that nowcasts solar photovoltaic (PV) energy input for the UK’s National Grid ESO (electricity system operator). National Grid runs more than 300 grid supply points (GSP’s), which are regionally located throughout the country. Every 30 minutes at the level of the GSP, OCF's Nowcasting App synthesises live PV data, numeric weather predictions (nwp), satellite data (looking at cloud cover), as well as GSP data to create a forecast for how many megawatts of PV energy will likely be generated at a given GSP. These incredibly accurate, short-term forecasts allow National Grid to reduce the amount of spinning reserves they need to run, ultimately reducing carbon emmisions. 
+
+In order to get started with reading the API’s forecast objects, it might be helpful to know that GSP's are referenced in the following ways:  gspId (ex. 122); gspName (ex. FIDF_1); regionName (ex. Fiddlers Ferry). The API provides information on when input data was last updated as well as a specific GSP's installed PV megawatt capacity. 
+
+You'll find more detailed information for each route in the documentation below. 
+
+If you have any questions, please don't hesitate to get in touch. And feel free to join us!
+
+
 """
 app = FastAPI(
     title="Nowcasting API",
@@ -72,8 +85,7 @@ app.include_router(status_router, prefix=f"{v0_route}")
 
 @app.get("/")
 async def get_api_information():
-    """Get information about the API itself Get information about the API
-    information about the api
+    """Get information about the API itself 
     """
 
     logger.info("Route / has be called")
