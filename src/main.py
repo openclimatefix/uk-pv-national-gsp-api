@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 version = "0.2.22"
 description = """
-The Nowcasting API is still under development.
+# The Nowcasting API is still under development.
 """
 app = FastAPI(
     title="Nowcasting API",
@@ -72,7 +72,9 @@ app.include_router(status_router, prefix=f"{v0_route}")
 
 @app.get("/")
 async def get_api_information():
-    """Get information about the API itself"""
+    """Get information about the API itself Get information about the API
+    information about the api
+    """
 
     logger.info("Route / has be called")
 
