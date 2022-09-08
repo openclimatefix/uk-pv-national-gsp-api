@@ -45,7 +45,7 @@ def get_latest_status_from_database(session: Session) -> Status:
 def get_forecasts_from_database(
     session: Session, historic: Optional[bool] = False
 ) -> ManyForecasts:
-    """# Get forecasts from database for all GSPs"""
+    """Get forecasts from database for all GSPs"""
     # get the latest forecast for all gsps.
 
     if historic:
@@ -86,7 +86,7 @@ def get_forecasts_from_database(
 def get_forecasts_for_a_specific_gsp_from_database(
     session: Session, gsp_id, historic: Optional[bool] = False
 ) -> Forecast:
-    """Get forecasts for on GSP from database"""
+    """Get forecasts for one GSP from database"""
 
     yesterday_start_datetime = datetime.now(tz=timezone.utc).date() - timedelta(days=1)
     yesterday_start_datetime = datetime.combine(yesterday_start_datetime, datetime.min.time())
