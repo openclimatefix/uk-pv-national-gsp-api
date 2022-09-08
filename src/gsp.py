@@ -47,16 +47,14 @@ async def get_forecasts_for_a_specific_gsp(
     historic: Optional[bool] = False,
 ) -> Forecast:
     """
-    ### Get one forecast for a specific GSP with gsp_id.
+    ### Get one forecast for a specific GSP using
     
     The forecast object is returned with the expected megawatt generation (expectedPowerGenerationMegawatts) for the next 6-7 hours at every 30-minute interval (targetTime). Setting history to true on this route will return targetTime and expectedPowerGenerationMegawatt readings from the day before for the given GSP. 
 
     
-    (below is info from the original description)
-    - gsp_id: The gsp id of the forecast you want
-    - session: sql session (this is done automatically)
-    - historic: There is an option to get historic forecast also.
-    - Forecast object
+    #### Parameters
+    - gsp_id: gsp_id of the desired forecast
+    - historic: set to true to get the previous day's forecasts and false for just today's forecast
     """
 
     logger.info(f"Get forecasts for gsp id {gsp_id} with {historic=}")
@@ -74,12 +72,15 @@ async def get_latest_forecasts_for_a_specific_gsp(
     session: Session = Depends(get_session),
     forecast_horizon_minutes: Optional[int] = None,
 ) -> List[ForecastValue]:
-    """Get the latest forecasts for a specific GSP id for today and yesterday
+    """### Gets the latest forecasts for a specific GSP for today and yesterday
 
-    :param gsp_id: The gsp id of the forecast you want
-    :param session: sql session (this is done automatically)
-    :param forecast_horizon_minutes: Optional forecast horizon in minutes. I.e 35 minutes, means
-        get the latest forecast made 35 minutes before the target time.
+    This route returns a simplified forecast object with only targetTimes and expectedPowerGenerationMegawattsin megawatts at 30-minute intervals for the given GSP. 
+    The __forecast_horizon_minutes__ parameter can be used to retrieves the latest forecast a given set of minutes before the target time. 
+
+    #### Parameters    
+    - gsp_id: gsp_id of the requested forecast
+    - forecast_horizon_minutes: optional forecast horizon in minutes (ex. 35 returns
+    the latest forecast made 35 minutes before the target time)
     """
 
     logger.info(f"Get forecasts for gsp id {gsp_id} with {forecast_horizon_minutes=}")
@@ -93,13 +94,27 @@ async def get_latest_forecasts_for_a_specific_gsp(
 async def get_truths_for_a_specific_gsp(
     gsp_id: int, regime: Optional[str] = None, session: Session = Depends(get_session)
 ) -> List[GSPYield]:
-    """Get PV live values for a specific GSP id, for yesterday and today
-    See [Sheffield Solar PV_Live](https://www.solar.sheffield.ac.uk/pvlive/) for more details.
-    Regime can "in-day" or "day-after",
-    as new values are calculated around midnight when more data is available.
-    If regime is not specific, the latest gsp yield is loaded.
 
-    The OCF Forecast is trying to predict the PV live 'day-after' value.
+    """### Get PV_Live values for a specific GSP for yesterday and today
+
+    PV_Live is Sheffield's API that pulls live PV data. Check out [Sheffield Solar PV_Live](https://www.solar.sheffield.ac.uk/pvlive/) for more details. 
+
+    The OCF Forecast is trying to predict the PV_Live 'day-after' value.
+    
+    This route has the __regime__ parameter that lets you look at values __in-day__ or __day-after__, which includes updated values that are calculated around midnight when more data is available. __Day-after__ values are updated i__in-day__ values. __In-day__ gives you all the readings from the day before up to the most recent reported gsp yield. __Day_after__ reports all the readings from the previous day. For example, a day-after regime request made on 08/09/2022 returns updated gsp yield for 07/09/2022. The 08/09/2022 __day-after__ values then become available at midnight on 09/09/2022. 
+    
+    If regime is not specificied, the most up-to-date gsp yield is returned. 
+
+
+    #### Parameters    
+    - gsp_id: gsp_id of the requested forecast
+    - regime: can choose __in-day__ or __day-after__
+
+    #### Metadata 
+    - datetimeUtc
+    - solarGenerationKw
+    - regime
+    - gsp
     """
 
     logger.info(f"Get PV Live estimates values for gsp id {gsp_id} and regime {regime}")
@@ -115,11 +130,16 @@ async def get_all_available_forecasts(
     historic: Optional[bool] = False,
     session: Session = Depends(get_session),
 ) -> ManyForecasts:
-    """Get the latest information for all available forecasts
+    """### Get the latest information for all available forecasts for all GSP's
 
-    There is an option to normalize the forecasts by gsp capacity
-    There is also an option to pull historic data.
-        This will the load the latest forecast value for each target time.
+    This route returns forecasts from all available GSP's with an option to normalize the forecasts by GSP installed capacity (installedCapacityMw). 
+
+    There is also the option to pull forecast history from yesterday. 
+
+
+    #### Parameters    
+    - normalize: boolean based on forecasts by GSP installed megawatt capacity 
+    - historic: boolean => TRUE returns the forecasts of yesterday along with today's forecasts
     """
 
     logger.info(f"Get forecasts for all gsps. The options are  {normalize=} and {historic=}")
@@ -136,7 +156,11 @@ async def get_all_available_forecasts(
 
 @router.get("/forecast/national", response_model=Forecast)
 async def get_nationally_aggregated_forecasts(session: Session = Depends(get_session)) -> Forecast:
-    """Get an aggregated forecast at the national level"""
+    """### Returns a national aggregate solar PV energy forecast 
+    
+    This route aggregrates data from all GSP forecasts and creates a 6-7 hour nowcast of national solar PV energy generation(expectedPowerGenerationMegawatts) in 30-minute intervals (timeTarget). 
+    
+    """
 
     logger.debug("Get national forecasts")
     return get_latest_national_forecast_from_database(session=session)
@@ -144,12 +168,14 @@ async def get_nationally_aggregated_forecasts(session: Session = Depends(get_ses
 
 @router.get("/gsp_boundaries")
 async def get_gsp_boundaries() -> dict:
-    """Get one gsp boundary for a specific GSP id
+    """### Get one GSP boundary for a specific GSP 
 
-    This is a wrapper around the dataset in
-    'https://data.nationalgrideso.com/system/gis-boundaries-for-gb-grid-supply-points'
+    This route is still under construction...
 
-    The returned object is in EPSG:4326 i.e latitude and longitude
+    [This is a wrapper around the dataset](https://data.nationalgrideso.com/system/gis-boundaries-for-gb-grid-supply-points).
+
+    Returns an object that is in EPSG:4326 (ie. latitude & longitude coordinates)
+
     """
 
     logger.info("Getting all GSP boundaries")
@@ -166,9 +192,24 @@ async def get_systems(
     session: Session = Depends(get_session), gsp_id: Optional[int] = None
 ) -> List[Location]:
     """
-    Get gsp system details.
+    ### Get system details for a single GSP or all GSP's
 
-    Provide gsp_id to just return one gsp system, otherwise all are returned
+    Returns an object with the system details of a given GSP using the gsp_id parameter. This object is the same as the initial object returned by the __Get Forecasts for a Specific GSP__ request. 
+    
+    Provide one gsp_id to return system details for that GSP, otherwise details for ALL grid systems will be returned. 
+
+    #### Parameters
+    - gsp_id: gsp_id of the requested system
+    - NB: If no parameter is entered, system details for all 300+ GSP's are returned. 
+
+    #### Metadata
+    - label
+    - gspId 
+    - gspName
+    - gspGroup
+    - regtionName
+    - installedCapacityMw
+    - rmMode
     """
 
     logger.info(f"Get GSP systems for {gsp_id=}")

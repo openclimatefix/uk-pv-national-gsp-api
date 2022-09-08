@@ -15,7 +15,11 @@ router = APIRouter()
 
 @router.get("/status", response_model=Status)
 async def get_status(session: Session = Depends(get_session)) -> Status:
-    """Get the status of the solar forecasts"""
+    """### Get status for solar forecasts
+
+    (might be good to explain this a bit more)
+
+     """
 
     logger.debug("Get status")
     return get_latest_status_from_database(session=session)

@@ -85,7 +85,16 @@ app.include_router(status_router, prefix=f"{v0_route}")
 
 @app.get("/")
 async def get_api_information():
-    """Get information about the API itself 
+    """### Get basic information about the Nowcasting API
+    
+    This returns an object containing the basic information about the Nowcasting API.  
+
+    #### Metadata
+    - title
+    - version
+    - description
+    - documentation
+
     """
 
     logger.info("Route / has be called")
