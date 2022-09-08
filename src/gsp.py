@@ -47,9 +47,12 @@ async def get_forecasts_for_a_specific_gsp(
     historic: Optional[bool] = False,
 ) -> Forecast:
     """
-    # Get one forecast for a specific GSP id.
-    ### Get the PV forecast for each target time (30-minute intervals) for yesterday and today.
-    ## Metadata for the forecast object:
+    ### Get one forecast for a specific GSP with gsp_id.
+    
+    The forecast object is returned with the expected megawatt generation (expectedPowerGenerationMegawatts) for the next 6-7 hours at every 30-minute interval (targetTime). Setting history to true on this route will return targetTime and expectedPowerGenerationMegawatt readings from the day before for the given GSP. 
+
+    
+    (below is info from the original description)
     - gsp_id: The gsp id of the forecast you want
     - session: sql session (this is done automatically)
     - historic: There is an option to get historic forecast also.

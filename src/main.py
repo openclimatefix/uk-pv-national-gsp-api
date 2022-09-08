@@ -31,7 +31,7 @@ In order to get started with reading the API’s forecast objects, it might be h
 
 You'll find more detailed information for each route in the documentation below. 
 
-If you have any questions, please don't hesitate to get in touch. And feel free to join us!
+If you have any questions, please don't hesitate to get in touch. And if you're interested in contributing to our open source project feel free to join us!
 
 
 """
