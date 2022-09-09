@@ -20,5 +20,5 @@ services:
     ports:
       - 80:80
     environment:
-      - DB_URL=postgresql://postgres:postgres@postgres_forecast:5432/postgres
-      - DB_URL_PV=postgresql://postgres:postgres@postgres_forecast:5432/postgres
+      - DB_URL=sqlite:///test.db
+      - DB_URL_PV=sqlite:///test.db
