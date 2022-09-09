@@ -19,7 +19,7 @@ async def get_status(session: Session = Depends(get_session)) -> Status:
 
     (might be good to explain this a bit more)
 
-     """
+    """
 
     logger.debug("Get status")
     return get_latest_status_from_database(session=session)
