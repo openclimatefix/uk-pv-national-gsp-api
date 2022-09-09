@@ -52,7 +52,8 @@ async def get_forecasts_for_a_specific_gsp(
 
     The forecast object is returned with expected megawatt generation at a specific GSP
     for the upcoming 8 hours at every 30-minute interval (targetTime).
-    Setting history to TRUE on this route will return readings from yesterday and today for the given GSP.
+    Setting history to TRUE on this route will return readings from yesterday and today
+    for the given GSP.
 
     Please refer to the __Forecast__ and __ForecastValue__ schemas below for metadata definitions.
 
@@ -152,18 +153,23 @@ async def get_all_available_forecasts(
 
     See __Forecast__ and __ForecastValue__ schema for metadata details.
 
-    This request may take a longer time to load because a lot of data is being pulled from the database.
+    This request may take a longer time to load because a lot of data is being pulled from the
+    database.
 
     This route returns forecasts objects from all available GSPs with an option to normalize
-    the forecasts by GSP installed capacity (installedCapacityMw). Normalization returns a decimal value equal
-    to _expectedPowerGenerationMegawatts_ divided by __installedCapacityMw__ for the GSP.
+    the forecasts by GSP installed capacity (installedCapacityMw). Normalization returns a
+    decimal value equal to _expectedPowerGenerationMegawatts_ divided by
+    __installedCapacityMw__ for the GSP.
 
     There is also the option to pull forecast history from yesterday.
 
 
     #### Parameters
-    - normalize: boolean => TRUE returns a value for _expectedPowerGenerationNormalized__, which in decimals is the percent of __installedCapacityMw__ (installed PV megawatt capacity) being forecasted / FALSE returns "null"
-    - historic: boolean => TRUE returns the forecasts of yesterday along with today's forecasts for all GSPs
+    - normalize: boolean => TRUE returns a value for _expectedPowerGenerationNormalized__,
+        which in decimals is the percent of __installedCapacityMw__ (installed PV megawatt capacity)
+        being forecasted / FALSE returns "null"
+    - historic: boolean => TRUE returns the forecasts of yesterday along with today's
+        forecasts for all GSPs
     """
 
     logger.info(f"Get forecasts for all gsps. The options are  {normalize=} and {historic=}")
@@ -184,7 +190,8 @@ async def get_nationally_aggregated_forecasts(session: Session = Depends(get_ses
 
     The return object is a forecast object.
 
-    This route aggregrates data from all GSP forecasts and creates an 8-hour solar energy generation forecast  in 30-minute interval for all of GB.
+    This route aggregrates data from all GSP forecasts and creates an 8-hour solar energy
+    generation forecast  in 30-minute interval for all of GB.
 
     See __Forecast__ and __ForecastValue__ schemas for metadata descriptions.
 
@@ -200,7 +207,8 @@ async def get_gsp_boundaries() -> dict:
 
     This route is still under construction...
 
-    [This is a wrapper around the dataset](https://data.nationalgrideso.com/systemgis-boundaries-for-gb-grid-supply-points).
+    [This is a wrapper around the dataset]
+    (https://data.nationalgrideso.com/systemgis-boundaries-for-gb-grid-supply-points).
 
     Returns an object that is in EPSG:4326 (ie. latitude & longitude coordinates).
 
