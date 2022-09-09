@@ -94,7 +94,6 @@ async def get_latest_forecasts_for_a_specific_gsp(
 async def get_truths_for_a_specific_gsp(
     gsp_id: int, regime: Optional[str] = None, session: Session = Depends(get_session)
 ) -> List[GSPYield]:
-
     """### Get PV_Live values for a specific GSP for yesterday and today
 
     PV_Live is Sheffield's API that pulls live PV data. Check out [Sheffield Solar PV_Live](https://www.solar.sheffield.ac.uk/pvlive/) for more details. 
