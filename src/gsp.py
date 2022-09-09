@@ -102,8 +102,10 @@ async def get_truths_for_a_specific_gsp(
 ) -> List[GSPYield]:
     """### Get PV_Live values for a specific GSP for yesterday and today
 
-    PV_Live is Sheffield's API that pulls live PV data. Check out [Sheffield Solar PV_Live](https://www.solar
-    sheffield.ac.uk/pvlive/) for more details.
+    PV_Live is Sheffield's API that pulls live PV data. 
+    
+    Check out [Sheffield Solar PV_Live](https://www.solarsheffield.ac.uk/pvlive/) for 
+    more details.
 
     The OCF Forecast is trying to predict the PV_Live 'day-after' value.
 
@@ -202,12 +204,14 @@ async def get_systems(
 ) -> List[Location]:
     """### Get system details for a single GSP or all GSP's
 
-    Returns an object with the system details of a given GSP using the gsp_id parameter.
-    This object is the same as the initial object returned by the
-    __Get Forecasts for a Specific GSP__ request.
+    Returns an object with the system details of a given GSP using the 
+    gsp_id parameter.
+    
+    This object is the same as the initial object returned 
+    by the __Get Forecasts for a Specific GSP__ request.
 
-    Provide one gsp_id to return system details for that GSP, otherwise details for ALL grid systems will be
-    returned.
+    Provide one gsp_id to return system details for that GSP, otherwise details for ALL 
+    grid systems will be returned.
 
     #### Parameters
     - gsp_id: gsp_id of the requested system
