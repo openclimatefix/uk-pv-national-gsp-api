@@ -148,7 +148,9 @@ async def get_all_available_forecasts(
 ) -> ManyForecasts:
     """### Get the latest information for ALL available forecasts for ALL GSPs
 
-    The return object contains a forecast object and system details for all National Grid GSPs. 
+    The return object contains a forecast object with system details for all National Grid GSPs. 
+
+    See __Forecast__ and __ForecastValue__ schema for metadata details. 
     
     This request may take a longer time to load because a lot of data is being pulled from the database.
 
