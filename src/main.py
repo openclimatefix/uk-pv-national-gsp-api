@@ -26,24 +26,29 @@ Nowcasting API is still under development.
 #### General Overview
 
 __Nowcasting__ essentially means __forecasting for the next few hours__.
-OCF has built a predictive model that nowcasts solar photovoltaic (PV) energy input for 
+OCF has built a predictive model that nowcasts solar energy generation for 
 the UK’s National Grid ESO (electricity system operator). National Grid runs more than 
-300 grid supply points (GSP’s), which are regionally located throughout the country. 
-Every 30 minutes at the level of the GSP, OCF's Nowcasting App synthesizes live PV data, 
-numeric weather predictions (nwp), satellite data (looking at cloud cover), as well as GSP 
-data to create a forecast for how many megawatts of PV energy will likely be generated
-at a given GSP. These incredibly accurate, short-term forecasts allow National Grid to 
-reduce the amount of spinning reserves they need to run, ultimately reducing carbon emmisions.
+300 [grid supply points](https://data.nationalgrideso.com/system/gis-boundaries-for-gb-grid-supply-points)
+(GSP’s), which are regionally located throughout the country. OCF's Nowcasting App synthesizes real-time PV
+data, numeric weather predictions (nwp), satellite imagery (looking at cloud cover), as well as GSP data to
+create a forecast how many megawatts of solar energy will likely be generated at a given GSP. 
+
+Here are key aspects of the solar forecasts:
+- Forecasts are produced in 30-minute time steps, from the next half hour out to eight hours ahead.
+- The geographic extent is all of Great Britain (GB). 
+- Forecasts are produced at the GB National and regional level (using GSPs)
+
+OCF's incredibly accurate, short-term forecasts allow National Grid to reduce the amount of spinning reserves they need to run at any given moment, ultimately reducing carbon emmisions.
 
 In order to get started with reading the API’s forecast objects, it might be helpful to 
-know that GSP's are referenced in the following ways:  gspId (ex. 122); gspName (ex. FIDF_1); 
+know that GSP's are referenced in the following ways:  gspId (ex. 122); gspName (ex. FIDF_1); gspGroup (ex. )
 regionName (ex. Fiddlers Ferry). The API provides information on when input data was last updated 
-as well as a specific GSP's installed PV megawatt capacity.
+as well as the installed PV megawatt capacity (installedCapacityMw) of each individual GSP. 
 
 You'll find more detailed information for each route in the documentation below.
 
 If you have any questions, please don't hesitate to get in touch. 
-And if you're interested in contributing to our open source project feel free to join us!
+And if you're interested in contributing to our open source project, feel free to join us!
 """
 app = FastAPI(
     title="Nowcasting API",
