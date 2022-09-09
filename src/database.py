@@ -50,7 +50,7 @@ def get_forecasts_from_database(
     # get the latest forecast for all gsps.
 
     if historic:
-        
+
         # get at most 2 days of data.
         yesterday_start_datetime = datetime.now(tz=timezone.utc).date() - timedelta(days=1)
         yesterday_start_datetime = datetime.combine(yesterday_start_datetime, datetime.min.time())
