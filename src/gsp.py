@@ -46,8 +46,7 @@ async def get_forecasts_for_a_specific_gsp(
     session: Session = Depends(get_session),
     historic: Optional[bool] = False,
 ) -> Forecast:
-    """
-    ### Get one forecast for a specific GSP using
+    """### Get one forecast for a specific GSP using
     
     The forecast object is returned with the expected megawatt generation (expectedPowerGenerationMegawatts) for the next 6-7 hours at every 30-minute interval (targetTime). Setting history to true on this route will return targetTime and expectedPowerGenerationMegawatt readings from the day before for the given GSP. 
 
@@ -174,7 +173,6 @@ async def get_gsp_boundaries() -> dict:
     [This is a wrapper around the dataset](https://data.nationalgrideso.com/system/gis-boundaries-for-gb-grid-supply-points).
 
     Returns an object that is in EPSG:4326 (ie. latitude & longitude coordinates)
-
     """
 
     logger.info("Getting all GSP boundaries")
@@ -190,8 +188,7 @@ async def get_gsp_boundaries() -> dict:
 async def get_systems(
     session: Session = Depends(get_session), gsp_id: Optional[int] = None
 ) -> List[Location]:
-    """
-    ### Get system details for a single GSP or all GSP's
+    """### Get system details for a single GSP or all GSP's
 
     Returns an object with the system details of a given GSP using the gsp_id parameter. This object is the same as the initial object returned by the __Get Forecasts for a Specific GSP__ request. 
     
