@@ -48,7 +48,9 @@ async def get_forecasts_for_a_specific_gsp(
 ) -> Forecast:
     """### Get one forecast for a specific GSP using
     
-    The forecast object is returned with the expected megawatt generation (expectedPowerGenerationMegawatts) for the next 6-7 hours at every 30-minute interval (targetTime). Setting history to true on this route will return targetTime and expectedPowerGenerationMegawatt readings from the day before for the given GSP. 
+    The forecast object is returned with the expected megawatt generation (expectedPowerGenerationMegawatts)
+    for the upcoming 8 hours at every 30-minute interval (targetTime). Setting history to true on this route
+    will return targetTime and expectedPowerGenerationMegawatt readings from the day before for the given GSP. 
 
     
     #### Parameters
@@ -73,8 +75,10 @@ async def get_latest_forecasts_for_a_specific_gsp(
 ) -> List[ForecastValue]:
     """### Gets the latest forecasts for a specific GSP for today and yesterday
 
-    This route returns a simplified forecast object with only targetTimes and expectedPowerGenerationMegawattsin megawatts at 30-minute intervals for the given GSP. 
-    The __forecast_horizon_minutes__ parameter can be used to retrieves the latest forecast a given set of minutes before the target time. 
+    This route returns a simplified forecast object with only targetTimes and
+    expectedPowerGenerationMegawattsin megawatts at 30-minute intervals for the given GSP. 
+    The __forecast_horizon_minutes__ parameter can be used to retrieves the latest forecast a given set of
+    minutes before the target time. 
 
     #### Parameters    
     - gsp_id: gsp_id of the requested forecast
@@ -95,11 +99,17 @@ async def get_truths_for_a_specific_gsp(
 ) -> List[GSPYield]:
     """### Get PV_Live values for a specific GSP for yesterday and today
 
-    PV_Live is Sheffield's API that pulls live PV data. Check out [Sheffield Solar PV_Live](https://www.solar.sheffield.ac.uk/pvlive/) for more details. 
+    PV_Live is Sheffield's API that pulls live PV data. Check out [Sheffield Solar PV_Live](https://www.solar
+    sheffield.ac.uk/pvlive/) for more details. 
 
     The OCF Forecast is trying to predict the PV_Live 'day-after' value.
     
-    This route has the __regime__ parameter that lets you look at values __in-day__ or __day-after__, which includes updated values that are calculated around midnight when more data is available. __Day-after__ values are updated i__in-day__ values. __In-day__ gives you all the readings from the day before up to the most recent reported gsp yield. __Day_after__ reports all the readings from the previous day. For example, a day-after regime request made on 08/09/2022 returns updated gsp yield for 07/09/2022. The 08/09/2022 __day-after__ values then become available at midnight on 09/09/2022. 
+    This route has the __regime__ parameter that lets you look at values __in-day__ or __day-after__, which
+    includes updated values that are calculated around midnight when more data is available. __Day-after__
+    values are updated i__in-day__ values. __In-day__ gives you all the readings from the day before up to the
+    most recent reported gsp yield. __Day_after__ reports all the readings from the previous day. For example,
+    a day-after regime request made on 08/09/2022 returns updated gsp yield for 07/09/2022. The 08/09/2022
+    __day-after__ values then become available at midnight on 09/09/2022. 
     
     If regime is not specificied, the most up-to-date gsp yield is returned. 
 
@@ -108,11 +118,6 @@ async def get_truths_for_a_specific_gsp(
     - gsp_id: gsp_id of the requested forecast
     - regime: can choose __in-day__ or __day-after__
 
-    #### Metadata 
-    - datetimeUtc
-    - solarGenerationKw
-    - regime
-    - gsp
     """
 
     logger.info(f"Get PV Live estimates values for gsp id {gsp_id} and regime {regime}")
@@ -130,7 +135,8 @@ async def get_all_available_forecasts(
 ) -> ManyForecasts:
     """### Get the latest information for all available forecasts for all GSP's
 
-    This route returns forecasts from all available GSP's with an option to normalize the forecasts by GSP installed capacity (installedCapacityMw). 
+    This route returns forecasts from all available GSP's with an option to normalize the forecasts by GSP
+    installed capacity (installedCapacityMw). 
 
     There is also the option to pull forecast history from yesterday. 
 
@@ -156,7 +162,8 @@ async def get_all_available_forecasts(
 async def get_nationally_aggregated_forecasts(session: Session = Depends(get_session)) -> Forecast:
     """### Returns a national aggregate solar PV energy forecast 
     
-    This route aggregrates data from all GSP forecasts and creates a 6-7 hour nowcast of national solar PV energy generation(expectedPowerGenerationMegawatts) in 30-minute intervals (timeTarget). 
+    This route aggregrates data from all GSP forecasts and creates a 6-7 hour nowcast of national solar PV
+    energy generation(expectedPowerGenerationMegawatts) in 30-minute intervals (timeTarget). 
     
     """
 
@@ -190,9 +197,12 @@ async def get_systems(
 ) -> List[Location]:
     """### Get system details for a single GSP or all GSP's
 
-    Returns an object with the system details of a given GSP using the gsp_id parameter. This object is the same as the initial object returned by the __Get Forecasts for a Specific GSP__ request. 
+    Returns an object with the system details of a given GSP using the gsp_id parameter. 
+    This object is the same as the initial object returned by the 
+    __Get Forecasts for a Specific GSP__ request. 
     
-    Provide one gsp_id to return system details for that GSP, otherwise details for ALL grid systems will be returned. 
+    Provide one gsp_id to return system details for that GSP, otherwise details for ALL grid systems will be
+    returned. 
 
     #### Parameters
     - gsp_id: gsp_id of the requested system
