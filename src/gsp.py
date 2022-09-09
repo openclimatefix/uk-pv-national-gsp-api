@@ -142,7 +142,7 @@ async def get_truths_for_a_specific_gsp(
 
 @router.get("/forecast/all", response_model=ManyForecasts)
 async def get_all_available_forecasts(
-    normalize: Optional[bool] = False,
+    # normalize: Optional[bool] = True,
     historic: Optional[bool] = False,
     session: Session = Depends(get_session),
 ) -> ManyForecasts:
@@ -162,7 +162,7 @@ async def get_all_available_forecasts(
 
 
     #### Parameters
-    - normalize: boolean => TRUE returns a value for _expectedPowerGenerationNormalized__, which in decimals is the percent of __installedCapacityMw__ (installed PV megawatt capacity) being forecasted / FALSE returns "null"
+    - normalize: boolean => TRUE returns a value for __expectedPowerGenerationNormalized__, which in decimals is the percent of __installedCapacityMw__ (installed PV megawatt capacity) being forecasted / FALSE returns "null"
     - historic: boolean => TRUE returns the forecasts of yesterday along with today's forecasts for all GSPs
     """
 

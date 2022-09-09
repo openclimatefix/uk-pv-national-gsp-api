@@ -1,4 +1,5 @@
 """ Functions to read from the database and format """
+from locale import normalize
 import logging
 import os
 from datetime import datetime, timedelta, timezone
@@ -49,7 +50,7 @@ def get_forecasts_from_database(
     # get the latest forecast for all gsps.
 
     if historic:
-
+        
         # get at most 2 days of data.
         yesterday_start_datetime = datetime.now(tz=timezone.utc).date() - timedelta(days=1)
         yesterday_start_datetime = datetime.combine(yesterday_start_datetime, datetime.min.time())
@@ -59,6 +60,7 @@ def get_forecasts_from_database(
             start_target_time=yesterday_start_datetime,
             preload_children=True,
             historic=True,
+            normalize=True,
         )
     else:
         # To speed up read time we only look at the last 12 hours of results, and take floor 30 mins
@@ -71,6 +73,7 @@ def get_forecasts_from_database(
             start_created_utc=yesterday_start_datetime,
             start_target_time=yesterday_start_datetime,
             preload_children=True,
+            normalize=True,
         )
 
     # change to pydantic objects
