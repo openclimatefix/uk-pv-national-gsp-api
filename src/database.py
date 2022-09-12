@@ -1,5 +1,4 @@
 """ Functions to read from the database and format """
-from locale import normalize
 import logging
 import os
 from datetime import datetime, timedelta, timezone
