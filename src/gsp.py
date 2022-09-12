@@ -187,6 +187,7 @@ async def get_national_pvlive(
         session=session, gsp_id=0, regime=regime
     )
 
+
 # corresponds to route /v0/solar/GB/gsp/forecast/all
 @router.get("/forecast/all", response_model=ManyForecasts)
 async def get_all_available_forecasts(
@@ -223,6 +224,7 @@ async def get_all_available_forecasts(
 
     return forecasts
 
+
 # corresponds to API route /v0/solar/GB/national/forecast/
 @router.get("/forecast/national", response_model=Forecast)
 async def get_nationally_aggregated_forecasts(
@@ -241,6 +243,7 @@ async def get_nationally_aggregated_forecasts(
 
     logger.debug("Get national forecasts")
     return get_latest_national_forecast_from_database(session=session)
+
 
 # corresponds to API route /v0/system/GB/gsp/boundaries
 @router.get("/gsp_boundaries")
@@ -263,6 +266,7 @@ async def get_gsp_boundaries() -> dict:
     json.loads(json_string)
 
     return json.loads(json_string)
+
 
 # corresponds to API route /v0/system/GB/gsp/
 @router.get("/gsp_systems", response_model=List[Location])
