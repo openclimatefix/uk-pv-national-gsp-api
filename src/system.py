@@ -39,6 +39,7 @@ def get_gsp_boundaries_from_eso_wgs84() -> gpd.GeoDataFrame:
 
     return boundaries
 
+
 @router.get("/boundaries")
 async def get_gsp_boundaries() -> dict:
     """### Get one GSP boundary for a specific GSP
