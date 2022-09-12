@@ -5,7 +5,7 @@ from typing import List, Optional
 
 import geopandas as gpd
 from fastapi import APIRouter, Depends
-from nowcasting_datamodel.models import (Forecast, ForecastValue, GSPYield, Location, ManyForecasts)
+from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield, Location, ManyForecasts
 from nowcasting_dataset.data_sources.gsp.eso import get_gsp_metadata_from_eso
 from sqlalchemy.orm.session import Session
 
