@@ -159,7 +159,7 @@ async def get_all_available_forecasts(
     historic: Optional[bool] = False,
     session: Session = Depends(get_session),
 ) -> ManyForecasts:
-    """### Get the latest information for ALL available forecasts for ALL GSPs
+   """### Get the latest information for ALL available forecasts for ALL GSPs
 
     The return object contains a forecast object with system details for all National Grid GSPs.
 
@@ -177,15 +177,7 @@ async def get_all_available_forecasts(
 
 
     #### Parameters
-<<<<<<< HEAD
     - historic: boolean => TRUE returns the forecasts of yesterday along with today's forecasts for all GSPs
-=======
-    - normalize: boolean => TRUE returns a value for _expectedPowerGenerationNormalized__,
-        which in decimals is the percent of __installedCapacityMw__ (installed PV megawatt capacity)
-        being forecasted / FALSE returns "null"
-    - historic: boolean => TRUE returns the forecasts of yesterday along with today's
-        forecasts for all GSPs
->>>>>>> origin/set-normalize-as-default-parameter-for-get-all-GSPs
     """
 
     logger.info(f"Get forecasts for all gsps. The option is {historic=}")
