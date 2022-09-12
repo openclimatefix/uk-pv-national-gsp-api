@@ -36,8 +36,7 @@ async def get_nationally_aggregated_forecasts(
     logger.debug("Get national forecasts")
     return get_latest_national_forecast_from_database(session=session)
 
-
-# corresponds to API route /v0/solar/GB/national/pvlive/
+# corresponds to API route /v0/solar/GB/national/pvlive/, getting PV_Live NationalYield for GB
 @router.get("/national/pvlive/", response_model=List[NationalYield])
 async def get_national_pvlive(
     regime: Optional[str] = None, session: Session = Depends(get_session)

@@ -9,6 +9,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
 from gsp import router as gsp_router
+from national import router as national_router
+from system import router as system_router
 from status import router as status_router
 
 # from pv import router as pv_router
@@ -18,7 +20,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-version = "0.2.26"
+version = "0.2.22"
 description = """
 As part of Open Climate Fix’s [open source project](https://github.com/openclimatefix), the
 Nowcasting API is still under development.
@@ -28,23 +30,24 @@ Nowcasting API is still under development.
 __Nowcasting__ essentially means __forecasting for the next few hours__.
 OCF has built a predictive model that nowcasts solar energy generation for
 the UK’s National Grid ESO (electricity system operator). National Grid runs more than
-300 [grid supply points]
-(https://data.nationalgrideso.com/system/gis-boundaries-for-gb-grid-supply-points)
-(GSP’s), which are regionally located throughout the country. OCF's Nowcasting App
- synthesizes real-time PV data, numeric weather predictions (nwp), satellite imagery
- (looking at cloud cover), as well as GSP data to forecast how much solar energy will
- generated for a given GSP.
+300 
+[grid supply points](https://data.nationalgrideso.com/system/gis-boundaries-for-gb-grid-supply-points)
+(GSP’s), which are regionally located throughout the country. OCF's Nowcasting App synthesizes real-time PV
+data, numeric weather predictions (nwp), satellite imagery (looking at cloud cover), as well as GSP data to
+forecast how much solar energy will generated for a given GSP.
 
 Here are key aspects of the solar forecasts:
 - Forecasts are produced in 30-minute time steps, projecting GSP yields out to eight hours ahead.
 - The geographic extent is all of Great Britain (GB).
 - Forecasts are produced at the GB National and regional level (using GSPs).
 
+OCF's incredibly accurate, short-term forecasts allow National Grid to reduce the amount of 
+spinning reserves they need to run at any given moment, ultimately reducing carbon emmisions.
+
 In order to get started with reading the API’s forecast objects, it might be helpful to
-know that GSPs are referenced in the following ways:  gspId (ex. 122); gspName (ex. FIDF_1);
- gspGroup (ex. ) regionName (ex. Fiddlers Ferry). The API provides information on when input
- data was last updated as well as the installed photovoltaic (PV) megawatt capacity
- (installedCapacityMw) of each individual GSP.
+know that GSPs are referenced in the following ways:  gspId (ex. 122); gspName (ex. FIDF_1); gspGroup (ex. )
+regionName (ex. Fiddlers Ferry). The API provides information on when input data was last updated
+as well as the installed photovoltaic (PV) megawatt capacity (installedCapacityMw) of each individual GSP.
 
 You'll find more detailed information for each route in the documentation below.
 
@@ -91,11 +94,13 @@ thirty_minutes = timedelta(minutes=30)
 
 
 # Dependency
-v0_route = "/v0/GB/solar"
+v0_route_solar = "/v0/solar/GB"
+v0_route_system = "/v0/system/GB"
 
-
-app.include_router(gsp_router, prefix=f"{v0_route}/gsp")
-app.include_router(status_router, prefix=f"{v0_route}")
+app.include_router(national_router, prefix=f"{v0_route_solar}/national")
+app.include_router(system_router, prefix=f"{v0_route_system}/national")
+app.include_router(gsp_router, prefix=f"{v0_route_solar}/gsp")
+app.include_router(status_router, prefix=f"{v0_route_solar}")
 # app.include_router(pv_router, prefix=f"{v0_route}/pv")
 
 
