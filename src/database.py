@@ -52,8 +52,12 @@ def get_forecasts_from_database(
     if historic:
 
         # get at most 2 days of data.
-        yesterday_start_datetime = datetime.now(tz=timezone.utc).date() - timedelta(days=1)
-        yesterday_start_datetime = datetime.combine(yesterday_start_datetime, datetime.min.time())
+        yesterday_start_datetime = datetime.now(tz=timezone.utc).date() - timedelta(
+            days=1
+        )
+        yesterday_start_datetime = datetime.combine(
+            yesterday_start_datetime, datetime.min.time()
+        )
 
         forecasts = get_all_gsp_ids_latest_forecast(
             session=session,
@@ -92,7 +96,9 @@ def get_forecasts_for_a_specific_gsp_from_database(
     """Get forecasts for one GSP from database"""
 
     yesterday_start_datetime = datetime.now(tz=timezone.utc).date() - timedelta(days=1)
-    yesterday_start_datetime = datetime.combine(yesterday_start_datetime, datetime.min.time())
+    yesterday_start_datetime = datetime.combine(
+        yesterday_start_datetime, datetime.min.time()
+    )
 
     # get forecast from database
     forecast = get_latest_forecast(
@@ -123,7 +129,9 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
     """
 
     yesterday_start_datetime = datetime.now(tz=timezone.utc).date() - timedelta(days=1)
-    yesterday_start_datetime = datetime.combine(yesterday_start_datetime, datetime.min.time())
+    yesterday_start_datetime = datetime.combine(
+        yesterday_start_datetime, datetime.min.time()
+    )
 
     if forecast_horizon_minutes is None:
         return get_forecast_values_latest(
@@ -177,7 +185,9 @@ def get_truth_values_for_a_specific_gsp_from_database(
     """
 
     yesterday_start_datetime = datetime.now(tz=timezone.utc).date() - timedelta(days=1)
-    yesterday_start_datetime = datetime.combine(yesterday_start_datetime, datetime.min.time())
+    yesterday_start_datetime = datetime.combine(
+        yesterday_start_datetime, datetime.min.time()
+    )
 
     return get_gsp_yield(
         session=session,
