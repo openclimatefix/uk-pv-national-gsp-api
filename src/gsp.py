@@ -65,7 +65,7 @@ async def get_forecasts_for_a_specific_gsp(
 
     logger.info(f"Get forecasts for gsp id {gsp_id} with {historic=}")
 
-    forecast =  get_forecasts_for_a_specific_gsp_from_database(
+    forecast = get_forecasts_for_a_specific_gsp_from_database(
         session=session,
         gsp_id=gsp_id,
         historic=historic,
