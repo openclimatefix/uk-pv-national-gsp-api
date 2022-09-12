@@ -1,4 +1,3 @@
-
 import logging
 from typing import List, Optional
 
@@ -36,6 +35,7 @@ async def get_nationally_aggregated_forecasts(
 
     logger.debug("Get national forecasts")
     return get_latest_national_forecast_from_database(session=session)
+
 
 # corresponds to API route /v0/solar/GB/national/pvlive/
 @router.get("/national/pvlive/", response_model=List[NationalYield])
