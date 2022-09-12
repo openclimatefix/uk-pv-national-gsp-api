@@ -207,7 +207,7 @@ def test_read_truth_national_gsp(db_session):
     gsp_yield_2 = GSPYield(datetime_utc=datetime(2022, 1, 1), solar_generation_kw=2)
     gsp_yield_2_sql = gsp_yield_2.to_orm()
 
-    gsp_yield_3 = GSPYield(datetime_utc=datetime(2022, 1, 1), solar_generation_kw=3)
+    gsp_yield_3 = GSPYield(datetime_utc=datetime(2022, 1, 1, 12), solar_generation_kw=3)
     gsp_yield_3_sql = gsp_yield_3.to_orm()
 
     gsp_sql_1: LocationSQL = Location(
