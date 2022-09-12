@@ -159,7 +159,7 @@ async def get_all_available_forecasts(
     historic: Optional[bool] = False,
     session: Session = Depends(get_session),
 ) -> ManyForecasts:
-   """### Get the latest information for ALL available forecasts for ALL GSPs
+    """### Get the latest information for ALL available forecasts for ALL GSPs
 
     The return object contains a forecast object with system details for all National Grid GSPs.
 
