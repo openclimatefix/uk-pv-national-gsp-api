@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 router = APIRouter()
+NationalYield = GSPYield
 
 
 def get_gsp_boundaries_from_eso_wgs84() -> gpd.GeoDataFrame:
@@ -141,10 +142,10 @@ async def get_truths_for_a_specific_gsp(
     )
 
 
-@router.get("/national/pvlive/", response_model=List[GSPYield])
+@router.get("/national/pvlive/", response_model=List[NationalYield])
 async def get_national_pvlive(
     regime: Optional[str] = None, session: Session = Depends(get_session)
-) -> List[GSPYield]:
+) -> List[NationalYield]:
     """### Get national PV_Live values for yesterday and today
 
     The return object is a series of real-time solar energy generation readings from PV_Live.
@@ -162,12 +163,12 @@ async def get_national_pvlive(
     This route has the __regime__ parameter that lets you look at values __in-day__ or
     __day-after__(most accurate reading). __Day-after__ values are updated __in-day__ values.
     __In-day__ gives you all the readings from the day before up to the most recent
-    reported GSP yield. __Day_after__ reports all the readings from the previous day.
-    For example, a day-after regime request made on 08/09/2022 returns updated GSP yield
+    reported national yield. __Day_after__ reports all the readings from the previous day.
+    For example, a day-after regime request made on 08/09/2022 returns updated national yield
     for 07/09/2022. The 08/09/2022 __day-after__ values then become available at 10:00 UTC
     on 09/09/2022.
 
-    If regime is not specificied, the most up-to-date GSP yield is returned.
+    If regime is not specificied, the most up-to-date national yield is returned.
 
     #### Parameters
     - regime: can choose __in-day__ or __day-after__
