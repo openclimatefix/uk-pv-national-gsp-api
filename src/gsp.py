@@ -142,7 +142,7 @@ async def get_truths_for_a_specific_gsp(
 
 
 @router.get("/national/pvlive/", response_model=List[GSPYield])
-async def get_truths_for_a_specific_gsp(
+async def get_national_pvlive(
     regime: Optional[str] = None, session: Session = Depends(get_session)
 ) -> List[GSPYield]:
     """### Get national PV_Live values for yesterday and today
