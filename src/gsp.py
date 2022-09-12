@@ -52,6 +52,7 @@ async def get_forecasts_for_a_specific_gsp(
 
     The forecast object is returned with expected megawatt generation at a specific GSP
     for the upcoming 8 hours at every 30-minute interval (targetTime).
+
     Setting history to TRUE on this route will return readings from yesterday and today
     for the given GSP.
 
@@ -64,11 +65,15 @@ async def get_forecasts_for_a_specific_gsp(
 
     logger.info(f"Get forecasts for gsp id {gsp_id} with {historic=}")
 
-    return get_forecasts_for_a_specific_gsp_from_database(
+    forecast = get_forecasts_for_a_specific_gsp_from_database(
         session=session,
         gsp_id=gsp_id,
         historic=historic,
     )
+
+    forecast.normalize()
+
+    return forecast
 
 
 @router.get("/forecast/latest/{gsp_id}", response_model=List[ForecastValue])
@@ -97,7 +102,9 @@ async def get_latest_forecasts_for_a_specific_gsp(
     logger.info(f"Get forecasts for gsp id {gsp_id} with {forecast_horizon_minutes=}")
 
     return get_latest_forecast_values_for_a_specific_gsp_from_database(
-        session=session, gsp_id=gsp_id, forecast_horizon_minutes=forecast_horizon_minutes
+        session=session,
+        gsp_id=gsp_id,
+        forecast_horizon_minutes=forecast_horizon_minutes,
     )
 
 
@@ -143,7 +150,6 @@ async def get_truths_for_a_specific_gsp(
 
 @router.get("/forecast/all", response_model=ManyForecasts)
 async def get_all_available_forecasts(
-    normalize: Optional[bool] = False,
     historic: Optional[bool] = False,
     session: Session = Depends(get_session),
 ) -> ManyForecasts:
@@ -165,27 +171,23 @@ async def get_all_available_forecasts(
 
 
     #### Parameters
-    - normalize: boolean => TRUE returns a value for _expectedPowerGenerationNormalized__,
-        which in decimals is the percent of __installedCapacityMw__ (installed PV megawatt capacity)
-        being forecasted / FALSE returns "null"
     - historic: boolean => TRUE returns the forecasts of yesterday along with today's
-        forecasts for all GSPs
+    forecasts for all GSPs
     """
 
-    logger.info(f"Get forecasts for all gsps. The options are  {normalize=} and {historic=}")
+    logger.info(f"Get forecasts for all gsps. The option is {historic=}")
 
     forecasts = get_forecasts_from_database(session=session, historic=historic)
 
-    logger.debug(f"Normalizing {normalize}")
-    if normalize:
-        forecasts.normalize()
-        logger.debug("Normalizing: done")
+    forecasts.normalize()
 
     return forecasts
 
 
 @router.get("/forecast/national", response_model=Forecast)
-async def get_nationally_aggregated_forecasts(session: Session = Depends(get_session)) -> Forecast:
+async def get_nationally_aggregated_forecasts(
+    session: Session = Depends(get_session),
+) -> Forecast:
     """### Returns a national aggregate solar PV energy forecast
 
     The return object is a forecast object.
