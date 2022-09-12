@@ -177,7 +177,7 @@ async def get_all_available_forecasts(
 
 
     #### Parameters
-    - historic: boolean => TRUE returns the forecasts of yesterday along with today's 
+    - historic: boolean => TRUE returns the forecasts of yesterday along with today's
     forecasts for all GSPs
     """
 
