@@ -176,6 +176,7 @@ def test_read_forecast_value_one_gsp(db_session):
         print(i)
     assert len(r_json) == 3
     _ = [ForecastValue(**forecast_value) for forecast_value in r_json]
+<<<<<<< HEAD
 
 @freeze_time("2022-01-01")
 def test_read_truths_for_a_specific_gsp(db_session):
@@ -211,3 +212,5 @@ def test_read_truths_for_a_specific_gsp(db_session):
     assert len(r_json) == 3
     _ = [GSPYield(**gsp_yield) for gsp_yield in r_json]
 
+=======
+>>>>>>> origin/131/define-national-routes

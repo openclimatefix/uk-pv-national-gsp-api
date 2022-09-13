@@ -59,6 +59,7 @@ async def get_forecasts_for_a_specific_gsp(
 
     return forecast
 
+
 # corresponds to API route /v0/solar/GB/gsp/forecast/{gsp_id}/{only_values} or other filter parameters
 @router.get("/forecast/latest/{gsp_id}", response_model=List[ForecastValue])
 async def get_latest_forecasts_for_a_specific_gsp(
@@ -90,6 +91,7 @@ async def get_latest_forecasts_for_a_specific_gsp(
         gsp_id=gsp_id,
         forecast_horizon_minutes=forecast_horizon_minutes,
     )
+
 
 # corresponds to API route /v0/solar/GB/gsp/pvlive/{gsp_id}
 @router.get("/pvlive/{gsp_id}", response_model=List[GSPYield])
@@ -132,7 +134,6 @@ async def get_truths_for_a_specific_gsp(
     )
 
 
-
 # corresponds to route /v0/solar/GB/gsp/forecast/all
 @router.get("/forecast/all/", response_model=ManyForecasts)
 async def get_all_available_forecasts(
@@ -168,6 +169,3 @@ async def get_all_available_forecasts(
     forecasts.normalize()
 
     return forecasts
-
-
-
