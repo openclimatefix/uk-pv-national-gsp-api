@@ -176,5 +176,3 @@ def test_read_forecast_one_gsp(db_session):
         print(i)
     assert len(r_json) == 3
     _ = [ForecastValue(**forecast_value) for forecast_value in r_json]
-
-

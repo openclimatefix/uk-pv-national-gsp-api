@@ -25,7 +25,6 @@ from main import app
 client = TestClient(app)
 
 
-
 def test_get_gsp_systems(db_session):
     """Check main system/GB/gsp/ works"""
 
@@ -50,5 +49,3 @@ def test_gsp_boundaries(db_session):
     response = client.get("/v0/system/GB/gsp/boundaries")
     assert response.status_code == 200
     assert len(response.json()) > 0
-
-
