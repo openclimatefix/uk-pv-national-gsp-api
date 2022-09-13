@@ -5,7 +5,7 @@ pydantic
 numpy
 requests
 nowcasting_datamodel==1.1.29
-nowcasting_dataset==3.1.59
+nowcasting_dataset==3.7.12
 sqlalchemy
 psycopg2-binary
 geopandas

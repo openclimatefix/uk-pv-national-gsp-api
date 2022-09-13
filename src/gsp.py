@@ -92,7 +92,7 @@ async def get_latest_forecasts_for_a_specific_gsp(
     )
 
 # corresponds to API route /v0/solar/GB/gsp/pvlive/{gsp_id}
-@router.get("/pvlive/one_gsp/{gsp_id}/", response_model=List[GSPYield])
+@router.get("/pvlive/{gsp_id}", response_model=List[GSPYield])
 async def get_truths_for_a_specific_gsp(
     gsp_id: int, regime: Optional[str] = None, session: Session = Depends(get_session)
 ) -> List[GSPYield]:
