@@ -53,9 +53,3 @@ def db_session(db_connection):
     t.rollback()
     connection.close()
 
-
-# def test(self, session):
-#     with session.no_autoflush:
-#         q = session.query(X).filter(X._val == self._val)
-#         x = q.one()
-#         print('x={}'.format(x))
