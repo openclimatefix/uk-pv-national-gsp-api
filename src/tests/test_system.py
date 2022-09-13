@@ -31,6 +31,7 @@ def test_get_gsp_systems(db_session):
 
     forecasts = make_fake_forecasts(gsp_ids=list(range(0, 10)), session=db_session)
     db_session.add_all(forecasts)
+    db_session.commit()
 
     app.dependency_overrides[get_session] = lambda: db_session
 
@@ -43,12 +44,6 @@ def test_get_gsp_systems(db_session):
 
 def test_gsp_boundaries(db_session):
     """Check main system/GB/gsp/boundaries"""
-
-# for the moment, this code doesn't seem right, 
-# it's the test for getting the national forecast 
-# I updated the route in the test though 
-    forecast = make_fake_national_forecast(session=db_session)
-    db_session.add(forecast)
 
     app.dependency_overrides[get_session] = lambda: db_session
 

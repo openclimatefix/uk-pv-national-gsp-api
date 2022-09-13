@@ -187,6 +187,3 @@ async def get_all_available_forecasts(
 
 
 
-# corresponds to API route /v0/system/GB/gsp/boundaries
-
-# corresponds to API route /v0/system/GB/gsp/
