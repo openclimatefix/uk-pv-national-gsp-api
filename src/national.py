@@ -1,3 +1,4 @@
+"""National API routes"""
 import logging
 from typing import List, Optional
 
