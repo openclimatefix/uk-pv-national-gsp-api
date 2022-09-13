@@ -18,7 +18,7 @@ router = APIRouter()
 NationalYield = GSPYield
 
 # corresponds to API route /v0/solar/GB/national/forecast/
-@router.get("/national/forecast", response_model=Forecast)
+@router.get("/forecast", response_model=Forecast)
 async def get_nationally_aggregated_forecasts(
     session: Session = Depends(get_session),
 ) -> Forecast:
@@ -36,8 +36,9 @@ async def get_nationally_aggregated_forecasts(
     logger.debug("Get national forecasts")
     return get_latest_national_forecast_from_database(session=session)
 
+
 # corresponds to API route /v0/solar/GB/national/pvlive/, getting PV_Live NationalYield for GB
-@router.get("/national/pvlive/", response_model=List[NationalYield])
+@router.get("/pvlive", response_model=List[NationalYield])
 async def get_national_pvlive(
     regime: Optional[str] = None, session: Session = Depends(get_session)
 ) -> List[NationalYield]:

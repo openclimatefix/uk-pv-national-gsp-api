@@ -30,7 +30,7 @@ Nowcasting API is still under development.
 __Nowcasting__ essentially means __forecasting for the next few hours__.
 OCF has built a predictive model that nowcasts solar energy generation for
 the UK’s National Grid ESO (electricity system operator). National Grid runs more than
-300 
+300
 [grid supply points](https://data.nationalgrideso.com/system/gis-boundaries-for-gb-grid-supply-points)
 (GSP’s), which are regionally located throughout the country. OCF's Nowcasting App synthesizes real-time PV
 data, numeric weather predictions (nwp), satellite imagery (looking at cloud cover), as well as GSP data to
@@ -41,7 +41,7 @@ Here are key aspects of the solar forecasts:
 - The geographic extent is all of Great Britain (GB).
 - Forecasts are produced at the GB National and regional level (using GSPs).
 
-OCF's incredibly accurate, short-term forecasts allow National Grid to reduce the amount of 
+OCF's incredibly accurate, short-term forecasts allow National Grid to reduce the amount of
 spinning reserves they need to run at any given moment, ultimately reducing carbon emmisions.
 
 In order to get started with reading the API’s forecast objects, it might be helpful to

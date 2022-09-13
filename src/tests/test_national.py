@@ -60,7 +60,11 @@ def test_read_truth_national_gsp(db_session):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
+<<<<<<< HEAD
     response = client.get("/v0/solar/GB/national/pvlive/")
+=======
+    response = client.get("/v0/solar/GB/national/pvlive")
+>>>>>>> origin/131/define-national-routes
     assert response.status_code == 200
 
     r_json = response.json()
