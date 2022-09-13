@@ -12,7 +12,6 @@ from sqlalchemy.orm.session import Session
 from database import (
     get_forecasts_for_a_specific_gsp_from_database,
     get_forecasts_from_database,
-    get_gsp_system,
     get_latest_forecast_values_for_a_specific_gsp_from_database,
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
@@ -24,23 +23,8 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 NationalYield = GSPYield
 
-# corresponds to /v0/system/GB/gsp/boundaries
-def get_gsp_boundaries_from_eso_wgs84() -> gpd.GeoDataFrame:
-    """Get GSP boundaries in lat/lon format (EPSG:4326)"""
-
-    # get gsp boundaries
-    boundaries = get_gsp_metadata_from_eso()
-
-    # change to lat/lon - https://epsg.io/4326
-    boundaries = boundaries.to_crs(4326)
-
-    # fill nans
-    boundaries = boundaries.fillna("")
-
-    return boundaries
-
 # corresponds to API route /v0/solar/GB/gsp/forecast/{gsp_id}
-@router.get("/forecast/one_gsp/{gsp_id}", response_model=Forecast)
+@router.get("/forecast/{gsp_id}", response_model=Forecast)
 async def get_forecasts_for_a_specific_gsp(
     gsp_id: int,
     session: Session = Depends(get_session),
@@ -150,7 +134,7 @@ async def get_truths_for_a_specific_gsp(
 
 
 # corresponds to route /v0/solar/GB/gsp/forecast/all
-@router.get("/forecast/all", response_model=ManyForecasts)
+@router.get("/forecast/all/", response_model=ManyForecasts)
 async def get_all_available_forecasts(
     historic: Optional[bool] = False,
     session: Session = Depends(get_session),
