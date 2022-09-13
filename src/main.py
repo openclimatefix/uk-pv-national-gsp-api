@@ -98,7 +98,7 @@ v0_route_solar = "/v0/solar/GB"
 v0_route_system = "/v0/system/GB"
 
 app.include_router(national_router, prefix=f"{v0_route_solar}/national")
-app.include_router(system_router, prefix=f"{v0_route_system}/national")
+app.include_router(system_router, prefix=f"{v0_route_system}/gsp")
 app.include_router(gsp_router, prefix=f"{v0_route_solar}/gsp")
 app.include_router(status_router, prefix=f"{v0_route_solar}")
 # app.include_router(pv_router, prefix=f"{v0_route}/pv")

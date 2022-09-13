@@ -62,7 +62,7 @@ async def get_gsp_boundaries() -> dict:
     return json.loads(json_string)
 
 
-@router.get("/", response_model=List[Location])
+@router.get("", response_model=List[Location])
 async def get_systems(
     session: Session = Depends(get_session), gsp_id: Optional[int] = None
 ) -> List[Location]:
