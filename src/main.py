@@ -13,8 +13,6 @@ from national import router as national_router
 from status import router as status_router
 from system import router as system_router
 
-
-# from pv import router as pv_router
 logging.basicConfig(
     level=getattr(logging, os.getenv("LOGLEVEL", "DEBUG")),
     format="[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s",
