@@ -1,12 +1,9 @@
 """Get GSP boundary data from eso """
-import json
 import logging
 from typing import List, Optional
 
-import geopandas as gpd
 from fastapi import APIRouter, Depends
-from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield, Location, ManyForecasts
-from nowcasting_dataset.data_sources.gsp.eso import get_gsp_metadata_from_eso
+from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield, ManyForecasts
 from sqlalchemy.orm.session import Session
 
 from database import (

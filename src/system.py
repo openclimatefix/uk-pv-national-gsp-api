@@ -5,7 +5,7 @@ from typing import List, Optional
 
 import geopandas as gpd
 from fastapi import APIRouter, Depends
-from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield, Location, ManyForecasts
+from nowcasting_datamodel.models import GSPYield, Location
 from nowcasting_dataset.data_sources.gsp.eso import get_gsp_metadata_from_eso
 from sqlalchemy.orm.session import Session
 
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 NationalYield = GSPYield
 
-# corresponds to /v0/system/GB/gsp/boundaries
+
 def get_gsp_boundaries_from_eso_wgs84() -> gpd.GeoDataFrame:
     """Get GSP boundaries in lat/lon format (EPSG:4326)"""
 

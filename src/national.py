@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 NationalYield = GSPYield
 
-# corresponds to API route /v0/solar/GB/national/forecast/
+
 @router.get("/forecast", response_model=Forecast)
 async def get_nationally_aggregated_forecasts(
     session: Session = Depends(get_session),
