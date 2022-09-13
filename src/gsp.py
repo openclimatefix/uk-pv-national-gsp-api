@@ -21,6 +21,44 @@ router = APIRouter()
 NationalYield = GSPYield
 
 
+# corresponds to route /v0/solar/GB/gsp/forecast/all
+@router.get("/forecast/all/", response_model=ManyForecasts)
+async def get_all_available_forecasts(
+    historic: Optional[bool] = False,
+    session: Session = Depends(get_session),
+) -> ManyForecasts:
+    """### Get the latest information for ALL available forecasts for ALL GSPs
+
+    The return object contains a forecast object with system details for all National Grid GSPs.
+
+    See __Forecast__ and __ForecastValue__ schema for metadata details.
+
+    This request may take a longer time to load because a lot of data is being pulled from the
+    database.
+
+    This route returns forecasts objects from all available GSPs with an option to normalize
+    the forecasts by GSP installed capacity (installedCapacityMw). Normalization returns a
+    decimal value equal to _expectedPowerGenerationMegawatts_ divided by
+    __installedCapacityMw__ for the GSP.
+
+    There is also the option to pull forecast history from yesterday.
+
+
+    #### Parameters
+    - historic: boolean => TRUE returns the forecasts of yesterday along with today's
+    forecasts for all GSPs
+    """
+
+    logger.info(f"Get forecasts for all gsps. The option is {historic=}")
+
+    forecasts = get_forecasts_from_database(session=session, historic=historic)
+
+    forecasts.normalize()
+
+    return forecasts
+
+    
+
 @router.get("/forecast/{gsp_id}", response_model=Forecast)
 async def get_forecasts_for_a_specific_gsp(
     gsp_id: int,
@@ -132,38 +170,3 @@ async def get_truths_for_a_specific_gsp(
     )
 
 
-# corresponds to route /v0/solar/GB/gsp/forecast/all
-@router.get("/forecast/all/", response_model=ManyForecasts)
-async def get_all_available_forecasts(
-    historic: Optional[bool] = False,
-    session: Session = Depends(get_session),
-) -> ManyForecasts:
-    """### Get the latest information for ALL available forecasts for ALL GSPs
-
-    The return object contains a forecast object with system details for all National Grid GSPs.
-
-    See __Forecast__ and __ForecastValue__ schema for metadata details.
-
-    This request may take a longer time to load because a lot of data is being pulled from the
-    database.
-
-    This route returns forecasts objects from all available GSPs with an option to normalize
-    the forecasts by GSP installed capacity (installedCapacityMw). Normalization returns a
-    decimal value equal to _expectedPowerGenerationMegawatts_ divided by
-    __installedCapacityMw__ for the GSP.
-
-    There is also the option to pull forecast history from yesterday.
-
-
-    #### Parameters
-    - historic: boolean => TRUE returns the forecasts of yesterday along with today's
-    forecasts for all GSPs
-    """
-
-    logger.info(f"Get forecasts for all gsps. The option is {historic=}")
-
-    forecasts = get_forecasts_from_database(session=session, historic=historic)
-
-    forecasts.normalize()
-
-    return forecasts
