@@ -27,7 +27,7 @@ def test_read_latest_national(db_session):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = client.get("/v0/solar/GB/national/forecast/")
+    response = client.get("/v0/solar/GB/national/forecast")
     assert response.status_code == 200
 
     _ = Forecast(**response.json())
