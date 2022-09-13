@@ -3,11 +3,7 @@ from datetime import datetime, timezone
 
 from fastapi.testclient import TestClient
 from freezegun import freeze_time
-from nowcasting_datamodel.fake import (
-    make_fake_forecast,
-    make_fake_forecasts,
-    make_fake_national_forecast,
-)
+from nowcasting_datamodel.fake import make_fake_forecast, make_fake_forecasts
 from nowcasting_datamodel.models import (
     Forecast,
     ForecastValue,
@@ -27,21 +23,21 @@ client = TestClient(app)
 
 @freeze_time("2022-01-01")
 def test_read_latest_one_gsp(db_session):
-    """Check main GB/pv/gsp/{gsp_id} route works"""
+    """Check main solar/GB/gsp/forecast/{gsp_id} route works"""
 
     forecasts = make_fake_forecasts(gsp_ids=list(range(0, 10)), session=db_session)
     db_session.add_all(forecasts)
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = client.get("/v0/GB/solar/gsp/forecast/one_gsp/1")
+    response = client.get("/v0/solar/GB/gsp/forecast/1")
     assert response.status_code == 200
 
     _ = Forecast(**response.json())
 
 
 def test_read_latest_all_gsp(db_session):
-    """Check main GB/pv/gsp route works"""
+    """Check main solar/GB/gsp/forecast/all route works"""
 
     forecasts = make_fake_forecasts(
         gsp_ids=list(range(0, 10)),
@@ -52,7 +48,7 @@ def test_read_latest_all_gsp(db_session):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = client.get("/v0/GB/solar/gsp/forecast/all")
+    response = client.get("/v0/solar/GB/gsp/forecast/all/")
     assert response.status_code == 200
 
     r = ManyForecasts(**response.json())
@@ -61,7 +57,7 @@ def test_read_latest_all_gsp(db_session):
 
 
 def test_read_latest_all_gsp_normalized(db_session):
-    """Check main GB/pv/gsp route works"""
+    """Check main solar/GB/gsp/forecast/all normalized route works"""
 
     forecasts = make_fake_forecasts(
         gsp_ids=list(range(0, 10)),
@@ -72,7 +68,7 @@ def test_read_latest_all_gsp_normalized(db_session):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = client.get("/v0/GB/solar/gsp/forecast/all/?normalize=True")
+    response = client.get("/v0/solar/GB/gsp/forecast/all/?normalize=True")
     assert response.status_code == 200
 
     r = ManyForecasts(**response.json())
@@ -81,7 +77,7 @@ def test_read_latest_all_gsp_normalized(db_session):
 
 
 def test_read_latest_all_gsp_historic(db_session):
-    """Check main GB/pv/gsp route works"""
+    """Check main solar/GB/gsp/forecast/all historic route works"""
 
     forecasts = make_fake_forecasts(
         gsp_ids=list(range(0, 10)),
@@ -93,7 +89,7 @@ def test_read_latest_all_gsp_historic(db_session):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = client.get("/v0/GB/solar/gsp/forecast/all/?historic=True")
+    response = client.get("/v0/solar/GB/gsp/forecast/all/?historic=True")
     assert response.status_code == 200
 
     r = ManyForecasts(**response.json())
@@ -104,7 +100,7 @@ def test_read_latest_all_gsp_historic(db_session):
 
 @freeze_time("2022-07-01 10:00:00")
 def test_read_latest_all_gsp_forecast_horizon(db_session):
-    """Check main GB/pv/gsp route works"""
+    """Check main solar/GB/gsp/forecast route works"""
 
     t0_datetime_utc = datetime(2022, 7, 1, 12, tzinfo=timezone.utc)
     created_utc = datetime(2022, 7, 1, 10, tzinfo=timezone.utc)
@@ -120,8 +116,8 @@ def test_read_latest_all_gsp_forecast_horizon(db_session):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    # no forecast are made 3 horus before target time
-    response = client.get("/v0/GB/solar/gsp/forecast/latest/0?forecast_horizon_minutes=180")
+    # no forecast are made 3 hours before target time
+    response = client.get("/v0/solar/GB/gsp/forecast/latest/0?forecast_horizon_minutes=180")
     assert response.status_code == 200
 
     r = [ForecastValue(**f) for f in response.json()]
@@ -129,112 +125,16 @@ def test_read_latest_all_gsp_forecast_horizon(db_session):
     # print(r.forecasts[0].forecast_values[0].created_utc)
     assert len(r) == 0
 
-    response = client.get("/v0/GB/solar/gsp/forecast/latest/0?forecast_horizon_minutes=119")
+    response = client.get("/v0/solar/GB/gsp/forecast/latest/0?forecast_horizon_minutes=119")
     assert response.status_code == 200
 
     r = [ForecastValue(**f) for f in response.json()]
     assert len(r) == 2
 
 
-def test_read_latest_national(db_session):
-    """Check main GB/pv/national route works"""
-
-    forecast = make_fake_national_forecast(session=db_session)
-    db_session.add(forecast)
-
-    app.dependency_overrides[get_session] = lambda: db_session
-
-    response = client.get("/v0/GB/solar/gsp/forecast/national")
-    assert response.status_code == 200
-
-    _ = Forecast(**response.json())
-
-
-def test_gsp_boundaries(db_session):
-    """Check main GB/pv/national route works"""
-
-    forecast = make_fake_national_forecast(session=db_session)
-    db_session.add(forecast)
-
-    app.dependency_overrides[get_session] = lambda: db_session
-
-    response = client.get("/v0/GB/solar/gsp/gsp_boundaries")
-    assert response.status_code == 200
-    assert len(response.json()) > 0
-
-
-@freeze_time("2022-01-01")
-def test_read_truth_one_gsp(db_session):
-    """Check main GB/pv/gsp/{gsp_id} route works"""
-
-    gsp_yield_1 = GSPYield(datetime_utc=datetime(2022, 1, 2), solar_generation_kw=1)
-    gsp_yield_1_sql = gsp_yield_1.to_orm()
-
-    gsp_yield_2 = GSPYield(datetime_utc=datetime(2022, 1, 1), solar_generation_kw=2)
-    gsp_yield_2_sql = gsp_yield_2.to_orm()
-
-    gsp_yield_3 = GSPYield(datetime_utc=datetime(2022, 1, 1), solar_generation_kw=3)
-    gsp_yield_3_sql = gsp_yield_3.to_orm()
-
-    gsp_sql_1: LocationSQL = Location(gsp_id=1, label="GSP_1", status_interval_minutes=5).to_orm()
-    gsp_sql_2: LocationSQL = Location(gsp_id=2, label="GSP_2", status_interval_minutes=5).to_orm()
-
-    # add pv system to yield object
-    gsp_yield_1_sql.location = gsp_sql_1
-    gsp_yield_2_sql.location = gsp_sql_1
-    gsp_yield_3_sql.location = gsp_sql_2
-
-    # add to database
-    db_session.add_all([gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_sql_1, gsp_sql_2])
-
-    app.dependency_overrides[get_session] = lambda: db_session
-
-    response = client.get("/v0/GB/solar/gsp/pvlive/one_gsp/1")
-    assert response.status_code == 200
-
-    r_json = response.json()
-    assert len(r_json) == 2
-    _ = [GSPYield(**gsp_yield) for gsp_yield in r_json]
-
-
-@freeze_time("2022-01-01")
-def test_read_truth_national_gsp(db_session):
-    """Check main GB/pv/gsp/{gsp_id} route works"""
-
-    gsp_yield_1 = GSPYield(datetime_utc=datetime(2022, 1, 2), solar_generation_kw=1)
-    gsp_yield_1_sql = gsp_yield_1.to_orm()
-
-    gsp_yield_2 = GSPYield(datetime_utc=datetime(2022, 1, 1), solar_generation_kw=2)
-    gsp_yield_2_sql = gsp_yield_2.to_orm()
-
-    gsp_yield_3 = GSPYield(datetime_utc=datetime(2022, 1, 1, 12), solar_generation_kw=3)
-    gsp_yield_3_sql = gsp_yield_3.to_orm()
-
-    gsp_sql_1: LocationSQL = Location(
-        gsp_id=0, label="national", status_interval_minutes=5
-    ).to_orm()
-
-    # add pv system to yield object
-    gsp_yield_1_sql.location = gsp_sql_1
-    gsp_yield_2_sql.location = gsp_sql_1
-    gsp_yield_3_sql.location = gsp_sql_1
-
-    # add to database
-    db_session.add_all([gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_sql_1])
-
-    app.dependency_overrides[get_session] = lambda: db_session
-
-    response = client.get("/v0/GB/solar/gsp/national/pvlive")
-    assert response.status_code == 200
-
-    r_json = response.json()
-    assert len(r_json) == 3
-    _ = [GSPYield(**gsp_yield) for gsp_yield in r_json]
-
-
 @freeze_time("2022-06-01")
-def test_read_forecast_one_gsp(db_session):
-    """Check main GB/pv/gsp/{gsp_id} route works"""
+def test_read_forecast_value_one_gsp(db_session):
+    """Check main solar/GB/gsp/forecast/{gsp_id} route works"""
 
     forecast_value_1_sql = ForecastValueLatestSQL(
         target_time=datetime(2022, 6, 2), expected_power_generation_megawatts=1, gsp_id=1
@@ -260,7 +160,7 @@ def test_read_forecast_one_gsp(db_session):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = client.get("/v0/GB/solar/gsp/forecast/latest/1")
+    response = client.get("/v0/solar/GB/gsp/forecast/latest/1")
     assert response.status_code == 200
 
     r_json = response.json()
@@ -274,16 +174,36 @@ def test_read_forecast_one_gsp(db_session):
     _ = [ForecastValue(**forecast_value) for forecast_value in r_json]
 
 
-def test_get_gsp_systems(db_session):
-    """Check main GB/pv/gsp route works"""
+@freeze_time("2022-01-01")
+def test_read_truths_for_a_specific_gsp(db_session):
+    """Check main solar/GB/national/pvlive route works"""
 
-    forecasts = make_fake_forecasts(gsp_ids=list(range(0, 10)), session=db_session)
-    db_session.add_all(forecasts)
+    gsp_yield_1 = GSPYield(datetime_utc=datetime(2022, 1, 2), solar_generation_kw=1)
+    gsp_yield_1_sql = gsp_yield_1.to_orm()
+
+    gsp_yield_2 = GSPYield(datetime_utc=datetime(2022, 1, 1), solar_generation_kw=2)
+    gsp_yield_2_sql = gsp_yield_2.to_orm()
+
+    gsp_yield_3 = GSPYield(datetime_utc=datetime(2022, 1, 1, 12), solar_generation_kw=3)
+    gsp_yield_3_sql = gsp_yield_3.to_orm()
+
+    gsp_sql_1: LocationSQL = Location(
+        gsp_id=122, label="GSP_122", status_interval_minutes=5
+    ).to_orm()
+
+    # add pv system to yield object
+    gsp_yield_1_sql.location = gsp_sql_1
+    gsp_yield_2_sql.location = gsp_sql_1
+    gsp_yield_3_sql.location = gsp_sql_1
+
+    # add to database
+    db_session.add_all([gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_sql_1])
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = client.get("v0/GB/solar/gsp/gsp_systems")
+    response = client.get("/v0/solar/GB/gsp/pvlive/122")
     assert response.status_code == 200
 
-    locations = [Location(**location) for location in response.json()]
-    assert len(locations) == 10
+    r_json = response.json()
+    assert len(r_json) == 3
+    _ = [GSPYield(**gsp_yield) for gsp_yield in r_json]
