@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 NationalYield = GSPYield
 
-# corresponds to API route /v0/solar/GB/gsp/forecast/{gsp_id}
+
 @router.get("/forecast/{gsp_id}", response_model=Forecast)
 async def get_forecasts_for_a_specific_gsp(
     gsp_id: int,
@@ -57,7 +57,8 @@ async def get_forecasts_for_a_specific_gsp(
     return forecast
 
 
-# corresponds to API route /v0/solar/GB/gsp/forecast/{gsp_id}/{only_values} or other filter parameters
+# corresponds to API route /v0/solar/GB/gsp/forecast/{gsp_id}/{only_values} 
+# or other filter parameters
 @router.get("/forecast/latest/{gsp_id}", response_model=List[ForecastValue])
 async def get_latest_forecasts_for_a_specific_gsp(
     gsp_id: int,

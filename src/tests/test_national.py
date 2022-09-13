@@ -3,9 +3,7 @@ from datetime import datetime
 
 from fastapi.testclient import TestClient
 from freezegun import freeze_time
-from nowcasting_datamodel.fake import (
-    make_fake_national_forecast,
-)
+from nowcasting_datamodel.fake import make_fake_national_forecast
 from nowcasting_datamodel.models import Forecast, GSPYield, Location, LocationSQL
 
 from database import get_session
