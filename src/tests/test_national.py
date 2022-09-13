@@ -20,14 +20,14 @@ client = TestClient(app)
 
 
 def test_read_latest_national(db_session):
-    """Check main GB/pv/national route works"""
+    """Check main solar/GB/national/forecast/ route works"""
 
     forecast = make_fake_national_forecast(session=db_session)
     db_session.add(forecast)
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = client.get("/v0/GB/solar/gsp/forecast/national")
+    response = client.get("/v0/solar/GB/national/forecast/")
     assert response.status_code == 200
 
     _ = Forecast(**response.json())
@@ -35,7 +35,7 @@ def test_read_latest_national(db_session):
 
 @freeze_time("2022-01-01")
 def test_read_truth_national_gsp(db_session):
-    """Check main GB/pv/gsp/{gsp_id} route works"""
+    """Check main solar/GB/national/pvlive/ route works"""
 
     gsp_yield_1 = GSPYield(datetime_utc=datetime(2022, 1, 2), solar_generation_kw=1)
     gsp_yield_1_sql = gsp_yield_1.to_orm()
@@ -60,7 +60,7 @@ def test_read_truth_national_gsp(db_session):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = client.get("/v0/GB/solar/gsp/national/pvlive")
+    response = client.get("/v0/solar/GB/national/pvlive/")
     assert response.status_code == 200
 
     r_json = response.json()

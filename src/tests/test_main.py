@@ -1,7 +1,7 @@
 """ Test for main app """
 from fastapi.testclient import TestClient
 
-from main import app, version
+from main.py import app, version
 
 client = TestClient(app)
 
