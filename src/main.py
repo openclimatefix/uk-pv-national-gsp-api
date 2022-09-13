@@ -47,14 +47,14 @@ eight hours ahead.
 - Forecasts are produced at the GB National and regional level (using GSPs).
 
 OCF's incredibly accurate, short-term forecasts allow National Grid to reduce the amount of
-spinning reserves they need to run at any given moment, ultimately reducing 
+spinning reserves they need to run at any given moment, ultimately reducing
 carbon emmisions.
 
 In order to get started with reading the API’s forecast objects, it might be helpful to
 know that GSPs are referenced in the following ways:  gspId (ex. 122); gspName
 (ex. FIDF_1); gspGroup (ex. )
-regionName (ex. Fiddlers Ferry). The API provides information on when input data was 
-last updated as well as the installed photovoltaic (PV) megawatt capacity 
+regionName (ex. Fiddlers Ferry). The API provides information on when input data was
+last updated as well as the installed photovoltaic (PV) megawatt capacity
 (installedCapacityMw) of each individual GSP.
 
 You'll find more detailed information for each route in the documentation below.
