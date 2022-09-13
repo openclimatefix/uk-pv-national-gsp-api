@@ -10,12 +10,8 @@ from nowcasting_dataset.data_sources.gsp.eso import get_gsp_metadata_from_eso
 from sqlalchemy.orm.session import Session
 
 from database import (
-    get_forecasts_for_a_specific_gsp_from_database,
-    get_forecasts_from_database,
     get_gsp_system,
-    get_latest_forecast_values_for_a_specific_gsp_from_database,
     get_session,
-    get_truth_values_for_a_specific_gsp_from_database,
 )
 
 logger = logging.getLogger(__name__)
@@ -62,7 +58,7 @@ async def get_gsp_boundaries() -> dict:
     return json.loads(json_string)
 
 
-@router.get("", response_model=List[Location])
+@router.get("/", response_model=List[Location])
 async def get_systems(
     session: Session = Depends(get_session), gsp_id: Optional[int] = None
 ) -> List[Location]:
