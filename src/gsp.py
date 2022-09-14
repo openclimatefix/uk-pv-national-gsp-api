@@ -64,13 +64,14 @@ async def get_all_available_forecasts(
 #  async def get latest only values
 #    logger.info(f"Get forecasts for gsp id {gsp_id} with {forecast_horizon_minutes=}")
 
-    # # return get_latest_forecast_values_for_a_specific_gsp_from_database(
-    #     session=session,
-    #     gsp_id=gsp_id,
-    #     forecast_horizon_minutes=forecast_horizon_minutes,
-    # )
+# # return get_latest_forecast_values_for_a_specific_gsp_from_database(
+#     session=session,
+#     gsp_id=gsp_id,
+#     forecast_horizon_minutes=forecast_horizon_minutes,
+# )
 
-@router.get("/forecast/{gsp_id}/{only_values}", response_model= Union[Forecast, List[Forecast]] )
+
+@router.get("/forecast/{gsp_id}/{only_values}", response_model=Union[Forecast, List[Forecast]])
 async def get_forecasts_for_a_specific_gsp(
     gsp_id: int,
     session: Session = Depends(get_session),
@@ -95,37 +96,33 @@ async def get_forecasts_for_a_specific_gsp(
     - historic: boolean => TRUE returns yesterday's forecasts in addition to today's forecast
     """
 
-    logger.info(f"Get forecasts for gsp id {gsp_id} with {historic=} or {only_values} and {forecast_horizon_minutes=}")
-    
+    logger.info(
+        f"Get forecasts for gsp id {gsp_id} with {historic=} or {only_values} and {forecast_horizon_minutes=}"
+    )
+
     if only_values is False:
         full_forecast = get_forecasts_for_a_specific_gsp_from_database(
             session=session,
             gsp_id=gsp_id,
             historic=historic,
-            )
+        )
 
         full_forecast.normalize()
-        
+
         return full_forecast
 
-    print('this is working')
-        
+    print("this is working")
 
     only_values_forecast = get_latest_forecast_values_for_a_specific_gsp_from_database(
         session=session,
         gsp_id=gsp_id,
         forecast_horizon_minutes=forecast_horizon_minutes,
     )
-    
+
     return only_values_forecast
 
 
-
-
-    
-
-
-@router.get("/forecast/{gsp_id}", response_model= Forecast )
+@router.get("/forecast/{gsp_id}", response_model=Forecast)
 async def get_forecasts_for_a_specific_gsp(
     gsp_id: int,
     session: Session = Depends(get_session),
