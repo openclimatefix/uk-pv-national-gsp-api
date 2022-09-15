@@ -66,11 +66,10 @@ async def get_forecasts_for_a_specific_gsp(
     only_forecast_values: Optional[bool] = False,
     forecast_horizon_minutes: Optional[int] = None,
 ) -> Union[Forecast, List[ForecastValue]]:
-    """### Get the most recent full forecast or a __values only__ only forecast 
+    """### This route comes with the following options: 
 
-    This route comes with the following options: 
-
-    1. Get __recent forecast__ for a specific GSP with system details.
+    1. Get __recent solar forecast__ for a specific GSP for today and yesterday 
+    with system details.
         - The return object is a solar forecast with GSP system details.
         -The forecast object is returned with expected megawatt generation at 
         a specific GSP
@@ -80,7 +79,7 @@ async def get_forecasts_for_a_specific_gsp(
         from yesterday and today
         for the given GSP
 
-    2. Get __ONLY__ forecast values for a specific GSP.
+    2. Get __ONLY__ forecast values for solar forecast for a specific GSP.
         - Set __only_forecast_values__ to TRUE 
         - Setting a __forecast_horizon_minutes__ parameter retrieves the latest forecast 
         a given set of minutes before the target time.
