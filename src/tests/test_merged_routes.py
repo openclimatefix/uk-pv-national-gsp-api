@@ -35,8 +35,9 @@ def test_read_one_gsp(db_session):
 def test_read_one_gsp_historic(db_session):
     """Check main solar/GB/gsp/forecast/{gsp_id} route works with history"""
 
-    forecasts = make_fake_forecasts(gsp_ids=list(range(0, 10)), session=db_session)
+    forecasts = make_fake_forecasts(gsp_ids=list(range(0, 10)), session=db_session, t0_datetime_utc=datetime.now(tz=timezone.utc))
     db_session.add_all(forecasts)
+    update_all_forecast_latest(forecasts=forecasts, session=db_session)
 
     app.dependency_overrides[get_session] = lambda: db_session
 
@@ -75,7 +76,7 @@ def test_read_only_forecast_values_gsp(db_session):
     app.dependency_overrides[get_session] = lambda: db_session
 
     response = client.get(
-        "/v0/solar/GB/gsp/forecast/1?only_forecast_values=True&&forecast_horizon_minutes=30"
+        "/v0/solar/GB/gsp/forecast/1?only_forecast_values=true"
     )
     assert response.status_code == 200
 

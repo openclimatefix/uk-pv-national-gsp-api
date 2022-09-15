@@ -71,14 +71,14 @@ async def get_all_available_forecasts(
 # )
 
 
-@router.get("/forecast/{gsp_id}", response_model=Union[Forecast, List[Forecast]])
+@router.get("/forecast/{gsp_id}", response_model=Union[Forecast, List[ForecastValue]])
 async def get_forecasts_for_a_specific_gsp(
     gsp_id: int,
     session: Session = Depends(get_session),
     historic: Optional[bool] = False,
-    only_forecast_values: Optional[bool] = True,
+    only_forecast_values: Optional[bool] = False,
     forecast_horizon_minutes: Optional[int] = None,
-) -> Union[Forecast, List[Forecast]]:
+) -> Union[Forecast, List[ForecastValue]]:
     """### Get one forecast for a specific GSP
 
     The return object is a solar forecast with GSP system details.
@@ -101,24 +101,30 @@ async def get_forecasts_for_a_specific_gsp(
     )
 
     if only_forecast_values is False:
+        logger.debug(f"Getting forecast.")
         full_forecast = get_forecasts_for_a_specific_gsp_from_database(
             session=session,
             gsp_id=gsp_id,
             historic=historic,
         )
+        logger.debug(f"Got forecast.")
 
         full_forecast.normalize()
 
+        logger.debug(f"Normalized forecast.")
         return full_forecast
 
     else:
+        logger.debug(f"Getting forecast values only.")
         forecast_only = get_latest_forecast_values_for_a_specific_gsp_from_database(
             session=session,
             gsp_id=gsp_id,
             forecast_horizon_minutes=forecast_horizon_minutes,
         )
-
+        logger.debug(f"Got forecast values only!!!")
         return forecast_only
+
+        
 
 
 # @router.get("/forecast/{gsp_id}", response_model= Forecast )
