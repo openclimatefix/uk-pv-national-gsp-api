@@ -124,8 +124,6 @@ async def get_forecasts_for_a_specific_gsp(
         logger.debug(f"Got forecast values only!!!")
         return forecast_only
 
-        
-
 
 # @router.get("/forecast/{gsp_id}", response_model= Forecast )
 # async def get_forecasts_for_a_specific_gsp(
