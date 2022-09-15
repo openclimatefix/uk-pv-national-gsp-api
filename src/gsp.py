@@ -1,6 +1,6 @@
 """Get GSP boundary data from eso """
 import logging
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from fastapi import APIRouter, Depends
 from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield, ManyForecasts
@@ -58,74 +58,75 @@ async def get_all_available_forecasts(
     return forecasts
 
 
-@router.get("/forecast/{gsp_id}", response_model=Forecast)
+@router.get("/forecast/{gsp_id}", response_model=Union[Forecast, List[ForecastValue]])
 async def get_forecasts_for_a_specific_gsp(
     gsp_id: int,
     session: Session = Depends(get_session),
     historic: Optional[bool] = False,
-) -> Forecast:
-    """### Get one forecast for a specific GSP
+    only_forecast_values: Optional[bool] = False,
+    forecast_horizon_minutes: Optional[int] = None,
+) -> Union[Forecast, List[ForecastValue]]:
+    """### This route comes with the following options:
 
-    The return object is a solar forecast with GSP system details.
+    1. Get __recent solar forecast__ for a specific GSP for today and yesterday
+    with system details.
+        - The return object is a solar forecast with GSP system details.
+        -The forecast object is returned with expected megawatt generation at
+        a specific GSP
+        for the upcoming 8 hours at every 30-minute interval (targetTime).
+        - Set __only_forecast_values__ ==> FALSE
+        - Setting __historic__ parameter to TRUE returns an object with data
+        from yesterday and today
+        for the given GSP
 
-    The forecast object is returned with expected megawatt generation at a specific GSP
-    for the upcoming 8 hours at every 30-minute interval (targetTime).
+    2. Get __ONLY__ forecast values for solar forecast for a specific GSP.
+        - Set __only_forecast_values__ to TRUE
+        - Setting a __forecast_horizon_minutes__ parameter retrieves the latest forecast
+        a given set of minutes before the target time.
+        - Return object is a simplified forecast object with __targetTimes__ and
+        __expectedPowerGenerationMegawatts__ at 30-minute intervals for the given GSP.
+        - NB: __historic__ parameter __will not__ work when __only_forecast_values__= TRUE
 
-    Setting history to TRUE on this route will return readings from yesterday and today
-    for the given GSP.
-
-    Please refer to the __Forecast__ and __ForecastValue__ schemas below for metadata definitions.
+    Please see the __Forecast__ and __ForecastValue__ schema below for full metadata details.
 
     #### Parameters
     - gsp_id: gsp_id of the desired forecast
     - historic: boolean => TRUE returns yesterday's forecasts in addition to today's forecast
-    """
-
-    logger.info(f"Get forecasts for gsp id {gsp_id} with {historic=}")
-
-    forecast = get_forecasts_for_a_specific_gsp_from_database(
-        session=session,
-        gsp_id=gsp_id,
-        historic=historic,
-    )
-
-    forecast.normalize()
-
-    return forecast
-
-
-# corresponds to API route /v0/solar/GB/gsp/forecast/{gsp_id}/{only_values}
-# or other filter parameters
-@router.get("/forecast/latest/{gsp_id}", response_model=List[ForecastValue])
-async def get_latest_forecasts_for_a_specific_gsp(
-    gsp_id: int,
-    session: Session = Depends(get_session),
-    forecast_horizon_minutes: Optional[int] = None,
-) -> List[ForecastValue]:
-    """### Gets the latest forecasts for a specific GSP for today and yesterday
-
-    The object returned is a solar forecast for the GSP without GSP system details.
-
-    This route returns a simplified forecast object with __targetTimes__ and
-    __expectedPowerGenerationMegawatts__ at 30-minute intervals for
-    the given GSP. The __forecast_horizon_minutes__ parameter
-    retrieves the latest forecast a given set of minutes before the target time.
-
-    Please see the __ForecastValue__ schema below for full metadata details.
-
-    #### Parameters
-    - gsp_id: gsp_id of the requested forecast
+    - only_forecast_values => TRUE returns solar forecast for the GSP without system details
     - forecast_horizon_minutes: optional forecast horizon in minutes (ex. 35 returns
     the latest forecast made 35 minutes before the target time)
     """
 
-    logger.info(f"Get forecasts for gsp id {gsp_id} with {forecast_horizon_minutes=}")
+    logger.info(f'{"Get forecasts for gsp id {gsp_id} forecast of forecast with only values."}')
 
-    return get_latest_forecast_values_for_a_specific_gsp_from_database(
-        session=session,
-        gsp_id=gsp_id,
-        forecast_horizon_minutes=forecast_horizon_minutes,
-    )
+    if only_forecast_values is False:
+        logger.debug(f'{"Getting forecast."}')
+        full_forecast = get_forecasts_for_a_specific_gsp_from_database(
+            session=session,
+            gsp_id=gsp_id,
+            historic=historic,
+        )
+
+        logger.debug(f'{"Got forecast."}')
+
+        full_forecast.normalize()
+
+        logger.debug(f'{"Normalized forecast."}')
+        return full_forecast
+
+    else:
+
+        logger.debug(f'{"Getting forecast values only."}')
+
+        forecast_only = get_latest_forecast_values_for_a_specific_gsp_from_database(
+            session=session,
+            gsp_id=gsp_id,
+            forecast_horizon_minutes=forecast_horizon_minutes,
+        )
+
+        logger.debug(f'{"Got forecast values only!!!"}')
+
+        return forecast_only
 
 
 # corresponds to API route /v0/solar/GB/gsp/pvlive/{gsp_id}
