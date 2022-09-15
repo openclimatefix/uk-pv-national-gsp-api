@@ -17,7 +17,7 @@ from main import app
 client = TestClient(app)
 
 @freeze_time("2022-01-01")
-def test_read_latest_one_gsp(db_session):
+def test_read_one_gsp(db_session):
     """Check main solar/GB/gsp/forecast/{gsp_id} route works"""
 
     forecasts = make_fake_forecasts(gsp_ids=list(range(0, 10)), session=db_session)
@@ -29,6 +29,20 @@ def test_read_latest_one_gsp(db_session):
     assert response.status_code == 200
 
     _ = Forecast(**response.json())
+
+def test_read_one_gsp_historic(db_session): 
+    """Check main solar/GB/gsp/forecast/{gsp_id} route works with history"""
+
+    forecasts = make_fake_forecasts(gsp_ids=list(range(0, 10)), session=db_session)
+    db_session.add_all(forecasts)
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = client.get("/v0/solar/GB/gsp/forecast/2?historic=True")
+    assert response.status_code == 200
+
+    _ = Forecast(**response.json())
+
 
 
 @freeze_time("2022-06-01")
@@ -48,7 +62,7 @@ def test_read_only_forecast_values_gsp(db_session):
     )
 
     forecast = make_fake_forecast(
-        gsp_id=122, session=db_session, t0_datetime_utc=datetime(2020, 1, 1)
+        gsp_id=1, session=db_session, t0_datetime_utc=datetime(2020, 1, 1)
     )
     forecast.forecast_values_latest.append(forecast_value_1_sql)
     forecast.forecast_values_latest.append(forecast_value_2_sql)
@@ -59,7 +73,7 @@ def test_read_only_forecast_values_gsp(db_session):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = client.get("/v0/solar/GB/gsp/forecast/122?only_forecast_values=true/")
+    response = client.get("/v0/solar/GB/gsp/forecast/1?only_forecast_values=True&&forecast_horizon_minutes=30")
     assert response.status_code == 200
 
     r_json = response.json()

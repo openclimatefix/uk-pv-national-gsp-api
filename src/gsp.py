@@ -76,7 +76,7 @@ async def get_forecasts_for_a_specific_gsp(
     gsp_id: int,
     session: Session = Depends(get_session),
     historic: Optional[bool] = False,
-    only_forecast_values: Optional[bool] = False,
+    only_forecast_values: Optional[bool] = True,
     forecast_horizon_minutes: Optional[int] = None,
 ) -> Union[Forecast, List[Forecast]]:
     """### Get one forecast for a specific GSP
@@ -98,7 +98,7 @@ async def get_forecasts_for_a_specific_gsp(
 
     logger.info(f"Get forecasts for gsp id {gsp_id} with {historic=} or {only_forecast_values} and {forecast_horizon_minutes=}")
     
-    if only_forecast_values == False:
+    if only_forecast_values is False:
         full_forecast = get_forecasts_for_a_specific_gsp_from_database(
             session=session,
             gsp_id=gsp_id,
