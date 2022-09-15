@@ -64,11 +64,11 @@ async def get_all_available_forecasts(
 #  async def get latest only values
 #    logger.info(f"Get forecasts for gsp id {gsp_id} with {forecast_horizon_minutes=}")
 
-    # # return get_latest_forecast_values_for_a_specific_gsp_from_database(
-    #     session=session,
-    #     gsp_id=gsp_id,
-    #     forecast_horizon_minutes=forecast_horizon_minutes,
-    # )
+# # return get_latest_forecast_values_for_a_specific_gsp_from_database(
+#     session=session,
+#     gsp_id=gsp_id,
+#     forecast_horizon_minutes=forecast_horizon_minutes,
+# )
 
 
 @router.get("/forecast/{gsp_id}", response_model=Union[Forecast, List[Forecast]])
@@ -96,33 +96,29 @@ async def get_forecasts_for_a_specific_gsp(
     - historic: boolean => TRUE returns yesterday's forecasts in addition to today's forecast
     """
 
-    logger.info(f"Get forecasts for gsp id {gsp_id} with {historic=} or {only_forecast_values} and {forecast_horizon_minutes=}")
-    
+    logger.info(
+        f"Get forecasts for gsp id {gsp_id} with {historic=} or {only_forecast_values} and {forecast_horizon_minutes=}"
+    )
+
     if only_forecast_values is False:
         full_forecast = get_forecasts_for_a_specific_gsp_from_database(
             session=session,
             gsp_id=gsp_id,
             historic=historic,
-            )
+        )
 
         full_forecast.normalize()
-        
+
         return full_forecast
 
-    else: 
+    else:
         forecast_only = get_latest_forecast_values_for_a_specific_gsp_from_database(
-        session=session,
-        gsp_id=gsp_id,
-        forecast_horizon_minutes=forecast_horizon_minutes,
+            session=session,
+            gsp_id=gsp_id,
+            forecast_horizon_minutes=forecast_horizon_minutes,
         )
-    
+
         return forecast_only
-
-
-
-
-
-    
 
 
 # @router.get("/forecast/{gsp_id}", response_model= Forecast )
