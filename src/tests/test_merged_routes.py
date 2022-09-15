@@ -4,11 +4,7 @@ from datetime import datetime, timezone
 from fastapi.testclient import TestClient
 from freezegun import freeze_time
 from nowcasting_datamodel.fake import make_fake_forecast, make_fake_forecasts
-from nowcasting_datamodel.models import (
-    Forecast,
-    ForecastValue,
-    ForecastValueLatestSQL,
-)
+from nowcasting_datamodel.models import Forecast, ForecastValue, ForecastValueLatestSQL
 from nowcasting_datamodel.update import update_all_forecast_latest
 
 from database import get_session
