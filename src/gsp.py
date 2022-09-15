@@ -66,21 +66,36 @@ async def get_forecasts_for_a_specific_gsp(
     only_forecast_values: Optional[bool] = False,
     forecast_horizon_minutes: Optional[int] = None,
 ) -> Union[Forecast, List[ForecastValue]]:
-    """### Get one forecast for a specific GSP
+    """### Get the most recent full forecast or a __values only__ only forecast 
 
-    The return object is a solar forecast with GSP system details.
+    This route comes with the following options: 
 
-    The forecast object is returned with expected megawatt generation at a specific GSP
-    for the upcoming 8 hours at every 30-minute interval (targetTime).
+    1. Get __recent forecast__ for a specific GSP with system details.
+        - The return object is a solar forecast with GSP system details.
+        -The forecast object is returned with expected megawatt generation at 
+        a specific GSP
+        for the upcoming 8 hours at every 30-minute interval (targetTime).
+        - Set __only_forecast_values__ ==> FALSE 
+        - Setting __historic__ parameter to TRUE returns an object with data 
+        from yesterday and today
+        for the given GSP
 
-    Setting history to TRUE on this route will return readings from yesterday and today
-    for the given GSP.
+    2. Get __ONLY__ forecast values for a specific GSP.
+        - Set __only_forecast_values__ to TRUE 
+        - Setting a __forecast_horizon_minutes__ parameter retrieves the latest forecast 
+        a given set of minutes before the target time.
+        - Return object is a simplified forecast object with __targetTimes__ and
+        __expectedPowerGenerationMegawatts__ at 30-minute intervals for the given GSP.
+        - NB: __historic__ parameter __will not__ work when __only_forecast_values__= TRUE
 
-    Please refer to the __Forecast__ and __ForecastValue__ schemas below for metadata definitions.
+    Please see the __Forecast__ and __ForecastValue__ schema below for full metadata details.
 
     #### Parameters
     - gsp_id: gsp_id of the desired forecast
     - historic: boolean => TRUE returns yesterday's forecasts in addition to today's forecast
+    - only_forecast_values => TRUE returns solar forecast for the GSP without system details
+    - forecast_horizon_minutes: optional forecast horizon in minutes (ex. 35 returns
+    the latest forecast made 35 minutes before the target time)
     """
 
     logger.info(f'{"Get forecasts for gsp id {gsp_id} forecast of forecast with only values."}')
