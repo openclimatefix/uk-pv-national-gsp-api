@@ -7,10 +7,9 @@ from nowcasting_datamodel.models import Forecast, GSPYield
 from sqlalchemy.orm.session import Session
 
 from database import (
-    get_latest_national_forecast_from_database,
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
-    get_forecasts_for_a_specific_gsp_from_database
+    get_forecasts_for_a_specific_gsp_from_database,
 )
 
 logger = logging.getLogger(__name__)
@@ -40,7 +39,9 @@ async def get_nationally_aggregated_forecasts(
     """
 
     logger.debug("Get national forecasts")
-    return get_forecasts_for_a_specific_gsp_from_database(session=session, historic=historic, gsp_id=0)
+    return get_forecasts_for_a_specific_gsp_from_database(
+        session=session, historic=historic, gsp_id=0
+    )
 
 
 # corresponds to API route /v0/solar/GB/national/pvlive/, getting PV_Live NationalYield for GB
