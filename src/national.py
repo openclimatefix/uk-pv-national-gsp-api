@@ -39,9 +39,15 @@ async def get_nationally_aggregated_forecasts(
     """
 
     logger.debug("Get national forecasts")
-    return get_forecasts_for_a_specific_gsp_from_database(
+    national_forecast = get_forecasts_for_a_specific_gsp_from_database(
         session=session, historic=historic, gsp_id=0
     )
+
+    logger.debug(
+        f"Got national forecasts with {len(national_forecast.forecast_values)} forecast values"
+    )
+
+    return national_forecast
 
 
 # corresponds to API route /v0/solar/GB/national/pvlive/, getting PV_Live NationalYield for GB
