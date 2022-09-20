@@ -7,9 +7,9 @@ from nowcasting_datamodel.models import Forecast, GSPYield
 from sqlalchemy.orm.session import Session
 
 from database import (
+    get_forecasts_for_a_specific_gsp_from_database,
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
-    get_forecasts_for_a_specific_gsp_from_database,
 )
 
 logger = logging.getLogger(__name__)
