@@ -10,6 +10,7 @@ from database import (
     get_latest_national_forecast_from_database,
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
+    get_forecasts_for_a_specific_gsp_from_database
 )
 
 logger = logging.getLogger(__name__)
@@ -22,6 +23,7 @@ NationalYield = GSPYield
 @router.get("/forecast", response_model=Forecast)
 async def get_nationally_aggregated_forecasts(
     session: Session = Depends(get_session),
+    historic: Optional[bool] = False,
 ) -> Forecast:
     """### Returns a national aggregate solar PV energy forecast
 
@@ -32,10 +34,13 @@ async def get_nationally_aggregated_forecasts(
 
     See __Forecast__ and __ForecastValue__ schemas for metadata descriptions.
 
+    params:
+        historic: boolean => TRUE returns yesterday's forecasts in addition to today's forecast
+
     """
 
     logger.debug("Get national forecasts")
-    return get_latest_national_forecast_from_database(session=session)
+    return get_forecasts_for_a_specific_gsp_from_database(session=session, historic=historic, gsp_id=0)
 
 
 # corresponds to API route /v0/solar/GB/national/pvlive/, getting PV_Live NationalYield for GB
