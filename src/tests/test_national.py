@@ -1,10 +1,11 @@
 """ Test for main app """
-from datetime import datetime
+from datetime import datetime, timezone
 
 from fastapi.testclient import TestClient
 from freezegun import freeze_time
 from nowcasting_datamodel.fake import make_fake_national_forecast
 from nowcasting_datamodel.models import Forecast, GSPYield, Location, LocationSQL
+from nowcasting_datamodel.update import update_all_forecast_latest
 
 from database import get_session
 from main import app
@@ -15,12 +16,32 @@ client = TestClient(app)
 def test_read_latest_national(db_session):
     """Check main solar/GB/national/forecast route works"""
 
-    forecast = make_fake_national_forecast(session=db_session)
+    forecast = make_fake_national_forecast(
+        session=db_session, t0_datetime_utc=datetime.now(tz=timezone.utc)
+    )
     db_session.add(forecast)
 
     app.dependency_overrides[get_session] = lambda: db_session
 
     response = client.get("/v0/solar/GB/national/forecast/")
+    assert response.status_code == 200
+
+    _ = Forecast(**response.json())
+
+
+def test_read_latest_national_historic(db_session):
+    """Check main solar/GB/national/forecast route works"""
+
+    forecast = make_fake_national_forecast(
+        session=db_session, t0_datetime_utc=datetime.now(tz=timezone.utc)
+    )
+    db_session.add(forecast)
+    update_all_forecast_latest(forecasts=[forecast], session=db_session)
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = client.get("/v0/solar/GB/national/forecast/?historic=True")
+    print(response.json())
     assert response.status_code == 200
 
     _ = Forecast(**response.json())
