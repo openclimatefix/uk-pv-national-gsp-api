@@ -62,18 +62,18 @@ async def get_national_forecast(
     logger.debug("Get national forecasts")
 
     if not only_forecast_values:
-        logger.debug(f'{"Getting forecast."}')
+        logger.debug("Getting forecast.")
         full_forecast = get_forecasts_for_a_specific_gsp_from_database(
             session=session,
             gsp_id=0,
             historic=historic,
         )
 
-        logger.debug(f"Got forecast.")
+        logger.debug("Got forecast.")
 
         full_forecast.normalize()
 
-        logger.debug(f'{"Normalized forecast."}')
+        logger.debug("Normalized forecast.")
 
         logger.debug(
             f"Got national forecasts with {len(full_forecast.forecast_values)} forecast values"
