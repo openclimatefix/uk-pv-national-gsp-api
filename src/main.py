@@ -143,7 +143,7 @@ def get_redoc_html_with_theme(
     """
     if with_google_fonts:
         html += """
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Inter:300,400,700" rel="stylesheet">
     """
     html += f"""
     <link rel="shortcut icon" href="{redoc_favicon_url}">
@@ -166,60 +166,58 @@ def get_redoc_html_with_theme(
     <script>
         Redoc.init("{openapi_url}", """ + """{
             "theme": {
-                "breakpoints": {
-                "small": "10rem",
-                "medium": "40rem",
-                "large": "85rem"
-                },
                 "colors": {
-                "primary": {
-                    "main": "rgba(246, 20, 63, 1)",
-                    "light": "rgba(246, 20, 63, 0.42)"
-                },
-                "success": {
-                    "main": "rgba(28, 184, 65, 1)",
-                    "light": "#81ec9a",
-                    "dark": "#083312",
-                    "contrastText": "#000"
-                },
-                "text": {
-                    "primary": "rgba(0, 0, 0, 1)",
-                    "secondary": "#4d4d4d"
-                },
-                "http": {
-                    "get": "rgba(0, 200, 219, 1)",
-                    "post": "rgba(28, 184, 65, 1)",
-                    "put": "rgba(255, 187, 0, 1)",
-                    "delete": "rgba(254, 39, 35, 1)"
-                }
+                    "primary": {
+                        "main": "#f7ba17",
+                        "light": "#ffefc6"
+                    },
+                    "success": {
+                        "main": "rgba(28, 184, 65, 1)",
+                        "light": "#81ec9a",
+                        "dark": "#083312",
+                        "contrastText": "#000"
+                    },
+                    "text": {
+                        "primary": "#14120e",
+                        "secondary": "#4d4d4d"
+                    },
+                    "http": {
+                        "get": "#f7ba17",
+                        "post": "rgba(28, 184, 65, 1)",
+                        "put": "rgba(255, 187, 0, 1)",
+                        "delete": "rgba(254, 39, 35, 1)"
+                    }
                 },
                 "typography": {
-                "fontSize": "16px",
-                "fontFamily": "Fira Sans, Roboto, sans-serif",
-                "optimizeSpeed": true,
-                "smoothing": "antialiased",
-                "headings": {
-                    "fontWeight": "bold",
-                    "lineHeight": "1em"
-                },
-                "code": {
-                    "fontWeight": "600",
-                    "color": "rgba(92, 62, 189, 1)",
-                    "wrap": true
-                },
-                "links": {
-                    "color": "rgba(246, 20, 63, 1)",
-                    "visited": "rgba(246, 20, 63, 1)",
-                    "hover": "#fa768f"
-                }
+                    "fontSize": "15px",
+                    "fontFamily": "Inter, sans-serif",
+                    "lineHeight": "1.5em",
+                    "headings": {
+                        "fontFamily": "Inter, sans-serif",
+                        "fontWeight": "bold",
+                        "lineHeight": "1.5em"
+                    },
+                    "code": {
+                        "fontWeight": "600",
+                        "color": "rgba(92, 62, 189, 1)",
+                        "wrap": true
+                    },
+                    "links": {
+                        "color": "#086788",
+                        "visited": "#086788",
+                        "hover": "#32343a"
+                    }
                 },
                 "sidebar": {
-                "width": "300px",
-                "textColor": "#000000"
+                    "width": "300px",
+                    "textColor": "#000000"
+                },
+                "logo": {
+                    "gutter": "10px"
                 },
                 "rightPanel": {
-                "backgroundColor": "rgba(55, 53, 71, 1)",
-                "textColor": "#ffffff"
+                    "backgroundColor": "rgba(55, 53, 71, 1)",
+                    "textColor": "#ffffff"
                 }
             }
         }""" + f""", document.getElementById('redoc-container'))
