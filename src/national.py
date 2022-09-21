@@ -3,14 +3,14 @@ import logging
 from typing import List, Optional, Union
 
 from fastapi import APIRouter, Depends
-from nowcasting_datamodel.models import Forecast, GSPYield, ForecastValue
+from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield
 from sqlalchemy.orm.session import Session
 
 from database import (
+    get_forecasts_for_a_specific_gsp_from_database,
+    get_latest_forecast_values_for_a_specific_gsp_from_database,
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
-    get_latest_forecast_values_for_a_specific_gsp_from_database,
-    get_forecasts_for_a_specific_gsp_from_database,
 )
 
 logger = logging.getLogger(__name__)
