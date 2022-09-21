@@ -10,7 +10,7 @@ from database import (
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
     get_latest_forecast_values_for_a_specific_gsp_from_database,
-    get_forecasts_for_a_specific_gsp_from_database
+    get_forecasts_for_a_specific_gsp_from_database,
 )
 
 logger = logging.getLogger(__name__)
@@ -73,7 +73,6 @@ async def get_national_forecast(
 
         logger.debug(f'{"Normalized forecast."}')
 
-
         logger.debug(
             f"Got national forecasts with {len(full_forecast.forecast_values)} forecast values"
         )
@@ -85,9 +84,7 @@ async def get_national_forecast(
             session=session, gsp_id=0, forecast_horizon_minutes=forecast_horizon_minutes
         )
 
-        logger.debug(
-            f"Got national forecasts with {len(national_forecast_values)} forecast values"
-        )
+        logger.debug(f"Got national forecasts with {len(national_forecast_values)} forecast values")
 
     return national_forecast_values
 
