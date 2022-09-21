@@ -19,7 +19,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-version = "0.2.28"
+version = "0.2.29"
 description = """
 As part of Open Climate Fix’s [open source project](https://github.com/openclimatefix), the
 Nowcasting API is still under development.
