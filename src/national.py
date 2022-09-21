@@ -27,7 +27,7 @@ async def get_national_forecast(
     only_forecast_values: Optional[bool] = False,
     forecast_horizon_minutes: Optional[int] = None,
 ) -> Union[Forecast, List[ForecastValue]]:
-    """ Get the National Forecast
+    """Get the National Forecast
 
     This route aggregrates data from all GSP forecasts and creates an 8-hour solar energy
     generation forecast  in 30-minute interval for all of GB.
