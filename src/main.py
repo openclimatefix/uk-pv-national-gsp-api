@@ -244,8 +244,8 @@ def custom_openapi():
         version=version,
         description=description,
         contact={
-            "name": "Open Climate Fix",
-            "url": "https://openclimatefix.org",
+            "name": "Nowcasting by Open Climate Fix",
+            "url": "https://nowcasting.io",
             "email": "info@openclimatefix.org",
         },
         license_info={
