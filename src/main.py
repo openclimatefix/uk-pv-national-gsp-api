@@ -132,9 +132,10 @@ async def redoc_html():
         title=title,
     )
 
+
 # OpenAPI (ReDoc) custom theme
 def custom_openapi():
-    """ Make custom redoc theme"""
+    """Make custom redoc theme"""
     if app.openapi_schema:
         return app.openapi_schema
     openapi_schema = get_openapi(
