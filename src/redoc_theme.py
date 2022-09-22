@@ -111,7 +111,7 @@ def get_redoc_html_with_theme(
                 }
             }
         }"""
-        + f""", document.getElementById('redoc-container'))
+        + """, document.getElementById('redoc-container'))
     </script>
     </body>
     </html>
