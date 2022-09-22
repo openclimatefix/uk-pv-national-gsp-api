@@ -8,7 +8,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.openapi.utils import get_openapi
-from starlette.responses import HTMLResponse
+from redoc_theme import get_redoc_html_with_theme
 
 from gsp import router as gsp_router
 from national import router as national_router
@@ -63,7 +63,7 @@ You'll find more detailed information for each route in the documentation below.
 If you have any questions, please don't hesitate to get in touch.
 And if you're interested in contributing to our open source project, feel free to join us!
 """
-app = FastAPI()
+app = FastAPI(docs_url=None, redoc_url=None)
 
 origins = os.getenv("ORIGINS", "https://app.nowcasting.io").split(",")
 app.add_middleware(
@@ -123,111 +123,7 @@ async def get_favicon() -> FileResponse:
     """Get favicon"""
     return FileResponse("src/favicon.ico")
 
-def get_redoc_html_with_theme(
-    *,
-    openapi_url: str = "./openapi.json",
-    title: str,
-    redoc_js_url: str = "https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js",
-    redoc_favicon_url: str = "/favicon.png",
-    with_google_fonts: bool = True,
-    theme = {}
-) -> HTMLResponse:
-    html = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-    <title>{title}</title>
-    <!-- needed for adaptive design -->
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    """
-    if with_google_fonts:
-        html += """
-    <link href="https://fonts.googleapis.com/css?family=Inter:300,400,700" rel="stylesheet">
-    """
-    html += f"""
-    <link rel="shortcut icon" href="{redoc_favicon_url}">
-    <!--
-    ReDoc doesn't change outer page styles
-    -->
-    <style>
-      body {{
-        margin: 0;
-        padding: 0;
-      }}
-    </style>
-    </head>
-    <body>
-    <div id="redoc-container"></div>
-    <noscript>
-        ReDoc requires Javascript to function. Please enable it to browse the documentation.
-    </noscript>
-    <script src="{redoc_js_url}"> </script>
-    <script>
-        Redoc.init("{openapi_url}", """ + """{
-            "theme": {
-                "colors": {
-                    "primary": {
-                        "main": "#f7ba17",
-                        "light": "#ffefc6"
-                    },
-                    "success": {
-                        "main": "rgba(28, 184, 65, 1)",
-                        "light": "#81ec9a",
-                        "dark": "#083312",
-                        "contrastText": "#000"
-                    },
-                    "text": {
-                        "primary": "#14120e",
-                        "secondary": "#4d4d4d"
-                    },
-                    "http": {
-                        "get": "#f7ba17",
-                        "post": "rgba(28, 184, 65, 1)",
-                        "put": "rgba(255, 187, 0, 1)",
-                        "delete": "rgba(254, 39, 35, 1)"
-                    }
-                },
-                "typography": {
-                    "fontSize": "15px",
-                    "fontFamily": "Inter, sans-serif",
-                    "lineHeight": "1.5em",
-                    "headings": {
-                        "fontFamily": "Inter, sans-serif",
-                        "fontWeight": "bold",
-                        "lineHeight": "1.5em"
-                    },
-                    "code": {
-                        "fontWeight": "600",
-                        "color": "rgba(92, 62, 189, 1)",
-                        "wrap": true
-                    },
-                    "links": {
-                        "color": "#086788",
-                        "visited": "#086788",
-                        "hover": "#32343a"
-                    }
-                },
-                "sidebar": {
-                    "width": "300px",
-                    "textColor": "#000000"
-                },
-                "logo": {
-                    "gutter": "10px"
-                },
-                "rightPanel": {
-                    "backgroundColor": "rgba(55, 53, 71, 1)",
-                    "textColor": "#ffffff"
-                }
-            }
-        }""" + f""", document.getElementById('redoc-container'))
-    </script>
-    </body>
-    </html>
-    """
-    return HTMLResponse(html)
-
-@app.get("/newdocs", include_in_schema=False)
+@app.get("/docs", include_in_schema=False)
 async def redoc_html():
     """### Render ReDoc with custom theme options included"""
     return get_redoc_html_with_theme(
