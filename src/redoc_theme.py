@@ -33,7 +33,8 @@ def get_redoc_html_with_theme(
         html += """
     <link href="https://fonts.googleapis.com/css?family=Inter:300,400,700" rel="stylesheet">
     """
-    html += f"""
+    html += (
+        f"""
     <link rel="shortcut icon" href="{redoc_favicon_url}">
     <!--
     ReDoc doesn't change outer page styles
@@ -52,7 +53,8 @@ def get_redoc_html_with_theme(
     </noscript>
     <script src="{redoc_js_url}"> </script>
     <script>
-        Redoc.init("{openapi_url}", """ + """{
+        Redoc.init("{openapi_url}", """
+        + """{
             "theme": {
                 "colors": {
                     "primary": {
@@ -108,9 +110,11 @@ def get_redoc_html_with_theme(
                     "textColor": "#ffffff"
                 }
             }
-        }""" + f""", document.getElementById('redoc-container'))
+        }"""
+        + f""", document.getElementById('redoc-container'))
     </script>
     </body>
     </html>
     """
+    )
     return HTMLResponse(html)

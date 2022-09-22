@@ -124,12 +124,13 @@ async def get_favicon() -> FileResponse:
     """Get favicon"""
     return FileResponse("src/favicon.ico")
 
+
 @app.get("/docs", include_in_schema=False)
 async def redoc_html():
     """### Render ReDoc with custom theme options included"""
     return get_redoc_html_with_theme(
         title=title,
-    ) 
+    )
 
 # OpenAPI (ReDoc) custom theme
 def custom_openapi():
@@ -151,9 +152,7 @@ def custom_openapi():
         },
         routes=app.routes,
     )
-    openapi_schema["info"]["x-logo"] = {
-        "url": "https://www.nowcasting.io/nowcasting.svg"
-    }
+    openapi_schema["info"]["x-logo"] = {"url": "https://www.nowcasting.io/nowcasting.svg"}
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
