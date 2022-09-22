@@ -129,11 +129,11 @@ async def redoc_html():
     """### Render ReDoc with custom theme options included"""
     return get_redoc_html_with_theme(
         title=title,
-        theme={}
     ) 
 
 # OpenAPI (ReDoc) custom theme
 def custom_openapi():
+    """ Make custom redoc theme"""
     if app.openapi_schema:
         return app.openapi_schema
     openapi_schema = get_openapi(

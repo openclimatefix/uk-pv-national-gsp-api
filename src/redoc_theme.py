@@ -1,4 +1,6 @@
+""" Redoc theme functions """
 from starlette.responses import HTMLResponse
+
 
 def get_redoc_html_with_theme(
     *,
@@ -7,8 +9,17 @@ def get_redoc_html_with_theme(
     redoc_js_url: str = "https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js",
     redoc_favicon_url: str = "/favicon.png",
     with_google_fonts: bool = True,
-    theme = {}
 ) -> HTMLResponse:
+    """
+    Get redoc htm theme
+
+    :param openapi_url: URL for open api
+    :param title: The title of the app
+    :param redoc_js_url: TODO
+    :param redoc_favicon_url: favicon icon locayion
+    :param with_google_fonts: option to sue google fonts
+    :return:
+    """
     html = f"""
     <!DOCTYPE html>
     <html>
