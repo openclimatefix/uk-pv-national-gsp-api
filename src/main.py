@@ -64,7 +64,7 @@ You'll find more detailed information for each route in the documentation below.
 If you have any questions, please don't hesitate to get in touch.
 And if you're interested in contributing to our open source project, feel free to join us!
 """
-app = FastAPI(docs_url=None, redoc_url=None)
+app = FastAPI(docs_url="/swagger", redoc_url=None)
 
 origins = os.getenv("ORIGINS", "https://app.nowcasting.io").split(",")
 app.add_middleware(
