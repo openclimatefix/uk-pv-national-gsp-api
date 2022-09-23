@@ -6,10 +6,12 @@ from datetime import timedelta
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.utils import get_openapi
 from fastapi.responses import FileResponse
 
 from gsp import router as gsp_router
 from national import router as national_router
+from redoc_theme import get_redoc_html_with_theme
 from status import router as status_router
 from system import router as system_router
 
@@ -19,7 +21,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+title = "Nowcasting API"
 version = "0.2.30"
+
 description = """
 As part of Open Climate Fix’s [open source project](https://github.com/openclimatefix), the
 Nowcasting API is still under development.
@@ -60,20 +64,7 @@ You'll find more detailed information for each route in the documentation below.
 If you have any questions, please don't hesitate to get in touch.
 And if you're interested in contributing to our open source project, feel free to join us!
 """
-app = FastAPI(
-    title="Nowcasting API",
-    version=version,
-    description=description,
-    contact={
-        "name": "Open Climate Fix",
-        "url": "https://openclimatefix.org",
-        "email": "info@openclimatefix.org",
-    },
-    license_info={
-        "name": "MIT License",
-        "url": "https://github.com/openclimatefix/nowcasting_api/blob/main/LICENSE",
-    },
-)
+app = FastAPI(docs_url="/swagger", redoc_url=None)
 
 origins = os.getenv("ORIGINS", "https://app.nowcasting.io").split(",")
 app.add_middleware(
@@ -132,3 +123,39 @@ async def get_api_information():
 async def get_favicon() -> FileResponse:
     """Get favicon"""
     return FileResponse("src/favicon.ico")
+
+
+@app.get("/docs", include_in_schema=False)
+async def redoc_html():
+    """### Render ReDoc with custom theme options included"""
+    return get_redoc_html_with_theme(
+        title=title,
+    )
+
+
+# OpenAPI (ReDoc) custom theme
+def custom_openapi():
+    """Make custom redoc theme"""
+    if app.openapi_schema:
+        return app.openapi_schema
+    openapi_schema = get_openapi(
+        title=title,
+        version=version,
+        description=description,
+        contact={
+            "name": "Nowcasting by Open Climate Fix",
+            "url": "https://nowcasting.io",
+            "email": "info@openclimatefix.org",
+        },
+        license_info={
+            "name": "MIT License",
+            "url": "https://github.com/openclimatefix/nowcasting_api/blob/main/LICENSE",
+        },
+        routes=app.routes,
+    )
+    openapi_schema["info"]["x-logo"] = {"url": "https://www.nowcasting.io/nowcasting.svg"}
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+
+app.openapi = custom_openapi
