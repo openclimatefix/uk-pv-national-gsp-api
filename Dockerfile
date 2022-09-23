@@ -1,7 +1,7 @@
 FROM python:3.10-slim-bullseye
 
 # copy files over
-# COPY ./src /app/src
+COPY ./src /app/src
 COPY ./requirements.txt /app/requirements.txt
 
 # set working directory
