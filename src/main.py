@@ -22,7 +22,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 title = "Nowcasting API"
-version = "0.2.31"
+version = "0.2.32"
 
 description = """
 As part of Open Climate Fix’s [open source project](https://github.com/openclimatefix), the
