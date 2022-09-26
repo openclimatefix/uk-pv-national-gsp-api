@@ -128,7 +128,7 @@ async def get_favicon() -> FileResponse:
 
 
 @app.get("/nowcasting.png", include_in_schema=False)
-async def get_favicon() -> FileResponse:
+async def get_nowcasting_logo() -> FileResponse:
     """Get favicon"""
     return FileResponse(f"{folder}/nowcasting.png")
 
