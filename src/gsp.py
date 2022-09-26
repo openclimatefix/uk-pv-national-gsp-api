@@ -97,7 +97,7 @@ async def get_forecasts_for_a_specific_gsp(
     the latest forecast made 35 minutes before the target time)
     """
 
-    logger.info(f'{"Get forecasts for gsp id {gsp_id} forecast of forecast with only values."}')
+    logger.info(f"Get forecasts for gsp id {gsp_id} forecast of forecast with only values.")
 
     if only_forecast_values is False:
         logger.debug(f'{"Getting forecast."}')

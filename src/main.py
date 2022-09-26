@@ -21,6 +21,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+folder = os.path.dirname(os.path.abspath(__file__))
+
 title = "Nowcasting API"
 version = "0.2.32"
 
@@ -122,7 +124,13 @@ async def get_api_information():
 @app.get("/favicon.ico", include_in_schema=False)
 async def get_favicon() -> FileResponse:
     """Get favicon"""
-    return FileResponse("src/favicon.ico")
+    return FileResponse(f"{folder}/favicon.ico")
+
+
+@app.get("/nowcasting.png", include_in_schema=False)
+async def get_nowcasting_logo() -> FileResponse:
+    """Get favicon"""
+    return FileResponse(f"{folder}/nowcasting.png")
 
 
 @app.get("/docs", include_in_schema=False)
@@ -153,7 +161,7 @@ def custom_openapi():
         },
         routes=app.routes,
     )
-    openapi_schema["info"]["x-logo"] = {"url": "https://www.nowcasting.io/nowcasting.svg"}
+    openapi_schema["info"]["x-logo"] = {"url": "/nowcasting.png"}
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
