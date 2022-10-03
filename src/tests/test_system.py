@@ -8,7 +8,6 @@ from database import get_session
 from main import app
 
 
-
 def test_get_gsp_systems(db_session, api_client):
     """Check main system/GB/gsp/ works"""
 

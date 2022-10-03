@@ -100,9 +100,15 @@ async def get_national_forecast(
 
 
 # corresponds to API route /v0/solar/GB/national/pvlive/, getting PV_Live NationalYield for GB
-@router.get("/pvlive", response_model=List[NationalYield], dependencies=[Depends(get_auth_implicit_scheme())])
+@router.get(
+    "/pvlive",
+    response_model=List[NationalYield],
+    dependencies=[Depends(get_auth_implicit_scheme())],
+)
 async def get_national_pvlive(
-    regime: Optional[str] = None, session: Session = Depends(get_session), user: Auth0User = Security(get_user()),
+    regime: Optional[str] = None,
+    session: Session = Depends(get_session),
+    user: Auth0User = Security(get_user()),
 ) -> List[NationalYield]:
     """### Get national PV_Live values for yesterday and today
 
@@ -132,8 +138,7 @@ async def get_national_pvlive(
     - regime: can choose __in-day__ or __day-after__
     """
 
-    logger.info(f"Get national PV Live estimates values "
-                f"for regime {regime} for  {user}")
+    logger.info(f"Get national PV Live estimates values " f"for regime {regime} for  {user}")
 
     return get_truth_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=0, regime=regime

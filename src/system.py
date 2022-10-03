@@ -37,8 +37,13 @@ def get_gsp_boundaries_from_eso_wgs84() -> gpd.GeoDataFrame:
 
 
 # corresponds to API route /v0/system/GB/gsp/boundaries
-@router.get("/boundaries", dependencies=[Depends(get_auth_implicit_scheme())],)
-async def get_gsp_boundaries(user: Auth0User = Security(get_user()),) -> dict:
+@router.get(
+    "/boundaries",
+    dependencies=[Depends(get_auth_implicit_scheme())],
+)
+async def get_gsp_boundaries(
+    user: Auth0User = Security(get_user()),
+) -> dict:
     """### Get one GSP boundary for a specific GSP
 
     This route is still under construction...
@@ -60,9 +65,15 @@ async def get_gsp_boundaries(user: Auth0User = Security(get_user()),) -> dict:
 
 
 # corresponds to API route /v0/system/GB/gsp/, get system details for all GSPs
-@router.get("/", response_model=List[Location], dependencies=[Depends(get_auth_implicit_scheme())],)
+@router.get(
+    "/",
+    response_model=List[Location],
+    dependencies=[Depends(get_auth_implicit_scheme())],
+)
 async def get_systems(
-    session: Session = Depends(get_session), gsp_id: Optional[int] = None, user: Auth0User = Security(get_user()),
+    session: Session = Depends(get_session),
+    gsp_id: Optional[int] = None,
+    user: Auth0User = Security(get_user()),
 ) -> List[Location]:
     """### Get system details for a single GSP or all GSPs
 

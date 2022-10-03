@@ -10,8 +10,6 @@ from database import get_session
 from main import app
 
 
-
-
 def test_read_latest_national(db_session, api_client):
     """Check main solar/GB/national/forecast route works"""
 
