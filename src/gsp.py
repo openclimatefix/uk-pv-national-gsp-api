@@ -2,12 +2,9 @@
 import logging
 from typing import List, Optional, Union
 
-import geopandas as gpd
-from fastapi import APIRouter, Depends, Security
-from fastapi_auth0 import Auth0User
-from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield, Location, ManyForecasts
-from nowcasting_dataset.data_sources.gsp.eso import get_gsp_metadata_from_eso
 from fastapi import APIRouter, Depends
+from fastapi import Security
+from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield, ManyForecasts
 from sqlalchemy.orm.session import Session
 

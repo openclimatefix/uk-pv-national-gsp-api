@@ -1,6 +1,5 @@
 """ Test for main app """
 
-from fastapi.testclient import TestClient
 from nowcasting_datamodel.fake import make_fake_forecasts
 from nowcasting_datamodel.models import Location
 
