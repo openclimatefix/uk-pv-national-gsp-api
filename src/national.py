@@ -8,7 +8,6 @@ from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield
 from sqlalchemy.orm.session import Session
 
 from auth_utils import get_auth_implicit_scheme, get_user
-
 from database import (
     get_forecasts_for_a_specific_gsp_from_database,
     get_latest_forecast_values_for_a_specific_gsp_from_database,

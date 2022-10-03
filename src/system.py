@@ -10,9 +10,8 @@ from nowcasting_datamodel.models import GSPYield, Location
 from nowcasting_dataset.data_sources.gsp.eso import get_gsp_metadata_from_eso
 from sqlalchemy.orm.session import Session
 
-from database import get_gsp_system, get_session
-
 from auth_utils import get_auth_implicit_scheme, get_user
+from database import get_gsp_system, get_session
 
 logger = logging.getLogger(__name__)
 
