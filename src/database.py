@@ -86,7 +86,7 @@ def get_forecasts_from_database(
 def get_forecasts_for_a_specific_gsp_from_database(
     session: Session, gsp_id, historic: Optional[bool] = False
 ) -> Forecast:
-    """Get forecasts for on GSP from database"""
+    """Get forecasts for one GSP from database"""
 
     yesterday_start_datetime = datetime.now(tz=timezone.utc).date() - timedelta(days=1)
     yesterday_start_datetime = datetime.combine(yesterday_start_datetime, datetime.min.time())
@@ -110,8 +110,7 @@ def get_forecasts_for_a_specific_gsp_from_database(
 def get_latest_forecast_values_for_a_specific_gsp_from_database(
     session: Session, gsp_id: int, forecast_horizon_minutes: Optional[int] = None
 ) -> List[ForecastValue]:
-    """
-    Get the forecast values for yesterday and today for one gsp
+    """Get the forecast values for yesterday and today for one gsp
 
     :param session: sqlalchemy session
     :param gsp_id: gsp id, 0 is national
@@ -166,8 +165,7 @@ def get_latest_national_forecast_from_database(session: Session) -> Forecast:
 def get_truth_values_for_a_specific_gsp_from_database(
     session: Session, gsp_id: int, regime: Optional[str] = "in-day"
 ) -> List[GSPYield]:
-    """
-    Get the truth value for one gsp for yesterday and today
+    """Get the truth value for one gsp for yesterday and today
 
     :param session: sql session
     :param gsp_id: gsp id
@@ -187,8 +185,7 @@ def get_truth_values_for_a_specific_gsp_from_database(
 
 
 def get_gsp_system(session: Session, gsp_id: Optional[int] = None) -> List[Location]:
-    """
-    Get gsp system details
+    """Get gsp system details
 
     :param session:
     :param gsp_id: optional input. If None, get all systems

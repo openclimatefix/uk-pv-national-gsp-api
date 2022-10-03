@@ -1,22 +1,21 @@
 """Get GSP boundary data from eso """
-import json
 import logging
-from typing import List, Optional
+from typing import List, Optional, Union
 
 import geopandas as gpd
 from fastapi import APIRouter, Depends, Security
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield, Location, ManyForecasts
 from nowcasting_dataset.data_sources.gsp.eso import get_gsp_metadata_from_eso
+from fastapi import APIRouter, Depends
+from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield, ManyForecasts
 from sqlalchemy.orm.session import Session
 
 from auth_utils import get_auth_implicit_scheme, get_user
 from database import (
     get_forecasts_for_a_specific_gsp_from_database,
     get_forecasts_from_database,
-    get_gsp_system,
     get_latest_forecast_values_for_a_specific_gsp_from_database,
-    get_latest_national_forecast_from_database,
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
 )
@@ -25,84 +24,131 @@ logger = logging.getLogger(__name__)
 
 
 router = APIRouter()
+NationalYield = GSPYield
 
 
-def get_gsp_boundaries_from_eso_wgs84() -> gpd.GeoDataFrame:
-    """Get GSP boundaries in lat/lon format (EPSG:4326)"""
+# corresponds to route /v0/solar/GB/gsp/forecast/all
+@router.get(
+    "/forecast/all/",
+    response_model=ManyForecasts,
+    dependencies=[Depends(get_auth_implicit_scheme())],
+)
+async def get_all_available_forecasts(
+    historic: Optional[bool] = False,
+    session: Session = Depends(get_session),
+    user: Auth0User = Security(get_user()),
+) -> ManyForecasts:
+    """### Get the latest information for ALL available forecasts for ALL GSPs
 
-    # get gsp boundaries
-    boundaries = get_gsp_metadata_from_eso()
+    The return object contains a forecast object with system details for all National Grid GSPs.
 
-    # change to lat/lon - https://epsg.io/4326
-    boundaries = boundaries.to_crs(4326)
+    See __Forecast__ and __ForecastValue__ schema for metadata details.
 
-    # fill nans
-    boundaries = boundaries.fillna("")
+    This request may take a longer time to load because a lot of data is being pulled from the
+    database.
 
-    return boundaries
+    This route returns forecasts objects from all available GSPs with an option to normalize
+    the forecasts by GSP installed capacity (installedCapacityMw). Normalization returns a
+    decimal value equal to _expectedPowerGenerationMegawatts_ divided by
+    __installedCapacityMw__ for the GSP.
+
+    There is also the option to pull forecast history from yesterday.
+
+    #### Parameters
+    - historic: boolean => TRUE returns the forecasts of yesterday along with today's
+    forecasts for all GSPs
+
+    """
+
+    logger.info(f"Get forecasts for all gsps. The option is {historic=} for user {user}")
+
+    forecasts = get_forecasts_from_database(session=session, historic=historic)
+
+    forecasts.normalize()
+
+    return forecasts
 
 
 @router.get(
-    "/forecast/one_gsp/{gsp_id}",
-    response_model=Forecast,
+    "/forecast/{gsp_id}",
+    response_model=Union[Forecast, List[ForecastValue]],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 async def get_forecasts_for_a_specific_gsp(
     gsp_id: int,
     session: Session = Depends(get_session),
-    user: Auth0User = Security(get_user()),
     historic: Optional[bool] = False,
-) -> Forecast:
-    """
-    Get one forecast for a specific GSP id.
-
-     This gets the latest forecast for each target time for yesterday and toady.
-
-    :param gsp_id: The gsp id of the forecast you want
-    :param session: sql session (this is done automatically)
-    :param historic: There is an option to get historic forecast also.
-    :return: Forecast object
-    """
-
-    logger.info(f"Get forecasts for gsp id {gsp_id} with {historic=} for user {user}")
-
-    return get_forecasts_for_a_specific_gsp_from_database(
-        session=session,
-        gsp_id=gsp_id,
-        historic=historic,
-    )
-
-
-@router.get(
-    "/forecast/latest/{gsp_id}",
-    response_model=List[ForecastValue],
-    dependencies=[Depends(get_auth_implicit_scheme())],
-)
-async def get_latest_forecasts_for_a_specific_gsp(
-    gsp_id: int,
-    session: Session = Depends(get_session),
+    only_forecast_values: Optional[bool] = False,
     forecast_horizon_minutes: Optional[int] = None,
     user: Auth0User = Security(get_user()),
-) -> List[ForecastValue]:
-    """Get the latest forecasts for a specific GSP id for today and yesterday
+) -> Union[Forecast, List[ForecastValue]]:
+    """### This route comes with the following options:
 
-    :param gsp_id: The gsp id of the forecast you want
-    :param session: sql session (this is done automatically)
-    :param forecast_horizon_minutes: Optional forecast horizon in minutes. I.e 35 minutes, means
-        get the latest forecast made 35 minutes before the target time.
+    1. Get __recent solar forecast__ for a specific GSP for today and yesterday
+    with system details.
+        - The return object is a solar forecast with GSP system details.
+        -The forecast object is returned with expected megawatt generation at
+        a specific GSP
+        for the upcoming 8 hours at every 30-minute interval (targetTime).
+        - Set __only_forecast_values__ ==> FALSE
+        - Setting __historic__ parameter to TRUE returns an object with data
+        from yesterday and today
+        for the given GSP
+
+    2. Get __ONLY__ forecast values for solar forecast for a specific GSP.
+        - Set __only_forecast_values__ to TRUE
+        - Setting a __forecast_horizon_minutes__ parameter retrieves the latest forecast
+        a given set of minutes before the target time.
+        - Return object is a simplified forecast object with __targetTimes__ and
+        __expectedPowerGenerationMegawatts__ at 30-minute intervals for the given GSP.
+        - NB: __historic__ parameter __will not__ work when __only_forecast_values__= TRUE
+
+    Please see the __Forecast__ and __ForecastValue__ schema below for full metadata details.
+
+    #### Parameters
+    - gsp_id: gsp_id of the desired forecast
+    - historic: boolean => TRUE returns yesterday's forecasts in addition to today's forecast
+    - only_forecast_values => TRUE returns solar forecast for the GSP without system details
+    - forecast_horizon_minutes: optional forecast horizon in minutes (ex. 35 returns
+    the latest forecast made 35 minutes before the target time)
     """
 
-    logger.info(
-        f"Get forecasts for gsp id {gsp_id} with {forecast_horizon_minutes=} for user {user}"
-    )
+    logger.info(f"Get forecasts for gsp id {gsp_id} forecast of forecast with only values.")
+    logger.info(f"This is for user {user}")
 
-    return get_latest_forecast_values_for_a_specific_gsp_from_database(
-        session=session, gsp_id=gsp_id, forecast_horizon_minutes=forecast_horizon_minutes
-    )
+    if only_forecast_values is False:
+        logger.debug("Getting forecast.")
+        full_forecast = get_forecasts_for_a_specific_gsp_from_database(
+            session=session,
+            gsp_id=gsp_id,
+            historic=historic,
+        )
+
+        logger.debug("Got forecast.")
+
+        full_forecast.normalize()
+
+        logger.debug(f'{"Normalized forecast."}')
+        return full_forecast
+
+    else:
+
+        logger.debug("Getting forecast values only.")
+
+        forecast_only = get_latest_forecast_values_for_a_specific_gsp_from_database(
+            session=session,
+            gsp_id=gsp_id,
+            forecast_horizon_minutes=forecast_horizon_minutes,
+        )
+
+        logger.debug("Got forecast values only!!!")
+
+        return forecast_only
 
 
+# corresponds to API route /v0/solar/GB/gsp/pvlive/{gsp_id}
 @router.get(
-    "/pvlive/one_gsp/{gsp_id}/",
+    "/pvlive/{gsp_id}",
     response_model=List[GSPYield],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
@@ -112,107 +158,36 @@ async def get_truths_for_a_specific_gsp(
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
 ) -> List[GSPYield]:
-    """Get PV live values for a specific GSP id, for yesterday and today
+    """### Get PV_Live values for a specific GSP for yesterday and today
 
-    See https://www.solar.sheffield.ac.uk/pvlive/ for more details.
-    Regime can "in-day" or "day-after",
-    as new values are calculated around midnight when more data is available.
-    If regime is not specific, the latest gsp yield is loaded.
+    The return object is a series of real-time solar energy generation readings from PV_Live.
+    PV_Live is Sheffield's API that reports real-time PV data. These readings are updated throughout
+    the day, reporting the most accurate finalized readings the following day at 10:00 UTC.
+    See the __GSPYield__ schema for metadata details.
 
-    The OCF Forecast is trying to predict the PV live 'day-after' value.
+    Check out [Sheffield Solar PV_Live](https://www.solarsheffield.ac.uk/pvlive/) for
+    more details.
+
+    The OCF Forecast is trying to predict the PV_Live 'day-after' value.
+
+    This route has the __regime__ parameter that lets you look at values __in-day__ or
+    __day-after__(most accurate reading). __Day-after__ values are updated __in-day__ values.
+    __In-day__ gives you all the readings from the day before up to the most recent
+    reported GSP yield. __Day_after__ reports all the readings from the previous day.
+
+    For example, a day-after regime request made on 08/09/2022 returns updated GSP yield
+    for 07/09/2022. The 08/09/2022 __day-after__ values then become available at 10:00 UTC
+    on 09/09/2022.
+
+    If regime is not specificied, the most up-to-date GSP yield is returned.
+    #### Parameters
+    - gsp_id: gsp_id of the requested forecast
+    - regime: can choose __in-day__ or __day-after__
     """
 
-    logger.info(
-        f"Get PV Live estimates values for gsp id {gsp_id} and regime {regime} for user {user}"
-    )
+    logger.info(f"Get PV Live estimates values for gsp id {gsp_id} "
+                f"and regime {regime} for user {user}")
 
     return get_truth_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=gsp_id, regime=regime
     )
-
-
-@router.get(
-    "/forecast/all",
-    response_model=ManyForecasts,
-    dependencies=[Depends(get_auth_implicit_scheme())],
-)
-async def get_all_available_forecasts(
-    normalize: Optional[bool] = False,
-    historic: Optional[bool] = False,
-    session: Session = Depends(get_session),
-    user: Auth0User = Security(get_user()),
-) -> ManyForecasts:
-    """Get the latest information for all available forecasts
-
-    There is an option to normalize the forecasts by gsp capacity
-    There is also an option to pull historic data.
-        This will the load the latest forecast value for each target time.
-    """
-
-    logger.info(
-        f"Get forecasts for all gsps. The options are  {normalize=} and {historic=} for user {user}"
-    )
-
-    forecasts = get_forecasts_from_database(session=session, historic=historic)
-
-    logger.debug(f"Normalizing {normalize}")
-    if normalize:
-        forecasts.normalize()
-        logger.debug("Normalizing: done")
-
-    return forecasts
-
-
-@router.get(
-    "/forecast/national",
-    response_model=Forecast,
-    dependencies=[Depends(get_auth_implicit_scheme())],
-)
-async def get_nationally_aggregated_forecasts(
-    session: Session = Depends(get_session),
-    user: Auth0User = Security(get_user()),
-) -> Forecast:
-    """Get an aggregated forecast at the national level"""
-
-    logger.debug(f"Get national forecasts. This is for user {user}")
-    return get_latest_national_forecast_from_database(session=session)
-
-
-@router.get("/gsp_boundaries", dependencies=[Depends(get_auth_implicit_scheme())])
-async def get_gsp_boundaries(user: Auth0User = Security(get_user())) -> dict:
-    """Get one gsp boundary for a specific GSP id
-
-    This is a wrapper around the dataset in
-    'https://data.nationalgrideso.com/system/gis-boundaries-for-gb-grid-supply-points'
-
-    The returned object is in EPSG:4326 i.e latitude and longitude
-    """
-
-    logger.info(f"Getting all GSP boundaries for {user}")
-
-    json_string = get_gsp_boundaries_from_eso_wgs84().to_json()
-
-    json.loads(json_string)
-
-    return json.loads(json_string)
-
-
-@router.get(
-    "/gsp_systems",
-    response_model=List[Location],
-    dependencies=[Depends(get_auth_implicit_scheme())],
-)
-async def get_systems(
-    session: Session = Depends(get_session),
-    gsp_id: Optional[int] = None,
-    user: Auth0User = Security(get_user()),
-) -> List[Location]:
-    """
-    Get gsp system details.
-
-    Provide gsp_id to just return one gsp system, otherwise all are returned
-    """
-
-    logger.info(f"Get GSP systems for {gsp_id=}. This is for user {user}")
-
-    return get_gsp_system(session=session, gsp_id=gsp_id)

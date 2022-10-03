@@ -15,7 +15,7 @@ def test_read_latest_status(db_session):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = client.get("/v0/GB/solar/status")
+    response = client.get("/v0/solar/GB/status")
     assert response.status_code == 200
 
     returned_status = Status(**response.json())

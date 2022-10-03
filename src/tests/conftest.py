@@ -5,7 +5,7 @@ import pytest
 from fastapi.testclient import TestClient
 from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.fake import make_fake_forecasts
-from nowcasting_datamodel.models.base import Base_Forecast, Base_PV
+from nowcasting_datamodel.models.base import Base_PV
 
 from auth_utils import get_auth_implicit_scheme, get_user
 from database import get_session
@@ -33,12 +33,12 @@ def db_connection():
     # os.environ["DB_URL_PV"] = url
     url = os.environ["DB_URL"]
     connection = DatabaseConnection(url=url)
-    Base_Forecast.metadata.create_all(connection.engine)
+    connection.create_all()
     Base_PV.metadata.create_all(connection.engine)
 
     yield connection
 
-    Base_Forecast.metadata.drop_all(connection.engine)
+    connection.drop_all()
     Base_PV.metadata.drop_all(connection.engine)
 
 

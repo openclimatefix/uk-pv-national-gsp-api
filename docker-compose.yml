@@ -11,14 +11,18 @@ services:
       - "5432:5432"
 
   api:
-    #    build:
-    #      context: .
-    #      dockerfile: Dockerfile
-    image: openclimatefix/nowcasting_api:0.1.7
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # image: openclimatefix/nowcasting_api:0.1.7
     container_name: nowcasting_api
     command: ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "80"]
     ports:
       - 80:80
     environment:
-      - DB_URL=postgresql://postgres:postgres@postgres_forecast:5432/postgres
-      - DB_URL_PV=postgresql://postgres:postgres@postgres_forecast:5432/postgres
+      - DB_URL=sqlite:///test.db
+      - DB_URL_PV=sqlite:///test.db
+    volumes:
+      - type: bind
+        source: ./src
+        target: /app/src
