@@ -2,8 +2,7 @@
 import logging
 from typing import List, Optional, Union
 
-from fastapi import APIRouter, Depends
-from fastapi import Security
+from fastapi import APIRouter, Depends, Security
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield, ManyForecasts
 from sqlalchemy.orm.session import Session
