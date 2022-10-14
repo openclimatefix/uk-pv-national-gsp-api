@@ -23,14 +23,13 @@ connection = DatabaseConnection(url=os.getenv("DB_URL", "not_set"))
 with connection.get_session() as session:
 
     # 1. make fake forecasts
-    make_fake_forecasts(gsp_ids=range(0,317), session=session, t0_datetime_utc=now)
+    make_fake_forecasts(gsp_ids=range(0, 317), session=session, t0_datetime_utc=now)
 
     # 2. make gsp yields
-    make_fake_gsp_yields(gsp_ids=range(0,317),session=session,t0_datetime_utc=now)
+    make_fake_gsp_yields(gsp_ids=range(0, 317), session=session, t0_datetime_utc=now)
 
     # 3. make status
-    status = StatusSQL(status='warning', message='this is all fake data')
+    status = StatusSQL(status="warning", message="this is all fake data")
 
     session.add(status)
     session.commit()
-
