@@ -9,11 +9,12 @@ need to fill the following tables
 3. a warning status of this is fake data
 """
 
+import os
+from datetime import datetime, timezone
+
 from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.fake import make_fake_forecasts, make_fake_gsp_yields
 from nowcasting_datamodel.models.models import StatusSQL
-from datetime import datetime, timezone
-import os
 
 now = datetime.now(tz=timezone.utc)
 
