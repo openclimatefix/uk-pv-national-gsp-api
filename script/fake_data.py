@@ -14,7 +14,12 @@ from datetime import datetime, timezone
 
 from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.fake import make_fake_forecasts, make_fake_gsp_yields
-from nowcasting_datamodel.models.models import StatusSQL
+from nowcasting_datamodel.models.models import (
+    StatusSQL,
+    ForecastValueLatestSQL,
+    ForecastValueSQL,
+    ForecastSQL,
+)
 
 now = datetime.now(tz=timezone.utc)
 
@@ -23,7 +28,9 @@ connection = DatabaseConnection(url=os.getenv("DB_URL", "not_set"))
 with connection.get_session() as session:
 
     # 1. make fake forecasts
-    make_fake_forecasts(gsp_ids=range(0, 317), session=session, t0_datetime_utc=now)
+    make_fake_forecasts(
+        gsp_ids=range(0, 317), session=session, t0_datetime_utc=now, add_latest=True
+    )
 
     # 2. make gsp yields
     make_fake_gsp_yields(gsp_ids=range(0, 317), session=session, t0_datetime_utc=now)
@@ -33,3 +40,8 @@ with connection.get_session() as session:
 
     session.add(status)
     session.commit()
+
+    assert len(session.query(StatusSQL).all()) > 0
+    assert len(session.query(ForecastValueLatestSQL).all()) > 0
+    assert len(session.query(ForecastValueSQL).all()) > 0
+    assert len(session.query(ForecastSQL).all()) > 0
