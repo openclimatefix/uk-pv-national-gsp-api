@@ -27,6 +27,11 @@ connection = DatabaseConnection(url=os.getenv("DB_URL", "not_set"))
 
 with connection.get_session() as session:
 
+    session.query(StatusSQL).delete()
+    session.query(ForecastValueLatestSQL).delete()
+    session.query(ForecastValueSQL).delete()
+    session.query(ForecastSQL).delete()
+
     # 1. make fake forecasts
     make_fake_forecasts(
         gsp_ids=range(0, 317), session=session, t0_datetime_utc=now, add_latest=True, historic=True
@@ -41,7 +46,7 @@ with connection.get_session() as session:
     session.add(status)
     session.commit()
 
-    assert len(session.query(StatusSQL).all()) > 0
-    assert len(session.query(ForecastValueLatestSQL).all()) > 0
-    assert len(session.query(ForecastValueSQL).all()) > 0
-    assert len(session.query(ForecastSQL).all()) > 0
+    assert len(session.query(StatusSQL).all()) == 1
+    assert len(session.query(ForecastValueLatestSQL).all()) == 112*317
+    assert len(session.query(ForecastValueSQL).all()) == 112*317
+    assert len(session.query(ForecastSQL).all()) == 317
