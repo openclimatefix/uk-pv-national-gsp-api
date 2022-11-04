@@ -20,8 +20,9 @@ from nowcasting_datamodel.models.forecast import (
     ForecastValueSQL,
 )
 from nowcasting_datamodel.models.models import StatusSQL
+from src.utils import floor_30_minutes_dt
 
-now = datetime.now(tz=timezone.utc)
+now = floor_30_minutes_dt(datetime.now(tz=timezone.utc))
 
 connection = DatabaseConnection(url=os.getenv("DB_URL", "not_set"))
 
