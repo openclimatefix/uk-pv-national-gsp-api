@@ -14,13 +14,13 @@ from datetime import datetime, timezone
 
 from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.fake import make_fake_forecasts, make_fake_gsp_yields
-from nowcasting_datamodel.models.models import (
-    StatusSQL,
-)
 from nowcasting_datamodel.models.forecast import (
     ForecastValueLatestSQL,
     ForecastValueSQL,
     ForecastSQL,
+)
+from nowcasting_datamodel.models.models import (
+    StatusSQL,
 )
 
 now = datetime.now(tz=timezone.utc)
