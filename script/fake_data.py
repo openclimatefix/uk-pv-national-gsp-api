@@ -32,7 +32,7 @@ with connection.get_session() as session:
     session.query(ForecastValueSQL).delete()
     session.query(ForecastSQL).delete()
 
-    N_GSPS = 100
+    N_GSPS = 10
 
     # 1. make fake forecasts
     make_fake_forecasts(
