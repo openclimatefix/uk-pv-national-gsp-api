@@ -65,7 +65,8 @@ def test_read_latest_all_gsp_normalized(db_session, api_client):
 
     r = ManyForecasts(**response.json())
     assert len(r.forecasts) == 10
-    assert r.forecasts[0].forecast_values[0].expected_power_generation_megawatts <= 1
+    assert r.forecasts[0].forecast_values[0].expected_power_generation_megawatts <= 13000
+    assert r.forecasts[1].forecast_values[0].expected_power_generation_megawatts <= 10
 
 
 def test_read_latest_all_gsp_historic(db_session, api_client):
@@ -86,8 +87,9 @@ def test_read_latest_all_gsp_historic(db_session, api_client):
     assert response.status_code == 200
 
     r = ManyForecasts(**response.json())
+
     assert len(r.forecasts) == 10
-    assert len(r.forecasts[0].forecast_values) == 112
+    assert len(r.forecasts[0].forecast_values) > 50
     assert r.forecasts[0].forecast_values[0].expected_power_generation_megawatts <= 1
 
 
