@@ -47,6 +47,6 @@ with connection.get_session() as session:
     session.commit()
 
     assert len(session.query(StatusSQL).all()) == 1
-    assert len(session.query(ForecastValueLatestSQL).all()) == 112*317
-    assert len(session.query(ForecastValueSQL).all()) == 112*317
+    assert len(session.query(ForecastValueLatestSQL).all()) == 112 * 317
+    assert len(session.query(ForecastValueSQL).all()) == 112 * 317
     assert len(session.query(ForecastSQL).all()) == 317
