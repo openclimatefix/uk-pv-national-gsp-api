@@ -36,7 +36,11 @@ with connection.get_session() as session:
 
     # 1. make fake forecasts
     make_fake_forecasts(
-        gsp_ids=range(0, N_GSPS), session=session, t0_datetime_utc=now, add_latest=True, historic=True
+        gsp_ids=range(0, N_GSPS),
+        session=session,
+        t0_datetime_utc=now,
+        add_latest=True,
+        historic=True,
     )
 
     # 2. make gsp yields
@@ -52,4 +56,3 @@ with connection.get_session() as session:
     assert len(session.query(ForecastValueLatestSQL).all()) == 112 * 317
     assert len(session.query(ForecastValueSQL).all()) == 112 * 317
     assert len(session.query(ForecastSQL).all()) == 317
-
