@@ -76,6 +76,7 @@ def test_read_latest_all_gsp_historic(db_session, api_client):
         gsp_ids=list(range(0, 10)),
         session=db_session,
         t0_datetime_utc=datetime.now(tz=timezone.utc),
+        historic=True,
     )
     db_session.add_all(forecasts)
     update_all_forecast_latest(forecasts=forecasts, session=db_session)
@@ -90,7 +91,8 @@ def test_read_latest_all_gsp_historic(db_session, api_client):
 
     assert len(r.forecasts) == 10
     assert len(r.forecasts[0].forecast_values) > 50
-    assert r.forecasts[0].forecast_values[0].expected_power_generation_megawatts <= 1
+    assert r.forecasts[0].forecast_values[0].expected_power_generation_megawatts <= 13000
+    assert r.forecasts[1].forecast_values[0].expected_power_generation_megawatts <= 10
 
 
 @freeze_time("2022-01-01")
