@@ -68,7 +68,9 @@ And if you're interested in contributing to our open source project, feel free t
 """
 app = FastAPI(docs_url="/swagger", redoc_url=None)
 
-origins = os.getenv("ORIGINS", "https://*.nowcasting.io").split(",")
+origins = os.getenv("ORIGINS", "https://*.nowcasting.io,https://*-openclimatefix.vercel.app").split(
+    ","
+)
 # origins = os.getenv("ORIGINS", "*").split(",")
 app.add_middleware(
     CORSMiddleware,
