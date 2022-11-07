@@ -2,10 +2,12 @@
 import logging
 from typing import List, Optional, Union
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Security
+from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield
 from sqlalchemy.orm.session import Session
 
+from auth_utils import get_auth_implicit_scheme, get_user
 from database import (
     get_forecasts_for_a_specific_gsp_from_database,
     get_latest_forecast_values_for_a_specific_gsp_from_database,
@@ -20,12 +22,17 @@ router = APIRouter()
 NationalYield = GSPYield
 
 
-@router.get("/forecast", response_model=Union[Forecast, List[ForecastValue]])
+@router.get(
+    "/forecast",
+    response_model=Union[Forecast, List[ForecastValue]],
+    dependencies=[Depends(get_auth_implicit_scheme())],
+)
 async def get_national_forecast(
     session: Session = Depends(get_session),
     historic: Optional[bool] = False,
     only_forecast_values: Optional[bool] = False,
     forecast_horizon_minutes: Optional[int] = None,
+    user: Auth0User = Security(get_user()),
 ) -> Union[Forecast, List[ForecastValue]]:
     """Get the National Forecast
 
@@ -92,9 +99,15 @@ async def get_national_forecast(
 
 
 # corresponds to API route /v0/solar/GB/national/pvlive/, getting PV_Live NationalYield for GB
-@router.get("/pvlive", response_model=List[NationalYield])
+@router.get(
+    "/pvlive",
+    response_model=List[NationalYield],
+    dependencies=[Depends(get_auth_implicit_scheme())],
+)
 async def get_national_pvlive(
-    regime: Optional[str] = None, session: Session = Depends(get_session)
+    regime: Optional[str] = None,
+    session: Session = Depends(get_session),
+    user: Auth0User = Security(get_user()),
 ) -> List[NationalYield]:
     """### Get national PV_Live values for yesterday and today
 
@@ -124,7 +137,7 @@ async def get_national_pvlive(
     - regime: can choose __in-day__ or __day-after__
     """
 
-    logger.info(f"Get national PV Live estimates values for regime {regime}")
+    logger.info(f"Get national PV Live estimates values " f"for regime {regime} for  {user}")
 
     return get_truth_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=0, regime=regime

@@ -47,6 +47,7 @@ cd src && uvicorn main:app --reload
 
 TO run tests use the following command
 ```bash
+docker stop $(docker ps -a -q)
 docker-compose -f test-docker-compose.yml build
 docker-compose -f test-docker-compose.yml run api
 ```
@@ -64,15 +65,19 @@ You can run the formatters and linters locally. To do that:
 
 # Deployment
 
-This API is temporarily deployed on AWS Elastic Beanstalk.
-We will move it to a more stable service once the API matures.
+Deployment of this service is now done through terraform cloud.
 
-If you want to deploy a new release, then please adjust the version in `docker-compose.yml`.
+# Environmental Variables
 
-```bash
-eb init
-eb deploy --message="Add message here"
-```
+- `AUTH0_DOMAIN` - The Auth0 domain which can be collected from the Applications/Applications tab. It should be something like
+'XXXXXXX.eu.auth0.com'
+- AUTH0_API_AUDIENCE - THE Auth0 api audience, this can be collected from the Applications/APIs tab. It should be something like
+`https://XXXXXXXXXX.eu.auth0.com/api/v2/`
+- DB_URL- The Forecast database URL used to get GSP forecast data
+- DB_URL_PV - The PV database URL, used to get PV data
+- `ORIGINS` - Endpoints that are valid CORS origins. See [FastAPI documentation](https://fastapi.tiangolo.com/tutorial/cors/).
+
+
 
 # Contributors ✨
 

@@ -2,10 +2,12 @@
 import logging
 from typing import List, Optional, Union
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Security
+from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield, ManyForecasts
 from sqlalchemy.orm.session import Session
 
+from auth_utils import get_auth_implicit_scheme, get_user
 from database import (
     get_forecasts_for_a_specific_gsp_from_database,
     get_forecasts_from_database,
@@ -22,10 +24,15 @@ NationalYield = GSPYield
 
 
 # corresponds to route /v0/solar/GB/gsp/forecast/all
-@router.get("/forecast/all/", response_model=ManyForecasts)
+@router.get(
+    "/forecast/all/",
+    response_model=ManyForecasts,
+    dependencies=[Depends(get_auth_implicit_scheme())],
+)
 async def get_all_available_forecasts(
     historic: Optional[bool] = False,
     session: Session = Depends(get_session),
+    user: Auth0User = Security(get_user()),
 ) -> ManyForecasts:
     """### Get the latest information for ALL available forecasts for ALL GSPs
 
@@ -43,13 +50,13 @@ async def get_all_available_forecasts(
 
     There is also the option to pull forecast history from yesterday.
 
-
     #### Parameters
     - historic: boolean => TRUE returns the forecasts of yesterday along with today's
     forecasts for all GSPs
+
     """
 
-    logger.info(f"Get forecasts for all gsps. The option is {historic=}")
+    logger.info(f"Get forecasts for all gsps. The option is {historic=} for user {user}")
 
     forecasts = get_forecasts_from_database(session=session, historic=historic)
 
@@ -58,13 +65,18 @@ async def get_all_available_forecasts(
     return forecasts
 
 
-@router.get("/forecast/{gsp_id}", response_model=Union[Forecast, List[ForecastValue]])
+@router.get(
+    "/forecast/{gsp_id}",
+    response_model=Union[Forecast, List[ForecastValue]],
+    dependencies=[Depends(get_auth_implicit_scheme())],
+)
 async def get_forecasts_for_a_specific_gsp(
     gsp_id: int,
     session: Session = Depends(get_session),
     historic: Optional[bool] = False,
     only_forecast_values: Optional[bool] = False,
     forecast_horizon_minutes: Optional[int] = None,
+    user: Auth0User = Security(get_user()),
 ) -> Union[Forecast, List[ForecastValue]]:
     """### This route comes with the following options:
 
@@ -98,16 +110,17 @@ async def get_forecasts_for_a_specific_gsp(
     """
 
     logger.info(f"Get forecasts for gsp id {gsp_id} forecast of forecast with only values.")
+    logger.info(f"This is for user {user}")
 
     if only_forecast_values is False:
-        logger.debug(f'{"Getting forecast."}')
+        logger.debug("Getting forecast.")
         full_forecast = get_forecasts_for_a_specific_gsp_from_database(
             session=session,
             gsp_id=gsp_id,
             historic=historic,
         )
 
-        logger.debug(f'{"Got forecast."}')
+        logger.debug("Got forecast.")
 
         full_forecast.normalize()
 
@@ -116,7 +129,7 @@ async def get_forecasts_for_a_specific_gsp(
 
     else:
 
-        logger.debug(f'{"Getting forecast values only."}')
+        logger.debug("Getting forecast values only.")
 
         forecast_only = get_latest_forecast_values_for_a_specific_gsp_from_database(
             session=session,
@@ -124,23 +137,28 @@ async def get_forecasts_for_a_specific_gsp(
             forecast_horizon_minutes=forecast_horizon_minutes,
         )
 
-        logger.debug(f'{"Got forecast values only!!!"}')
+        logger.debug("Got forecast values only!!!")
 
         return forecast_only
 
 
 # corresponds to API route /v0/solar/GB/gsp/pvlive/{gsp_id}
-@router.get("/pvlive/{gsp_id}", response_model=List[GSPYield])
+@router.get(
+    "/pvlive/{gsp_id}",
+    response_model=List[GSPYield],
+    dependencies=[Depends(get_auth_implicit_scheme())],
+)
 async def get_truths_for_a_specific_gsp(
-    gsp_id: int, regime: Optional[str] = None, session: Session = Depends(get_session)
+    gsp_id: int,
+    regime: Optional[str] = None,
+    session: Session = Depends(get_session),
+    user: Auth0User = Security(get_user()),
 ) -> List[GSPYield]:
     """### Get PV_Live values for a specific GSP for yesterday and today
 
     The return object is a series of real-time solar energy generation readings from PV_Live.
-
     PV_Live is Sheffield's API that reports real-time PV data. These readings are updated throughout
     the day, reporting the most accurate finalized readings the following day at 10:00 UTC.
-
     See the __GSPYield__ schema for metadata details.
 
     Check out [Sheffield Solar PV_Live](https://www.solarsheffield.ac.uk/pvlive/) for
@@ -152,18 +170,20 @@ async def get_truths_for_a_specific_gsp(
     __day-after__(most accurate reading). __Day-after__ values are updated __in-day__ values.
     __In-day__ gives you all the readings from the day before up to the most recent
     reported GSP yield. __Day_after__ reports all the readings from the previous day.
+
     For example, a day-after regime request made on 08/09/2022 returns updated GSP yield
     for 07/09/2022. The 08/09/2022 __day-after__ values then become available at 10:00 UTC
     on 09/09/2022.
 
     If regime is not specificied, the most up-to-date GSP yield is returned.
-
     #### Parameters
     - gsp_id: gsp_id of the requested forecast
     - regime: can choose __in-day__ or __day-after__
     """
 
-    logger.info(f"Get PV Live estimates values for gsp id {gsp_id} and regime {regime}")
+    logger.info(
+        f"Get PV Live estimates values for gsp id {gsp_id} " f"and regime {regime} for user {user}"
+    )
 
     return get_truth_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=gsp_id, regime=regime

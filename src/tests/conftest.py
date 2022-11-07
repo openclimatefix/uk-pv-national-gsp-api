@@ -2,9 +2,14 @@
 import os
 
 import pytest
+from fastapi.testclient import TestClient
 from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.fake import make_fake_forecasts
 from nowcasting_datamodel.models.base import Base_PV
+
+from auth_utils import get_auth_implicit_scheme, get_user
+from database import get_session
+from main import app
 
 
 @pytest.fixture
@@ -50,5 +55,20 @@ def db_session(db_connection):
 
         s.rollback()
 
-    t.rollback()
-    connection.close()
+        t.rollback()
+        connection.close()
+
+
+@pytest.fixture()
+def api_client(db_session):
+    """Get API test client
+
+    We override the user and the database session
+    """
+    client = TestClient(app)
+
+    app.dependency_overrides[get_auth_implicit_scheme] = lambda: None
+    app.dependency_overrides[get_user] = lambda: None
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    return client

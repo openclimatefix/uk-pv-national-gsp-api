@@ -1,7 +1,6 @@
 """ Test for main app """
 from datetime import datetime, timezone
 
-from fastapi.testclient import TestClient
 from freezegun import freeze_time
 from nowcasting_datamodel.fake import make_fake_national_forecast
 from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield, Location, LocationSQL
@@ -10,10 +9,8 @@ from nowcasting_datamodel.update import update_all_forecast_latest
 from database import get_session
 from main import app
 
-client = TestClient(app)
 
-
-def test_read_latest_national(db_session):
+def test_read_latest_national(db_session, api_client):
     """Check main solar/GB/national/forecast route works"""
 
     forecast = make_fake_national_forecast(
@@ -23,13 +20,13 @@ def test_read_latest_national(db_session):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = client.get("/v0/solar/GB/national/forecast/")
+    response = api_client.get("/v0/solar/GB/national/forecast/")
     assert response.status_code == 200
 
     _ = Forecast(**response.json())
 
 
-def test_read_latest_national_historic_forecast_vallue(db_session):
+def test_read_latest_national_historic_forecast_vallue(db_session, api_client):
     """Check main solar/GB/national/forecast route works"""
 
     forecast = make_fake_national_forecast(
@@ -40,13 +37,13 @@ def test_read_latest_national_historic_forecast_vallue(db_session):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = client.get("/v0/solar/GB/national/forecast/?only_forecast_values=True")
+    response = api_client.get("/v0/solar/GB/national/forecast/?only_forecast_values=True")
     assert response.status_code == 200
 
     _ = [ForecastValue(**f) for f in response.json()]
 
 
-def test_read_latest_national_historic(db_session):
+def test_read_latest_national_historic(db_session, api_client):
     """Check main solar/GB/national/forecast route works"""
 
     forecast = make_fake_national_forecast(
@@ -57,14 +54,14 @@ def test_read_latest_national_historic(db_session):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = client.get("/v0/solar/GB/national/forecast/?historic=True")
+    response = api_client.get("/v0/solar/GB/national/forecast/?historic=True")
     assert response.status_code == 200
 
     _ = Forecast(**response.json())
 
 
 @freeze_time("2022-01-01")
-def test_read_truth_national_gsp(db_session):
+def test_read_truth_national_gsp(db_session, api_client):
     """Check main solar/GB/national/pvlive route works"""
 
     gsp_yield_1 = GSPYield(datetime_utc=datetime(2022, 1, 2), solar_generation_kw=1)
@@ -90,7 +87,7 @@ def test_read_truth_national_gsp(db_session):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = client.get("/v0/solar/GB/national/pvlive/")
+    response = api_client.get("/v0/solar/GB/national/pvlive/")
     assert response.status_code == 200
 
     r_json = response.json()

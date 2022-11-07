@@ -1,13 +1,9 @@
 """ Test for main app """
-from fastapi.testclient import TestClient
-
-from main import app, version
-
-client = TestClient(app)
+from main import version
 
 
-def test_read_main():
+def test_read_main(api_client):
     """Check main route works"""
-    response = client.get("/")
+    response = api_client.get("/")
     assert response.status_code == 200
     assert response.json()["version"] == version
