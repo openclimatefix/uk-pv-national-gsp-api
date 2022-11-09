@@ -4,9 +4,6 @@ import os
 
 from fastapi_auth0 import Auth0
 
-domain = os.getenv("AUTH0_DOMAIN", "not-set")
-api_audience = os.getenv("AUTH0_API_AUDIENCE", "not-set")
-
 logger = logging.getLogger(__name__)
 
 
@@ -16,7 +13,14 @@ def get_auth():
     If AUTH0_DOMAIN or AUTH0_API_AUDIENCE has been set, None is returned.
     This is useful for testing
     """
-    if domain == "not-set" or api_audience == "notset":
+
+    domain = os.getenv("AUTH0_DOMAIN", "not-set")
+    api_audience = os.getenv("AUTH0_API_AUDIENCE", "not-set")
+
+    logger.debug(f"The auth0 domain {domain}")
+    logger.debug(f"The auth0 api audience {api_audience}")
+
+    if (domain == "not-set") or (api_audience == "not-set"):
         logger.warning('"AUTH0_DOMAIN" and "AUTH0_API_AUDIENCE" need to be set ')
         return None
     return Auth0(
