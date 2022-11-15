@@ -8,6 +8,7 @@ from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.models import (
     Forecast,
     ForecastValue,
+    ForecastValueSevenDaysSQL,
     GSPYield,
     Location,
     ManyForecasts,
@@ -133,6 +134,7 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
         start_datetime=yesterday_start_datetime,
         only_return_latest=True,
         forecast_horizon_minutes=forecast_horizon_minutes,
+        model=ForecastValueSevenDaysSQL,
     )
 
 
