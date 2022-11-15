@@ -49,19 +49,19 @@ def test_read_only_forecast_values_gsp(db_session, api_client):
     """Check main solar/GB/gsp/forecast/{gsp_id} route works"""
 
     forecast_value_1_sql = ForecastValueLatestSQL(
-        target_time=datetime(2022, 6, 2), expected_power_generation_megawatts=1, gsp_id=1
+        target_time=datetime(2023, 6, 2), expected_power_generation_megawatts=1, gsp_id=1
     )
 
     forecast_value_2_sql = ForecastValueLatestSQL(
-        target_time=datetime(2022, 6, 1, 1), expected_power_generation_megawatts=2, gsp_id=1
+        target_time=datetime(2023, 6, 1, 1), expected_power_generation_megawatts=2, gsp_id=1
     )
 
     forecast_value_3_sql = ForecastValueLatestSQL(
-        target_time=datetime(2022, 6, 1), expected_power_generation_megawatts=3, gsp_id=1
+        target_time=datetime(2023, 6, 1), expected_power_generation_megawatts=3, gsp_id=1
     )
 
     forecast = make_fake_forecast(
-        gsp_id=1, session=db_session, t0_datetime_utc=datetime(2020, 1, 1)
+        gsp_id=1, session=db_session, t0_datetime_utc=datetime(2023, 1, 1)
     )
     forecast.forecast_values_latest.append(forecast_value_1_sql)
     forecast.forecast_values_latest.append(forecast_value_2_sql)
