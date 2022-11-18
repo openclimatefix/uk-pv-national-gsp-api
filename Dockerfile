@@ -1,9 +1,10 @@
-FROM python:3.10-slim-bullseye
+FROM python:3.10-slim
 
 # copy files requirements
 COPY ./requirements.txt /app/requirements.txt
 
 # install requirements
+RUN apt-get clean
 RUN apt-get update -y
 RUN #apt-get install -y gdal-bin libgdal-dev g++
 RUN pip install -U pip
