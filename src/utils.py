@@ -51,5 +51,6 @@ def get_start_datetime(n_history_days: Optional[Union[str, int]] = None):
         start_datetime = datetime.combine(start_datetime, datetime.min.time())
         start_datetime = start_datetime.replace(tzinfo=timezone.utc)
     else:
-        start_datetime = datetime.now(tz=timezone.utc).date() - timedelta(days=int(n_history_days))
+        start_datetime = datetime.now(tz=timezone.utc) - timedelta(days=int(n_history_days))
+        start_datetime = floor_30_minutes_dt(start_datetime)
     return start_datetime
