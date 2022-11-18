@@ -49,6 +49,7 @@ def get_start_datetime(n_history_days: Optional[Union[str, int]] = None):
     if n_history_days == "yesterday":
         start_datetime = datetime.now(tz=timezone.utc).date() - timedelta(days=1)
         start_datetime = datetime.combine(start_datetime, datetime.min.time())
+        start_datetime = start_datetime.replace(tzinfo=timezone.utc)
     else:
         start_datetime = datetime.now(tz=timezone.utc).date() - timedelta(days=int(n_history_days))
     return start_datetime
