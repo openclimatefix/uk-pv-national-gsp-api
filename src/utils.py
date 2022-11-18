@@ -1,7 +1,7 @@
 """ Utils functions for main.py """
 import os
+from datetime import datetime, timedelta, timezone
 from typing import Optional, Union
-from datetime import timedelta, datetime, timezone
 
 import numpy as np
 
@@ -26,7 +26,7 @@ def floor_30_minutes_dt(dt):
     return dt
 
 
-def get_start_datetime(n_history_days: Optional[Union[str, int]] = None):
+def get_start_datetime(n_history_days: Optional[Union[str, int]] = None) -> datetime:
     """
     Get the start datetime for the query
 
@@ -34,13 +34,9 @@ def get_start_datetime(n_history_days: Optional[Union[str, int]] = None):
     we 'N_HISTORY_DAYS' use env var to get number of days
 
     :param n_history_days: n_history
-    :return:
+    :return: start datetime
     """
-    """ Get the start datetime for the query
 
-    By default we get yesterdays morning at midnight,
-    we 'N_HISTORY_DAYS' use env var to get number of days
-    """
 
     if n_history_days is None:
         n_history_days = os.getenv("N_HISTORY_DAYS", "yesterday")
