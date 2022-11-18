@@ -54,6 +54,7 @@ def test_floor_30_minutes():
 
 @freeze_time("2022-11-12 12:34:56")
 def test_get_start_datetime():
+    """Test that we get the correct start datetime"""
 
     # check yesterday
     assert (
