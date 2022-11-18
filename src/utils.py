@@ -37,7 +37,6 @@ def get_start_datetime(n_history_days: Optional[Union[str, int]] = None) -> date
     :return: start datetime
     """
 
-
     if n_history_days is None:
         n_history_days = os.getenv("N_HISTORY_DAYS", "yesterday")
 
