@@ -43,10 +43,10 @@ def get_start_datetime(n_history_days: Optional[Union[str, int]] = None):
     """
 
     if n_history_days is None:
-        n_history_days = os.getenv('N_HISTORY_DAYS', 'yesterday')
+        n_history_days = os.getenv("N_HISTORY_DAYS", "yesterday")
 
     # get at most 2 days of data.
-    if n_history_days == 'yesterday':
+    if n_history_days == "yesterday":
         start_datetime = datetime.now(tz=timezone.utc).date() - timedelta(days=1)
         start_datetime = datetime.combine(start_datetime, datetime.min.time())
     else:
