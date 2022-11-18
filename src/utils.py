@@ -26,7 +26,7 @@ def floor_30_minutes_dt(dt):
     return dt
 
 
-def floor_6_hours_dt(dt:datetime):
+def floor_6_hours_dt(dt: datetime):
     """
     Floor a datetime by 6 hours.
 
