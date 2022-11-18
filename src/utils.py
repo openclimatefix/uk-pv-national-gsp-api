@@ -1,6 +1,6 @@
 """ Utils functions for main.py """
 import os
-from typing import Optional
+from typing import Optional, Union
 from datetime import timedelta, datetime, timezone
 
 import numpy as np
@@ -26,7 +26,7 @@ def floor_30_minutes_dt(dt):
     return dt
 
 
-def get_start_datetime(n_history_days:Optional[str] = None):
+def get_start_datetime(n_history_days: Optional[Union[str, int]] = None):
     """
     Get the start datetime for the query
 

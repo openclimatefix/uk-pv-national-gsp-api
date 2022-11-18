@@ -55,5 +55,10 @@ def test_floor_30_minutes():
 @freeze_time("2022-11-12 12:34:56")
 def test_get_start_datetime():
 
-    assert get_start_datetime() == datetime(2022, 11, 11, tzinfo=timezone.utc)
-    assert get_start_datetime(n_history_days=10) == datetime(2022, 11, 2,12,34,56, tzinfo=timezone.utc)
+    assert (
+        get_start_datetime().isoformat() == datetime(2022, 11, 11, tzinfo=timezone.utc).isoformat()
+    )
+    assert (
+        get_start_datetime(n_history_days="10").isoformat()
+        == datetime(2022, 11, 2, 12, 34, 56, tzinfo=timezone.utc).isoformat()
+    )
