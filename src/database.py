@@ -28,7 +28,7 @@ from nowcasting_datamodel.read.read import (
 from nowcasting_datamodel.read.read_gsp import get_gsp_yield
 from sqlalchemy.orm.session import Session
 
-from utils import floor_30_minutes_dt
+from utils import floor_30_minutes_dt, get_start_datetime
 
 logger = logging.getLogger(__name__)
 
@@ -51,13 +51,11 @@ def get_forecasts_from_database(
 
     if historic:
 
-        # get at most 2 days of data.
-        yesterday_start_datetime = datetime.now(tz=timezone.utc).date() - timedelta(days=1)
-        yesterday_start_datetime = datetime.combine(yesterday_start_datetime, datetime.min.time())
+        start_datetime = get_start_datetime()
 
         forecasts = get_all_gsp_ids_latest_forecast(
             session=session,
-            start_target_time=yesterday_start_datetime,
+            start_target_time=start_datetime,
             preload_children=True,
             historic=True,
         )
@@ -89,15 +87,14 @@ def get_forecasts_for_a_specific_gsp_from_database(
 ) -> Forecast:
     """Get forecasts for one GSP from database"""
 
-    yesterday_start_datetime = datetime.now(tz=timezone.utc).date() - timedelta(days=1)
-    yesterday_start_datetime = datetime.combine(yesterday_start_datetime, datetime.min.time())
+    start_datetime = get_start_datetime()
 
     # get forecast from database
     forecast = get_latest_forecast(
         session=session,
         gsp_id=gsp_id,
         historic=historic,
-        start_target_time=yesterday_start_datetime,
+        start_target_time=start_datetime,
     )
 
     logger.debug("Found latest forecasts")
@@ -120,18 +117,17 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
     :return: list of latest forecat values
     """
 
-    yesterday_start_datetime = datetime.now(tz=timezone.utc).date() - timedelta(days=1)
-    yesterday_start_datetime = datetime.combine(yesterday_start_datetime, datetime.min.time())
+    start_datetime = get_start_datetime()
 
     if forecast_horizon_minutes is None:
         return get_forecast_values_latest(
-            session=session, gsp_id=gsp_id, start_datetime=yesterday_start_datetime
+            session=session, gsp_id=gsp_id, start_datetime=start_datetime
         )
 
     return get_forecast_values(
         session=session,
         gsp_id=gsp_id,
-        start_datetime=yesterday_start_datetime,
+        start_datetime=start_datetime,
         only_return_latest=True,
         forecast_horizon_minutes=forecast_horizon_minutes,
         model=ForecastValueSevenDaysSQL,
@@ -175,13 +171,12 @@ def get_truth_values_for_a_specific_gsp_from_database(
     :return: list of gsp yields
     """
 
-    yesterday_start_datetime = datetime.now(tz=timezone.utc).date() - timedelta(days=1)
-    yesterday_start_datetime = datetime.combine(yesterday_start_datetime, datetime.min.time())
+    start_datetime = get_start_datetime()
 
     return get_gsp_yield(
         session=session,
         gsp_ids=[gsp_id],
-        start_datetime_utc=yesterday_start_datetime,
+        start_datetime_utc=start_datetime,
         regime=regime,
     )
 

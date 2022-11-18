@@ -1,7 +1,9 @@
 """ Utils functions for test """
 from datetime import datetime, timezone
 
-from utils import floor_30_minutes_dt
+from freezegun import freeze_time
+
+from utils import floor_30_minutes_dt, get_start_datetime
 
 LOWER_LIMIT_MINUTE = 0
 UPPER_LIMIT_MINUTE = 60
@@ -48,3 +50,10 @@ def test_floor_30_minutes():
             assert floor_minute.minute == 0
         else:
             assert floor_minute.minute == 30
+
+
+@freeze_time("2022-11-12 12:34:56")
+def test_get_start_datetime():
+
+    assert get_start_datetime() == datetime(2022, 11, 11, tzinfo=timezone.utc)
+    assert get_start_datetime(n_history_days=10) == datetime(2022, 11, 2,12,34,56, tzinfo=timezone.utc)

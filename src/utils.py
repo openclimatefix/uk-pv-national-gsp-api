@@ -1,5 +1,7 @@
 """ Utils functions for main.py """
-from datetime import timedelta
+import os
+from typing import List
+from datetime import timedelta, datetime, timezone
 
 import numpy as np
 
@@ -22,3 +24,31 @@ def floor_30_minutes_dt(dt):
     dt += timedelta(minutes=approx)
 
     return dt
+
+
+def get_start_datetime(n_history_days:Optional[str] = None):
+    """
+    Get the start datetime for the query
+
+    By default we get yesterdays morning at midnight,
+    we 'N_HISTORY_DAYS' use env var to get number of days
+
+    :param n_history_days: n_history
+    :return:
+    """
+    """ Get the start datetime for the query
+
+    By default we get yesterdays morning at midnight,
+    we 'N_HISTORY_DAYS' use env var to get number of days
+    """
+
+    if n_history_days is None:
+        n_history_days = os.getenv('N_HISTORY_DAYS', 'yesterday')
+
+    # get at most 2 days of data.
+    if n_history_days == 'yesterday':
+        start_datetime = datetime.now(tz=timezone.utc).date() - timedelta(days=1)
+        start_datetime = datetime.combine(start_datetime, datetime.min.time())
+    else:
+        start_datetime = datetime.now(tz=timezone.utc).date() - timedelta(days=int(n_history_days))
+    return start_datetime
