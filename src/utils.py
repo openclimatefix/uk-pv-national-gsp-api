@@ -1,6 +1,6 @@
 """ Utils functions for main.py """
 import os
-from typing import List
+from typing import Optional
 from datetime import timedelta, datetime, timezone
 
 import numpy as np
