@@ -4,7 +4,13 @@ from typing import List, Optional, Union
 
 from fastapi import APIRouter, Depends, Security
 from fastapi_auth0 import Auth0User
-from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield, Location, ManyForecasts
+from nowcasting_datamodel.models import (
+    Forecast,
+    ForecastValue,
+    GSPYield,
+    LocationWithGSPYields,
+    ManyForecasts,
+)
 from sqlalchemy.orm.session import Session
 
 from auth_utils import get_auth_implicit_scheme, get_user
@@ -146,14 +152,14 @@ async def get_forecasts_for_a_specific_gsp(
 # corresponds to API route /v0/solar/GB/gsp/pvlive/all
 @router.get(
     "/pvlive/all",
-    response_model=List[Location],
+    response_model=List[LocationWithGSPYields],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 async def get_truths_for_all_gsps(
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
-) -> List[Location]:
+) -> List[LocationWithGSPYields]:
     """### Get PV_Live values for a all GSPs for yesterday and today
 
     The return object is a series of real-time solar energy generation readings from PV_Live.
