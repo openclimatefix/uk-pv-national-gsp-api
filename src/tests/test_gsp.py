@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 
 from freezegun import freeze_time
 from nowcasting_datamodel.fake import make_fake_forecasts
-from nowcasting_datamodel.models import Forecast, GSPYield, Location, LocationSQL, ManyForecasts
+from nowcasting_datamodel.models import Forecast, GSPYield, Location, LocationSQL, LocationWithGSPYields, ManyForecasts
 from nowcasting_datamodel.update import update_all_forecast_latest
 
 from database import get_session
@@ -169,6 +169,6 @@ def test_read_truths_for_all_gsp(db_session, api_client):
     r_json = response.json()
     assert len(r_json) == 2
 
-    location = [Location(**location) for location in r_json]
+    location = [LocationWithGSPYields(**location) for location in r_json]
     assert len(location) == 2
     assert len(location[0].gsp_yields) == 2
