@@ -169,6 +169,6 @@ def test_read_truths_for_all_gsp(db_session, api_client):
     r_json = response.json()
     assert len(r_json) == 2
 
-    location = [Location.from_orm(**location) for location in r_json]
+    location = [Location(**location) for location in r_json]
     assert len(location) == 2
     assert len(location[0].gsp_yields) == 2

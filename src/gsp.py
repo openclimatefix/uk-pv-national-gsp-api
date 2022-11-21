@@ -146,7 +146,7 @@ async def get_forecasts_for_a_specific_gsp(
 # corresponds to API route /v0/solar/GB/gsp/pvlive/all
 @router.get(
     "/pvlive/all",
-    response_model=List[GSPYield],
+    response_model=List[Location],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 async def get_truths_for_all_gsps(

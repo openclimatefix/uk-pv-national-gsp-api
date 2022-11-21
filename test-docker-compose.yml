@@ -1,7 +1,7 @@
 version: "3"
 
 services:
-  postgres:
+  postgres_db:
     image: postgres:14.5
     restart: always
     environment:
@@ -17,8 +17,8 @@ services:
       args:
         TESTING: 1
     environment:
-      - DB_URL=postgresql://postgres:postgres@postgres:5432/postgres
-      - DB_URL_PV=postgresql://postgres:postgres@postgres:5432/postgres
+      - DB_URL=postgresql://postgres:postgres@postgres_db:5432/postgres
+      - DB_URL_PV=postgresql://postgres:postgres@postgres_db:5432/postgres
       - GIT_PYTHON_REFRESH=quiet
       - LOG_LEVEL=DEBUG
     command: >
@@ -28,6 +28,6 @@ services:
       && cp .coverage ./src/tests/
       && cp coverage.xml ./src/tests/"
     depends_on:
-      - "postgres"
+      - postgres_db
     volumes:
       - ./src/:/app/src
