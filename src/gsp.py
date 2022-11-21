@@ -149,7 +149,7 @@ async def get_forecasts_for_a_specific_gsp(
     response_model=List[GSPYield],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
-async def get_truths_for_a_specific_gsp(
+async def get_truths_for_all_gsps(
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
@@ -181,13 +181,9 @@ async def get_truths_for_a_specific_gsp(
     - regime: can choose __in-day__ or __day-after__
     """
 
-    logger.info(
-        f"Get PV Live estimates values for all gsp id and regime {regime} for user {user}"
-    )
+    logger.info(f"Get PV Live estimates values for all gsp id and regime {regime} for user {user}")
 
-    return get_truth_values_for_all_gsps_from_database(
-        session=session, regime=regime
-    )
+    return get_truth_values_for_all_gsps_from_database(session=session, regime=regime)
 
 
 # corresponds to API route /v0/solar/GB/gsp/pvlive/{gsp_id}
