@@ -76,7 +76,7 @@ Deployment of this service is now done through terraform cloud.
 - DB_URL- The Forecast database URL used to get GSP forecast data
 - DB_URL_PV - The PV database URL, used to get PV data
 - `ORIGINS` - Endpoints that are valid CORS origins. See [FastAPI documentation](https://fastapi.tiangolo.com/tutorial/cors/).
-- N_DAY_HISTORY - Default is just to load data from today and yesterday,
+- N_HISTORY_DAYS - Default is just to load data from today and yesterday,
     but we can set this to 5, if we want the api always to return 5 days of data
 
 
