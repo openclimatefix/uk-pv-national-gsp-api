@@ -8,7 +8,6 @@ from nowcasting_datamodel.models import (
     Forecast,
     ForecastValue,
     GSPYield,
-    Location,
     LocationWithGSPYields,
     ManyForecasts,
 )
