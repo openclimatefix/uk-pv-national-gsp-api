@@ -25,7 +25,8 @@ from nowcasting_datamodel.read.read import (
     get_location,
     national_gb_label,
 )
-from nowcasting_datamodel.read.read_gsp import get_gsp_yield
+from nowcasting_datamodel.read.read_gsp import get_gsp_yield, get_gsp_yield_by_location
+from nowcasting_datamodel.update import N_GSP
 from sqlalchemy.orm.session import Session
 
 from utils import floor_30_minutes_dt, get_start_datetime
@@ -179,6 +180,29 @@ def get_truth_values_for_a_specific_gsp_from_database(
         start_datetime_utc=start_datetime,
         regime=regime,
     )
+
+
+def get_truth_values_for_all_gsps_from_database(
+    session: Session, n_gsp: Optional[int] = N_GSP, regime: Optional[str] = "in-day"
+) -> List[Location]:
+    """Get the truth value for all gsps for yesterday and today
+
+    :param session: sql session
+    :param n_gsp: the number of gsps we should load.
+    :param regime: option for "in-day" or "day-after"
+    :return: list of gsp yields
+    """
+
+    start_datetime = get_start_datetime()
+
+    locations = get_gsp_yield_by_location(
+        session=session,
+        gsp_ids=list(range(1, n_gsp)),
+        start_datetime_utc=start_datetime,
+        regime=regime,
+    )
+
+    return [Location.from_orm(location) for location in locations]
 
 
 def get_gsp_system(session: Session, gsp_id: Optional[int] = None) -> List[Location]:
