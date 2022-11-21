@@ -11,6 +11,7 @@ from nowcasting_datamodel.models import (
     ForecastValueSevenDaysSQL,
     GSPYield,
     Location,
+    LocationWithGSPYields,
     ManyForecasts,
     Status,
 )
@@ -184,7 +185,7 @@ def get_truth_values_for_a_specific_gsp_from_database(
 
 def get_truth_values_for_all_gsps_from_database(
     session: Session, n_gsp: Optional[int] = N_GSP, regime: Optional[str] = "in-day"
-) -> List[Location]:
+) -> List[LocationWithGSPYields]:
     """Get the truth value for all gsps for yesterday and today
 
     :param session: sql session
@@ -202,7 +203,7 @@ def get_truth_values_for_all_gsps_from_database(
         regime=regime,
     )
 
-    return [Location.from_orm(location) for location in locations]
+    return [LocationWithGSPYields.from_orm(location) for location in locations]
 
 
 def get_gsp_system(session: Session, gsp_id: Optional[int] = None) -> List[Location]:
