@@ -198,7 +198,7 @@ def get_truth_values_for_all_gsps_from_database(
 
     locations = get_gsp_yield_by_location(
         session=session,
-        gsp_ids=list(range(1, n_gsp+1)),
+        gsp_ids=list(range(1, n_gsp + 1)),
         start_datetime_utc=start_datetime,
         regime=regime,
     )
