@@ -79,6 +79,68 @@ Deployment of this service is now done through terraform cloud.
 - N_HISTORY_DAYS - Default is just to load data from today and yesterday,
     but we can set this to 5, if we want the api always to return 5 days of data
 
+## Routes to SQL tables
+
+### National
+```mermaid
+  graph TD;
+      N1(national/forecast) --> Q1;
+      Q1{only forecast <br> values?} --> |no| N2
+      N2[Forecast] --> Q2;
+      Q1-->|yes|Q3;
+      Q2{historic?}
+      Q2-->|no| N3[ForecastValue];
+      Q2-->|yes| N4[ForecastValueLatest];
+      Q3{forecast horizon <br> minutes not None}
+      Q3-->|yes| N5[ForecastValueSevenDaysSQL];
+      Q3-->|no| N4;
+
+      NP1(national/pvlive)-->NP2;
+      NP2[GSPYieldSQL];
+```
+
+### GSP
+```mermaid
+  graph TD;
+      G1(gsp/forecast/all) -->G2;
+      G2[Forecast] -->Q1;
+      Q1{historic}
+      Q1-->|no| N3[ForecastValue];
+      Q1-->|yes| N4[ForecastValueLatest];
+
+      G3(gsp/forecast/gsp_id) -->Q2;
+      Q2{only forecast values} --> |no| G4
+      Q2--> |yes| Q4
+      G4[Forecast] --> Q3;
+      Q3{historic}
+      Q3-->|no| G5[ForecastValue];
+      Q3-->|yes| G6[ForecastValueLatest];
+      Q4{forecast horizon <br> minutes not None}
+      Q4-->|yes| G7[ForecastValueSevenDaysSQL];
+      Q4-->|no| G6;
+
+      GP1(gsp/pvlive/all)-->GP2;
+      GP2[GSPYieldSQL];
+
+      GP3(gsp/pvlive/gsp_id)-->GP4;
+      GP4[GSPYieldSQL];
+```
+
+### Extras
+
+```mermaid
+  graph TD;
+      G1(status)-->G2;
+      G2[Status];
+
+      G3(gsp)-->G4
+      G4[LocationSQL]
+      
+```
+
+
+    
+
 
 
 # Contributors ✨
