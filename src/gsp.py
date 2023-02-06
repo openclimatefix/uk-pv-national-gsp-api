@@ -135,7 +135,6 @@ async def get_forecasts_for_a_specific_gsp(
         return full_forecast
 
     else:
-
         logger.debug("Getting forecast values only.")
 
         forecast_only = get_latest_forecast_values_for_a_specific_gsp_from_database(

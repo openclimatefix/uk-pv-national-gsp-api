@@ -135,11 +135,11 @@ Deployment of this service is now done through terraform cloud.
 
       G3(gsp)-->G4
       G4[LocationSQL]
-      
+
 ```
 
 
-    
+
 
 
 
