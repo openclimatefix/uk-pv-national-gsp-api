@@ -22,4 +22,4 @@ async def get_status(session: Session = Depends(get_session)) -> Status:
     """
 
     logger.debug("Get status")
-    return get_latest_status_from_database(session=session)
+    return await get_latest_status_from_database(session=session)

@@ -70,7 +70,7 @@ async def get_national_forecast(
 
     if not only_forecast_values:
         logger.debug("Getting forecast.")
-        full_forecast = get_forecasts_for_a_specific_gsp_from_database(
+        full_forecast = await get_forecasts_for_a_specific_gsp_from_database(
             session=session,
             gsp_id=0,
             historic=historic,
@@ -89,7 +89,7 @@ async def get_national_forecast(
 
     else:
 
-        national_forecast_values = get_latest_forecast_values_for_a_specific_gsp_from_database(
+        national_forecast_values = await get_latest_forecast_values_for_a_specific_gsp_from_database(
             session=session, gsp_id=0, forecast_horizon_minutes=forecast_horizon_minutes
         )
 
@@ -139,6 +139,6 @@ async def get_national_pvlive(
 
     logger.info(f"Get national PV Live estimates values " f"for regime {regime} for  {user}")
 
-    return get_truth_values_for_a_specific_gsp_from_database(
+    return await get_truth_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=0, regime=regime
     )

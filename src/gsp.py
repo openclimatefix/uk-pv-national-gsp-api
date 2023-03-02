@@ -65,7 +65,7 @@ async def get_all_available_forecasts(
 
     logger.info(f"Get forecasts for all gsps. The option is {historic=} for user {user}")
 
-    forecasts = get_forecasts_from_database(session=session, historic=historic)
+    forecasts = await get_forecasts_from_database(session=session, historic=historic)
 
     forecasts.normalize()
 
@@ -121,7 +121,7 @@ async def get_forecasts_for_a_specific_gsp(
 
     if only_forecast_values is False:
         logger.debug("Getting forecast.")
-        full_forecast = get_forecasts_for_a_specific_gsp_from_database(
+        full_forecast = await get_forecasts_for_a_specific_gsp_from_database(
             session=session,
             gsp_id=gsp_id,
             historic=historic,
@@ -138,7 +138,7 @@ async def get_forecasts_for_a_specific_gsp(
 
         logger.debug("Getting forecast values only.")
 
-        forecast_only = get_latest_forecast_values_for_a_specific_gsp_from_database(
+        forecast_only = await get_latest_forecast_values_for_a_specific_gsp_from_database(
             session=session,
             gsp_id=gsp_id,
             forecast_horizon_minutes=forecast_horizon_minutes,
@@ -189,7 +189,7 @@ async def get_truths_for_all_gsps(
 
     logger.info(f"Get PV Live estimates values for all gsp id and regime {regime} for user {user}")
 
-    return get_truth_values_for_all_gsps_from_database(session=session, regime=regime)
+    return await get_truth_values_for_all_gsps_from_database(session=session, regime=regime)
 
 
 # corresponds to API route /v0/solar/GB/gsp/pvlive/{gsp_id}
@@ -235,6 +235,6 @@ async def get_truths_for_a_specific_gsp(
         f"Get PV Live estimates values for gsp id {gsp_id} " f"and regime {regime} for user {user}"
     )
 
-    return get_truth_values_for_a_specific_gsp_from_database(
+    return await get_truth_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=gsp_id, regime=regime
     )
