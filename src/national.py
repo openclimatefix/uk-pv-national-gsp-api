@@ -89,8 +89,10 @@ async def get_national_forecast(
 
     else:
 
-        national_forecast_values = await get_latest_forecast_values_for_a_specific_gsp_from_database(
-            session=session, gsp_id=0, forecast_horizon_minutes=forecast_horizon_minutes
+        national_forecast_values = (
+            await get_latest_forecast_values_for_a_specific_gsp_from_database(
+                session=session, gsp_id=0, forecast_horizon_minutes=forecast_horizon_minutes
+            )
         )
 
         logger.debug(f"Got national forecasts with {len(national_forecast_values)} forecast values")
