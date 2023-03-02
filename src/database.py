@@ -35,7 +35,7 @@ from utils import floor_30_minutes_dt, get_start_datetime
 logger = logging.getLogger(__name__)
 
 
-def get_latest_status_from_database(session: Session) -> Status:
+async def get_latest_status_from_database(session: Session) -> Status:
     """Get latest status from database"""
     latest_status = get_latest_status(session)
 
@@ -45,7 +45,7 @@ def get_latest_status_from_database(session: Session) -> Status:
     return latest_status
 
 
-def get_forecasts_from_database(
+async def get_forecasts_from_database(
     session: Session, historic: Optional[bool] = False
 ) -> ManyForecasts:
     """Get forecasts from database for all GSPs"""
@@ -84,7 +84,7 @@ def get_forecasts_from_database(
     return ManyForecasts(forecasts=forecasts)
 
 
-def get_forecasts_for_a_specific_gsp_from_database(
+async def get_forecasts_for_a_specific_gsp_from_database(
     session: Session, gsp_id, historic: Optional[bool] = False
 ) -> Forecast:
     """Get forecasts for one GSP from database"""
@@ -107,7 +107,7 @@ def get_forecasts_for_a_specific_gsp_from_database(
         return Forecast.from_orm(forecast)
 
 
-def get_latest_forecast_values_for_a_specific_gsp_from_database(
+async def get_latest_forecast_values_for_a_specific_gsp_from_database(
     session: Session, gsp_id: int, forecast_horizon_minutes: Optional[int] = None
 ) -> List[ForecastValue]:
     """Get the forecast values for yesterday and today for one gsp
@@ -152,7 +152,7 @@ def get_session_pv():
         yield s
 
 
-def get_latest_national_forecast_from_database(session: Session) -> Forecast:
+async def get_latest_national_forecast_from_database(session: Session) -> Forecast:
     """Get the national level forecast from the database"""
 
     logger.debug("Getting latest national forecast")
@@ -162,7 +162,7 @@ def get_latest_national_forecast_from_database(session: Session) -> Forecast:
     return Forecast.from_orm(forecast)
 
 
-def get_truth_values_for_a_specific_gsp_from_database(
+async def get_truth_values_for_a_specific_gsp_from_database(
     session: Session, gsp_id: int, regime: Optional[str] = "in-day"
 ) -> List[GSPYield]:
     """Get the truth value for one gsp for yesterday and today
@@ -183,7 +183,7 @@ def get_truth_values_for_a_specific_gsp_from_database(
     )
 
 
-def get_truth_values_for_all_gsps_from_database(
+async def get_truth_values_for_all_gsps_from_database(
     session: Session, n_gsp: Optional[int] = N_GSP, regime: Optional[str] = "in-day"
 ) -> List[LocationWithGSPYields]:
     """Get the truth value for all gsps for yesterday and today
@@ -206,7 +206,7 @@ def get_truth_values_for_all_gsps_from_database(
     return [LocationWithGSPYields.from_orm(location) for location in locations]
 
 
-def get_gsp_system(session: Session, gsp_id: Optional[int] = None) -> List[Location]:
+async def get_gsp_system(session: Session, gsp_id: Optional[int] = None) -> List[Location]:
     """Get gsp system details
 
     :param session:

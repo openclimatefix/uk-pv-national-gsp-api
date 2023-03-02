@@ -92,4 +92,4 @@ async def get_systems(
 
     logger.info(f"Get GSP systems for {gsp_id=} for {user}")
 
-    return get_gsp_system(session=session, gsp_id=gsp_id)
+    return await get_gsp_system(session=session, gsp_id=gsp_id)
