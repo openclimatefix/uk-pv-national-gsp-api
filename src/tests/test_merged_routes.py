@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from freezegun import freeze_time
 from nowcasting_datamodel.fake import make_fake_forecast, make_fake_forecasts
 from nowcasting_datamodel.models import Forecast, ForecastValue, ForecastValueLatestSQL
-from nowcasting_datamodel.update import update_all_forecast_latest
+from nowcasting_datamodel.save.update import update_all_forecast_latest
 
 from database import get_session
 from main import app
