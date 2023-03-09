@@ -77,7 +77,7 @@ async def get_national_forecast(
         )
 
         logger.debug("Got forecast.")
-
+        full_forecast.adjust()
         full_forecast.normalize()
 
         logger.debug("Normalized forecast.")
@@ -96,6 +96,8 @@ async def get_national_forecast(
         )
 
         logger.debug(f"Got national forecasts with {len(national_forecast_values)} forecast values")
+
+    national_forecast_values = [f.adjust() for f in national_forecast_values]
 
     return national_forecast_values
 

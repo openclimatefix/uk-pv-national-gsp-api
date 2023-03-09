@@ -11,7 +11,7 @@ from nowcasting_datamodel.models import (
     LocationWithGSPYields,
     ManyForecasts,
 )
-from nowcasting_datamodel.update import update_all_forecast_latest
+from nowcasting_datamodel.save.update import update_all_forecast_latest
 
 from database import get_session
 from main import app
