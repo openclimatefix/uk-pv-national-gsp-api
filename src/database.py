@@ -27,7 +27,7 @@ from nowcasting_datamodel.read.read import (
     national_gb_label,
 )
 from nowcasting_datamodel.read.read_gsp import get_gsp_yield, get_gsp_yield_by_location
-from nowcasting_datamodel.update import N_GSP
+from nowcasting_datamodel.save.update import N_GSP
 from sqlalchemy.orm.session import Session
 
 from utils import floor_30_minutes_dt, get_start_datetime
