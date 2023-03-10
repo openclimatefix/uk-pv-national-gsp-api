@@ -141,6 +141,7 @@ async def get_latest_forecast_values_for_a_specific_gsp_from_database(
 
     return forecast_values
 
+
 def get_session():
     """Get database settion"""
     connection = DatabaseConnection(url=os.getenv("DB_URL", "not_set"))

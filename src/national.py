@@ -8,6 +8,7 @@ from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield
 from sqlalchemy.orm.session import Session
 
 from auth_utils import get_auth_implicit_scheme, get_user
+from cache import cache_response
 from database import (
     get_forecasts_for_a_specific_gsp_from_database,
     get_latest_forecast_values_for_a_specific_gsp_from_database,
@@ -27,6 +28,7 @@ NationalYield = GSPYield
     response_model=Union[Forecast, List[ForecastValue]],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
+@cache_response
 async def get_national_forecast(
     session: Session = Depends(get_session),
     historic: Optional[bool] = False,
@@ -108,6 +110,7 @@ async def get_national_forecast(
     response_model=List[NationalYield],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
+@cache_response
 async def get_national_pvlive(
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
