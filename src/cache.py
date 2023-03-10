@@ -28,7 +28,7 @@ def cache_response(func):
     last_updated = {}
 
     @wraps(func)
-    async def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs):
         nonlocal response
         nonlocal last_updated
 

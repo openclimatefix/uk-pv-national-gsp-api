@@ -29,7 +29,7 @@ NationalYield = GSPYield
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
-async def get_national_forecast(
+def get_national_forecast(
     session: Session = Depends(get_session),
     historic: Optional[bool] = False,
     only_forecast_values: Optional[bool] = False,
@@ -72,7 +72,7 @@ async def get_national_forecast(
 
     if not only_forecast_values:
         logger.debug("Getting forecast.")
-        full_forecast = await get_forecasts_for_a_specific_gsp_from_database(
+        full_forecast = get_forecasts_for_a_specific_gsp_from_database(
             session=session,
             gsp_id=0,
             historic=historic,
@@ -92,7 +92,7 @@ async def get_national_forecast(
     else:
 
         national_forecast_values = (
-            await get_latest_forecast_values_for_a_specific_gsp_from_database(
+            get_latest_forecast_values_for_a_specific_gsp_from_database(
                 session=session, gsp_id=0, forecast_horizon_minutes=forecast_horizon_minutes
             )
         )
@@ -111,7 +111,7 @@ async def get_national_forecast(
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
-async def get_national_pvlive(
+def get_national_pvlive(
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
@@ -146,6 +146,6 @@ async def get_national_pvlive(
 
     logger.info(f"Get national PV Live estimates values " f"for regime {regime} for  {user}")
 
-    return await get_truth_values_for_a_specific_gsp_from_database(
+    return get_truth_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=0, regime=regime
     )

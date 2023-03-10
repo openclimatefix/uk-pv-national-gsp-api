@@ -38,7 +38,7 @@ NationalYield = GSPYield
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
-async def get_all_available_forecasts(
+def get_all_available_forecasts(
     historic: Optional[bool] = True,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
@@ -67,7 +67,7 @@ async def get_all_available_forecasts(
 
     logger.info(f"Get forecasts for all gsps. The option is {historic=} for user {user}")
 
-    forecasts = await get_forecasts_from_database(session=session, historic=historic)
+    forecasts = get_forecasts_from_database(session=session, historic=historic)
 
     forecasts.normalize()
 
@@ -80,7 +80,7 @@ async def get_all_available_forecasts(
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
-async def get_forecasts_for_a_specific_gsp(
+def get_forecasts_for_a_specific_gsp(
     gsp_id: int,
     session: Session = Depends(get_session),
     historic: Optional[bool] = False,
@@ -124,7 +124,7 @@ async def get_forecasts_for_a_specific_gsp(
 
     if only_forecast_values is False:
         logger.debug("Getting forecast.")
-        full_forecast = await get_forecasts_for_a_specific_gsp_from_database(
+        full_forecast = get_forecasts_for_a_specific_gsp_from_database(
             session=session,
             gsp_id=gsp_id,
             historic=historic,
@@ -159,7 +159,7 @@ async def get_forecasts_for_a_specific_gsp(
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
-async def get_truths_for_all_gsps(
+def get_truths_for_all_gsps(
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
@@ -193,7 +193,7 @@ async def get_truths_for_all_gsps(
 
     logger.info(f"Get PV Live estimates values for all gsp id and regime {regime} for user {user}")
 
-    return await get_truth_values_for_all_gsps_from_database(session=session, regime=regime)
+    return get_truth_values_for_all_gsps_from_database(session=session, regime=regime)
 
 
 # corresponds to API route /v0/solar/GB/gsp/pvlive/{gsp_id}
@@ -203,7 +203,7 @@ async def get_truths_for_all_gsps(
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
-async def get_truths_for_a_specific_gsp(
+def get_truths_for_a_specific_gsp(
     gsp_id: int,
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
@@ -240,6 +240,6 @@ async def get_truths_for_a_specific_gsp(
         f"Get PV Live estimates values for gsp id {gsp_id} " f"and regime {regime} for user {user}"
     )
 
-    return await get_truth_values_for_a_specific_gsp_from_database(
+    return get_truth_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=gsp_id, regime=regime
     )
