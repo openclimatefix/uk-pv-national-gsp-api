@@ -22,6 +22,7 @@ from database import (
     get_truth_values_for_a_specific_gsp_from_database,
     get_truth_values_for_all_gsps_from_database,
 )
+from cache import cache_response
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +37,7 @@ NationalYield = GSPYield
     response_model=ManyForecasts,
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
+@cache_response
 async def get_all_available_forecasts(
     historic: Optional[bool] = True,
     session: Session = Depends(get_session),
@@ -77,6 +79,7 @@ async def get_all_available_forecasts(
     response_model=Union[Forecast, List[ForecastValue]],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
+@cache_response
 async def get_forecasts_for_a_specific_gsp(
     gsp_id: int,
     session: Session = Depends(get_session),
@@ -155,6 +158,7 @@ async def get_forecasts_for_a_specific_gsp(
     response_model=List[LocationWithGSPYields],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
+@cache_response
 async def get_truths_for_all_gsps(
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
@@ -198,6 +202,7 @@ async def get_truths_for_all_gsps(
     response_model=List[GSPYield],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
+@cache_response
 async def get_truths_for_a_specific_gsp(
     gsp_id: int,
     regime: Optional[str] = None,

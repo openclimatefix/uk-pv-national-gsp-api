@@ -6,6 +6,7 @@ from nowcasting_datamodel.models import Status
 from sqlalchemy.orm.session import Session
 
 from database import get_latest_status_from_database, get_session
+from cache import cache_response
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +15,7 @@ router = APIRouter()
 
 
 @router.get("/status", response_model=Status)
+@cache_response
 async def get_status(session: Session = Depends(get_session)) -> Status:
     """### Get status for solar forecasts
 

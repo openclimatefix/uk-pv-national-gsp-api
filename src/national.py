@@ -14,6 +14,7 @@ from database import (
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
 )
+from cache import cache_response
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +28,7 @@ NationalYield = GSPYield
     response_model=Union[Forecast, List[ForecastValue]],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
+@cache_response
 async def get_national_forecast(
     session: Session = Depends(get_session),
     historic: Optional[bool] = False,
@@ -108,6 +110,7 @@ async def get_national_forecast(
     response_model=List[NationalYield],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
+@cache_response
 async def get_national_pvlive(
     regime: Optional[str] = None,
     session: Session = Depends(get_session),

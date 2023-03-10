@@ -12,6 +12,7 @@ from sqlalchemy.orm.session import Session
 
 from auth_utils import get_auth_implicit_scheme, get_user
 from database import get_gsp_system, get_session
+from cache import cache_response
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +41,7 @@ def get_gsp_boundaries_from_eso_wgs84() -> gpd.GeoDataFrame:
     "/boundaries",
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
+@cache_response
 async def get_gsp_boundaries(
     user: Auth0User = Security(get_user()),
 ) -> dict:
@@ -69,6 +71,7 @@ async def get_gsp_boundaries(
     response_model=List[Location],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
+@cache_response
 async def get_systems(
     session: Session = Depends(get_session),
     gsp_id: Optional[int] = None,
