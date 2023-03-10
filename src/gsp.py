@@ -37,7 +37,7 @@ NationalYield = GSPYield
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 async def get_all_available_forecasts(
-    historic: Optional[bool] = False,
+    historic: Optional[bool] = True,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
 ) -> ManyForecasts:
