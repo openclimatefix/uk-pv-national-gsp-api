@@ -33,17 +33,26 @@ def cache_response(func):
         nonlocal response
         nonlocal last_updated
 
+        # get teh variables that go into the route
+        # we don't want to use the cache for different variables
         route_variables = kwargs.copy()
-        route_variables.pop('session')
-        route_variables.pop('user')
+
+        # drop session and user
+        for var in ['session','user']:
+            if var in route_variables:
+                route_variables.pop(var)
+
+        # make into string
         route_variables = json.dumps(route_variables)
 
+        # check if its been called before
         if route_variables not in last_updated:
             logger.debug('First time this is route run')
             last_updated[route_variables] = datetime.now(tz=timezone.utc)
             response[route_variables] = await func(*args, **kwargs)
             return response[route_variables]
 
+        # re run if cache time out is up
         now = datetime.now(tz=timezone.utc)
         if now - timedelta(seconds=cache_time_seconds) > last_updated[route_variables]:
             logger.debug(f'not using cache as longer than {cache_time_seconds} seconds')
@@ -51,6 +60,7 @@ def cache_response(func):
             response[route_variables] = await func(*args, **kwargs)
             return response[route_variables]
 
+        # use cache
         logger.debug('Using cache route')
         return response[route_variables]
 
