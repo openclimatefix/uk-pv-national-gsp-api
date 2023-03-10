@@ -22,6 +22,7 @@ def cache_response(func):
     ```
     """
     response = None
+    last_updated = None
 
     @wraps(func)
     async def wrapper(*args, **kwargs):
