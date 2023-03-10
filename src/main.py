@@ -83,10 +83,10 @@ app.add_middleware(
 
 
 @app.middleware("http")
-def add_process_time_header(request: Request, call_next):
+async def add_process_time_header(request: Request, call_next):
     """Add process time into response object header"""
     start_time = time.time()
-    response = call_next(request)
+    response = await call_next(request)
     process_time = str(time.time() - start_time)
     logger.debug(f"Process Time {process_time} {call_next}")
     response.headers["X-Process-Time"] = process_time
