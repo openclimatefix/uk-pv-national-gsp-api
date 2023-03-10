@@ -45,7 +45,7 @@ def test_read_latest_all_gsp(db_session, api_client):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = api_client.get("/v0/solar/GB/gsp/forecast/all/")
+    response = api_client.get("/v0/solar/GB/gsp/forecast/all/?historic=False")
 
     assert response.status_code == 200
 
@@ -66,7 +66,7 @@ def test_read_latest_all_gsp_normalized(db_session, api_client):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = api_client.get("/v0/solar/GB/gsp/forecast/all/?normalize=True")
+    response = api_client.get("/v0/solar/GB/gsp/forecast/all/?historic=False&normalize=True")
 
     assert response.status_code == 200
 
