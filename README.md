@@ -14,7 +14,7 @@ We use [FastAPI](https://fastapi.tiangolo.com/).
 
 # Documentation
 
-Documentation can be viewed at `/docs`. This is automatically generated from the code.
+Documentation can be viewed at `/docs` or `/swagger`. This is automatically generated from the code.
 
 # Setup and Run
 
@@ -71,12 +71,12 @@ Deployment of this service is now done through terraform cloud.
 
 - `AUTH0_DOMAIN` - The Auth0 domain which can be collected from the Applications/Applications tab. It should be something like
 'XXXXXXX.eu.auth0.com'
-- AUTH0_API_AUDIENCE - THE Auth0 api audience, this can be collected from the Applications/APIs tab. It should be something like
+- `AUTH0_API_AUDIENCE` - THE Auth0 api audience, this can be collected from the Applications/APIs tab. It should be something like
 `https://XXXXXXXXXX.eu.auth0.com/api/v2/`
-- DB_URL- The Forecast database URL used to get GSP forecast data
-- DB_URL_PV - The PV database URL, used to get PV data
+- `DB_URL`- The Forecast database URL used to get GSP forecast data
+- `DB_URL_PV` - The PV database URL, used to get PV data
 - `ORIGINS` - Endpoints that are valid CORS origins. See [FastAPI documentation](https://fastapi.tiangolo.com/tutorial/cors/).
-- N_HISTORY_DAYS - Default is just to load data from today and yesterday,
+- `N_HISTORY_DAYS` - Default is just to load data from today and yesterday,
     but we can set this to 5, if we want the api always to return 5 days of data
 
 ## Routes to SQL tables
