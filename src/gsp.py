@@ -14,6 +14,7 @@ from nowcasting_datamodel.models import (
 from sqlalchemy.orm.session import Session
 
 from auth_utils import get_auth_implicit_scheme, get_user
+from cache import cache_response
 from database import (
     get_forecasts_for_a_specific_gsp_from_database,
     get_forecasts_from_database,
@@ -22,7 +23,6 @@ from database import (
     get_truth_values_for_a_specific_gsp_from_database,
     get_truth_values_for_all_gsps_from_database,
 )
-from cache import cache_response
 
 logger = logging.getLogger(__name__)
 

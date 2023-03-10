@@ -5,8 +5,8 @@ from fastapi import APIRouter, Depends
 from nowcasting_datamodel.models import Status
 from sqlalchemy.orm.session import Session
 
-from database import get_latest_status_from_database, get_session
 from cache import cache_response
+from database import get_latest_status_from_database, get_session
 
 logger = logging.getLogger(__name__)
 

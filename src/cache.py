@@ -1,14 +1,13 @@
-import os
-import logging
 import json
-from functools import wraps
+import logging
+import os
 from datetime import datetime, timedelta, timezone
-
+from functools import wraps
 
 logger = logging.getLogger(__name__)
 
 CACHE_TIME_SECONDS = 120
-cache_time_seconds = int(os.getenv('CACHE_TIME_SECONDS', CACHE_TIME_SECONDS))
+cache_time_seconds = int(os.getenv("CACHE_TIME_SECONDS", CACHE_TIME_SECONDS))
 
 
 def cache_response(func):
@@ -38,7 +37,7 @@ def cache_response(func):
         route_variables = kwargs.copy()
 
         # drop session and user
-        for var in ['session','user']:
+        for var in ["session", "user"]:
             if var in route_variables:
                 route_variables.pop(var)
 
@@ -47,7 +46,7 @@ def cache_response(func):
 
         # check if its been called before
         if route_variables not in last_updated:
-            logger.debug('First time this is route run')
+            logger.debug("First time this is route run")
             last_updated[route_variables] = datetime.now(tz=timezone.utc)
             response[route_variables] = await func(*args, **kwargs)
             return response[route_variables]
@@ -55,13 +54,13 @@ def cache_response(func):
         # re run if cache time out is up
         now = datetime.now(tz=timezone.utc)
         if now - timedelta(seconds=cache_time_seconds) > last_updated[route_variables]:
-            logger.debug(f'not using cache as longer than {cache_time_seconds} seconds')
+            logger.debug(f"not using cache as longer than {cache_time_seconds} seconds")
             last_updated[route_variables] = now
             response[route_variables] = await func(*args, **kwargs)
             return response[route_variables]
 
         # use cache
-        logger.debug('Using cache route')
+        logger.debug("Using cache route")
         return response[route_variables]
 
     return wrapper
