@@ -42,7 +42,7 @@ def get_gsp_boundaries_from_eso_wgs84() -> gpd.GeoDataFrame:
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
-async def get_gsp_boundaries(
+def get_gsp_boundaries(
     user: Auth0User = Security(get_user()),
 ) -> dict:
     """### Get one GSP boundary for a specific GSP
@@ -72,7 +72,7 @@ async def get_gsp_boundaries(
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
-async def get_systems(
+def get_systems(
     session: Session = Depends(get_session),
     gsp_id: Optional[int] = None,
     user: Auth0User = Security(get_user()),
@@ -95,4 +95,4 @@ async def get_systems(
 
     logger.info(f"Get GSP systems for {gsp_id=} for {user}")
 
-    return await get_gsp_system(session=session, gsp_id=gsp_id)
+    return get_gsp_system(session=session, gsp_id=gsp_id)

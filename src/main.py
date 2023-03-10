@@ -108,7 +108,7 @@ app.include_router(system_router, prefix=f"{v0_route_system}/gsp")
 
 
 @app.get("/")
-async def get_api_information():
+def get_api_information():
     """### Get basic information about the Nowcasting API
 
     The object returned contains basic information about the Nowcasting API.
@@ -126,19 +126,19 @@ async def get_api_information():
 
 
 @app.get("/favicon.ico", include_in_schema=False)
-async def get_favicon() -> FileResponse:
+def get_favicon() -> FileResponse:
     """Get favicon"""
     return FileResponse(f"{folder}/favicon.ico")
 
 
 @app.get("/nowcasting.png", include_in_schema=False)
-async def get_nowcasting_logo() -> FileResponse:
+def get_nowcasting_logo() -> FileResponse:
     """Get favicon"""
     return FileResponse(f"{folder}/nowcasting.png")
 
 
 @app.get("/docs", include_in_schema=False)
-async def redoc_html():
+def redoc_html():
     """### Render ReDoc with custom theme options included"""
     return get_redoc_html_with_theme(
         title=title,

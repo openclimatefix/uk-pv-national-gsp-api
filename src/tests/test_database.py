@@ -1,5 +1,4 @@
 """ Test for main app """
-import asyncio
 
 from freezegun import freeze_time
 from nowcasting_datamodel.read.read import national_gb_label
@@ -18,25 +17,24 @@ def test_get_forecasts_for_a_specific_gsp_from_database(db_session, forecasts):
 
     gsp_id = 1
 
-    _ = asyncio.run(
-        get_forecasts_for_a_specific_gsp_from_database(gsp_id=gsp_id, session=db_session)
-    )
+    _ = get_forecasts_for_a_specific_gsp_from_database(gsp_id=gsp_id, session=db_session)
+
 
 
 def test_get_gsp_system_all(db_session, forecasts):
     """Check get gsp system works for all systems"""
-    a = asyncio.run(get_gsp_system(session=db_session))
+    a = get_gsp_system(session=db_session)
     assert len(a) == 338
 
 
 def test_get_gsp_system_one(db_session, forecasts):
     """Check get gsp system works for one system"""
-    a = asyncio.run(get_gsp_system(session=db_session, gsp_id=1))
+    a = get_gsp_system(session=db_session, gsp_id=1)
     assert len(a) == 1
 
 
 def test_get_gsp_system_one_national(db_session, forecasts):
     """Check get gsp system works for one system"""
-    a = asyncio.run(get_gsp_system(session=db_session, gsp_id=0))
+    a = get_gsp_system(session=db_session, gsp_id=0)
     assert len(a) == 1
     assert a[0].label == national_gb_label
