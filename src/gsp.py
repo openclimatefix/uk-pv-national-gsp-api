@@ -141,7 +141,7 @@ def get_forecasts_for_a_specific_gsp(
 
         logger.debug("Getting forecast values only.")
 
-        forecast_only = await get_latest_forecast_values_for_a_specific_gsp_from_database(
+        forecast_only = get_latest_forecast_values_for_a_specific_gsp_from_database(
             session=session,
             gsp_id=gsp_id,
             forecast_horizon_minutes=forecast_horizon_minutes,

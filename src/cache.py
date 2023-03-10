@@ -48,7 +48,7 @@ def cache_response(func):
         if route_variables not in last_updated:
             logger.debug("First time this is route run")
             last_updated[route_variables] = datetime.now(tz=timezone.utc)
-            response[route_variables] = await func(*args, **kwargs)
+            response[route_variables] = func(*args, **kwargs)
             return response[route_variables]
 
         # re run if cache time out is up
@@ -56,7 +56,7 @@ def cache_response(func):
         if now - timedelta(seconds=cache_time_seconds) > last_updated[route_variables]:
             logger.debug(f"not using cache as longer than {cache_time_seconds} seconds")
             last_updated[route_variables] = now
-            response[route_variables] = await func(*args, **kwargs)
+            response[route_variables] = func(*args, **kwargs)
             return response[route_variables]
 
         # use cache
