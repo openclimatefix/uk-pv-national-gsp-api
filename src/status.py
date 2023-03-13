@@ -41,6 +41,7 @@ def check_last_forecast(session: Session = Depends(get_session)) -> datetime:
 
     query = session.query(ForecastSQL)
     query = query.order_by(ForecastSQL.created_utc.desc())
+    query = query.limit(1)
 
     try:
         forecast = query.one()
