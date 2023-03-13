@@ -1,5 +1,6 @@
 """National API routes"""
 import logging
+import os
 from typing import List, Optional, Union
 
 from fastapi import APIRouter, Depends, Security
@@ -18,6 +19,8 @@ from database import (
 
 logger = logging.getLogger(__name__)
 
+
+adjust_limit = float(os.getenv('ADJUST_MW_LIMIT',0.0))
 
 router = APIRouter()
 NationalYield = GSPYield
@@ -78,8 +81,8 @@ def get_national_forecast(
             historic=historic,
         )
 
-        logger.debug("Got forecast.")
-        full_forecast.adjust()
+        logger.debug(f"Got forecast Now adjusting by at most {adjust_limit} MW and normalizing.")
+        full_forecast.adjust(limit=adjust_limit)
         full_forecast.normalize()
 
         logger.debug("Normalized forecast.")
@@ -97,9 +100,10 @@ def get_national_forecast(
             )
         )
 
-        logger.debug(f"Got national forecasts with {len(national_forecast_values)} forecast values")
+        logger.debug(f"Got national forecasts with {len(national_forecast_values)} forecast values. "
+                     f"Now adjusting by at most {adjust_limit} MW")
 
-    national_forecast_values = [f.adjust() for f in national_forecast_values]
+    national_forecast_values = [f.adjust(limit=adjust_limit) for f in national_forecast_values]
 
     return national_forecast_values
 
