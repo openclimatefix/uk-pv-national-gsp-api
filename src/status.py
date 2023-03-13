@@ -54,4 +54,5 @@ def check_last_forecast(session: Session = Depends(get_session)) -> datetime:
             f"It was made at {forecast.forecast_creation_time}",
         )
 
+    logger.debug(f'Last forecast time was {forecast.forecast_creation_time}')
     return forecast.forecast_creation_time
