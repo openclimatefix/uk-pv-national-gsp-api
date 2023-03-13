@@ -20,7 +20,7 @@ from database import (
 logger = logging.getLogger(__name__)
 
 
-adjust_limit = float(os.getenv('ADJUST_MW',0.0))
+adjust_limit = float(os.getenv('ADJUST_MW_LIMIT',0.0))
 
 router = APIRouter()
 NationalYield = GSPYield
