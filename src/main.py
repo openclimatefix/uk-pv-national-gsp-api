@@ -30,41 +30,61 @@ description = """
 As part of Open Climate Fix’s [open source project](https://github.com/openclimatefix), the
 Nowcasting API is still under development.
 
-#### General Overview
+### General Overview
 
 __Nowcasting__ essentially means __forecasting for the next few hours__.
 OCF has built a predictive model that nowcasts solar energy generation for
-the UK’s National Grid ESO (electricity system operator). National Grid runs more than
-300
+the UK’s National Grid ESO (electricity system operator) and a few other test 
+users. National Grid 
+balances the electricity grid across 300
 [GSPs](https://data.nationalgrideso.com/system/gis-boundaries-for-gb-grid-supply-points)
-(grid supply points), which are regionally located throughout the country.
-OCF's Nowcasting App synthesizes real-time PV
-data, numeric weather predictions (nwp), satellite imagery
-(looking at cloud cover),
-as well as GSP data to
-forecast how much solar energy will generated for a given GSP.
+(grid supply points), or regions across Britain.
+OCF's Nowcasting App synthesizes real-time PV data, numeric weather
+predictions (NWPs), satellite imagery (observing cloud cover), and GSP PV
+generation data to forecast how much solar energy will be generated for a
+given GSP.
 
 Here are key aspects of the solar forecasts:
 - Forecasts are produced in 30-minute time steps, projecting GSP yields out to
 eight hours ahead.
 - The geographic extent is all of Great Britain (GB).
-- Forecasts are produced at the GB National and regional level (using GSPs).
+- Forecasts are produced at the GB National and regional level (GSPs).
 
-OCF's incredibly accurate, short-term forecasts allow National Grid to reduce the amount of
-spinning reserves they need to run at any given moment, ultimately reducing
-carbon emmisions.
+OCF's incredibly accurate, short-term forecasts allow National Grid to reduce
+the amount of spinning reserves they need to run at any given moment,
+ultimately reducing carbon emmisions.
 
-In order to get started with reading the API’s forecast objects, it might be helpful to
-know that GSPs are referenced in the following ways:  gspId (ex. 122); gspName
-(ex. FIDF_1); gspGroup (ex. )
-regionName (ex. Fiddlers Ferry). The API provides information on when input data was
+In order to get started with reading the API documentation, it might be
+helpful to know that GSPs are referenced in the following ways:  gspId
+(ex. 122); gspName (ex. FIDF_1); regionName (ex. Fiddlers Ferry).
+
+
+The API provides information on when input data was
 last updated as well as the installed photovoltaic (PV) megawatt capacity
 (installedCapacityMw) of each individual GSP.
 
-You'll find more detailed information for each route in the documentation below.
+You’ll find an explanation of the terms we use and how solar forecasts are
+defined in the *Introduction to Solar Forecasts* section.  You'll find more
+detailed information for each API route in the documentation below.
 
-If you have any questions, please don't hesitate to get in touch.
-And if you're interested in contributing to our open source project, feel free to join us!
+If you have any questions, please don't hesitate to get in touch. And if you're interested in contributing to our open source project, you can get started by going to our [OCF Github](https://github.com/openclimatefix) page and checking out our “[list of good first issues](https://github.com/search?l=&p=1&q=user%3Aopenclimatefix+label%3A%22good+first+issue%22&ref=advsearch&type=Issues&utf8=%E2%9C%93&state=open)”!
+
+You can find more information about the Nowcasting App on or [Notion page](https://openclimatefix.notion.site/Nowcasting-Documentation-0d718915650e4f098470d695aa3494bf).
+
+### Introduction to Solar Forecasts
+
+Glossary table and explanation of key concepts.
+
+- **GSP (grid supply point)**. GSPs supply the Great Britain transmission
+network. The  Nowcasting map displays all 316 GSPs using their
+geospatial boundaries.
+- **Mwh (megawatt hour)**. This is equal to 1,000 kilowatt hours (Kwh) or 1,000
+kilowatts of electricity used continuously for one hour, about the amount of
+electricity used by 330 homes during one hour.
+
+-
+
+
 """
 app = FastAPI(docs_url="/swagger", redoc_url=None)
 
