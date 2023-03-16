@@ -18,23 +18,23 @@ from status import router as status_router
 from system import router as system_router
 
 structlog.configure(
-        processors=[
-            structlog.processors.EventRenamer("message", replace_by="_event"),
-            structlog.stdlib.PositionalArgumentsFormatter(),
-            structlog.processors.CallsiteParameterAdder(
-                [
-                    structlog.processors.CallsiteParameter.FILENAME,
-                    structlog.processors.CallsiteParameter.LINENO
-                ],
-            ),
-            structlog.processors.dict_tracebacks,
-            structlog.stdlib.add_log_level,
-            structlog.processors.TimeStamper(fmt="iso"),
-            structlog.processors.StackInfoRenderer(),
-            structlog.processors.format_exc_info,
-            structlog.processors.JSONRenderer(),
-        ],
-    )
+    processors=[
+        structlog.processors.EventRenamer("message", replace_by="_event"),
+        structlog.stdlib.PositionalArgumentsFormatter(),
+        structlog.processors.CallsiteParameterAdder(
+            [
+                structlog.processors.CallsiteParameter.FILENAME,
+                structlog.processors.CallsiteParameter.LINENO,
+            ],
+        ),
+        structlog.processors.dict_tracebacks,
+        structlog.stdlib.add_log_level,
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.StackInfoRenderer(),
+        structlog.processors.format_exc_info,
+        structlog.processors.JSONRenderer(),
+    ],
+)
 logger = structlog.stdlib.getLogger()
 
 folder = os.path.dirname(os.path.abspath(__file__))
@@ -121,8 +121,6 @@ app.include_router(gsp_router, prefix=f"{v0_route_solar}/gsp")
 app.include_router(status_router, prefix=f"{v0_route_solar}")
 app.include_router(system_router, prefix=f"{v0_route_system}/gsp")
 # app.include_router(pv_router, prefix=f"{v0_route}/pv")
-
-
 
 
 @app.get("/")
