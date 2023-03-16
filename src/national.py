@@ -20,7 +20,7 @@ from database import (
 logger = logging.getLogger(__name__)
 
 
-adjust_limit = float(os.getenv('ADJUST_MW_LIMIT',0.0))
+adjust_limit = float(os.getenv("ADJUST_MW_LIMIT", 0.0))
 
 router = APIRouter()
 NationalYield = GSPYield
@@ -93,15 +93,14 @@ def get_national_forecast(
         return full_forecast
 
     else:
-
-        national_forecast_values = (
-            get_latest_forecast_values_for_a_specific_gsp_from_database(
-                session=session, gsp_id=0, forecast_horizon_minutes=forecast_horizon_minutes
-            )
+        national_forecast_values = get_latest_forecast_values_for_a_specific_gsp_from_database(
+            session=session, gsp_id=0, forecast_horizon_minutes=forecast_horizon_minutes
         )
 
-        logger.debug(f"Got national forecasts with {len(national_forecast_values)} forecast values. "
-                     f"Now adjusting by at most {adjust_limit} MW")
+        logger.debug(
+            f"Got national forecasts with {len(national_forecast_values)} forecast values. "
+            f"Now adjusting by at most {adjust_limit} MW"
+        )
 
     national_forecast_values = [f.adjust(limit=adjust_limit) for f in national_forecast_values]
 

@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-forecast_error_hours = float(os.getenv('FORECAST_ERROR_HOURS', 2.0))
+forecast_error_hours = float(os.getenv("FORECAST_ERROR_HOURS", 2.0))
 
 
 @router.get("/status", response_model=Status)
@@ -48,12 +48,14 @@ def check_last_forecast(session: Session = Depends(get_session)) -> datetime:
     except NoResultFound:
         raise HTTPException(status_code=404, detail="There are no forecasts")
 
-    if forecast.forecast_creation_time <= datetime.now(tz=timezone.utc) - timedelta(hours=forecast_error_hours):
+    if forecast.forecast_creation_time <= datetime.now(tz=timezone.utc) - timedelta(
+        hours=forecast_error_hours
+    ):
         raise HTTPException(
             status_code=404,
             detail=f"The last forecast is more than {forecast_error_hours} hours ago. "
             f"It was made at {forecast.forecast_creation_time}",
         )
 
-    logger.debug(f'Last forecast time was {forecast.forecast_creation_time}')
+    logger.debug(f"Last forecast time was {forecast.forecast_creation_time}")
     return forecast.forecast_creation_time

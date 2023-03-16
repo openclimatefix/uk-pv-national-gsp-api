@@ -52,7 +52,6 @@ def get_forecasts_from_database(
     # get the latest forecast for all gsps.
 
     if historic:
-
         start_datetime = get_start_datetime()
 
         forecasts = get_all_gsp_ids_latest_forecast(
@@ -127,7 +126,6 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
         )
 
     else:
-
         forecast_values = get_forecast_values(
             session=session,
             gsp_id=gsp_id,
@@ -221,7 +219,6 @@ def get_gsp_system(session: Session, gsp_id: Optional[int] = None) -> List[Locat
     """
 
     if gsp_id is not None:
-
         # adjust label for nation location
         if gsp_id == 0:
             label = national_gb_label
