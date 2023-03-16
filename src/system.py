@@ -14,7 +14,7 @@ from auth_utils import get_auth_implicit_scheme, get_user
 from cache import cache_response
 from database import get_gsp_system, get_session
 
-logger = structlog.stdlib.getLogger()
+logger = structlog.stdlib.get_logger()
 
 
 router = APIRouter()

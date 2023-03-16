@@ -17,7 +17,7 @@ from database import (
     get_truth_values_for_a_specific_gsp_from_database,
 )
 
-logger = structlog.stdlib.getLogger()
+logger = structlog.stdlib.get_logger()
 
 
 adjust_limit = float(os.getenv("ADJUST_MW_LIMIT", 0.0))

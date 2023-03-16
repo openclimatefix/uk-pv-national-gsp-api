@@ -11,8 +11,7 @@ from sqlalchemy.orm.session import Session
 from cache import cache_response
 from database import get_latest_status_from_database, get_session
 
-logger = structlog.stdlib.getLogger()
-
+logger = structlog.stdlib.get_logger()
 
 router = APIRouter()
 

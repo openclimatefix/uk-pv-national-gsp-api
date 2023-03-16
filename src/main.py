@@ -33,7 +33,7 @@ structlog.configure(
         structlog.processors.JSONRenderer(),
     ],
 )
-logger = structlog.stdlib.getLogger()
+logger = structlog.stdlib.get_logger()
 
 folder = os.path.dirname(os.path.abspath(__file__))
 

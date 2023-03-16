@@ -1,11 +1,11 @@
 """ Caching utils for api"""
 import json
-import logging
+import structlog
 import os
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger()
 
 CACHE_TIME_SECONDS = 120
 cache_time_seconds = int(os.getenv("CACHE_TIME_SECONDS", CACHE_TIME_SECONDS))
