@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 folder = os.path.dirname(os.path.abspath(__file__))
 
 title = "Nowcasting API"
-version = "1.2.1"
+version = "1.2.2"
 
 description = """
 As part of Open Climate Fix’s [open source project](https://github.com/openclimatefix), the
