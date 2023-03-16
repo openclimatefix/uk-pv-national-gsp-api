@@ -29,7 +29,7 @@ def cache_response(func):
     last_updated = {}
 
     @wraps(func)
-    def wrapper(*args, **kwargs): #noqa
+    def wrapper(*args, **kwargs):  # noqa
         nonlocal response
         nonlocal last_updated
 
