@@ -1,9 +1,10 @@
 """ Caching utils for api"""
 import json
-import structlog
 import os
 from datetime import datetime, timedelta, timezone
 from functools import wraps
+
+import structlog
 
 logger = structlog.stdlib.get_logger()
 
