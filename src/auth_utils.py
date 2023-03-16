@@ -1,6 +1,6 @@
 """ Authentical  objects """
-import logging
 import os
+
 import structlog
 from fastapi_auth0 import Auth0
 

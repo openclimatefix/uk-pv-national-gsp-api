@@ -1,6 +1,6 @@
 """ Functions to read from the database and format """
-import logging
 import os
+import structlog
 from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 

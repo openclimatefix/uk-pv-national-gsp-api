@@ -1,6 +1,6 @@
 """Get GSP boundary data from eso """
 import json
-import logging
+import structlog
 from typing import List, Optional
 
 import geopandas as gpd

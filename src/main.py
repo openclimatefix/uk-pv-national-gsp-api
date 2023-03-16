@@ -1,15 +1,13 @@
 """ Main FastAPI app """
-import logging
 import os
 import time
 from datetime import timedelta
 
+import structlog
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import FileResponse
-
-import structlog
 
 from gsp import router as gsp_router
 from national import router as national_router

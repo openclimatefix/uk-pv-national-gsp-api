@@ -1,5 +1,4 @@
 """Get GSP boundary data from eso """
-import logging
 from typing import List, Optional, Union
 
 from fastapi import APIRouter, Depends, Security

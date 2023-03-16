@@ -20,7 +20,6 @@ def test_get_forecasts_for_a_specific_gsp_from_database(db_session, forecasts):
     _ = get_forecasts_for_a_specific_gsp_from_database(gsp_id=gsp_id, session=db_session)
 
 
-
 def test_get_gsp_system_all(db_session, forecasts):
     """Check get gsp system works for all systems"""
     a = get_gsp_system(session=db_session)
