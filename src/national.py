@@ -1,8 +1,8 @@
 """National API routes"""
-import logging
 import os
 from typing import List, Optional, Union
 
+import structlog
 from fastapi import APIRouter, Depends, Security
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield
@@ -17,7 +17,7 @@ from database import (
     get_truth_values_for_a_specific_gsp_from_database,
 )
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger()
 
 
 adjust_limit = float(os.getenv("ADJUST_MW_LIMIT", 0.0))

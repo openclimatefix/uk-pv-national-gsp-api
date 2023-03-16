@@ -1,10 +1,10 @@
 """ Authentical  objects """
-import logging
 import os
 
+import structlog
 from fastapi_auth0 import Auth0
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger()
 
 
 def get_auth():

@@ -1,7 +1,7 @@
 """Get GSP boundary data from eso """
-import logging
 from typing import List, Optional, Union
 
+import structlog
 from fastapi import APIRouter, Depends, Security
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.models import (
@@ -24,7 +24,7 @@ from database import (
     get_truth_values_for_all_gsps_from_database,
 )
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger()
 
 
 router = APIRouter()

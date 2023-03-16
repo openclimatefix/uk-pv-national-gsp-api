@@ -1,9 +1,9 @@
 """ Functions to read from the database and format """
-import logging
 import os
 from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
+import structlog
 from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.models import (
     Forecast,
@@ -32,7 +32,7 @@ from sqlalchemy.orm.session import Session
 
 from utils import floor_30_minutes_dt, get_start_datetime
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger()
 
 
 def get_latest_status_from_database(session: Session) -> Status:

@@ -1,9 +1,9 @@
 """ Test for main app """
 from datetime import datetime, timedelta, timezone
-from fastapi.testclient import TestClient
-from nowcasting_datamodel.models import Status, ForecastSQL
 
+from fastapi.testclient import TestClient
 from freezegun import freeze_time
+from nowcasting_datamodel.models import ForecastSQL, Status
 
 from database import get_session
 from main import app

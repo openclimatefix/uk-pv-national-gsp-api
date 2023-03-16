@@ -1,9 +1,9 @@
 """ Main FastAPI app """
-import logging
 import os
 import time
 from datetime import timedelta
 
+import structlog
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
@@ -15,11 +15,25 @@ from redoc_theme import get_redoc_html_with_theme
 from status import router as status_router
 from system import router as system_router
 
-logging.basicConfig(
-    level=getattr(logging, os.getenv("LOGLEVEL", "DEBUG")),
-    format="[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s",
+structlog.configure(
+    processors=[
+        structlog.processors.EventRenamer("message", replace_by="_event"),
+        structlog.stdlib.PositionalArgumentsFormatter(),
+        structlog.processors.CallsiteParameterAdder(
+            [
+                structlog.processors.CallsiteParameter.FILENAME,
+                structlog.processors.CallsiteParameter.LINENO,
+            ],
+        ),
+        structlog.processors.dict_tracebacks,
+        structlog.stdlib.add_log_level,
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.StackInfoRenderer(),
+        structlog.processors.format_exc_info,
+        structlog.processors.JSONRenderer(),
+    ],
 )
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger()
 
 folder = os.path.dirname(os.path.abspath(__file__))
 

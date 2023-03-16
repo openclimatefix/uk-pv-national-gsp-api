@@ -1,10 +1,12 @@
+""" Caching utils for api"""
 import json
-import logging
 import os
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 
-logger = logging.getLogger(__name__)
+import structlog
+
+logger = structlog.stdlib.get_logger()
 
 CACHE_TIME_SECONDS = 120
 cache_time_seconds = int(os.getenv("CACHE_TIME_SECONDS", CACHE_TIME_SECONDS))
@@ -28,7 +30,7 @@ def cache_response(func):
     last_updated = {}
 
     @wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs):  # noqa
         nonlocal response
         nonlocal last_updated
 

@@ -1,19 +1,17 @@
 """Get Status from database """
-import logging
 import os
-
 from datetime import datetime, timedelta, timezone
 
+import structlog
 from fastapi import APIRouter, Depends, HTTPException
-from nowcasting_datamodel.models import Status, ForecastSQL
-from sqlalchemy.orm.session import Session
+from nowcasting_datamodel.models import ForecastSQL, Status
 from sqlalchemy.exc import NoResultFound
+from sqlalchemy.orm.session import Session
 
 from cache import cache_response
 from database import get_latest_status_from_database, get_session
 
-logger = logging.getLogger(__name__)
-
+logger = structlog.stdlib.get_logger()
 
 router = APIRouter()
 
