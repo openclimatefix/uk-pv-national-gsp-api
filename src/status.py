@@ -12,7 +12,7 @@ from sqlalchemy.exc import NoResultFound
 from cache import cache_response
 from database import get_latest_status_from_database, get_session
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.getLogger()
 
 
 router = APIRouter()

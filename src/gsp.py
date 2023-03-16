@@ -24,7 +24,7 @@ from database import (
     get_truth_values_for_all_gsps_from_database,
 )
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.getLogger()
 
 
 router = APIRouter()

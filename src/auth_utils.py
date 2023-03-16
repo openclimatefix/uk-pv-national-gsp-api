@@ -4,7 +4,7 @@ import os
 
 from fastapi_auth0 import Auth0
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.getLogger()
 
 
 def get_auth():

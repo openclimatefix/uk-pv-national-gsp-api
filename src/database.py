@@ -32,7 +32,7 @@ from sqlalchemy.orm.session import Session
 
 from utils import floor_30_minutes_dt, get_start_datetime
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.getLogger()
 
 
 def get_latest_status_from_database(session: Session) -> Status:

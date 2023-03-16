@@ -9,17 +9,33 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import FileResponse
 
+import structlog
+
 from gsp import router as gsp_router
 from national import router as national_router
 from redoc_theme import get_redoc_html_with_theme
 from status import router as status_router
 from system import router as system_router
 
-logging.basicConfig(
-    level=getattr(logging, os.getenv("LOGLEVEL", "DEBUG")),
-    format="[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s",
-)
-logger = logging.getLogger(__name__)
+structlog.configure(
+        processors=[
+            structlog.processors.EventRenamer("message", replace_by="_event"),
+            structlog.stdlib.PositionalArgumentsFormatter(),
+            structlog.processors.CallsiteParameterAdder(
+                [
+                    structlog.processors.CallsiteParameter.FILENAME,
+                    structlog.processors.CallsiteParameter.LINENO
+                ],
+            ),
+            structlog.processors.dict_tracebacks,
+            structlog.stdlib.add_log_level,
+            structlog.processors.TimeStamper(fmt="iso"),
+            structlog.processors.StackInfoRenderer(),
+            structlog.processors.format_exc_info,
+            structlog.processors.JSONRenderer(),
+        ],
+    )
+logger = structlog.stdlib.getLogger()
 
 folder = os.path.dirname(os.path.abspath(__file__))
 
@@ -105,6 +121,8 @@ app.include_router(gsp_router, prefix=f"{v0_route_solar}/gsp")
 app.include_router(status_router, prefix=f"{v0_route_solar}")
 app.include_router(system_router, prefix=f"{v0_route_system}/gsp")
 # app.include_router(pv_router, prefix=f"{v0_route}/pv")
+
+
 
 
 @app.get("/")
