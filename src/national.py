@@ -1,5 +1,6 @@
 """National API routes"""
 import os
+import structlog
 from typing import List, Optional, Union
 
 from fastapi import APIRouter, Depends, Security

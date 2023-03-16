@@ -28,7 +28,6 @@ now = floor_30_minutes_dt(datetime.now(tz=timezone.utc))
 connection = DatabaseConnection(url=os.getenv("DB_URL", "not_set"))
 
 with connection.get_session() as session:
-
     session.query(StatusSQL).delete()
     session.query(ForecastValueLatestSQL).delete()
     session.query(ForecastValueSQL).delete()
