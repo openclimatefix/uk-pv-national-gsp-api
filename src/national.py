@@ -1,8 +1,8 @@
 """National API routes"""
 import os
-import structlog
 from typing import List, Optional, Union
 
+import structlog
 from fastapi import APIRouter, Depends, Security
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield

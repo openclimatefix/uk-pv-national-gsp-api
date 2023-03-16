@@ -1,8 +1,8 @@
 """Get Status from database """
 import os
-import structlog
 from datetime import datetime, timedelta, timezone
 
+import structlog
 from fastapi import APIRouter, Depends, HTTPException
 from nowcasting_datamodel.models import Status, ForecastSQL
 from sqlalchemy.exc import NoResultFound

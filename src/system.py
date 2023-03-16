@@ -1,9 +1,9 @@
 """Get GSP boundary data from eso """
 import json
-import structlog
 from typing import List, Optional
 
 import geopandas as gpd
+import structlog
 from fastapi import APIRouter, Depends, Security
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.models import GSPYield, Location

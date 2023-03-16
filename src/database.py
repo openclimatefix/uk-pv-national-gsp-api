@@ -1,9 +1,9 @@
 """ Functions to read from the database and format """
 import os
-import structlog
 from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
+import structlog
 from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.models import (
     Forecast,
