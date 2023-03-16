@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 
 import structlog
 from fastapi import APIRouter, Depends, HTTPException
-from nowcasting_datamodel.models import Status, ForecastSQL
+from nowcasting_datamodel.models import ForecastSQL, Status
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm.session import Session
 

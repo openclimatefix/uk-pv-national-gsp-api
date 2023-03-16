@@ -1,3 +1,4 @@
+""" Caching utils for api"""
 import json
 import logging
 import os
@@ -28,7 +29,7 @@ def cache_response(func):
     last_updated = {}
 
     @wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs): #noqa
         nonlocal response
         nonlocal last_updated
 
