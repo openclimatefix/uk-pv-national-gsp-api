@@ -93,7 +93,6 @@ def get_national_forecast(
         return full_forecast
 
     else:
-
         national_forecast_values = get_latest_forecast_values_for_a_specific_gsp_from_database(
             session=session, gsp_id=0, forecast_horizon_minutes=forecast_horizon_minutes
         )
