@@ -6,7 +6,7 @@ COPY ./requirements.txt /app/requirements.txt
 # install requirements
 RUN apt-get clean
 RUN apt-get update -y
-RUN apt-get install -y gdal-bin libgdal-dev g++
+#RUN apt-get install -y gdal-bin libgdal-dev g++
 RUN pip install -U pip
 RUN pip install -r /app/requirements.txt
 RUN apt-get update && apt-get install -y git
