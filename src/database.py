@@ -15,6 +15,7 @@ from nowcasting_datamodel.models import (
     ManyForecasts,
     Status,
 )
+from nowcasting_datamodel.read.blend import get_blend_forecast_values_latest
 from nowcasting_datamodel.read.read import (
     get_all_gsp_ids_latest_forecast,
     get_all_locations,
@@ -26,7 +27,6 @@ from nowcasting_datamodel.read.read import (
     get_location,
     national_gb_label,
 )
-from nowcasting_datamodel.read.blend import get_blend_forecast_values_latest
 from nowcasting_datamodel.read.read_gsp import get_gsp_yield, get_gsp_yield_by_location
 from nowcasting_datamodel.save.update import N_GSP
 from sqlalchemy.orm.session import Session
