@@ -30,7 +30,7 @@ def test_read_latest_national(db_session, api_client):
 def test_read_latest_national_historic_forecast_value(db_session, api_client):
     """Check main solar/GB/national/forecast route works"""
 
-    model = get_model(db_session, name="cnn", version='0.0.1')
+    model = get_model(db_session, name="cnn", version="0.0.1")
 
     forecast = make_fake_national_forecast(
         session=db_session, t0_datetime_utc=datetime.now(tz=timezone.utc)
