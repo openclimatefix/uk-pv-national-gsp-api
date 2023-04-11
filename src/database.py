@@ -15,6 +15,7 @@ from nowcasting_datamodel.models import (
     ManyForecasts,
     Status,
 )
+from nowcasting_datamodel.read.blend import get_blend_forecast_values_latest
 from nowcasting_datamodel.read.read import (
     get_all_gsp_ids_latest_forecast,
     get_all_locations,
@@ -121,9 +122,14 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
     start_datetime = get_start_datetime()
 
     if forecast_horizon_minutes is None:
-        forecast_values = get_forecast_values_latest(
-            session=session, gsp_id=gsp_id, start_datetime=start_datetime
-        )
+        if gsp_id != 0:
+            forecast_values = get_forecast_values_latest(
+                session=session, gsp_id=gsp_id, start_datetime=start_datetime
+            )
+        else:
+            forecast_values = get_blend_forecast_values_latest(
+                session=session, gsp_id=0, start_datetime=start_datetime
+            )
 
     else:
         forecast_values = get_forecast_values(
