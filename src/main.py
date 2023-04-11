@@ -38,7 +38,7 @@ logger = structlog.stdlib.get_logger()
 folder = os.path.dirname(os.path.abspath(__file__))
 
 title = "Nowcasting API"
-version = "1.2.4"
+version = "1.2.5"
 
 description = """
 As part of Open Climate Fix’s [open source project](https://github.com/openclimatefix), the
