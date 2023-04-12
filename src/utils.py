@@ -2,9 +2,11 @@
 import os
 from datetime import datetime, timedelta, timezone
 from typing import Optional, Union
+from pytz import timezone as pytz_timezone
 
 import numpy as np
 
+europe_london_tz = pytz_timezone("Europe/London")
 
 def floor_30_minutes_dt(dt):
     """
@@ -63,10 +65,12 @@ def get_start_datetime(n_history_days: Optional[Union[str, int]] = None) -> date
 
     # get at most 2 days of data.
     if n_history_days == "yesterday":
-        start_datetime = datetime.now(tz=timezone.utc).date() - timedelta(days=1)
+        start_datetime = datetime.now(tz=europe_london_tz).date() - timedelta(days=1)
         start_datetime = datetime.combine(start_datetime, datetime.min.time())
-        start_datetime = start_datetime.replace(tzinfo=timezone.utc)
+        start_datetime = europe_london_tz.localize(start_datetime)
+        start_datetime = start_datetime.astimezone(pytz_timezone('UTC'))
     else:
-        start_datetime = datetime.now(tz=timezone.utc) - timedelta(days=int(n_history_days))
+        start_datetime = datetime.now(tz=europe_london_tz) - timedelta(days=int(n_history_days))
         start_datetime = floor_6_hours_dt(start_datetime)
+        start_datetime = start_datetime.astimezone(pytz_timezone('UTC'))
     return start_datetime
