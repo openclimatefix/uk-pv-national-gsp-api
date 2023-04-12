@@ -8,8 +8,8 @@ from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.models import (
     Forecast,
     ForecastValue,
-    ForecastValueSQL,
     ForecastValueSevenDaysSQL,
+    ForecastValueSQL,
     GSPYield,
     Location,
     LocationWithGSPYields,

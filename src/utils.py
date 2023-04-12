@@ -1,12 +1,11 @@
 """ Utils functions for main.py """
+import logging
 import os
 from datetime import datetime, timedelta
 from typing import Optional, Union
-from pytz import timezone
 
 import numpy as np
-
-import logging
+from pytz import timezone
 
 logger = logging.getLogger(__name__)
 
