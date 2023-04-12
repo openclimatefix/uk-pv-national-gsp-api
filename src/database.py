@@ -8,6 +8,7 @@ from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.models import (
     Forecast,
     ForecastValue,
+    ForecastValueSQL,
     ForecastValueSevenDaysSQL,
     GSPYield,
     Location,
@@ -127,6 +128,8 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
                 session=session, gsp_id=gsp_id, start_datetime=start_datetime
             )
         else:
+            # get blend of forecast values from CNN and Nationa_xg
+            # this returns a list of ForecastValue objects
             forecast_values = get_blend_forecast_values_latest(
                 session=session, gsp_id=0, start_datetime=start_datetime
             )
@@ -141,7 +144,11 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
             model=ForecastValueSevenDaysSQL,
         )
 
-    forecast_values = [ForecastValue.from_orm(f) for f in forecast_values]
+    # convert to pydantic objects
+    if isinstance(forecast_values[0], ForecastValueSevenDaysSQL) or isinstance(
+        forecast_values[0], ForecastValueSQL
+    ):
+        forecast_values = [ForecastValue.from_orm(f) for f in forecast_values]
 
     return forecast_values
 
