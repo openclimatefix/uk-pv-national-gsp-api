@@ -14,7 +14,6 @@ europe_london_tz = timezone("Europe/London")
 utc = timezone("UTC")
 
 
-
 def floor_30_minutes_dt(dt):
     """
     Floor a datetime by 30 mins.
