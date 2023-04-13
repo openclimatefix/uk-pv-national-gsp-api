@@ -61,8 +61,25 @@ def test_get_start_datetime():
         get_start_datetime().isoformat() == datetime(2022, 11, 11, tzinfo=timezone.utc).isoformat()
     )
 
-    # check to data 10 days ago, + round down to 30 mins
+    # check to data 10 days ago, + round down to 6 hours
     assert (
         get_start_datetime(n_history_days="10").isoformat()
         == datetime(2022, 11, 2, 12, tzinfo=timezone.utc).isoformat()
+    )
+
+
+@freeze_time("2022-06-12 13:34:56")
+def test_get_start_datetime_summer():
+    """Test that we get the correct start datetime"""
+
+    # check yesterday
+    assert (
+        get_start_datetime().isoformat()
+        == datetime(2022, 6, 10, 23, tzinfo=timezone.utc).isoformat()
+    )
+
+    # check to data 10 days ago, + round down to closest 6 hours, adjusting for BST
+    assert (
+        get_start_datetime(n_history_days="6").isoformat()
+        == datetime(2022, 6, 6, 11, tzinfo=timezone.utc).isoformat()
     )

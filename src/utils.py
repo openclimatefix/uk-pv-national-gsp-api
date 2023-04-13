@@ -1,9 +1,16 @@
 """ Utils functions for main.py """
+import logging
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from typing import Optional, Union
 
 import numpy as np
+from pytz import timezone
+
+logger = logging.getLogger(__name__)
+
+europe_london_tz = timezone("Europe/London")
+utc = timezone("UTC")
 
 
 def floor_30_minutes_dt(dt):
@@ -63,10 +70,12 @@ def get_start_datetime(n_history_days: Optional[Union[str, int]] = None) -> date
 
     # get at most 2 days of data.
     if n_history_days == "yesterday":
-        start_datetime = datetime.now(tz=timezone.utc).date() - timedelta(days=1)
+        start_datetime = datetime.now(tz=europe_london_tz).date() - timedelta(days=1)
         start_datetime = datetime.combine(start_datetime, datetime.min.time())
-        start_datetime = start_datetime.replace(tzinfo=timezone.utc)
+        start_datetime = europe_london_tz.localize(start_datetime)
+        start_datetime = start_datetime.astimezone(utc)
     else:
-        start_datetime = datetime.now(tz=timezone.utc) - timedelta(days=int(n_history_days))
+        start_datetime = datetime.now(tz=europe_london_tz) - timedelta(days=int(n_history_days))
         start_datetime = floor_6_hours_dt(start_datetime)
+        start_datetime = start_datetime.astimezone(utc)
     return start_datetime
