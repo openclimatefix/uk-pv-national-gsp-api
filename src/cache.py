@@ -57,8 +57,8 @@ def cache_response(func):
         now = datetime.now(tz=timezone.utc)
         if now - timedelta(seconds=cache_time_seconds) > last_updated[route_variables]:
             logger.debug(f"not using cache as longer than {cache_time_seconds} seconds")
-            last_updated[route_variables] = now
             response[route_variables] = func(*args, **kwargs)
+            last_updated[route_variables] = now
             return response[route_variables]
 
         # use cache
