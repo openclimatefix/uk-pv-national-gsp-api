@@ -20,7 +20,6 @@ from nowcasting_datamodel.read.blend.blend import get_blend_forecast_values_late
 from nowcasting_datamodel.read.read import (
     get_all_gsp_ids_latest_forecast,
     get_all_locations,
-    get_forecast_values,
     get_forecast_values_latest,
     get_latest_forecast,
     get_latest_national_forecast,
