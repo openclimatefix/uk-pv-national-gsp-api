@@ -85,6 +85,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "dorinclisu",
+      "name": "Dorin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13818396?v=4",
+      "profile": "http://dorinclisu.github.io",
+      "contributions": [
+        "review"
+      ]
     }
   ],
   "contributorsPerLine": 7,
@@ -92,5 +101,6 @@
   "projectOwner": "openclimatefix",
   "repoType": "github",
   "repoHost": "https://github.com",
-  "skipCi": true
+  "skipCi": true,
+  "commitConvention": "angular"
 }
