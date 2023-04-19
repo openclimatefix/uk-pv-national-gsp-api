@@ -61,6 +61,10 @@ def get_forecasts_from_database(
             preload_children=True,
             historic=True,
         )
+        if forecasts[0].location.gsp_id == 0:
+            # make sure we don't get national forecast here
+            forecasts.pop(0)
+
     else:
         # To speed up read time we only look at the last 12 hours of results, and take floor 30 mins
         yesterday_start_datetime = floor_30_minutes_dt(
