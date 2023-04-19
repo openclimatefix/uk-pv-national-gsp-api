@@ -64,6 +64,10 @@ def get_forecasts_from_database(
 
         logger.debug(f'Found {len(forecasts)} forecasts from database')
 
+        # TODO not sure why, but this does seem to sort the map out on the UI
+        logger.warning('Duplicating first forecast')
+        forecasts = [forecasts[0]] + forecasts
+
     else:
         # To speed up read time we only look at the last 12 hours of results, and take floor 30 mins
         yesterday_start_datetime = floor_30_minutes_dt(
