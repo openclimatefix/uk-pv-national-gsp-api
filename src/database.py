@@ -60,10 +60,10 @@ def get_forecasts_from_database(
             start_target_time=start_datetime,
             preload_children=True,
             historic=True,
+            include_national=False,
         )
-        if forecasts[0].location.gsp_id == 0:
-            # make sure we don't get national forecast here
-            forecasts.pop(0)
+
+        logger.debug(f"Found {len(forecasts)} forecasts from database")
 
     else:
         # To speed up read time we only look at the last 12 hours of results, and take floor 30 mins
