@@ -1,9 +1,9 @@
 """ Main FastAPI app """
 import os
 import time
-import sentry_sdk
 from datetime import timedelta
 
+import sentry_sdk
 import structlog
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -15,7 +15,6 @@ from national import router as national_router
 from redoc_theme import get_redoc_html_with_theme
 from status import router as status_router
 from system import router as system_router
-
 from utils import traces_sampler
 structlog.configure(
     processors=[
