@@ -14,3 +14,4 @@ pytest-cov
 fastapi-auth0==0.3.0
 httpx
 structlog
+sentry-sdk

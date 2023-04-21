@@ -3,6 +3,7 @@ import os
 import time
 from datetime import timedelta
 
+import sentry_sdk
 import structlog
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,6 +15,7 @@ from national import router as national_router
 from redoc_theme import get_redoc_html_with_theme
 from status import router as status_router
 from system import router as system_router
+from utils import traces_sampler
 
 structlog.configure(
     processors=[
@@ -39,6 +41,12 @@ folder = os.path.dirname(os.path.abspath(__file__))
 
 title = "Nowcasting API"
 version = "1.3.10"
+
+sentry_sdk.init(
+    dsn=os.getenv("SENTRY_DSN"),
+    environment=os.getenv("ENVIRONMENT", "local"),
+    traces_sampler=traces_sampler,
+)
 
 description = """
 As part of Open Climate Fix’s [open source project](https://github.com/openclimatefix), the
