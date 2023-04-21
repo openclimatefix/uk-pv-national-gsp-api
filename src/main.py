@@ -50,11 +50,6 @@ sentry_sdk.init(
     traces_sampler=traces_sampler,
 )
 
-sentry_sdk.init(
-    dsn=os.getenv("SENTRY_DSN"),
-    environment=os.getenv("ENVIRONMENT", "local"),
-    traces_sampler=traces_sampler,
-)
 
 description = """
 As part of Open Climate Fix’s [open source project](https://github.com/openclimatefix), the
