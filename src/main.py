@@ -16,6 +16,7 @@ from redoc_theme import get_redoc_html_with_theme
 from status import router as status_router
 from system import router as system_router
 from utils import traces_sampler
+
 structlog.configure(
     processors=[
         structlog.processors.EventRenamer("message", replace_by="_event"),
