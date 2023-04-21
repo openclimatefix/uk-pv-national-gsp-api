@@ -1,9 +1,10 @@
 """ Utils functions for test """
+import os
 from datetime import datetime, timezone
 
 from freezegun import freeze_time
 
-from utils import floor_30_minutes_dt, get_start_datetime
+from utils import floor_30_minutes_dt, get_start_datetime, traces_sampler
 
 LOWER_LIMIT_MINUTE = 0
 UPPER_LIMIT_MINUTE = 60
@@ -82,4 +83,22 @@ def test_get_start_datetime_summer():
     assert (
         get_start_datetime(n_history_days="6").isoformat()
         == datetime(2022, 6, 6, 11, tzinfo=timezone.utc).isoformat()
+    )
+
+
+def test_traces_sampler():
+
+    os.environ["ENVIRONMENT"] = "local"
+    assert traces_sampler({}) == 0.0
+
+    os.environ["ENVIRONMENT"] = "test"
+    assert (
+        traces_sampler({"parent_sampled": False, "transaction_context": {"name": "warning"}})
+        == 0.05
+    )
+    assert (
+        traces_sampler({"parent_sampled": True, "transaction_context": {"name": "warning"}}) == 0.0
+    )
+    assert (
+        traces_sampler({"parent_sampled": False, "transaction_context": {"name": "error1"}}) == 1.0
     )
