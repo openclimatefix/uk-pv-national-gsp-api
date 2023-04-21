@@ -87,7 +87,6 @@ def test_get_start_datetime_summer():
 
 
 def test_traces_sampler():
-
     os.environ["ENVIRONMENT"] = "local"
     assert traces_sampler({}) == 0.0
 
