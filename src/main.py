@@ -19,6 +19,7 @@ from system import router as system_router
 from utils import traces_sampler
 
 from utils import traces_sampler
+
 structlog.configure(
     processors=[
         structlog.processors.EventRenamer("message", replace_by="_event"),
