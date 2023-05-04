@@ -1,7 +1,6 @@
 """ Main FastAPI app """
 import os
 import time
-import sentry_sdk
 from datetime import timedelta
 
 import sentry_sdk
@@ -18,7 +17,6 @@ from status import router as status_router
 from system import router as system_router
 from utils import traces_sampler
 
-from utils import traces_sampler
 structlog.configure(
     processors=[
         structlog.processors.EventRenamer("message", replace_by="_event"),
