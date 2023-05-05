@@ -4,6 +4,8 @@ from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 import structlog
+from fastapi import Security, Depends
+from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.models import (
     Forecast,
@@ -14,7 +16,7 @@ from nowcasting_datamodel.models import (
     Location,
     LocationWithGSPYields,
     ManyForecasts,
-    Status,
+    Status, APIRequestSQL,
 )
 from nowcasting_datamodel.read.blend.blend import get_blend_forecast_values_latest
 from nowcasting_datamodel.read.read import (
@@ -28,9 +30,12 @@ from nowcasting_datamodel.read.read import (
     national_gb_label,
 )
 from nowcasting_datamodel.read.read_gsp import get_gsp_yield, get_gsp_yield_by_location
+from nowcasting_datamodel.read.read_user import get_user as get_user_from_db
 from nowcasting_datamodel.save.update import N_GSP
+from sqlalchemy.orm import Session
 from sqlalchemy.orm.session import Session
 
+from auth_utils import get_user
 from utils import floor_30_minutes_dt, get_start_datetime
 
 logger = structlog.stdlib.get_logger()
@@ -247,3 +252,18 @@ def get_gsp_system(session: Session, gsp_id: Optional[int] = None) -> List[Locat
 
     # change to pydantic object
     return [Location.from_orm(gsp_system) for gsp_system in gsp_systems]
+
+
+def save_api_call_to_db(request):
+
+    user: Auth0User = Security(get_user())
+    url = request.url
+    session: Session = Depends(get_session)
+    # get user from db
+    user = get_user_from_db(session=session, email=user.email)
+    # make api call
+    api_request = APIRequestSQL(url=url)
+
+    # commit to database
+    session.add(api_request)
+    session.commit()

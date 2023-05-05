@@ -15,7 +15,8 @@ from national import router as national_router
 from redoc_theme import get_redoc_html_with_theme
 from status import router as status_router
 from system import router as system_router
-from utils import traces_sampler, save_api_call_to_db
+from utils import traces_sampler
+from database import save_api_call_to_db
 
 structlog.configure(
     processors=[

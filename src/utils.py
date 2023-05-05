@@ -7,14 +7,6 @@ from typing import Optional, Union
 import numpy as np
 from pytz import timezone
 
-from fastapi import Depends, Security
-from fastapi_auth0 import Auth0User
-from auth_utils import get_user
-from nowcasting_datamodel.read.read_user import get_user as get_user_from_db
-from nowcasting_datamodel.models.api import APIRequestSQL
-from sqlalchemy.orm.session import Session
-from database import get_session
-
 logger = logging.getLogger(__name__)
 
 europe_london_tz = timezone("Europe/London")
@@ -111,16 +103,3 @@ def traces_sampler(sampling_context):
         return 0.05
 
 
-def save_api_call_to_db(request):
-
-    user: Auth0User = Security(get_user())
-    url = request.url
-    session: Session = Depends(get_session)
-    # get user from db
-    user = get_user_from_db(session=session, email=user.email)
-    # make api call
-    api_request = APIRequestSQL(url=url, user=user)
-
-    # commit to database
-    session.add(api_request)
-    session.commit()
