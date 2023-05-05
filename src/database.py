@@ -8,6 +8,7 @@ from fastapi import Security
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.models import (
+    APIRequestSQL,
     Forecast,
     ForecastValue,
     ForecastValueSevenDaysSQL,
@@ -17,7 +18,6 @@ from nowcasting_datamodel.models import (
     LocationWithGSPYields,
     ManyForecasts,
     Status,
-    APIRequestSQL,
 )
 from nowcasting_datamodel.read.blend.blend import get_blend_forecast_values_latest
 from nowcasting_datamodel.read.read import (

@@ -10,13 +10,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import FileResponse
 
+from database import save_api_call_to_db
 from gsp import router as gsp_router
 from national import router as national_router
 from redoc_theme import get_redoc_html_with_theme
 from status import router as status_router
 from system import router as system_router
 from utils import traces_sampler
-from database import save_api_call_to_db
 
 structlog.configure(
     processors=[
