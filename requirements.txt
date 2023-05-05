@@ -5,7 +5,7 @@ pydantic
 numpy
 requests
 #nowcasting_datamodel==1.3.10
-nowcasting_datamodel @ git+https://github.com/openclimatefix/nowcasting_datamodel.git@7eb426c10118eb7b604249a96bde9e5ad814170b#egg=nowcasting_datamodel
+nowcasting_datamodel @ git+https://github.com/openclimatefix/nowcasting_datamodel.git@a8bc7aad6678b32f63337202908daaca0ec5a01e#egg=nowcasting_datamodel
 nowcasting_dataset==3.7.12
 sqlalchemy
 psycopg2-binary
