@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 import structlog
-from fastapi import Security, Depends
+from fastapi import Security
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.models import (
@@ -32,7 +32,6 @@ from nowcasting_datamodel.read.read import (
 from nowcasting_datamodel.read.read_gsp import get_gsp_yield, get_gsp_yield_by_location
 from nowcasting_datamodel.read.read_user import get_user as get_user_from_db
 from nowcasting_datamodel.save.update import N_GSP
-from sqlalchemy.orm import Session
 from sqlalchemy.orm.session import Session
 
 from auth_utils import get_user
