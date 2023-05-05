@@ -15,7 +15,7 @@ from national import router as national_router
 from redoc_theme import get_redoc_html_with_theme
 from status import router as status_router
 from system import router as system_router
-from utils import traces_sampler
+from utils import traces_sampler, save_api_call_to_db
 
 structlog.configure(
     processors=[
@@ -113,6 +113,10 @@ async def add_process_time_header(request: Request, call_next):
     process_time = str(time.time() - start_time)
     logger.debug(f"Process Time {process_time} {request.url}")
     response.headers["X-Process-Time"] = process_time
+
+    # save user to database
+    save_api_call_to_db(request)
+
     return response
 
 
