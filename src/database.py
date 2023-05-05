@@ -16,7 +16,8 @@ from nowcasting_datamodel.models import (
     Location,
     LocationWithGSPYields,
     ManyForecasts,
-    Status, APIRequestSQL,
+    Status,
+    APIRequestSQL,
 )
 from nowcasting_datamodel.read.blend.blend import get_blend_forecast_values_latest
 from nowcasting_datamodel.read.read import (
@@ -263,10 +264,10 @@ def save_api_call_to_db(request):
     """
     user: Auth0User = Security(get_user())
 
-    if hasattr(user,'email'):
+    if hasattr(user, "email"):
         email = user.email
     else:
-        email = 'unknown'
+        email = "unknown"
 
     url = str(request.url)
 

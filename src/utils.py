@@ -101,5 +101,3 @@ def traces_sampler(sampling_context):
     else:
         # Default sample rate
         return 0.05
-
-
