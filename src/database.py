@@ -255,14 +255,28 @@ def get_gsp_system(session: Session, gsp_id: Optional[int] = None) -> List[Locat
 
 
 def save_api_call_to_db(request):
+    """
+    Save api call to database
 
+    If the user does not have an email address, we will save the email as unknown
+    :param request:
+    :return:
+    """
     user: Auth0User = Security(get_user())
-    url = request.url
-    session: Session = Depends(get_session)
+
+    if hasattr(user,'email'):
+        email = user.email
+    else:
+        email = 'unknown'
+
+    url = str(request.url)
+
+    # not very nice
+    session: Session = next(get_session())
     # get user from db
-    user = get_user_from_db(session=session, email=user.email)
+    user = get_user_from_db(session=session, email=email)
     # make api call
-    api_request = APIRequestSQL(url=url)
+    api_request = APIRequestSQL(url=url, user=user)
 
     # commit to database
     session.add(api_request)
