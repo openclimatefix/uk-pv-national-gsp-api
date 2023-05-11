@@ -22,7 +22,7 @@ from database import (
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
     get_truth_values_for_all_gsps_from_database,
-    save_api_call_to_db
+    save_api_call_to_db,
 )
 
 logger = structlog.stdlib.get_logger()

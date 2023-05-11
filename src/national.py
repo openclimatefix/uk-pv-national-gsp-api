@@ -15,7 +15,7 @@ from database import (
     get_latest_forecast_values_for_a_specific_gsp_from_database,
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
-    save_api_call_to_db
+    save_api_call_to_db,
 )
 
 
