@@ -4,8 +4,6 @@ from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 import structlog
-from fastapi import Security
-from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.models import (
     APIRequestSQL,
@@ -35,7 +33,6 @@ from nowcasting_datamodel.read.read_user import get_user as get_user_from_db
 from nowcasting_datamodel.save.update import N_GSP
 from sqlalchemy.orm.session import Session
 
-from auth_utils import get_user
 from utils import floor_30_minutes_dt, get_start_datetime
 
 logger = structlog.stdlib.get_logger()
@@ -254,7 +251,7 @@ def get_gsp_system(session: Session, gsp_id: Optional[int] = None) -> List[Locat
     return [Location.from_orm(gsp_system) for gsp_system in gsp_systems]
 
 
-def save_api_call_to_db(request):
+def save_api_call_to_db(request, session, user=None):
     """
     Save api call to database
 
@@ -262,20 +259,18 @@ def save_api_call_to_db(request):
     :param request:
     :return:
     """
-    user: Auth0User = Security(get_user())
-
-    if hasattr(user, "email"):
-        email = user.email
-    else:
-        email = "unknown"
 
     url = str(request.url)
 
-    # not very nice
-    session: Session = next(get_session())
+    if user is None:
+        email = "unknown"
+    else:
+        email = user.email
+
     # get user from db
     user = get_user_from_db(session=session, email=email)
     # make api call
+    logger.info(f"Saving api call ({url=}) to database for user {email}")
     api_request = APIRequestSQL(url=url, user=user)
 
     # commit to database

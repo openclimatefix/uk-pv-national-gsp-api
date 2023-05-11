@@ -39,7 +39,7 @@ def cache_response(func):
         route_variables = kwargs.copy()
 
         # drop session and user
-        for var in ["session", "user"]:
+        for var in ["session", "user", "request"]:
             if var in route_variables:
                 route_variables.pop(var)
 

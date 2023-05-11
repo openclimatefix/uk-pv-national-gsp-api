@@ -10,7 +10,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import FileResponse
 
-from database import save_api_call_to_db
 from gsp import router as gsp_router
 from national import router as national_router
 from redoc_theme import get_redoc_html_with_theme
@@ -114,9 +113,6 @@ async def add_process_time_header(request: Request, call_next):
     process_time = str(time.time() - start_time)
     logger.debug(f"Process Time {process_time} {request.url}")
     response.headers["X-Process-Time"] = process_time
-
-    # save user to database
-    save_api_call_to_db(request)
 
     return response
 

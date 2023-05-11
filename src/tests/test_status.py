@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 
 from fastapi.testclient import TestClient
 from freezegun import freeze_time
-from nowcasting_datamodel.models import ForecastSQL, Status
+from nowcasting_datamodel.models import APIRequestSQL, ForecastSQL, Status, UserSQL
 
 from database import get_session
 from main import app
@@ -24,6 +24,9 @@ def test_read_latest_status(db_session):
     returned_status = Status(**response.json())
     assert returned_status.message == status.message
     assert returned_status.status == status.status
+
+    assert len(db_session.query(APIRequestSQL).all()) == 1
+    assert len(db_session.query(UserSQL).all()) == 1
 
 
 @freeze_time("2023-01-01")
