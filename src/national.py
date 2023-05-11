@@ -18,7 +18,6 @@ from database import (
     save_api_call_to_db,
 )
 
-
 logger = structlog.stdlib.get_logger()
 
 
