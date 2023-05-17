@@ -3,13 +3,13 @@ import os
 from datetime import datetime, timedelta, timezone
 
 import structlog
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from nowcasting_datamodel.models import ForecastSQL, Status
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm.session import Session
 
 from cache import cache_response
-from database import get_latest_status_from_database, get_session
+from database import get_latest_status_from_database, get_session, save_api_call_to_db
 
 logger = structlog.stdlib.get_logger()
 
@@ -20,20 +20,23 @@ forecast_error_hours = float(os.getenv("FORECAST_ERROR_HOURS", 2.0))
 
 @router.get("/status", response_model=Status)
 @cache_response
-def get_status(session: Session = Depends(get_session)) -> Status:
+def get_status(request: Request, session: Session = Depends(get_session)) -> Status:
     """### Get status for solar forecasts
 
     (might be good to explain this a bit more)
 
     """
+    save_api_call_to_db(session=session, request=request)
 
     logger.debug("Get status")
     return get_latest_status_from_database(session=session)
 
 
 @router.get("/check_last_forecast_run", include_in_schema=False)
-def check_last_forecast(session: Session = Depends(get_session)) -> datetime:
+def check_last_forecast(request: Request, session: Session = Depends(get_session)) -> datetime:
     """Check to that a forecast has run with in the last 2 hours"""
+
+    save_api_call_to_db(session=session, request=request)
 
     logger.debug("Check to see when the last forecast run was ")
 
