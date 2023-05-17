@@ -40,7 +40,7 @@ logger = structlog.stdlib.get_logger()
 folder = os.path.dirname(os.path.abspath(__file__))
 
 title = "Nowcasting API"
-version = "1.4.3"
+version = "1.4.4"
 
 sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN"),
