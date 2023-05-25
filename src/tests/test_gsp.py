@@ -11,6 +11,7 @@ from nowcasting_datamodel.models import (
     LocationWithGSPYields,
     ManyForecasts,
 )
+from nowcasting_datamodel.read.read import get_model
 from nowcasting_datamodel.save.update import update_all_forecast_latest
 
 from database import get_session
@@ -36,11 +37,15 @@ def test_read_latest_one_gsp(db_session, api_client):
 def test_read_latest_all_gsp(db_session, api_client):
     """Check main solar/GB/gsp/forecast/all route works"""
 
+    model = get_model(session=db_session, name="cnn", version="0.0.1")
+
     forecasts = make_fake_forecasts(
         gsp_ids=list(range(0, 10)),
         session=db_session,
         t0_datetime_utc=datetime.now(tz=timezone.utc),
     )
+    [setattr(f, "model", model) for f in forecasts]
+
     db_session.add_all(forecasts)
 
     app.dependency_overrides[get_session] = lambda: db_session
@@ -57,11 +62,14 @@ def test_read_latest_all_gsp(db_session, api_client):
 def test_read_latest_all_gsp_normalized(db_session, api_client):
     """Check main solar/GB/gsp/forecast/all normalized route works"""
 
+    model = get_model(session=db_session, name="cnn", version="0.0.1")
+
     forecasts = make_fake_forecasts(
         gsp_ids=list(range(0, 10)),
         session=db_session,
         t0_datetime_utc=datetime.now(tz=timezone.utc),
     )
+    [setattr(f, "model", model) for f in forecasts]
     db_session.add_all(forecasts)
 
     app.dependency_overrides[get_session] = lambda: db_session
@@ -79,12 +87,15 @@ def test_read_latest_all_gsp_normalized(db_session, api_client):
 def test_read_latest_all_gsp_historic(db_session, api_client):
     """Check main solar/GB/gsp/forecast/all historic route works"""
 
+    model = get_model(session=db_session, name="cnn", version="0.0.1")
+
     forecasts = make_fake_forecasts(
         gsp_ids=list(range(0, 10)),
         session=db_session,
         t0_datetime_utc=datetime.now(tz=timezone.utc),
         historic=True,
     )
+    [setattr(f, "model", model) for f in forecasts]
     db_session.add_all(forecasts)
     update_all_forecast_latest(forecasts=forecasts, session=db_session)
 
