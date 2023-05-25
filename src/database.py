@@ -63,6 +63,7 @@ def get_forecasts_from_database(
             preload_children=True,
             historic=True,
             include_national=False,
+            model_name="cnn",
         )
 
         logger.debug(f"Found {len(forecasts)} forecasts from database")
@@ -78,6 +79,7 @@ def get_forecasts_from_database(
             start_created_utc=yesterday_start_datetime,
             start_target_time=yesterday_start_datetime,
             preload_children=True,
+            model_name="cnn",
         )
 
     # change to pydantic objects
