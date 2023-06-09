@@ -39,7 +39,7 @@ logger = structlog.stdlib.get_logger()
 
 folder = os.path.dirname(os.path.abspath(__file__))
 
-title = "Nowcasting API"
+title = "Quartz Solar API"
 version = "1.4.6"
 
 sentry_sdk.init(
@@ -51,7 +51,7 @@ sentry_sdk.init(
 
 description = """
 As part of Open Climate Fix’s [open source project](https://github.com/openclimatefix), the
-Nowcasting API is still under development.
+Quartz Solar API is still under development.
 
 #### General Overview
 
@@ -61,7 +61,7 @@ the UK’s National Grid ESO (electricity system operator). National Grid runs m
 300
 [GSPs](https://data.nationalgrideso.com/system/gis-boundaries-for-gb-grid-supply-points)
 (grid supply points), which are regionally located throughout the country.
-OCF's Nowcasting App synthesizes real-time PV
+OCF's Quartz Solar App synthesizes real-time PV
 data, numeric weather predictions (nwp), satellite imagery
 (looking at cloud cover),
 as well as GSP data to
@@ -91,7 +91,7 @@ And if you're interested in contributing to our open source project, feel free t
 """
 app = FastAPI(docs_url="/swagger", redoc_url=None)
 
-# origins = os.getenv("ORIGINS", "https://*.nowcasting.io,https://*-openclimatefix.vercel.app")
+# origins = os.getenv("ORIGINS", "https://*.nowcasting.io,https://*-openclimatefix.vercel.app,https://*.quartz.solar")
 # .split(
 #     ","
 # )
@@ -142,10 +142,10 @@ def get_api_information():
     logger.info("Route / has be called")
 
     return {
-        "title": "Nowcasting API",
+        "title": "Quartz Solar API",
         "version": version,
         "description": description,
-        "documentation": "https://api.nowcasting.io/docs",
+        "documentation": "https://api.quartz.solar/docs",
     }
 
 
@@ -155,10 +155,10 @@ def get_favicon() -> FileResponse:
     return FileResponse(f"{folder}/favicon.ico")
 
 
-@app.get("/nowcasting.png", include_in_schema=False)
+@app.get("/QUARTZSOLAR_LOGO_SECONDARY_BLACK_1.png", include_in_schema=False)
 def get_nowcasting_logo() -> FileResponse:
-    """Get favicon"""
-    return FileResponse(f"{folder}/nowcasting.png")
+    """Get logo"""
+    return FileResponse(f"{folder}/QUARTZSOLAR_LOGO_SECONDARY_BLACK_1.png")
 
 
 @app.get("/docs", include_in_schema=False)
@@ -180,7 +180,7 @@ def custom_openapi():
         description=description,
         contact={
             "name": "Nowcasting by Open Climate Fix",
-            "url": "https://nowcasting.io",
+            "url": "https://quartz.solar",
             "email": "info@openclimatefix.org",
         },
         license_info={
@@ -189,7 +189,7 @@ def custom_openapi():
         },
         routes=app.routes,
     )
-    openapi_schema["info"]["x-logo"] = {"url": "/nowcasting.png"}
+    openapi_schema["info"]["x-logo"] = {"url": "/QUARTZSOLAR_LOGO_SECONDARY_BLACK_1.png"}
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
