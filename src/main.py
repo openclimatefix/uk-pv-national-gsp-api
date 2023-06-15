@@ -55,7 +55,7 @@ Quartz Solar API is still under development.
 
 ### General Overview
 
-__Nowcasting__ essentially means __forecasting for the next few hours__.
+__Nowcasting__ means __forecasting for the next few hours__.
 OCF has built a predictive model that nowcasts solar energy generation for
 the UK’s National Grid ESO (electricity system operator) and a few other test 
 users. National Grid 
@@ -68,47 +68,65 @@ data, numeric weather predictions (nwp), satellite imagery
 as well as GSP data to
 forecast how much solar energy will generated for a given GSP.
 
-Here are key aspects of the solar forecasts:
-- Forecasts are produced in 30-minute time steps, projecting GSP yields out to
-eight hours ahead.
-- The geographic extent is all of Great Britain (GB).
-- Forecasts are produced at the GB National and regional level (GSPs).
-
 OCF's incredibly accurate, short-term forecasts allow National Grid to reduce
 the amount of spinning reserves they need to run at any given moment,
 ultimately reducing carbon emmisions.
 
-In order to get started with reading the API documentation, it might be
-helpful to know that GSPs are referenced in the following ways:  gspId
-(ex. 122); gspName (ex. FIDF_1); regionName (ex. Fiddlers Ferry).
-
-
-The API provides information on when input data was
-last updated as well as the installed photovoltaic (PV) megawatt capacity
-(installedCapacityMw) of each individual GSP.
-
 You’ll find an explanation of the terms we use and how solar forecasts are
-defined in the *Introduction to Solar Forecasts* section.  You'll find more
-detailed information for each API route in the documentation below.
+defined in the *Introduction to Solar Forecasts* section. 
+
+Predicatably, you'll find more detailed information for each API route in the documentation below.
 
 If you have any questions, please don't hesitate to get in touch. And if you're interested in contributing to our open source project, you can get started by going to our [OCF Github](https://github.com/openclimatefix) page and checking out our “[list of good first issues](https://github.com/search?l=&p=1&q=user%3Aopenclimatefix+label%3A%22good+first+issue%22&ref=advsearch&type=Issues&utf8=%E2%9C%93&state=open)”!
 
-You can find more information about the Nowcasting App on or [Notion page](https://openclimatefix.notion.site/Nowcasting-Documentation-0d718915650e4f098470d695aa3494bf).
+You can find more information about the Nowcasting App on or [Notion page](https:/
+openclimatefix.notion.site/Nowcasting-Documentation-0d718915650e4f098470d695aa3494bf).
 
-### Introduction to Solar Forecasts
+### Key terms for Quartz Solar API
 
-Glossary table and explanation of key concepts.
+**Forecast**:
+- Forecasts are produced in 30-minute time steps, projecting GSP yields out to
+    eight hours ahead.
+- The geographic extent of each forecast is all of Great Britain (GB).
+- Forecasts are produced at the GB National and regional level (GSPs).
 
-- **GSP (grid supply point)**. GSPs supply the Great Britain transmission
+**GSP (grid supply point):** GSPs supply the Great Britain transmission
 network. The  Nowcasting map displays all 316 GSPs using their
 geospatial boundaries.
-- **Mwh (megawatt hour)**. This is equal to 1,000 kilowatt hours (Kwh) or 1,000
-kilowatts of electricity used continuously for one hour, about the amount of
-electricity used by 330 homes during one hour.
 
--
+**Gigawatt (GW):** A gigawatt is equal to 1,000 megawatts and is  a unit of power used to describe electrical power production. The UK has a solar generation capacity of around 14 GW.  
 
+**MW (megawatt):** A megawatt is a unit of power used to describe electrical
+power production. At the GSP level, for example, solar power production is measured
+in MW. This is not to be confused with MWh (megawatt hour), which is a unit of
+energy equivalent to a steady power of one megawatt running for one hour. 
 
+**Normalization:** A value is said to be ***normalized*** when rendered as a percentage of a total value. In the Quartz Solar UI’s case, this means PV actual values or PV forecasted values can be presented as a percentage of total installed PV generation capacity. A user might find normalized values meaningful when comparing forecasted and actual PV generation between GSPs with different installed PV capacities.
+
+**PV_Live:** [PV_Live](https://www.solar.sheffield.ac.uk/pvlive/) is Sheffield Solar’s API that reports estimate PV data for each GSP and then updated truth values for the following day. These readings are updated throughout the day, reporting the actual or *truth* values the following day by late morning UTC. In the Quartz Solar UI, PV_Live’s estimate and updated truth values on both the national and GSP level are plotted alongside the Quartz Solar forecast values.
+
+### Data visualization of Quartz Solar API
+![Quartz Solar API Overview](forecast_graph.png)
+- OCF forecast line (dotted yellow)
+- PV_Live truth (solid black), PV_Live estimate (dotted black)
+
+#### Three use cases
+
+I, the user, would like to fetch…
+
+- Data on the OCF national forecast as many hours into the future as available. 
+    - **Get National Forecast**
+   ```https://api.nowcasting.io/v0/solar/GB/national/forecast/```
+
+- The OCF forecast made at 6am yesterday for yesterday’s national solar PV
+generation.  
+    - **Get National Forecast (historic = TRUE)**
+    ```https://api.nowcasting.io/v0/solar/GB/national/forecast/
+    only_forecast_values=True)```
+
+- Great Britain's PV generation truth value for yesterday generated by PV_Live. 
+    - **Get Truths For A Specific GSP**
+    ```https://api.nowcasting.io//v0/solar/GB/national/pvlive/)```
 """
 app = FastAPI(docs_url="/swagger", redoc_url=None)
 
@@ -189,6 +207,12 @@ def redoc_html():
         title=title,
     )
 
+@app.get("/forecast_graph.png", include_in_schema=False)
+def get_graph() -> FileResponse:
+    """Get chart image"""
+    return FileResponse(f"{folder}/forecast_graph.png")
+
+
 
 # OpenAPI (ReDoc) custom theme
 def custom_openapi():
@@ -200,7 +224,7 @@ def custom_openapi():
         version=version,
         description=description,
         contact={
-            "name": "Nowcasting by Open Climate Fix",
+            "name": "Quartz Solar by Open Climate Fix",
             "url": "https://quartz.solar",
             "email": "info@openclimatefix.org",
         },
@@ -210,7 +234,8 @@ def custom_openapi():
         },
         routes=app.routes,
     )
-    openapi_schema["info"]["x-logo"] = {"url": "/QUARTZSOLAR_LOGO_SECONDARY_BLACK_1.png"}
+    openapi_schema["info"]["x-logo"] = {"url": 
+    "QUARTZSOLAR_LOGO_SECONDARY_BLACK_1.png"}
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
