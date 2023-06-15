@@ -1,9 +1,9 @@
 """ Test for main app """
 from datetime import datetime, timedelta, timezone
-from fastapi.testclient import TestClient
-from nowcasting_datamodel.models import Status, ForecastSQL
 
+from fastapi.testclient import TestClient
 from freezegun import freeze_time
+from nowcasting_datamodel.models import APIRequestSQL, ForecastSQL, Status, UserSQL
 
 from database import get_session
 from main import app
@@ -25,8 +25,11 @@ def test_read_latest_status(db_session):
     assert returned_status.message == status.message
     assert returned_status.status == status.status
 
+    assert len(db_session.query(APIRequestSQL).all()) == 1
+    assert len(db_session.query(UserSQL).all()) == 1
 
-@freeze_time('2023-01-01')
+
+@freeze_time("2023-01-01")
 def test_check_last_forecast_run_no_forecast(db_session):
     """Check main check_last_forecast_run fales where there are not forecasts"""
     app.dependency_overrides[get_session] = lambda: db_session
@@ -35,7 +38,7 @@ def test_check_last_forecast_run_no_forecast(db_session):
     assert response.status_code == 404
 
 
-@freeze_time('2023-01-02')
+@freeze_time("2023-01-02")
 def test_check_last_forecast_run_correct(db_session):
     """Check check_last_forecast_run works fine"""
     forecast_creation_time = datetime.now(tz=timezone.utc) - timedelta(minutes=5)
@@ -48,7 +51,7 @@ def test_check_last_forecast_run_correct(db_session):
     assert response.status_code == 200
 
 
-@freeze_time('2023-01-03')
+@freeze_time("2023-01-03")
 def test_check_last_forecast_error(db_session):
     """Check check_last_forecast_run works fine"""
     forecast_creation_time = datetime.now(tz=timezone.utc) - timedelta(hours=3)

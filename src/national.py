@@ -1,9 +1,9 @@
 """National API routes"""
-import logging
 import os
 from typing import List, Optional, Union
 
-from fastapi import APIRouter, Depends, Security
+import structlog
+from fastapi import APIRouter, Depends, Request, Security
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield
 from sqlalchemy.orm.session import Session
@@ -15,12 +15,13 @@ from database import (
     get_latest_forecast_values_for_a_specific_gsp_from_database,
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
+    save_api_call_to_db,
 )
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger()
 
 
-adjust_limit = float(os.getenv('ADJUST_MW_LIMIT',0.0))
+adjust_limit = float(os.getenv("ADJUST_MW_LIMIT", 0.0))
 
 router = APIRouter()
 NationalYield = GSPYield
@@ -33,6 +34,7 @@ NationalYield = GSPYield
 )
 @cache_response
 def get_national_forecast(
+    request: Request,
     session: Session = Depends(get_session),
     historic: Optional[bool] = False,
     only_forecast_values: Optional[bool] = False,
@@ -73,6 +75,8 @@ def get_national_forecast(
 
     logger.debug("Get national forecasts")
 
+    save_api_call_to_db(session=session, user=user, request=request)
+
     if not only_forecast_values:
         logger.debug("Getting forecast.")
         full_forecast = get_forecasts_for_a_specific_gsp_from_database(
@@ -93,15 +97,14 @@ def get_national_forecast(
         return full_forecast
 
     else:
-
-        national_forecast_values = (
-            get_latest_forecast_values_for_a_specific_gsp_from_database(
-                session=session, gsp_id=0, forecast_horizon_minutes=forecast_horizon_minutes
-            )
+        national_forecast_values = get_latest_forecast_values_for_a_specific_gsp_from_database(
+            session=session, gsp_id=0, forecast_horizon_minutes=forecast_horizon_minutes
         )
 
-        logger.debug(f"Got national forecasts with {len(national_forecast_values)} forecast values. "
-                     f"Now adjusting by at most {adjust_limit} MW")
+        logger.debug(
+            f"Got national forecasts with {len(national_forecast_values)} forecast values. "
+            f"Now adjusting by at most {adjust_limit} MW"
+        )
 
     national_forecast_values = [f.adjust(limit=adjust_limit) for f in national_forecast_values]
 
@@ -116,6 +119,7 @@ def get_national_forecast(
 )
 @cache_response
 def get_national_pvlive(
+    request: Request,
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
@@ -149,6 +153,8 @@ def get_national_pvlive(
     """
 
     logger.info(f"Get national PV Live estimates values " f"for regime {regime} for  {user}")
+
+    save_api_call_to_db(session=session, user=user, request=request)
 
     return get_truth_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=0, regime=regime

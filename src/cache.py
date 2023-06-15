@@ -1,10 +1,12 @@
+""" Caching utils for api"""
 import json
-import logging
 import os
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 
-logger = logging.getLogger(__name__)
+import structlog
+
+logger = structlog.stdlib.get_logger()
 
 CACHE_TIME_SECONDS = 120
 cache_time_seconds = int(os.getenv("CACHE_TIME_SECONDS", CACHE_TIME_SECONDS))
@@ -28,7 +30,7 @@ def cache_response(func):
     last_updated = {}
 
     @wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs):  # noqa
         nonlocal response
         nonlocal last_updated
 
@@ -37,7 +39,7 @@ def cache_response(func):
         route_variables = kwargs.copy()
 
         # drop session and user
-        for var in ["session", "user"]:
+        for var in ["session", "user", "request"]:
             if var in route_variables:
                 route_variables.pop(var)
 
@@ -55,8 +57,8 @@ def cache_response(func):
         now = datetime.now(tz=timezone.utc)
         if now - timedelta(seconds=cache_time_seconds) > last_updated[route_variables]:
             logger.debug(f"not using cache as longer than {cache_time_seconds} seconds")
-            last_updated[route_variables] = now
             response[route_variables] = func(*args, **kwargs)
+            last_updated[route_variables] = now
             return response[route_variables]
 
         # use cache

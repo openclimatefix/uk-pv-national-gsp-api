@@ -1,24 +1,26 @@
 """ Functions to read from the database and format """
-import logging
 import os
 from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
+import structlog
 from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.models import (
+    APIRequestSQL,
     Forecast,
     ForecastValue,
     ForecastValueSevenDaysSQL,
+    ForecastValueSQL,
     GSPYield,
     Location,
     LocationWithGSPYields,
     ManyForecasts,
     Status,
 )
+from nowcasting_datamodel.read.blend.blend import get_blend_forecast_values_latest
 from nowcasting_datamodel.read.read import (
     get_all_gsp_ids_latest_forecast,
     get_all_locations,
-    get_forecast_values,
     get_forecast_values_latest,
     get_latest_forecast,
     get_latest_national_forecast,
@@ -27,12 +29,13 @@ from nowcasting_datamodel.read.read import (
     national_gb_label,
 )
 from nowcasting_datamodel.read.read_gsp import get_gsp_yield, get_gsp_yield_by_location
+from nowcasting_datamodel.read.read_user import get_user as get_user_from_db
 from nowcasting_datamodel.save.update import N_GSP
 from sqlalchemy.orm.session import Session
 
 from utils import floor_30_minutes_dt, get_start_datetime
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger()
 
 
 def get_latest_status_from_database(session: Session) -> Status:
@@ -52,7 +55,6 @@ def get_forecasts_from_database(
     # get the latest forecast for all gsps.
 
     if historic:
-
         start_datetime = get_start_datetime()
 
         forecasts = get_all_gsp_ids_latest_forecast(
@@ -60,7 +62,12 @@ def get_forecasts_from_database(
             start_target_time=start_datetime,
             preload_children=True,
             historic=True,
+            include_national=False,
+            model_name="cnn",
         )
+
+        logger.debug(f"Found {len(forecasts)} forecasts from database")
+
     else:
         # To speed up read time we only look at the last 12 hours of results, and take floor 30 mins
         yesterday_start_datetime = floor_30_minutes_dt(
@@ -72,6 +79,7 @@ def get_forecasts_from_database(
             start_created_utc=yesterday_start_datetime,
             start_target_time=yesterday_start_datetime,
             preload_children=True,
+            model_name="cnn",
         )
 
     # change to pydantic objects
@@ -122,22 +130,30 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
     start_datetime = get_start_datetime()
 
     if forecast_horizon_minutes is None:
-        forecast_values = get_forecast_values_latest(
-            session=session, gsp_id=gsp_id, start_datetime=start_datetime
-        )
+        if gsp_id != 0:
+            forecast_values = get_forecast_values_latest(
+                session=session, gsp_id=gsp_id, start_datetime=start_datetime
+            )
+        else:
+            # get blend of forecast values from CNN and Nationa_xg
+            # this returns a list of ForecastValue objects
+            forecast_values = get_blend_forecast_values_latest(
+                session=session, gsp_id=0, start_datetime=start_datetime
+            )
 
     else:
-
-        forecast_values = get_forecast_values(
+        forecast_values = get_blend_forecast_values_latest(
             session=session,
             gsp_id=gsp_id,
             start_datetime=start_datetime,
-            only_return_latest=True,
             forecast_horizon_minutes=forecast_horizon_minutes,
-            model=ForecastValueSevenDaysSQL,
         )
 
-    forecast_values = [ForecastValue.from_orm(f) for f in forecast_values]
+    # convert to pydantic objects
+    if isinstance(forecast_values[0], ForecastValueSevenDaysSQL) or isinstance(
+        forecast_values[0], ForecastValueSQL
+    ):
+        forecast_values = [ForecastValue.from_orm(f) for f in forecast_values]
 
     return forecast_values
 
@@ -221,7 +237,6 @@ def get_gsp_system(session: Session, gsp_id: Optional[int] = None) -> List[Locat
     """
 
     if gsp_id is not None:
-
         # adjust label for nation location
         if gsp_id == 0:
             label = national_gb_label
@@ -236,3 +251,30 @@ def get_gsp_system(session: Session, gsp_id: Optional[int] = None) -> List[Locat
 
     # change to pydantic object
     return [Location.from_orm(gsp_system) for gsp_system in gsp_systems]
+
+
+def save_api_call_to_db(request, session, user=None):
+    """
+    Save api call to database
+
+    If the user does not have an email address, we will save the email as unknown
+    :param request:
+    :return:
+    """
+
+    url = str(request.url)
+
+    if user is None:
+        email = "unknown"
+    else:
+        email = user.email
+
+    # get user from db
+    user = get_user_from_db(session=session, email=email)
+    # make api call
+    logger.info(f"Saving api call ({url=}) to database for user {email}")
+    api_request = APIRequestSQL(url=url, user=user)
+
+    # commit to database
+    session.add(api_request)
+    session.commit()

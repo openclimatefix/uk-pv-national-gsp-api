@@ -1,9 +1,10 @@
 """ Utils functions for test """
+import os
 from datetime import datetime, timezone
 
 from freezegun import freeze_time
 
-from utils import floor_30_minutes_dt, get_start_datetime
+from utils import floor_30_minutes_dt, get_start_datetime, traces_sampler
 
 LOWER_LIMIT_MINUTE = 0
 UPPER_LIMIT_MINUTE = 60
@@ -61,8 +62,42 @@ def test_get_start_datetime():
         get_start_datetime().isoformat() == datetime(2022, 11, 11, tzinfo=timezone.utc).isoformat()
     )
 
-    # check to data 10 days ago, + round down to 30 mins
+    # check to data 10 days ago, + round down to 6 hours
     assert (
         get_start_datetime(n_history_days="10").isoformat()
         == datetime(2022, 11, 2, 12, tzinfo=timezone.utc).isoformat()
+    )
+
+
+@freeze_time("2022-06-12 13:34:56")
+def test_get_start_datetime_summer():
+    """Test that we get the correct start datetime"""
+
+    # check yesterday
+    assert (
+        get_start_datetime().isoformat()
+        == datetime(2022, 6, 10, 23, tzinfo=timezone.utc).isoformat()
+    )
+
+    # check to data 10 days ago, + round down to closest 6 hours, adjusting for BST
+    assert (
+        get_start_datetime(n_history_days="6").isoformat()
+        == datetime(2022, 6, 6, 11, tzinfo=timezone.utc).isoformat()
+    )
+
+
+def test_traces_sampler():
+    os.environ["ENVIRONMENT"] = "local"
+    assert traces_sampler({}) == 0.0
+
+    os.environ["ENVIRONMENT"] = "test"
+    assert (
+        traces_sampler({"parent_sampled": False, "transaction_context": {"name": "warning"}})
+        == 0.05
+    )
+    assert (
+        traces_sampler({"parent_sampled": True, "transaction_context": {"name": "warning"}}) == 0.0
+    )
+    assert (
+        traces_sampler({"parent_sampled": False, "transaction_context": {"name": "error1"}}) == 1.0
     )

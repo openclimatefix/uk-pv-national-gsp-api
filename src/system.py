@@ -1,9 +1,9 @@
 """Get GSP boundary data from eso """
 import json
-import logging
 from typing import List, Optional
 
 import geopandas as gpd
+import structlog
 from fastapi import APIRouter, Depends, Security
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.models import GSPYield, Location
@@ -14,7 +14,7 @@ from auth_utils import get_auth_implicit_scheme, get_user
 from cache import cache_response
 from database import get_gsp_system, get_session
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger()
 
 
 router = APIRouter()

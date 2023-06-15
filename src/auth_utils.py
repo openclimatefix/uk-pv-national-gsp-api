@@ -1,10 +1,10 @@
 """ Authentical  objects """
-import logging
 import os
 
+import structlog
 from fastapi_auth0 import Auth0
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger()
 
 
 def get_auth():
@@ -29,13 +29,16 @@ def get_auth():
     )
 
 
+# only need to do this once
+auth = get_auth()
+
+
 def get_auth_implicit_scheme():
     """Get authentical implicit scheme - this can be mocked in tests
 
     If AUTH0_DOMAIN or AUTH0_API_AUDIENCE has been set, a empty None is returned.
     This is useful for testing
     """
-    auth = get_auth()
 
     if auth is None:
         return lambda: None
@@ -49,7 +52,6 @@ def get_user():
     If AUTH0_DOMAIN or AUTH0_API_AUDIENCE has been set, a empty None is returned.
     This is useful for testing
     """
-    auth = get_auth()
 
     if auth is None:
         return lambda: None

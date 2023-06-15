@@ -1,8 +1,8 @@
 """Get GSP boundary data from eso """
-import logging
 from typing import List, Optional, Union
 
-from fastapi import APIRouter, Depends, Security
+import structlog
+from fastapi import APIRouter, Depends, Request, Security
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.models import (
     Forecast,
@@ -22,9 +22,10 @@ from database import (
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
     get_truth_values_for_all_gsps_from_database,
+    save_api_call_to_db,
 )
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger()
 
 
 router = APIRouter()
@@ -39,6 +40,7 @@ NationalYield = GSPYield
 )
 @cache_response
 def get_all_available_forecasts(
+    request: Request,
     historic: Optional[bool] = True,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
@@ -65,6 +67,8 @@ def get_all_available_forecasts(
 
     """
 
+    save_api_call_to_db(session=session, user=user, request=request)
+
     logger.info(f"Get forecasts for all gsps. The option is {historic=} for user {user}")
 
     forecasts = get_forecasts_from_database(session=session, historic=historic)
@@ -81,6 +85,7 @@ def get_all_available_forecasts(
 )
 @cache_response
 def get_forecasts_for_a_specific_gsp(
+    request: Request,
     gsp_id: int,
     session: Session = Depends(get_session),
     historic: Optional[bool] = False,
@@ -119,6 +124,8 @@ def get_forecasts_for_a_specific_gsp(
     the latest forecast made 35 minutes before the target time)
     """
 
+    save_api_call_to_db(session=session, user=user, request=request)
+
     logger.info(f"Get forecasts for gsp id {gsp_id} forecast of forecast with only values.")
     logger.info(f"This is for user {user}")
 
@@ -138,7 +145,6 @@ def get_forecasts_for_a_specific_gsp(
         return full_forecast
 
     else:
-
         logger.debug("Getting forecast values only.")
 
         forecast_only = get_latest_forecast_values_for_a_specific_gsp_from_database(
@@ -160,6 +166,7 @@ def get_forecasts_for_a_specific_gsp(
 )
 @cache_response
 def get_truths_for_all_gsps(
+    request: Request,
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
@@ -191,6 +198,8 @@ def get_truths_for_all_gsps(
     - regime: can choose __in-day__ or __day-after__
     """
 
+    save_api_call_to_db(session=session, user=user, request=request)
+
     logger.info(f"Get PV Live estimates values for all gsp id and regime {regime} for user {user}")
 
     return get_truth_values_for_all_gsps_from_database(session=session, regime=regime)
@@ -204,6 +213,7 @@ def get_truths_for_all_gsps(
 )
 @cache_response
 def get_truths_for_a_specific_gsp(
+    request: Request,
     gsp_id: int,
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
@@ -235,6 +245,8 @@ def get_truths_for_a_specific_gsp(
     - gsp_id: gsp_id of the requested forecast
     - regime: can choose __in-day__ or __day-after__
     """
+
+    save_api_call_to_db(session=session, user=user, request=request)
 
     logger.info(
         f"Get PV Live estimates values for gsp id {gsp_id} " f"and regime {regime} for user {user}"

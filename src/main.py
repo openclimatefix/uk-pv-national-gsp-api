@@ -1,9 +1,10 @@
 """ Main FastAPI app """
-import logging
 import os
 import time
 from datetime import timedelta
 
+import sentry_sdk
+import structlog
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
@@ -14,21 +15,43 @@ from national import router as national_router
 from redoc_theme import get_redoc_html_with_theme
 from status import router as status_router
 from system import router as system_router
+from utils import traces_sampler
 
-logging.basicConfig(
-    level=getattr(logging, os.getenv("LOGLEVEL", "DEBUG")),
-    format="[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s",
+structlog.configure(
+    processors=[
+        structlog.processors.EventRenamer("message", replace_by="_event"),
+        structlog.stdlib.PositionalArgumentsFormatter(),
+        structlog.processors.CallsiteParameterAdder(
+            [
+                structlog.processors.CallsiteParameter.FILENAME,
+                structlog.processors.CallsiteParameter.LINENO,
+            ],
+        ),
+        structlog.processors.dict_tracebacks,
+        structlog.stdlib.add_log_level,
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.StackInfoRenderer(),
+        structlog.processors.format_exc_info,
+        structlog.processors.JSONRenderer(),
+    ],
 )
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger()
 
 folder = os.path.dirname(os.path.abspath(__file__))
 
-title = "Nowcasting API"
-version = "1.2.0"
+title = "Quartz Solar API"
+version = "1.4.7"
+
+sentry_sdk.init(
+    dsn=os.getenv("SENTRY_DSN"),
+    environment=os.getenv("ENVIRONMENT", "local"),
+    traces_sampler=traces_sampler,
+)
+
 
 description = """
 As part of Open Climate Fix’s [open source project](https://github.com/openclimatefix), the
-Nowcasting API is still under development.
+Quartz Solar API is still under development.
 
 ### General Overview
 
@@ -38,11 +61,12 @@ the UK’s National Grid ESO (electricity system operator) and a few other test
 users. National Grid 
 balances the electricity grid across 300
 [GSPs](https://data.nationalgrideso.com/system/gis-boundaries-for-gb-grid-supply-points)
-(grid supply points), or regions across Britain.
-OCF's Nowcasting App synthesizes real-time PV data, numeric weather
-predictions (NWPs), satellite imagery (observing cloud cover), and GSP PV
-generation data to forecast how much solar energy will be generated for a
-given GSP.
+(grid supply points), which are regionally located throughout the country.
+OCF's Quartz Solar App synthesizes real-time PV
+data, numeric weather predictions (nwp), satellite imagery
+(looking at cloud cover),
+as well as GSP data to
+forecast how much solar energy will generated for a given GSP.
 
 Here are key aspects of the solar forecasts:
 - Forecasts are produced in 30-minute time steps, projecting GSP yields out to
@@ -88,7 +112,7 @@ electricity used by 330 homes during one hour.
 """
 app = FastAPI(docs_url="/swagger", redoc_url=None)
 
-# origins = os.getenv("ORIGINS", "https://*.nowcasting.io,https://*-openclimatefix.vercel.app")
+# origins = os.getenv("ORIGINS", "https://*.nowcasting.io,https://*-openclimatefix.vercel.app,https://*.quartz.solar")
 # .split(
 #     ","
 # )
@@ -108,8 +132,9 @@ async def add_process_time_header(request: Request, call_next):
     start_time = time.time()
     response = await call_next(request)
     process_time = str(time.time() - start_time)
-    logger.debug(f"Process Time {process_time} {call_next}")
+    logger.debug(f"Process Time {process_time} {request.url}")
     response.headers["X-Process-Time"] = process_time
+
     return response
 
 
@@ -138,10 +163,10 @@ def get_api_information():
     logger.info("Route / has be called")
 
     return {
-        "title": "Nowcasting API",
+        "title": "Quartz Solar API",
         "version": version,
         "description": description,
-        "documentation": "https://api.nowcasting.io/docs",
+        "documentation": "https://api.quartz.solar/docs",
     }
 
 
@@ -151,10 +176,10 @@ def get_favicon() -> FileResponse:
     return FileResponse(f"{folder}/favicon.ico")
 
 
-@app.get("/nowcasting.png", include_in_schema=False)
+@app.get("/QUARTZSOLAR_LOGO_SECONDARY_BLACK_1.png", include_in_schema=False)
 def get_nowcasting_logo() -> FileResponse:
-    """Get favicon"""
-    return FileResponse(f"{folder}/nowcasting.png")
+    """Get logo"""
+    return FileResponse(f"{folder}/QUARTZSOLAR_LOGO_SECONDARY_BLACK_1.png")
 
 
 @app.get("/docs", include_in_schema=False)
@@ -176,7 +201,7 @@ def custom_openapi():
         description=description,
         contact={
             "name": "Nowcasting by Open Climate Fix",
-            "url": "https://nowcasting.io",
+            "url": "https://quartz.solar",
             "email": "info@openclimatefix.org",
         },
         license_info={
@@ -185,7 +210,7 @@ def custom_openapi():
         },
         routes=app.routes,
     )
-    openapi_schema["info"]["x-logo"] = {"url": "/nowcasting.png"}
+    openapi_schema["info"]["x-logo"] = {"url": "/QUARTZSOLAR_LOGO_SECONDARY_BLACK_1.png"}
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
