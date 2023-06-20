@@ -37,39 +37,19 @@ def get_national_forecast(
     request: Request,
     session: Session = Depends(get_session),
     historic: Optional[bool] = False,
-    only_forecast_values: Optional[bool] = False,
+    only_forecast_values: Optional[bool] = True,
     forecast_horizon_minutes: Optional[int] = None,
     user: Auth0User = Security(get_user()),
 ) -> Union[Forecast, List[ForecastValue]]:
     """Get the National Forecast
 
-    This route aggregrates data from all GSP forecasts and creates an 8-hour solar energy
-    generation forecast  in 30-minute interval for all of GB.
-
-    1. Get __recent solar forecast__ for the UK for today and yesterday
-    with system details.
-        - The return object is a solar forecast with forecast details.
-        -The forecast object is returned with expected megawatt generation for the UK
-        for the upcoming 8 hours at every 30-minute interval (targetTime).
-        - Set __only_forecast_values__ ==> FALSE
-        - Setting __historic__ parameter to TRUE returns an object with data
-        from yesterday and today
-
-    2. Get __ONLY__ forecast values for solar national forecast.
-        - Set __only_forecast_values__ to TRUE
-        - Setting a __forecast_horizon_minutes__ parameter retrieves the latest forecast
-        a given set of minutes before the target time.
-        - Return object is a simplified forecast object with __targetTimes__ and
-        __expectedPowerGenerationMegawatts__ at 30-minute intervals.
-        - NB: __historic__ parameter __will not__ work when __only_forecast_values__= TRUE
-
-    Please see the __Forecast__ and __ForecastValue__ schema below for full metadata details.
+    This route aggregrates data from all GSP forecasts in Great Britain,
+    creating a national, 8-hour,
+    solar generation forecast in 30-minute intervals.
 
     #### Parameters
-    - historic: boolean => TRUE returns yesterday's forecasts in addition to today's forecast
-    - only_forecast_values => TRUE returns solar national forecast values
-    - forecast_horizon_minutes: optional forecast horizon in minutes (ex. 35 returns
-    the latest forecast made 35 minutes before the target time)
+    - **forecast_horizon_minutes**: optional forecast horizon in minutes (ex. 60
+    returns the latest forecast made 60 minutes before the target time)
 
     """
 
@@ -83,9 +63,13 @@ def get_national_forecast(
             session=session,
             gsp_id=0,
             historic=historic,
+            only_forecast_values=only_forecast_values,
         )
 
-        logger.debug(f"Got forecast Now adjusting by at most {adjust_limit} MW and normalizing.")
+        logger.debug(
+            f"Got forecast Now adjusting by at most {adjust_limit} MW and normalizing."
+        )
+
         full_forecast.adjust(limit=adjust_limit)
         full_forecast.normalize()
 
@@ -94,11 +78,16 @@ def get_national_forecast(
         logger.debug(
             f"Got national forecasts with {len(full_forecast.forecast_values)} forecast values"
         )
+
         return full_forecast
 
     else:
-        national_forecast_values = get_latest_forecast_values_for_a_specific_gsp_from_database(
-            session=session, gsp_id=0, forecast_horizon_minutes=forecast_horizon_minutes
+        national_forecast_values = (
+            get_latest_forecast_values_for_a_specific_gsp_from_database(
+                session=session,
+                gsp_id=0,
+                forecast_horizon_minutes=forecast_horizon_minutes,
+            )
         )
 
         logger.debug(
@@ -106,8 +95,11 @@ def get_national_forecast(
             f"Now adjusting by at most {adjust_limit} MW"
         )
 
-    national_forecast_values = [f.adjust(limit=adjust_limit) for f in national_forecast_values]
+    national_forecast_values = [
+        f.adjust(limit=adjust_limit) for f in national_forecast_values
+    ]
 
+    print(national_forecast_values)
     return national_forecast_values
 
 
@@ -126,10 +118,10 @@ def get_national_pvlive(
 ) -> List[NationalYield]:
     """### Get national PV_Live values for yesterday and today
 
-    The return object is a series of real-time solar energy generation readings from PV_Live.
+    Get a series of real-time solar energy generation readings from PV_Live.
 
     PV_Live is Sheffield's API that reports real-time PV data. These readings are updated throughout
-    the day, reporting the most accurate finalized readings the following day at 10:00 UTC.
+    the day, reporting the most accurate finalized readings the following day around 10:00 UTC.
 
     See the __GSPYield__ schema for metadata details.
 
@@ -146,13 +138,13 @@ def get_national_pvlive(
     for 07/09/2022. The 08/09/2022 __day-after__ values then become available at 10:00 UTC
     on 09/09/2022.
 
-    If regime is not specificied, the most up-to-date national yield is returned.
-
     #### Parameters
     - regime: can choose __in-day__ or __day-after__
     """
 
-    logger.info(f"Get national PV Live estimates values " f"for regime {regime} for  {user}")
+    logger.info(
+        f"Get national PV Live estimates values " f"for regime {regime} for {user}"
+    )
 
     save_api_call_to_db(session=session, user=user, request=request)
 
