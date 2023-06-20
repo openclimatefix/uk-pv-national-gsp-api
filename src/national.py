@@ -37,7 +37,7 @@ def get_national_forecast(
     request: Request,
     session: Session = Depends(get_session),
     historic: Optional[bool] = False,
-    only_forecast_values: Optional[bool] = True,
+    only_forecast_values: Optional[bool] = False,
     forecast_horizon_minutes: Optional[int] = None,
     user: Auth0User = Security(get_user()),
 ) -> Union[Forecast, List[ForecastValue]]:
@@ -63,7 +63,6 @@ def get_national_forecast(
             session=session,
             gsp_id=0,
             historic=historic,
-            only_forecast_values=only_forecast_values,
         )
 
         logger.debug(f"Got forecast Now adjusting by at most {adjust_limit} MW and normalizing.")
@@ -93,7 +92,6 @@ def get_national_forecast(
 
     national_forecast_values = [f.adjust(limit=adjust_limit) for f in national_forecast_values]
 
-    print(national_forecast_values)
     return national_forecast_values
 
 
