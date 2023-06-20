@@ -114,24 +114,6 @@ def get_national_pvlive(
 
     Get a series of real-time solar energy generation readings from PV_Live.
 
-    PV_Live is Sheffield's API that reports real-time PV data. These readings are updated throughout
-    the day, reporting the most accurate finalized readings the following day around 10:00 UTC.
-
-    See the __GSPYield__ schema for metadata details.
-
-    Check out [Sheffield Solar PV_Live](https://www.solarsheffield.ac.uk/pvlive/) for
-    more details.
-
-    The OCF Forecast is trying to predict the PV_Live 'day-after' value.
-
-    This route has the __regime__ parameter that lets you look at values __in-day__ or
-    __day-after__(most accurate reading). __Day-after__ values are updated __in-day__ values.
-    __In-day__ gives you all the readings from the day before up to the most recent
-    reported national yield. __Day_after__ reports all the readings from the previous day.
-    For example, a day-after regime request made on 08/09/2022 returns updated national yield
-    for 07/09/2022. The 08/09/2022 __day-after__ values then become available at 10:00 UTC
-    on 09/09/2022.
-
     #### Parameters
     - regime: can choose __in-day__ or __day-after__
     """

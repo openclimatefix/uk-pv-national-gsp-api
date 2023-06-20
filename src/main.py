@@ -85,6 +85,24 @@ out our
 You can find more information about the Nowcasting App on or
 [Notion page](https:/openclimatefix.notion.site/Nowcasting-Documentation-0d718915650e4f098470d695aa3494bf).
 
+## A Note on PV_Live
+
+[PV_Live](https://www.solar.sheffield.ac.uk/pvlive/) is Sheffield
+Solar’s API that provides estimate and truth PV generation values
+by GSP.
+In the Quartz Solar app, PV_Live Estimate and PV_Live Actual readings are
+plotted on the same chart as the Quartz Solar forecast values, providing a
+comparison.
+
+The Quartz Solar forecast is trying to predict the PV_Live next-day updated
+truth value.
+
+The PV_Live API route that OCF uses has a parameter, __regime__, that's worth
+explaining. _Regime_ can be set to _in-day_ or _day-after_. Basically,
+__in-day__ values are the PV_Live. Estimate generation values. _Day-after_
+values are the PV_Live Actual or truth
+values updated the next day.
+
 ## Key Terms and Sample Use Cases
 
 ### Key Terms
