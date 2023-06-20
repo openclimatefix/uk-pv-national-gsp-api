@@ -91,7 +91,9 @@ And if you're interested in contributing to our open source project, feel free t
 """
 app = FastAPI(docs_url="/swagger", redoc_url=None)
 
-# origins = os.getenv("ORIGINS", "https://*.nowcasting.io,https://*-openclimatefix.vercel.app,https://*.quartz.solar")
+# origins = os.getenv("ORIGINS", 
+# "https://*.nowcasting.io,
+# https://*-openclimatefix.vercel.app,https://*.quartz.solar")
 # .split(
 #     ","
 # )
