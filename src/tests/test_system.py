@@ -16,9 +16,7 @@ def test_get_gsp_systems(db_session, api_client):
     db_session.commit()
 
     # update to installed capacity to a float
-    location = get_location(
-        gsp_id=1, session=db_session
-    )
+    location = get_location(gsp_id=1, session=db_session)
     location.installed_capacity_mw = 1.1
     db_session.commit()
 
