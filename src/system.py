@@ -79,17 +79,14 @@ def get_systems(
 ) -> List[Location]:
     """### Get system details for a single GSP or all GSPs
 
-    Returns an object with the system details of a given GSP using the
-    gsp_id parameter.
+    Returns an object with system details of a given GSP using the
+    _gsp_id_ query parameter.
 
-    Provide one gsp_id to return system details for that GSP, otherwise details for ALL
-    grid systems will be returned.
-
-    Please see __Location__ schema for metadata details.
+    Provide one gsp_id to return system details for that GSP, otherwise
+    details for ALL supply points are provided.
 
     #### Parameters
-    - gsp_id: gsp_id of the requested system
-    - NB: If no parameter is entered, system details for all 300+ GSPs are returned.
+    - **gsp_id**: gsp_id of the requested system
 
     """
 
