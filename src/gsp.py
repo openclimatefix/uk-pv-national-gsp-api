@@ -69,9 +69,7 @@ def get_all_available_forecasts(
 
     save_api_call_to_db(session=session, user=user, request=request)
 
-    logger.info(
-        f"Get forecasts for all gsps. The option is {historic=} for user {user}"
-    )
+    logger.info(f"Get forecasts for all gsps. The option is {historic=} for user {user}")
 
     forecasts = get_forecasts_from_database(session=session, historic=historic)
 
@@ -105,9 +103,7 @@ def get_forecasts_for_a_specific_gsp(
 
     save_api_call_to_db(session=session, user=user, request=request)
 
-    logger.info(
-        f"Get forecasts for gsp id {gsp_id} forecast of forecast with only values."
-    )
+    logger.info(f"Get forecasts for gsp id {gsp_id} forecast of forecast with only values.")
     logger.info(f"This is for user {user}")
 
     if only_forecast_values is False:
@@ -167,9 +163,7 @@ def get_truths_for_all_gsps(
 
     save_api_call_to_db(session=session, user=user, request=request)
 
-    logger.info(
-        f"Get PV Live estimates values for all gsp id and regime {regime} for user {user}"
-    )
+    logger.info(f"Get PV Live estimates values for all gsp id and regime {regime} for user {user}")
 
     return get_truth_values_for_all_gsps_from_database(session=session, regime=regime)
 
@@ -203,8 +197,7 @@ def get_truths_for_a_specific_gsp(
     save_api_call_to_db(session=session, user=user, request=request)
 
     logger.info(
-        f"Get PV Live estimates values for gsp id {gsp_id} "
-        f"and regime {regime} for user {user}"
+        f"Get PV Live estimates values for gsp id {gsp_id} " f"and regime {regime} for user {user}"
     )
 
     return get_truth_values_for_a_specific_gsp_from_database(
