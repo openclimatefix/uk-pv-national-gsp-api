@@ -36,7 +36,7 @@ def get_gsp_boundaries_from_eso_wgs84() -> gpd.GeoDataFrame:
     return boundaries
 
 
-# corresponds to API route /v0/system/GB/gsp/boundaries
+# corresponds to API /v0/system/GB/gsp/boundaries route
 @router.get(
     "/boundaries",
     dependencies=[Depends(get_auth_implicit_scheme())],
