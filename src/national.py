@@ -43,7 +43,7 @@ def get_national_forecast(
 
     This route aggregrates data from all GSP forecasts in Great Britain,
     creating a national, 8-hour,
-    solar generation forecast in 30-minute intervals.  
+    solar generation forecast in 30-minute intervals.
     The _forecast_horizon_minutes_ parameter allows
     a user to query for a forecast closer than 8 hours to the target time.
 
@@ -63,13 +63,13 @@ def get_national_forecast(
 
     logger.debug("Getting forecast.")
     national_forecast_values = get_latest_forecast_values_for_a_specific_gsp_from_database(
-            session=session, gsp_id=0, forecast_horizon_minutes=forecast_horizon_minutes
-        )
+        session=session, gsp_id=0, forecast_horizon_minutes=forecast_horizon_minutes
+    )
 
     logger.debug(
         f"Got national forecasts with {len(national_forecast_values)} forecast values. "
-            f"Now adjusting by at most {adjust_limit} MW"
-        )
+        f"Now adjusting by at most {adjust_limit} MW"
+    )
     national_forecast_values = [f.adjust(limit=adjust_limit) for f in national_forecast_values]
 
     return national_forecast_values
@@ -109,5 +109,5 @@ def get_national_pvlive(
     save_api_call_to_db(session=session, user=user, request=request)
 
     return get_truth_values_for_a_specific_gsp_from_database(
-            session=session, gsp_id=0, regime=regime
-        )
+        session=session, gsp_id=0, regime=regime
+    )

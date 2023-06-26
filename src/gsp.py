@@ -67,11 +67,12 @@ def get_all_available_forecasts(
 
     return forecasts
 
+
 @router.get(
     "/forecast/{gsp_id}",
     response_model=Union[Forecast, List[ForecastValue]],
     dependencies=[Depends(get_auth_implicit_scheme())],
-    include_in_schema=False
+    include_in_schema=False,
 )
 @cache_response
 def get_forecasts_for_a_specific_gsp_old_route(
@@ -92,7 +93,6 @@ def get_forecasts_for_a_specific_gsp_old_route(
         forecast_horizon_minutes=forecast_horizon_minutes,
         user=user,
     )
-    
 
 
 @router.get(
@@ -151,7 +151,9 @@ def get_forecasts_for_a_specific_gsp(
 
         return forecast_only
 
+
 # corresponds to API route /v0/solar/GB/gsp/pvlive/all
+
 
 @router.get(
     "/pvlive/all",
@@ -174,12 +176,11 @@ def get_truths_for_all_gsps(
     the previous day's truth values for the GSPs. The default is __in-day__.
 
     If regime is not specified, the most up-to-date GSP yield is returned.
-    
+
     #### Parameters
     - **gsp_id**: gsp_id of the requested forecast
     - **regime**: can choose __in-day__ or __day-after__
     """
-
 
     save_api_call_to_db(session=session, user=user, request=request)
 
@@ -239,7 +240,6 @@ def get_truths_for_a_specific_gsp(
     - **gsp_id**: gsp_id of the requested forecast
     - **regime**: can choose __in-day__ or __day-after__
     """
-
 
     save_api_call_to_db(session=session, user=user, request=request)
 

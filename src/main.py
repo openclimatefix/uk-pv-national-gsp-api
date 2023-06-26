@@ -121,6 +121,7 @@ async def add_process_time_header(request: Request, call_next):
 
     return response
 
+
 # Todo, create an option for redirecting a route
 
 # from fastapi.responses import RedirectResponse
@@ -130,7 +131,6 @@ async def add_process_time_header(request: Request, call_next):
 #     if matches_certain_format(request.url.path):
 #         new_url = create_target_url(request.url.path)
 #         return RedirectResponse(url=new_url)
-
 
 
 thirty_minutes = timedelta(minutes=30)
