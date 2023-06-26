@@ -5,10 +5,11 @@ from datetime import timedelta
 
 import sentry_sdk
 import structlog
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Security
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import FileResponse
+from fastapi_auth0 import Auth0, Auth0User
 
 from gsp import router as gsp_router
 from national import router as national_router
@@ -89,6 +90,7 @@ You'll find more detailed information for each route in the documentation below.
 If you have any questions, please don't hesitate to get in touch.
 And if you're interested in contributing to our open source project, feel free to join us!
 """
+
 app = FastAPI(docs_url="/swagger", redoc_url=None)
 
 # origins = os.getenv("ORIGINS",
@@ -97,7 +99,8 @@ app = FastAPI(docs_url="/swagger", redoc_url=None)
 # .split(
 #     ","
 # )
-origins = os.getenv("ORIGINS", "*").split(",")
+# origins = os.getenv("ORIGINS", "*").split(",")
+origins = ["*"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -117,6 +120,17 @@ async def add_process_time_header(request: Request, call_next):
     response.headers["X-Process-Time"] = process_time
 
     return response
+
+# Todo, create an option for redirecting a route
+
+# from fastapi.responses import RedirectResponse
+
+# @app.middleware("http")
+# async def redirect_middleware(request: Request, call_next):
+#     if matches_certain_format(request.url.path):
+#         new_url = create_target_url(request.url.path)
+#         return RedirectResponse(url=new_url)
+
 
 
 thirty_minutes = timedelta(minutes=30)
