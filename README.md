@@ -36,6 +36,8 @@ pip install -r requirements.txt
 cd src && uvicorn main:app --reload
 ```
 
+You may need to run the following additional installation `pip install git+https://github.com/SheffieldSolar/PV_Live-API#pvlive_api` for `pvlive-api`, as in the Dockerfile.
+
 ## Docker
 
 1. Make sure docker is installed on your system.
