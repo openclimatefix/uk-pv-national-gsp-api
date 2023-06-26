@@ -77,9 +77,36 @@ def get_all_available_forecasts(
 
     return forecasts
 
-
 @router.get(
     "/forecast/{gsp_id}",
+    response_model=Union[Forecast, List[ForecastValue]],
+    dependencies=[Depends(get_auth_implicit_scheme())],
+    include_in_schema=False
+)
+@cache_response
+def get_forecasts_for_a_specific_gsp_old_route(
+    request: Request,
+    gsp_id: int,
+    session: Session = Depends(get_session),
+    historic: Optional[bool] = False,
+    only_forecast_values: Optional[bool] = False,
+    forecast_horizon_minutes: Optional[int] = None,
+    user: Auth0User = Security(get_user()),
+) -> Union[Forecast, List[ForecastValue]]:
+    get_forecasts_for_a_specific_gsp(
+        request=request,
+        gsp_id=gsp_id,
+        session=session,
+        historic=historic,
+        only_forecast_values=only_forecast_values,
+        forecast_horizon_minutes=forecast_horizon_minutes,
+        user=user,
+    )
+    
+
+
+@router.get(
+    "/{gsp_id}/forecast",
     response_model=Union[Forecast, List[ForecastValue]],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
@@ -203,11 +230,32 @@ def get_truths_for_all_gsps(
     logger.info(f"Get PV Live estimates values for all gsp id and regime {regime} for user {user}")
 
     return get_truth_values_for_all_gsps_from_database(session=session, regime=regime)
+@router.get(
+    "/pvlive/{gsp_id}",
+    response_model=List[GSPYield],
+    dependencies=[Depends(get_auth_implicit_scheme())],
+    include_in_schema=False,
+)
+@cache_response
+def get_truths_for_a_specific_gsp_old_route(
+    request: Request,
+    gsp_id: int,
+    regime: Optional[str] = None,
+    session: Session = Depends(get_session),
+    user: Auth0User = Security(get_user()),
+) -> List[GSPYield]:
+    get_forecasts_for_a_specific_gsp(
+        request=request,
+        gsp_id=gsp_id,
+        regime=regime,
+        session=session,
+        user=user,
+    )
 
 
 # corresponds to API route /v0/solar/GB/gsp/pvlive/{gsp_id}
 @router.get(
-    "/pvlive/{gsp_id}",
+    "/{gsp_id}/pvlive",
     response_model=List[GSPYield],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
