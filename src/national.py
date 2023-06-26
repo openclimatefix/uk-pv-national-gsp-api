@@ -43,7 +43,7 @@ def get_national_forecast(
 
     This route aggregrates data from all GSP forecasts in Great Britain,
     creating a national, 8-hour,
-    solar generation forecast in 30-minute intervals.
+    solar generation forecast in 30-minute intervals.  
     The _forecast_horizon_minutes_ parameter allows
     a user to query for a forecast closer than 8 hours to the target time.
 
@@ -71,9 +71,6 @@ def get_national_forecast(
             f"Now adjusting by at most {adjust_limit} MW"
         )
     national_forecast_values = [f.adjust(limit=adjust_limit) for f in national_forecast_values]
-    national_forecast_values.normalize()
-
-    logger.debug("Normalized forecast.")
 
     return national_forecast_values
 
