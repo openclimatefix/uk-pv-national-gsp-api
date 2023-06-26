@@ -47,12 +47,12 @@ def get_gsp_boundaries(
 ) -> dict:
     """### Get one GSP boundary for a specific GSP
 
-    This route is still under construction...
+    Returns an object with the boundaries for the GSPs.
 
-    [This is a wrapper around the dataset]
-    (https://data.nationalgrideso.com/systemgis-boundaries-for-gb-grid-supply-points).
+    [This is a wrapper around the dataset] (https://data.nationalgrideso.com/systemgis-boundaries-for-gb-grid-supply-points).
 
-    Returns an object that is in EPSG:4326 (ie. latitude & longitude coordinates).
+    The object is in EPSG:4326 (ie. latitude & longitude
+    coordinates).
 
     """
 
@@ -79,18 +79,14 @@ def get_systems(
 ) -> List[Location]:
     """### Get system details for a single GSP or all GSPs
 
-    Returns an object with the system details of a given GSP using the
-    gsp_id parameter.
+    Returns an object with system details of a given GSP using the
+    _gsp_id_ query parameter.
 
-    Provide one gsp_id to return system details for that GSP, otherwise details for ALL
-    grid systems will be returned.
-
-    Please see __Location__ schema for metadata details.
+    Provide one gsp_id to return system details for that GSP, otherwise
+    details for all supply points are provided.
 
     #### Parameters
-    - gsp_id: gsp_id of the requested system
-    - NB: If no parameter is entered, system details for all 300+ GSPs are returned.
-
+    - **gsp_id**: gsp_id of the requested system
     """
 
     logger.info(f"Get GSP systems for {gsp_id=} for {user}")
