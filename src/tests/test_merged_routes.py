@@ -10,7 +10,6 @@ from database import get_session
 from main import app
 
 
-
 @freeze_time("2022-06-01")
 def test_read_forecast_values_gsp(db_session, api_client):
     """Check main solar/GB/gsp/{gsp_id}/forecast route works"""

@@ -133,10 +133,10 @@ def get_forecasts_for_a_specific_gsp(
 
     logger.info(f"Get forecasts for gsp id {gsp_id} forecast of forecast with only values.")
     logger.info(f"This is for user {user}")
-    
+
     if gsp_id > GSP_TOTAL:
         return Response(None, status.HTTP_204_NO_CONTENT)
-    
+
     forecast_values_for_specific_gsp = get_latest_forecast_values_for_a_specific_gsp_from_database(
         session=session,
         gsp_id=gsp_id,

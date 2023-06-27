@@ -31,7 +31,7 @@ def test_read_latest_one_gsp(db_session, api_client):
     response = api_client.get("/v0/solar/GB/gsp/1/forecast")
 
     assert response.status_code == 200
-  
+
     _ = [ForecastValue(**f) for f in response.json()]
 
 
