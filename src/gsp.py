@@ -2,7 +2,8 @@
 from typing import List, Optional, Union
 
 import structlog
-from fastapi import APIRouter, Depends, Request, Security
+from fastapi import APIRouter, Depends, Request, Security, status
+from fastapi.responses import Response
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.models import (
     Forecast,
@@ -24,6 +25,9 @@ from database import (
     get_truth_values_for_all_gsps_from_database,
     save_api_call_to_db,
 )
+
+GSP_TOTAL = 317
+
 
 logger = structlog.stdlib.get_logger()
 
@@ -74,6 +78,7 @@ def get_all_available_forecasts(
     response_model=Union[Forecast, List[ForecastValue]],
     dependencies=[Depends(get_auth_implicit_scheme())],
     include_in_schema=False,
+    responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
 @cache_response
 def get_forecasts_for_a_specific_gsp_old_route(
@@ -96,6 +101,7 @@ def get_forecasts_for_a_specific_gsp_old_route(
     "/{gsp_id}/forecast",
     response_model=Union[Forecast, List[ForecastValue]],
     dependencies=[Depends(get_auth_implicit_scheme())],
+    responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
 @cache_response
 def get_forecasts_for_a_specific_gsp(
@@ -127,7 +133,10 @@ def get_forecasts_for_a_specific_gsp(
 
     logger.info(f"Get forecasts for gsp id {gsp_id} forecast of forecast with only values.")
     logger.info(f"This is for user {user}")
-
+    
+    if gsp_id > GSP_TOTAL:
+        return Response(None, status.HTTP_204_NO_CONTENT)
+    
     forecast_values_for_specific_gsp = get_latest_forecast_values_for_a_specific_gsp_from_database(
         session=session,
         gsp_id=gsp_id,
@@ -177,6 +186,7 @@ def get_truths_for_all_gsps(
     response_model=List[GSPYield],
     dependencies=[Depends(get_auth_implicit_scheme())],
     include_in_schema=False,
+    responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
 @cache_response
 def get_truths_for_a_specific_gsp_old_route(
@@ -200,6 +210,7 @@ def get_truths_for_a_specific_gsp_old_route(
     "/{gsp_id}/pvlive",
     response_model=List[GSPYield],
     dependencies=[Depends(get_auth_implicit_scheme())],
+    responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
 @cache_response
 def get_truths_for_a_specific_gsp(
@@ -229,6 +240,9 @@ def get_truths_for_a_specific_gsp(
     logger.info(
         f"Get PV Live estimates values for gsp id {gsp_id} " f"and regime {regime} for user {user}"
     )
+
+    if gsp_id > GSP_TOTAL:
+        return Response(None, status.HTTP_204_NO_CONTENT)
 
     return get_truth_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=gsp_id, regime=regime

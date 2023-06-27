@@ -34,7 +34,7 @@ def cache_response(func):
         nonlocal response
         nonlocal last_updated
 
-        # get teh variables that go into the route
+        # get the variables that go into the route
         # we don't want to use the cache for different variables
         route_variables = kwargs.copy()
 

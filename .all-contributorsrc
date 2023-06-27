@@ -94,13 +94,23 @@
       "contributions": [
         "review"
       ]
+    },
+    {
+      "login": "petermnhull",
+      "name": "Peter Hull",
+      "avatar_url": "https://avatars.githubusercontent.com/u/56369394?v=4",
+      "profile": "http://petermnhull.github.io",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
-  "projectName": "nowcasting_api",
+  "projectName": "uk-pv-national-gsp-api",
   "projectOwner": "openclimatefix",
   "repoType": "github",
   "repoHost": "https://github.com",
   "skipCi": true,
-  "commitConvention": "angular"
+  "commitConvention": "angular",
+  "commitType": "docs"
 }

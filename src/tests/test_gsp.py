@@ -60,6 +60,30 @@ def test_read_latest_all_gsp(db_session, api_client):
     assert len(r.forecasts[0].forecast_values) == 112
 
 
+def test_read_latest_gsp_id_greater_than_total(db_session, api_client):
+    """Check that request with gsp_id>=318 returns 204"""
+
+    gsp_id = 318
+    response = api_client.get(f"/v0/solar/GB/gsp/forecast/{gsp_id}/?historic=False&normalize=True")
+
+    assert response.status_code == 204
+
+
+def test_read_latest_gsp_id_equal_to_total(db_session, api_client):
+    """Check that request with gsp_id<318 returns 200"""
+
+    forecasts = make_fake_forecasts(gsp_ids=[317], session=db_session)
+    db_session.add_all(forecasts)
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = api_client.get("/v0/solar/GB/gsp/forecast/317")
+
+    assert response.status_code == 200
+
+    _ = Forecast(**response.json())
+
+
 def test_read_latest_all_gsp_normalized(db_session, api_client):
     """Check main solar/GB/gsp/forecast/all normalized route works"""
 
@@ -147,6 +171,45 @@ def test_read_truths_for_a_specific_gsp(db_session, api_client):
 
     r_json = response.json()
     assert len(r_json) == 3
+
+    _ = [GSPYield(**gsp_yield) for gsp_yield in r_json]
+
+
+def test_read_pvlive_for_gsp_id_over_total(db_session, api_client):
+    """Check solar/GB/gsp/pvlive returns 204 when gsp_id over total"""
+
+    gsp_id = 318
+    response = api_client.get(f"/v0/solar/GB/gsp/pvlive/{gsp_id}")
+
+    assert response.status_code == 204
+
+
+@freeze_time("2022-01-01")
+def test_read_truths_for_gsp_id_less_than_total(db_session, api_client):
+    """Check solar/GB/gsp/pvlive returns 200 when gsp_id under total"""
+
+    gsp_yield = GSPYield(datetime_utc=datetime(2022, 1, 2), solar_generation_kw=1)
+    gsp_yield_sql = gsp_yield.to_orm()
+
+    gsp_id = 317
+    gsp_sql: LocationSQL = Location(
+        gsp_id=gsp_id, label="GSP_317", status_interval_minutes=1
+    ).to_orm()
+
+    # add pv system to yield object
+    gsp_yield_sql.location = gsp_sql
+
+    # add to database
+    db_session.add_all([gsp_yield_sql, gsp_sql])
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = api_client.get(f"/v0/solar/GB/gsp/pvlive/{gsp_id}")
+
+    assert response.status_code == 200
+
+    r_json = response.json()
+    assert len(r_json) == 1
 
     _ = [GSPYield(**gsp_yield) for gsp_yield in r_json]
 
