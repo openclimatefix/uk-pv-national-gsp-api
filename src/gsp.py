@@ -80,8 +80,6 @@ def get_forecasts_for_a_specific_gsp_old_route(
     request: Request,
     gsp_id: int,
     session: Session = Depends(get_session),
-    historic: Optional[bool] = False,
-    only_forecast_values: Optional[bool] = False,
     forecast_horizon_minutes: Optional[int] = None,
     user: Auth0User = Security(get_user()),
 ) -> Union[Forecast, List[ForecastValue]]:
@@ -89,8 +87,6 @@ def get_forecasts_for_a_specific_gsp_old_route(
         request=request,
         gsp_id=gsp_id,
         session=session,
-        historic=historic,
-        only_forecast_values=only_forecast_values,
         forecast_horizon_minutes=forecast_horizon_minutes,
         user=user,
     )
@@ -162,15 +158,13 @@ def get_truths_for_all_gsps(
     truth values from PV_Live for all GSPs.
 
     Setting the _regime_ parameter to _day-after_ includes
-    the previous day's truth values for the GSPs. The default is _in-day_.
+    the previous day's truth values for the GSPs. The default is _in-day__.
 
-    If regime is not specified, the most up-to-date GSP yields are returned.
+    If regime is not specified, the most up-to-date GSP yield is returned.
 
     #### Parameters
-    - **gsp_id**: gsp_id of the requested forecast
     - **regime**: can choose __in-day__ or __day-after__
     """
-
     save_api_call_to_db(session=session, user=user, request=request)
 
     logger.info(f"Get PV Live estimates values for all gsp id and regime {regime} for user {user}")
@@ -178,9 +172,32 @@ def get_truths_for_all_gsps(
     return get_truth_values_for_all_gsps_from_database(session=session, regime=regime)
 
 
-# corresponds to API route /v0/solar/GB/gsp/pvlive/{gsp_id}
 @router.get(
     "/pvlive/{gsp_id}",
+    response_model=List[GSPYield],
+    dependencies=[Depends(get_auth_implicit_scheme())],
+    include_in_schema=False,
+)
+@cache_response
+def get_truths_for_a_specific_gsp_old_route(
+    request: Request,
+    gsp_id: int,
+    regime: Optional[str] = None,
+    session: Session = Depends(get_session),
+    user: Auth0User = Security(get_user()),
+) -> List[GSPYield]:
+    get_forecasts_for_a_specific_gsp(
+        request=request,
+        gsp_id=gsp_id,
+        regime=regime,
+        session=session,
+        user=user,
+    )
+
+
+# corresponds to API route /v0/solar/GB/gsp/pvlive/{gsp_id}
+@router.get(
+    "/{gsp_id}/pvlive",
     response_model=List[GSPYield],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
@@ -194,29 +211,17 @@ def get_truths_for_a_specific_gsp(
 ) -> List[GSPYield]:
     """### Get PV_Live values for a specific GSP for yesterday and today
 
-    The return object is a series of real-time solar energy generation readings from PV_Live.
-    PV_Live is Sheffield's API that reports real-time PV data. These readings are updated throughout
-    the day, reporting the most accurate finalized readings the following day at 10:00 UTC.
-    See the __GSPYield__ schema for metadata details.
+    The return object is a series of real-time solar energy generation
+    from PV_Live for a single GSP.
 
-    Check out [Sheffield Solar PV_Live](https://www.solarsheffield.ac.uk/pvlive/) for
-    more details.
+    Setting the __regime__ parameter to __day-after__ includes
+    the previous day's truth values for the GSPs. The default is __in-day__.
 
-    The OCF Forecast is trying to predict the PV_Live 'day-after' value.
+    If regime is not specified, the most up-to-date GSP yield is returned.
 
-    This route has the __regime__ parameter that lets you look at values __in-day__ or
-    __day-after__(most accurate reading). __Day-after__ values are updated __in-day__ values.
-    __In-day__ gives you all the readings from the day before up to the most recent
-    reported GSP yield. __Day_after__ reports all the readings from the previous day.
-
-    For example, a day-after regime request made on 08/09/2022 returns updated GSP yield
-    for 07/09/2022. The 08/09/2022 __day-after__ values then become available at 10:00 UTC
-    on 09/09/2022.
-
-    If regime is not specificied, the most up-to-date GSP yield is returned.
     #### Parameters
-    - gsp_id: gsp_id of the requested forecast
-    - regime: can choose __in-day__ or __day-after__
+    - **gsp_id**: gsp_id of the requested forecast
+    - **regime**: can choose __in-day__ or __day-after__
     """
 
     save_api_call_to_db(session=session, user=user, request=request)
