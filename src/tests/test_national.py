@@ -3,12 +3,7 @@ from datetime import datetime, timezone
 
 from freezegun import freeze_time
 from nowcasting_datamodel.fake import make_fake_national_forecast
-from nowcasting_datamodel.models import (
-    ForecastValue,
-    GSPYield,
-    Location,
-    LocationSQL,
-)
+from nowcasting_datamodel.models import ForecastValue, GSPYield, Location, LocationSQL
 from nowcasting_datamodel.read.read import get_model
 from nowcasting_datamodel.save.update import update_all_forecast_latest
 
