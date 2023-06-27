@@ -12,41 +12,22 @@ from main import app
 
 @freeze_time("2022-01-01")
 def test_read_one_gsp(db_session, api_client):
-    """Check main solar/GB/gsp/forecast/{gsp_id} route works"""
+    """Check main solar/GB/gsp/{gsp_id}/forecast route works"""
 
     forecasts = make_fake_forecasts(gsp_ids=list(range(0, 10)), session=db_session)
     db_session.add_all(forecasts)
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = api_client.get("/v0/solar/GB/gsp/forecast/1")
+    response = api_client.get("/v0/solar/GB/gsp/1/forecast")
     assert response.status_code == 200
 
-    _ = Forecast(**response.json())
-
-
-def test_read_one_gsp_historic(db_session, api_client):
-    """Check main solar/GB/gsp/forecast/{gsp_id} route works with history"""
-
-    forecasts = make_fake_forecasts(
-        gsp_ids=list(range(0, 10)),
-        session=db_session,
-        t0_datetime_utc=datetime.now(tz=timezone.utc),
-    )
-    db_session.add_all(forecasts)
-    update_all_forecast_latest(forecasts=forecasts, session=db_session)
-
-    app.dependency_overrides[get_session] = lambda: db_session
-
-    response = api_client.get("/v0/solar/GB/gsp/forecast/2?historic=True")
-    assert response.status_code == 200
-
-    _ = Forecast(**response.json())
+    _ = ForecastValue(**response.json())
 
 
 @freeze_time("2022-06-01")
-def test_read_only_forecast_values_gsp(db_session, api_client):
-    """Check main solar/GB/gsp/forecast/{gsp_id} route works"""
+def test_read_forecast_values_gsp(db_session, api_client):
+    """Check main solar/GB/gsp/{gsp_id}/forecast route works"""
 
     forecast_value_1_sql = ForecastValueLatestSQL(
         target_time=datetime(2023, 6, 2), expected_power_generation_megawatts=1, gsp_id=1
@@ -72,7 +53,7 @@ def test_read_only_forecast_values_gsp(db_session, api_client):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = api_client.get("/v0/solar/GB/gsp/forecast/1?only_forecast_values=true")
+    response = api_client.get("/v0/solar/GB/gsp/1/forecast")
     assert response.status_code == 200
 
     r_json = response.json()
