@@ -16,6 +16,7 @@ def test_read_one_gsp(db_session, api_client):
 
     forecasts = make_fake_forecasts(gsp_ids=list(range(0, 10)), session=db_session, add_latest=True)
     db_session.add_all(forecasts)
+    db_session.commit()
 
     app.dependency_overrides[get_session] = lambda: db_session
 
