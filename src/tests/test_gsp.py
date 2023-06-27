@@ -72,7 +72,7 @@ def test_read_latest_gsp_id_greater_than_total(db_session, api_client):
 def test_read_latest_gsp_id_equal_to_total(db_session, api_client):
     """Check that request with gsp_id<318 returns 200"""
 
-    forecasts = make_fake_forecasts(gsp_ids=[317], session=db_session)
+    forecasts = make_fake_forecasts(gsp_ids=[317], session=db_session, add_latest=True)
     db_session.add_all(forecasts)
 
     app.dependency_overrides[get_session] = lambda: db_session
