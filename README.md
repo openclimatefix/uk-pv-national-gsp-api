@@ -92,11 +92,11 @@ Deployment of this service is now done through terraform cloud.
       N1(national/forecast) --> Q1;
       N4[ForecastValueLatest];
       Q1{forecast horizon <br> minutes not None}
-      Q1-->|yes| N5[ForecastValueSevenDaysSQL];
+      Q1-->|yes| N5[ForecastValueSevenDays];
       Q1-->|no| N4;
 
       NP1(national/pvlive)-->NP2;
-      NP2[GSPYieldSQL];
+      NP2[GSPYield];
 ```
 
 ### GSP
@@ -107,14 +107,14 @@ Deployment of this service is now done through terraform cloud.
 
       G3(gsp/gsp_id/forecast) -->Q4;
       Q4{forecast horizon <br> minutes not None}
-      Q4-->|yes| G7[ForecastValueSevenDaysSQL];
+      Q4-->|yes| G7[ForecastValueSevenDays];
       Q4-->|no| G6[ForecastValueLatest];
 
       GP1(gsp/pvlive/all)-->GP2;
       GP2[LocationWithGSPYields];
 
       GP3(gsp/gsp_id/pvlive)-->GP4;
-      GP4[GSPYieldSQL];
+      GP4[GSPYield];
 ```
 
 ### Extras
@@ -125,7 +125,7 @@ Deployment of this service is now done through terraform cloud.
       G2[Status];
 
       G3(gsp)-->G4
-      G4[LocationSQL]
+      G4[Location]
 
 ```
 
