@@ -3,7 +3,12 @@ from datetime import datetime, timezone
 
 from freezegun import freeze_time
 from nowcasting_datamodel.fake import make_fake_national_forecast
-from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield, Location, LocationSQL
+from nowcasting_datamodel.models import (
+    ForecastValue,
+    GSPYield,
+    Location,
+    LocationSQL,
+)
 from nowcasting_datamodel.read.read import get_model
 from nowcasting_datamodel.save.update import update_all_forecast_latest
 
@@ -22,7 +27,9 @@ def test_read_latest_national_values(db_session, api_client):
     forecast.model = model
 
     db_session.add(forecast)
-    update_all_forecast_latest(forecasts=[forecast], session=db_session, model_name="cnn")
+    update_all_forecast_latest(
+        forecasts=[forecast], session=db_session, model_name="cnn"
+    )
 
     app.dependency_overrides[get_session] = lambda: db_session
 

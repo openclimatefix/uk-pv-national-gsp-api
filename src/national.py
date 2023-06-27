@@ -11,7 +11,6 @@ from sqlalchemy.orm.session import Session
 from auth_utils import get_auth_implicit_scheme, get_user
 from cache import cache_response
 from database import (
-    get_forecasts_for_a_specific_gsp_from_database,
     get_latest_forecast_values_for_a_specific_gsp_from_database,
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
@@ -65,15 +64,19 @@ def get_national_forecast(
     save_api_call_to_db(session=session, user=user, request=request)
 
     logger.debug("Getting forecast.")
-    national_forecast_values = get_latest_forecast_values_for_a_specific_gsp_from_database(
-        session=session, gsp_id=0, forecast_horizon_minutes=forecast_horizon_minutes
+    national_forecast_values = (
+        get_latest_forecast_values_for_a_specific_gsp_from_database(
+            session=session, gsp_id=0, forecast_horizon_minutes=forecast_horizon_minutes
+        )
     )
 
     logger.debug(
         f"Got national forecasts with {len(national_forecast_values)} forecast values. "
         f"Now adjusting by at most {adjust_limit} MW"
     )
-    national_forecast_values = [f.adjust(limit=adjust_limit) for f in national_forecast_values]
+    national_forecast_values = [
+        f.adjust(limit=adjust_limit) for f in national_forecast_values
+    ]
 
     return national_forecast_values
 
@@ -108,7 +111,9 @@ def get_national_pvlive(
     - **regime**: can choose __in-day__ or __day-after__
     """
 
-    logger.info(f"Get national PV Live estimates values " f"for regime {regime} for  {user}")
+    logger.info(
+        f"Get national PV Live estimates values " f"for regime {regime} for  {user}"
+    )
 
     save_api_call_to_db(session=session, user=user, request=request)
 
