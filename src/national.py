@@ -36,8 +36,6 @@ NationalYield = GSPYield
 def get_national_forecast(
     request: Request,
     session: Session = Depends(get_session),
-    historic: Optional[bool] = False,
-    only_forecast_values: Optional[bool] = False,
     forecast_horizon_minutes: Optional[int] = None,
     user: Auth0User = Security(get_user()),
 ) -> Union[Forecast, List[ForecastValue]]:
@@ -62,35 +60,19 @@ def get_national_forecast(
 
     save_api_call_to_db(session=session, user=user, request=request)
 
-    if not only_forecast_values:
-        logger.debug("Getting forecast.")
-        full_forecast = get_forecasts_for_a_specific_gsp_from_database(
-            session=session,
-            gsp_id=0,
-            historic=historic,
-        )
+    logger.debug("Get national forecasts")
 
-        logger.debug(f"Got forecast Now adjusting by at most {adjust_limit} MW and normalizing.")
-        full_forecast.adjust(limit=adjust_limit)
-        full_forecast.normalize()
+    save_api_call_to_db(session=session, user=user, request=request)
 
-        logger.debug("Normalized forecast.")
+    logger.debug("Getting forecast.")
+    national_forecast_values = get_latest_forecast_values_for_a_specific_gsp_from_database(
+        session=session, gsp_id=0, forecast_horizon_minutes=forecast_horizon_minutes
+    )
 
-        logger.debug(
-            f"Got national forecasts with {len(full_forecast.forecast_values)} forecast values"
-        )
-        return full_forecast
-
-    else:
-        national_forecast_values = get_latest_forecast_values_for_a_specific_gsp_from_database(
-            session=session, gsp_id=0, forecast_horizon_minutes=forecast_horizon_minutes
-        )
-
-        logger.debug(
-            f"Got national forecasts with {len(national_forecast_values)} forecast values. "
-            f"Now adjusting by at most {adjust_limit} MW"
-        )
-
+    logger.debug(
+        f"Got national forecasts with {len(national_forecast_values)} forecast values. "
+        f"Now adjusting by at most {adjust_limit} MW"
+    )
     national_forecast_values = [f.adjust(limit=adjust_limit) for f in national_forecast_values]
 
     return national_forecast_values
