@@ -27,9 +27,7 @@ def test_read_latest_national_values(db_session, api_client):
     forecast.model = model
 
     db_session.add(forecast)
-    update_all_forecast_latest(
-        forecasts=[forecast], session=db_session, model_name="cnn"
-    )
+    update_all_forecast_latest(forecasts=[forecast], session=db_session, model_name="cnn")
 
     app.dependency_overrides[get_session] = lambda: db_session
 
