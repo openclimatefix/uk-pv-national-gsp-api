@@ -268,9 +268,7 @@ def custom_openapi():
         },
         routes=app.routes,
     )
-    openapi_schema["info"]["x-logo"] = {
-        "url": "/QUARTZSOLAR_LOGO_SECONDARY_BLACK_1.png"
-    }
+    openapi_schema["info"]["x-logo"] = {"url": "/QUARTZSOLAR_LOGO_SECONDARY_BLACK_1.png"}
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
