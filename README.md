@@ -90,45 +90,31 @@ Deployment of this service is now done through terraform cloud.
 ```mermaid
   graph TD;
       N1(national/forecast) --> Q1;
-      Q1{only forecast <br> values?} --> |no| N2
-      N2[Forecast] --> Q2;
-      Q1-->|yes|Q3;
-      Q2{historic?}
-      Q2-->|no| N3[ForecastValue];
-      Q2-->|yes| N4[ForecastValueLatest];
-      Q3{forecast horizon <br> minutes not None}
-      Q3-->|yes| N5[ForecastValueSevenDaysSQL];
-      Q3-->|no| N4;
+      N4[ForecastValueLatest];
+      Q1{forecast horizon <br> minutes not None}
+      Q1-->|yes| N5[ForecastValueSevenDays];
+      Q1-->|no| N4;
 
       NP1(national/pvlive)-->NP2;
-      NP2[GSPYieldSQL];
+      NP2[GSPYield];
 ```
 
 ### GSP
 ```mermaid
   graph TD;
-      G1(gsp/forecast/all) -->G2;
-      G2[Forecast] -->Q1;
-      Q1{historic}
-      Q1-->|no| N3[ForecastValue];
-      Q1-->|yes| N4[ForecastValueLatest];
+      G1(gsp/forecast/all);
+      G1--> N3[ManyForecasts];
 
-      G3(gsp/forecast/gsp_id) -->Q2;
-      Q2{only forecast values} --> |no| G4
-      Q2--> |yes| Q4
-      G4[Forecast] --> Q3;
-      Q3{historic}
-      Q3-->|no| G5[ForecastValue];
-      Q3-->|yes| G6[ForecastValueLatest];
+      G3(gsp/gsp_id/forecast) -->Q4;
       Q4{forecast horizon <br> minutes not None}
-      Q4-->|yes| G7[ForecastValueSevenDaysSQL];
-      Q4-->|no| G6;
+      Q4-->|yes| G7[ForecastValueSevenDays];
+      Q4-->|no| G6[ForecastValueLatest];
 
       GP1(gsp/pvlive/all)-->GP2;
-      GP2[GSPYieldSQL];
+      GP2[LocationWithGSPYields];
 
-      GP3(gsp/pvlive/gsp_id)-->GP4;
-      GP4[GSPYieldSQL];
+      GP3(gsp/gsp_id/pvlive)-->GP4;
+      GP4[GSPYield];
 ```
 
 ### Extras
@@ -139,7 +125,7 @@ Deployment of this service is now done through terraform cloud.
       G2[Status];
 
       G3(gsp)-->G4
-      G4[LocationSQL]
+      G4[Location]
 
 ```
 
