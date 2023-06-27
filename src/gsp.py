@@ -83,7 +83,7 @@ def get_forecasts_for_a_specific_gsp_old_route(
     forecast_horizon_minutes: Optional[int] = None,
     user: Auth0User = Security(get_user()),
 ) -> Union[Forecast, List[ForecastValue]]:
-    get_forecasts_for_a_specific_gsp(
+    return get_forecasts_for_a_specific_gsp(
         request=request,
         gsp_id=gsp_id,
         session=session,
@@ -186,7 +186,7 @@ def get_truths_for_a_specific_gsp_old_route(
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
 ) -> List[GSPYield]:
-    get_forecasts_for_a_specific_gsp(
+    return get_truths_for_a_specific_gsp(
         request=request,
         gsp_id=gsp_id,
         regime=regime,

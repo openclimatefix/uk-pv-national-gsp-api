@@ -14,7 +14,7 @@ from main import app
 def test_read_one_gsp(db_session, api_client):
     """Check main solar/GB/gsp/{gsp_id}/forecast route works"""
 
-    forecasts = make_fake_forecasts(gsp_ids=list(range(0, 10)), session=db_session)
+    forecasts = make_fake_forecasts(gsp_ids=list(range(0, 10)), session=db_session, add_latest=True)
     db_session.add_all(forecasts)
 
     app.dependency_overrides[get_session] = lambda: db_session
@@ -22,7 +22,7 @@ def test_read_one_gsp(db_session, api_client):
     response = api_client.get("/v0/solar/GB/gsp/1/forecast")
     assert response.status_code == 200
 
-    _ = ForecastValue(**response.json())
+    _ = [ForecastValue(**f) for f in response.json()]
 
 
 @freeze_time("2022-06-01")

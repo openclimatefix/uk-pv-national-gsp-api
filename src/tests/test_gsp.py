@@ -22,8 +22,9 @@ from main import app
 def test_read_latest_one_gsp(db_session, api_client):
     """Check main solar/GB/gsp/{gsp_id}/forecast route works"""
 
-    forecasts = make_fake_forecasts(gsp_ids=list(range(0, 10)), session=db_session)
+    forecasts = make_fake_forecasts(gsp_ids=list(range(0, 2)), session=db_session, add_latest=True)
     db_session.add_all(forecasts)
+    db_session.commit()
 
     app.dependency_overrides[get_session] = lambda: db_session
 
