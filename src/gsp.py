@@ -34,7 +34,7 @@ NationalYield = GSPYield
 
 # corresponds to route /v0/solar/GB/gsp/forecast/all
 @router.get(
-    "/forecast/all/",
+    "/forecast/all",
     response_model=ManyForecasts,
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
@@ -45,24 +45,15 @@ def get_all_available_forecasts(
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
 ) -> ManyForecasts:
-    """### Get the latest information for ALL available forecasts for ALL GSPs
+    """### Get the latest information for all available forecasts for all GSPs
 
-    The return object contains a forecast object with system details for all National Grid GSPs.
-
-    See __Forecast__ and __ForecastValue__ schema for metadata details.
+    The return object contains a forecast object with system details and forecast values for all GSPs.
 
     This request may take a longer time to load because a lot of data is being pulled from the
     database.
 
-    This route returns forecasts objects from all available GSPs with an option to normalize
-    the forecasts by GSP installed capacity (installedCapacityMw). Normalization returns a
-    decimal value equal to _expectedPowerGenerationMegawatts_ divided by
-    __installedCapacityMw__ for the GSP.
-
-    There is also the option to pull forecast history from yesterday.
-
     #### Parameters
-    - historic: boolean => TRUE returns the forecasts of yesterday along with today's
+    - **historic**: boolean value set to True returns the forecasts of yesterday along with today's
     forecasts for all GSPs
 
     """
@@ -78,13 +69,15 @@ def get_all_available_forecasts(
     return forecasts
 
 
+
 @router.get(
     "/forecast/{gsp_id}",
     response_model=Union[Forecast, List[ForecastValue]],
     dependencies=[Depends(get_auth_implicit_scheme())],
+    include_in_schema=False,
 )
 @cache_response
-def get_forecasts_for_a_specific_gsp(
+def get_forecasts_for_a_specific_gsp_old_route(
     request: Request,
     gsp_id: int,
     session: Session = Depends(get_session),
@@ -93,35 +86,45 @@ def get_forecasts_for_a_specific_gsp(
     forecast_horizon_minutes: Optional[int] = None,
     user: Auth0User = Security(get_user()),
 ) -> Union[Forecast, List[ForecastValue]]:
-    """### This route comes with the following options:
+    get_forecasts_for_a_specific_gsp(
+        request=request,
+        gsp_id=gsp_id,
+        session=session,
+        historic=historic,
+        only_forecast_values=only_forecast_values,
+        forecast_horizon_minutes=forecast_horizon_minutes,
+        user=user,
+    )
 
-    1. Get __recent solar forecast__ for a specific GSP for today and yesterday
-    with system details.
-        - The return object is a solar forecast with GSP system details.
-        -The forecast object is returned with expected megawatt generation at
-        a specific GSP
-        for the upcoming 8 hours at every 30-minute interval (targetTime).
-        - Set __only_forecast_values__ ==> FALSE
-        - Setting __historic__ parameter to TRUE returns an object with data
-        from yesterday and today
-        for the given GSP
+@router.get(
+    "/{gsp_id}/forecast",
+    response_model=Union[Forecast, List[ForecastValue]],
+    dependencies=[Depends(get_auth_implicit_scheme())],
+)
+@cache_response
+def get_forecasts_for_a_specific_gsp(
+    request: Request,
+    gsp_id: int,
+    session: Session = Depends(get_session),
+    forecast_horizon_minutes: Optional[int] = None,
+    user: Auth0User = Security(get_user()),
+) -> Union[Forecast, List[ForecastValue]]:
+    """### Get recent forecast values for a specific GSP
+   
+    Returns an 8-hour solar generation forecast for a specific GSP with option
+    to change the forecast horizon. 
+    
+    The _forecast_horizon_minutes_ parameter allows
+    a user to query for a forecast closer than 8 hours to the target time.
 
-    2. Get __ONLY__ forecast values for solar forecast for a specific GSP.
-        - Set __only_forecast_values__ to TRUE
-        - Setting a __forecast_horizon_minutes__ parameter retrieves the latest forecast
-        a given set of minutes before the target time.
-        - Return object is a simplified forecast object with __targetTimes__ and
-        __expectedPowerGenerationMegawatts__ at 30-minute intervals for the given GSP.
-        - NB: __historic__ parameter __will not__ work when __only_forecast_values__= TRUE
-
-    Please see the __Forecast__ and __ForecastValue__ schema below for full metadata details.
+    For example, if the target time is 10am today, the forecast made at 2am
+    today is the 8-hour forecast for 10am, and the forecast made at 6am for
+    10am today is the 4-hour forecast for 10am.
 
     #### Parameters
-    - gsp_id: gsp_id of the desired forecast
-    - historic: boolean => TRUE returns yesterday's forecasts in addition to today's forecast
-    - only_forecast_values => TRUE returns solar forecast for the GSP without system details
-    - forecast_horizon_minutes: optional forecast horizon in minutes (ex. 35 returns
-    the latest forecast made 35 minutes before the target time)
+    - **gsp_id**: **gsp_id** of the desired forecast
+    - **forecast_horizon_minutes**: optional forecast horizon in minutes (ex. 60
+    returns the latest forecast made 60 minutes before the target time)
     """
 
     save_api_call_to_db(session=session, user=user, request=request)
@@ -129,33 +132,15 @@ def get_forecasts_for_a_specific_gsp(
     logger.info(f"Get forecasts for gsp id {gsp_id} forecast of forecast with only values.")
     logger.info(f"This is for user {user}")
 
-    if only_forecast_values is False:
-        logger.debug("Getting forecast.")
-        full_forecast = get_forecasts_for_a_specific_gsp_from_database(
-            session=session,
-            gsp_id=gsp_id,
-            historic=historic,
-        )
-
-        logger.debug("Got forecast.")
-
-        full_forecast.normalize()
-
-        logger.debug(f'{"Normalized forecast."}')
-        return full_forecast
-
-    else:
-        logger.debug("Getting forecast values only.")
-
-        forecast_only = get_latest_forecast_values_for_a_specific_gsp_from_database(
+    forecast_values_for_specific_gsp = get_latest_forecast_values_for_a_specific_gsp_from_database(
             session=session,
             gsp_id=gsp_id,
             forecast_horizon_minutes=forecast_horizon_minutes,
         )
 
-        logger.debug("Got forecast values only!!!")
+    logger.debug("Got forecast values for a specific gsp.")
 
-        return forecast_only
+    return forecast_values_for_specific_gsp
 
 
 # corresponds to API route /v0/solar/GB/gsp/pvlive/all
@@ -171,31 +156,19 @@ def get_truths_for_all_gsps(
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
 ) -> List[LocationWithGSPYields]:
-    """### Get PV_Live values for a all GSPs for yesterday and today
+    """### Get PV_Live values for all GSPs for yesterday and/or today
 
-    The return object is a series of real-time solar energy generation readings from PV_Live.
-    PV_Live is Sheffield's API that reports real-time PV data. These readings are updated throughout
-    the day, reporting the most accurate finalized readings the following day at 10:00 UTC.
-    See the __GSPYield__ schema for metadata details.
+    The return object is a series of real-time PV generation estimates or
+    truth values from PV_Live for all GSPs.
 
-    Check out [Sheffield Solar PV_Live](https://www.solarsheffield.ac.uk/pvlive/) for
-    more details.
+    Setting the _regime_ parameter to _day-after_ includes
+    the previous day's truth values for the GSPs. The default is _in-day_.
 
-    The OCF Forecast is trying to predict the PV_Live 'day-after' value.
+    If regime is not specified, the most up-to-date GSP yields are returned.
 
-    This route has the __regime__ parameter that lets you look at values __in-day__ or
-    __day-after__(most accurate reading). __Day-after__ values are updated __in-day__ values.
-    __In-day__ gives you all the readings from the day before up to the most recent
-    reported GSP yield. __Day_after__ reports all the readings from the previous day.
-
-    For example, a day-after regime request made on 08/09/2022 returns updated GSP yield
-    for 07/09/2022. The 08/09/2022 __day-after__ values then become available at 10:00 UTC
-    on 09/09/2022.
-
-    If regime is not specificied, the most up-to-date GSP yield is returned.
     #### Parameters
-    - gsp_id: gsp_id of the requested forecast
-    - regime: can choose __in-day__ or __day-after__
+    - **gsp_id**: gsp_id of the requested forecast
+    - **regime**: can choose __in-day__ or __day-after__
     """
 
     save_api_call_to_db(session=session, user=user, request=request)
