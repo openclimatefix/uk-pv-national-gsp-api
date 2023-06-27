@@ -69,7 +69,6 @@ def get_all_available_forecasts(
     return forecasts
 
 
-
 @router.get(
     "/forecast/{gsp_id}",
     response_model=Union[Forecast, List[ForecastValue]],
@@ -96,6 +95,7 @@ def get_forecasts_for_a_specific_gsp_old_route(
         user=user,
     )
 
+
 @router.get(
     "/{gsp_id}/forecast",
     response_model=Union[Forecast, List[ForecastValue]],
@@ -110,10 +110,10 @@ def get_forecasts_for_a_specific_gsp(
     user: Auth0User = Security(get_user()),
 ) -> Union[Forecast, List[ForecastValue]]:
     """### Get recent forecast values for a specific GSP
-   
+
     Returns an 8-hour solar generation forecast for a specific GSP with option
-    to change the forecast horizon. 
-    
+    to change the forecast horizon.
+
     The _forecast_horizon_minutes_ parameter allows
     a user to query for a forecast closer than 8 hours to the target time.
 
@@ -133,10 +133,10 @@ def get_forecasts_for_a_specific_gsp(
     logger.info(f"This is for user {user}")
 
     forecast_values_for_specific_gsp = get_latest_forecast_values_for_a_specific_gsp_from_database(
-            session=session,
-            gsp_id=gsp_id,
-            forecast_horizon_minutes=forecast_horizon_minutes,
-        )
+        session=session,
+        gsp_id=gsp_id,
+        forecast_horizon_minutes=forecast_horizon_minutes,
+    )
 
     logger.debug("Got forecast values for a specific gsp.")
 
