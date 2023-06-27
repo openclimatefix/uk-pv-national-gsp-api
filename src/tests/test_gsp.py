@@ -81,7 +81,7 @@ def test_read_latest_gsp_id_equal_to_total(db_session, api_client):
 
     assert response.status_code == 200
 
-    _ = Forecast(**response.json())
+    _ = [ForecastValue(**f) for f in response.json()]
 
 
 def test_read_latest_all_gsp_normalized(db_session, api_client):
