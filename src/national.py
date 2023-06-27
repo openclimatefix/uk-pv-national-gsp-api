@@ -95,6 +95,7 @@ def get_national_pvlive(
 
     Returns a series of real-time solar energy generation readings from
     PV_Live for all of Great Britain.
+    
     _In-day_ values are PV generation estimates for the current day,
     while _day-after_ values are
     updated PV generation truths for the previous day along with
