@@ -43,36 +43,21 @@ def get_national_forecast(
 ) -> Union[Forecast, List[ForecastValue]]:
     """Get the National Forecast
 
-    This route aggregrates data from all GSP forecasts and creates an 8-hour solar energy
-    generation forecast  in 30-minute interval for all of GB.
+    This route aggregrates data from all GSP forecasts in Great Britain,
+    creating a national, 8-hour,
+    solar generation forecast in 30-minute intervals.
+    The _forecast_horizon_minutes_ parameter allows
+    a user to query for a forecast closer than 8 hours to the target time.
 
-    1. Get __recent solar forecast__ for the UK for today and yesterday
-    with system details.
-        - The return object is a solar forecast with forecast details.
-        -The forecast object is returned with expected megawatt generation for the UK
-        for the upcoming 8 hours at every 30-minute interval (targetTime).
-        - Set __only_forecast_values__ ==> FALSE
-        - Setting __historic__ parameter to TRUE returns an object with data
-        from yesterday and today
-
-    2. Get __ONLY__ forecast values for solar national forecast.
-        - Set __only_forecast_values__ to TRUE
-        - Setting a __forecast_horizon_minutes__ parameter retrieves the latest forecast
-        a given set of minutes before the target time.
-        - Return object is a simplified forecast object with __targetTimes__ and
-        __expectedPowerGenerationMegawatts__ at 30-minute intervals.
-        - NB: __historic__ parameter __will not__ work when __only_forecast_values__= TRUE
-
-    Please see the __Forecast__ and __ForecastValue__ schema below for full metadata details.
+    For example, if the target time is 10am today, the forecast made at 2am
+    today is the 8-hour forecast for 10am, and the forecast made at 6am for
+    10am today is the 4-hour forecast for 10am.
 
     #### Parameters
-    - historic: boolean => TRUE returns yesterday's forecasts in addition to today's forecast
-    - only_forecast_values => TRUE returns solar national forecast values
-    - forecast_horizon_minutes: optional forecast horizon in minutes (ex. 35 returns
-    the latest forecast made 35 minutes before the target time)
+    - **forecast_horizon_minutes**: optional forecast horizon in minutes (ex.
+    60 returns the forecast made an hour before the target time)
 
     """
-
     logger.debug("Get national forecasts")
 
     save_api_call_to_db(session=session, user=user, request=request)
@@ -124,32 +109,20 @@ def get_national_pvlive(
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
 ) -> List[NationalYield]:
-    """### Get national PV_Live values for yesterday and today
+    """### Get national PV_Live values for yesterday and/or today
 
-    The return object is a series of real-time solar energy generation readings from PV_Live.
+    Returns a series of real-time solar energy generation readings from
+    PV_Live for all of Great Britain.
+    _In-day_ values are PV generation estimates for the current day,
+    while _day-after_ values are
+    updated PV generation truths for the previous day along with
+    _in-day_ estimates for the current day.
 
-    PV_Live is Sheffield's API that reports real-time PV data. These readings are updated throughout
-    the day, reporting the most accurate finalized readings the following day at 10:00 UTC.
-
-    See the __GSPYield__ schema for metadata details.
-
-    Check out [Sheffield Solar PV_Live](https://www.solarsheffield.ac.uk/pvlive/) for
-    more details.
-
-    The OCF Forecast is trying to predict the PV_Live 'day-after' value.
-
-    This route has the __regime__ parameter that lets you look at values __in-day__ or
-    __day-after__(most accurate reading). __Day-after__ values are updated __in-day__ values.
-    __In-day__ gives you all the readings from the day before up to the most recent
-    reported national yield. __Day_after__ reports all the readings from the previous day.
-    For example, a day-after regime request made on 08/09/2022 returns updated national yield
-    for 07/09/2022. The 08/09/2022 __day-after__ values then become available at 10:00 UTC
-    on 09/09/2022.
-
-    If regime is not specificied, the most up-to-date national yield is returned.
+    If nothing is set for the _regime_ parameter, the route will return
+    _in-day_ values for the current day.
 
     #### Parameters
-    - regime: can choose __in-day__ or __day-after__
+    - **regime**: can choose __in-day__ or __day-after__
     """
 
     logger.info(f"Get national PV Live estimates values " f"for regime {regime} for  {user}")
