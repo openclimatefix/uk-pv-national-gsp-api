@@ -17,6 +17,8 @@ from status import router as status_router
 from system import router as system_router
 from utils import traces_sampler
 
+# flake8: noqa E501
+
 structlog.configure(
     processors=[
         structlog.processors.EventRenamer("message", replace_by="_event"),
@@ -48,7 +50,7 @@ sentry_sdk.init(
     traces_sampler=traces_sampler,
 )
 
-
+# noqa: E501
 description = """
 
 ## General Overview
@@ -266,7 +268,9 @@ def custom_openapi():
         },
         routes=app.routes,
     )
-    openapi_schema["info"]["x-logo"] = {"url": "/QUARTZSOLAR_LOGO_SECONDARY_BLACK_1.png"}
+    openapi_schema["info"]["x-logo"] = {
+        "url": "/QUARTZSOLAR_LOGO_SECONDARY_BLACK_1.png"
+    }
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
