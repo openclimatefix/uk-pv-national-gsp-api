@@ -17,7 +17,6 @@ from sqlalchemy.orm.session import Session
 from auth_utils import get_auth_implicit_scheme, get_user
 from cache import cache_response
 from database import (
-    get_forecasts_for_a_specific_gsp_from_database,
     get_forecasts_from_database,
     get_latest_forecast_values_for_a_specific_gsp_from_database,
     get_session,
@@ -51,10 +50,11 @@ def get_all_available_forecasts(
 ) -> ManyForecasts:
     """### Get the latest information for all available forecasts for all GSPs
 
-    The return object contains a forecast object with system details and forecast values for all GSPs.
+    The return object contains a forecast object with system details and
+    forecast values for all GSPs.
 
-    This request may take a longer time to load because a lot of data is being pulled from the
-    database.
+    This request may take a longer time to load because a lot of data is being
+    pulled from the database.
 
     #### Parameters
     - **historic**: boolean value set to True returns the forecasts of yesterday along with today's
@@ -88,6 +88,7 @@ def get_forecasts_for_a_specific_gsp_old_route(
     forecast_horizon_minutes: Optional[int] = None,
     user: Auth0User = Security(get_user()),
 ) -> Union[Forecast, List[ForecastValue]]:
+    """Redirects old API route to new route /v0/solar/GB/gsp/{gsp_id}/forecast"""
     return get_forecasts_for_a_specific_gsp(
         request=request,
         gsp_id=gsp_id,
@@ -196,6 +197,7 @@ def get_truths_for_a_specific_gsp_old_route(
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
 ) -> List[GSPYield]:
+    """Redirects old API route to new route /v0/solar/GB/gsp/{gsp_id}/pvlive"""
     return get_truths_for_a_specific_gsp(
         request=request,
         gsp_id=gsp_id,
@@ -205,7 +207,7 @@ def get_truths_for_a_specific_gsp_old_route(
     )
 
 
-# corresponds to API route /v0/solar/GB/gsp/pvlive/{gsp_id}
+# corresponds to API route /v0/solar/GB/gsp/{gsp_id}/pvlive
 @router.get(
     "/{gsp_id}/pvlive",
     response_model=List[GSPYield],
@@ -225,8 +227,8 @@ def get_truths_for_a_specific_gsp(
     The return object is a series of real-time solar energy generation
     from PV_Live for a single GSP.
 
-    Setting the __regime__ parameter to __day-after__ includes
-    the previous day's truth values for the GSPs. The default is __in-day__.
+    Setting the _regime_ parameter to _day-after_ includes
+    the previous day's truth values for the GSPs. The default is _in-day_.
 
     If regime is not specified, the most up-to-date GSP yield is returned.
 
