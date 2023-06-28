@@ -45,6 +45,7 @@ def get_gsp_boundaries_from_eso_wgs84() -> gpd.GeoDataFrame:
 @cache_response
 def get_gsp_boundaries(
     request: Request,
+    session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
 ) -> dict:
     """### Get GSP boundaries
