@@ -32,7 +32,7 @@ NationalYield = GSPYield
 )
 @cache_response
 def get_national_forecast(
-    request:Request,
+    request: Request,
     session: Session = Depends(get_session),
     forecast_horizon_minutes: Optional[int] = None,
     user: Auth0User = Security(get_user()),
@@ -78,7 +78,7 @@ def get_national_forecast(
 )
 @cache_response
 def get_national_pvlive(
-    request:Request,
+    request: Request,
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),

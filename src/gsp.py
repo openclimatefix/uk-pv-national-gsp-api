@@ -42,7 +42,7 @@ NationalYield = GSPYield
 )
 @cache_response
 def get_all_available_forecasts(
-    request:Response,
+    request: Response,
     historic: Optional[bool] = True,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
@@ -78,7 +78,7 @@ def get_all_available_forecasts(
 )
 @cache_response
 def get_forecasts_for_a_specific_gsp_old_route(
-    request:Request,
+    request: Request,
     gsp_id: int,
     session: Session = Depends(get_session),
     forecast_horizon_minutes: Optional[int] = None,
@@ -102,7 +102,7 @@ def get_forecasts_for_a_specific_gsp_old_route(
 )
 @cache_response
 def get_forecasts_for_a_specific_gsp(
-    request:Request,
+    request: Request,
     gsp_id: int,
     session: Session = Depends(get_session),
     forecast_horizon_minutes: Optional[int] = None,
@@ -152,7 +152,7 @@ def get_forecasts_for_a_specific_gsp(
 )
 @cache_response
 def get_truths_for_all_gsps(
-    request:Request,
+    request: Request,
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
@@ -184,7 +184,7 @@ def get_truths_for_all_gsps(
 )
 @cache_response
 def get_truths_for_a_specific_gsp_old_route(
-    request:Request,
+    request: Request,
     gsp_id: int,
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
