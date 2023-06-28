@@ -2,7 +2,7 @@
 from typing import List, Optional, Union
 
 import structlog
-from fastapi import APIRouter, Depends, Request, Security, status
+from fastapi import APIRouter, Depends, Security, status
 from fastapi.responses import Response
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.models import (
@@ -22,7 +22,6 @@ from database import (
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
     get_truth_values_for_all_gsps_from_database,
-    save_api_call_to_db,
 )
 
 GSP_TOTAL = 317
@@ -43,7 +42,6 @@ NationalYield = GSPYield
 )
 @cache_response
 def get_all_available_forecasts(
-    request: Request,
     historic: Optional[bool] = True,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
@@ -60,8 +58,6 @@ def get_all_available_forecasts(
     - **historic**: boolean that defaults to `true`, returning yesterday's and
     today's forecasts for all GSPs
     """
-
-    save_api_call_to_db(session=session, user=user, request=request)
 
     logger.info(f"Get forecasts for all gsps. The option is {historic=} for user {user}")
 
@@ -81,7 +77,6 @@ def get_all_available_forecasts(
 )
 @cache_response
 def get_forecasts_for_a_specific_gsp_old_route(
-    request: Request,
     gsp_id: int,
     session: Session = Depends(get_session),
     forecast_horizon_minutes: Optional[int] = None,
@@ -89,7 +84,6 @@ def get_forecasts_for_a_specific_gsp_old_route(
 ) -> Union[Forecast, List[ForecastValue]]:
     """Redirects old API route to new route /v0/solar/GB/gsp/{gsp_id}/forecast"""
     return get_forecasts_for_a_specific_gsp(
-        request=request,
         gsp_id=gsp_id,
         session=session,
         forecast_horizon_minutes=forecast_horizon_minutes,
@@ -105,7 +99,6 @@ def get_forecasts_for_a_specific_gsp_old_route(
 )
 @cache_response
 def get_forecasts_for_a_specific_gsp(
-    request: Request,
     gsp_id: int,
     session: Session = Depends(get_session),
     forecast_horizon_minutes: Optional[int] = None,
@@ -129,8 +122,6 @@ def get_forecasts_for_a_specific_gsp(
     - **forecast_horizon_minutes**: optional forecast horizon in minutes (ex. 60
     returns the latest forecast made 60 minutes before the target time)
     """
-
-    save_api_call_to_db(session=session, user=user, request=request)
 
     logger.info(f"Get forecasts for gsp id {gsp_id} forecast of forecast with only values.")
     logger.info(f"This is for user {user}")
@@ -157,7 +148,6 @@ def get_forecasts_for_a_specific_gsp(
 )
 @cache_response
 def get_truths_for_all_gsps(
-    request: Request,
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
@@ -175,8 +165,6 @@ def get_truths_for_all_gsps(
     #### Parameters
     - **regime**: can choose __in-day__ or __day-after__
     """
-    save_api_call_to_db(session=session, user=user, request=request)
-
     logger.info(f"Get PV Live estimates values for all gsp id and regime {regime} for user {user}")
 
     return get_truth_values_for_all_gsps_from_database(session=session, regime=regime)
@@ -191,7 +179,6 @@ def get_truths_for_all_gsps(
 )
 @cache_response
 def get_truths_for_a_specific_gsp_old_route(
-    request: Request,
     gsp_id: int,
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
@@ -199,7 +186,6 @@ def get_truths_for_a_specific_gsp_old_route(
 ) -> List[GSPYield]:
     """Redirects old API route to new route /v0/solar/GB/gsp/{gsp_id}/pvlive"""
     return get_truths_for_a_specific_gsp(
-        request=request,
         gsp_id=gsp_id,
         regime=regime,
         session=session,
@@ -216,7 +202,6 @@ def get_truths_for_a_specific_gsp_old_route(
 )
 @cache_response
 def get_truths_for_a_specific_gsp(
-    request: Request,
     gsp_id: int,
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
@@ -236,8 +221,6 @@ def get_truths_for_a_specific_gsp(
     - **gsp_id**: _gsp_id_ of the requested forecast
     - **regime**: can choose __in-day__ or __day-after__
     """
-
-    save_api_call_to_db(session=session, user=user, request=request)
 
     logger.info(
         f"Get PV Live estimates values for gsp id {gsp_id} " f"and regime {regime} for user {user}"

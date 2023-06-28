@@ -3,7 +3,7 @@ import os
 from typing import List, Optional, Union
 
 import structlog
-from fastapi import APIRouter, Depends, Request, Security
+from fastapi import APIRouter, Depends, Security
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield
 from sqlalchemy.orm.session import Session
@@ -14,7 +14,6 @@ from database import (
     get_latest_forecast_values_for_a_specific_gsp_from_database,
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
-    save_api_call_to_db,
 )
 
 logger = structlog.stdlib.get_logger()
@@ -33,7 +32,6 @@ NationalYield = GSPYield
 )
 @cache_response
 def get_national_forecast(
-    request: Request,
     session: Session = Depends(get_session),
     forecast_horizon_minutes: Optional[int] = None,
     user: Auth0User = Security(get_user()),
@@ -57,12 +55,6 @@ def get_national_forecast(
     """
     logger.debug("Get national forecasts")
 
-    save_api_call_to_db(session=session, user=user, request=request)
-
-    logger.debug("Get national forecasts")
-
-    save_api_call_to_db(session=session, user=user, request=request)
-
     logger.debug("Getting forecast.")
     national_forecast_values = get_latest_forecast_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=0, forecast_horizon_minutes=forecast_horizon_minutes
@@ -85,7 +77,6 @@ def get_national_forecast(
 )
 @cache_response
 def get_national_pvlive(
-    request: Request,
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
@@ -108,8 +99,6 @@ def get_national_pvlive(
     """
 
     logger.info(f"Get national PV Live estimates values " f"for regime {regime} for  {user}")
-
-    save_api_call_to_db(session=session, user=user, request=request)
 
     return get_truth_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=0, regime=regime

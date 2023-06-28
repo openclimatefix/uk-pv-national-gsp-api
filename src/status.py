@@ -20,15 +20,13 @@ forecast_error_hours = float(os.getenv("FORECAST_ERROR_HOURS", 2.0))
 
 @router.get("/status", response_model=Status)
 @cache_response
-def get_status(request: Request, session: Session = Depends(get_session)) -> Status:
+def get_status(session: Session = Depends(get_session)) -> Status:
     """### Get status for the database and forecasts
 
     Occasionally there may be a small problem or interruption with the forecast. This
     route is where the OCF team communicates the forecast status to users.
 
     """
-    save_api_call_to_db(session=session, request=request)
-
     logger.debug("Get status")
     return get_latest_status_from_database(session=session)
 
