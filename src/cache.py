@@ -3,10 +3,10 @@ import json
 import os
 from datetime import datetime, timedelta, timezone
 from functools import wraps
-from database import save_api_call_to_db
-
 
 import structlog
+
+from database import save_api_call_to_db
 
 logger = structlog.stdlib.get_logger()
 
