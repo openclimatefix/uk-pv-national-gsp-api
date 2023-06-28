@@ -14,6 +14,7 @@ from auth_utils import get_auth_implicit_scheme, get_user
 from cache import cache_response
 from database import get_gsp_system, get_session
 
+# flake8: noqa: E501
 logger = structlog.stdlib.get_logger()
 
 
@@ -45,14 +46,14 @@ def get_gsp_boundaries_from_eso_wgs84() -> gpd.GeoDataFrame:
 def get_gsp_boundaries(
     user: Auth0User = Security(get_user()),
 ) -> dict:
-    """### Get one GSP boundary for a specific GSP
+    """### Get GSP boundaries
 
-    This route is still under construction...
+    Returns an object with GSP boundaries provided by National Grid ESO.
 
-    [This is a wrapper around the dataset]
-    (https://data.nationalgrideso.com/systemgis-boundaries-for-gb-grid-supply-points).
+    [This is a wrapper around the dataset](https://data.nationalgrideso.com/systemgis-boundaries-for-gb-grid-supply-points).
 
-    Returns an object that is in EPSG:4326 (ie. latitude & longitude coordinates).
+    The return object is in EPSG:4326 (ie. contains latitude & longitude
+    coordinates).
 
     """
 
@@ -72,25 +73,18 @@ def get_gsp_boundaries(
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
-def get_systems(
+def get_system_details(
     session: Session = Depends(get_session),
     gsp_id: Optional[int] = None,
     user: Auth0User = Security(get_user()),
 ) -> List[Location]:
     """### Get system details for a single GSP or all GSPs
 
-    Returns an object with the system details of a given GSP using the
-    gsp_id parameter.
-
-    Provide one gsp_id to return system details for that GSP, otherwise details for ALL
-    grid systems will be returned.
-
-    Please see __Location__ schema for metadata details.
+    Returns an object with system details of a given GSP using the
+    _gsp_id_ query parameter, otherwise details for all supply points are provided.
 
     #### Parameters
-    - gsp_id: gsp_id of the requested system
-    - NB: If no parameter is entered, system details for all 300+ GSPs are returned.
-
+    - **gsp_id**: gsp_id of the requested system
     """
 
     logger.info(f"Get GSP systems for {gsp_id=} for {user}")
