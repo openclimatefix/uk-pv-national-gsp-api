@@ -113,7 +113,7 @@ def get_forecasts_for_a_specific_gsp(
 ) -> Union[Forecast, List[ForecastValue]]:
     """### Get recent forecast values for a specific GSP
 
-    This route returns the most recent forecast for each _target_time_ for a 
+    This route returns the most recent forecast for each _target_time_ for a
     specific GSP.
 
     The _forecast_horizon_minutes_ parameter allows
@@ -228,7 +228,7 @@ def get_truths_for_a_specific_gsp(
     from __PV_Live__ for a single GSP.
 
     Setting the _regime_ parameter to _day-after_ includes
-    the previous day's truth values for the GSPs. 
+    the previous day's truth values for the GSPs.
 
     If _regime_ is not specified, the parameter defaults to _in-day_.
 
