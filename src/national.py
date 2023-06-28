@@ -3,7 +3,7 @@ import os
 from typing import List, Optional, Union
 
 import structlog
-from fastapi import APIRouter, Depends, Security
+from fastapi import APIRouter, Depends, Request, Security
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield
 from sqlalchemy.orm.session import Session
@@ -32,6 +32,7 @@ NationalYield = GSPYield
 )
 @cache_response
 def get_national_forecast(
+    request:Request,
     session: Session = Depends(get_session),
     forecast_horizon_minutes: Optional[int] = None,
     user: Auth0User = Security(get_user()),
@@ -77,6 +78,7 @@ def get_national_forecast(
 )
 @cache_response
 def get_national_pvlive(
+    request:Request,
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),

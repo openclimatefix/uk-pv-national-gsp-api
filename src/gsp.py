@@ -2,7 +2,7 @@
 from typing import List, Optional, Union
 
 import structlog
-from fastapi import APIRouter, Depends, Security, status
+from fastapi import APIRouter, Depends, Request, Security, status
 from fastapi.responses import Response
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.models import (
@@ -42,6 +42,7 @@ NationalYield = GSPYield
 )
 @cache_response
 def get_all_available_forecasts(
+    request:Response,
     historic: Optional[bool] = True,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
@@ -77,6 +78,7 @@ def get_all_available_forecasts(
 )
 @cache_response
 def get_forecasts_for_a_specific_gsp_old_route(
+    request:Request,
     gsp_id: int,
     session: Session = Depends(get_session),
     forecast_horizon_minutes: Optional[int] = None,
@@ -84,6 +86,7 @@ def get_forecasts_for_a_specific_gsp_old_route(
 ) -> Union[Forecast, List[ForecastValue]]:
     """Redirects old API route to new route /v0/solar/GB/gsp/{gsp_id}/forecast"""
     return get_forecasts_for_a_specific_gsp(
+        request=request,
         gsp_id=gsp_id,
         session=session,
         forecast_horizon_minutes=forecast_horizon_minutes,
@@ -99,6 +102,7 @@ def get_forecasts_for_a_specific_gsp_old_route(
 )
 @cache_response
 def get_forecasts_for_a_specific_gsp(
+    request:Request,
     gsp_id: int,
     session: Session = Depends(get_session),
     forecast_horizon_minutes: Optional[int] = None,
@@ -148,6 +152,7 @@ def get_forecasts_for_a_specific_gsp(
 )
 @cache_response
 def get_truths_for_all_gsps(
+    request:Request,
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
@@ -179,6 +184,7 @@ def get_truths_for_all_gsps(
 )
 @cache_response
 def get_truths_for_a_specific_gsp_old_route(
+    request:Request,
     gsp_id: int,
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
@@ -186,6 +192,7 @@ def get_truths_for_a_specific_gsp_old_route(
 ) -> List[GSPYield]:
     """Redirects old API route to new route /v0/solar/GB/gsp/{gsp_id}/pvlive"""
     return get_truths_for_a_specific_gsp(
+        request=request,
         gsp_id=gsp_id,
         regime=regime,
         session=session,
@@ -202,6 +209,7 @@ def get_truths_for_a_specific_gsp_old_route(
 )
 @cache_response
 def get_truths_for_a_specific_gsp(
+    request: Request,
     gsp_id: int,
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
