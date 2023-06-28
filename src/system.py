@@ -4,7 +4,7 @@ from typing import List, Optional
 
 import geopandas as gpd
 import structlog
-from fastapi import APIRouter, Depends, Security
+from fastapi import APIRouter, Depends, Request, Security
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.models import GSPYield, Location
 from nowcasting_dataset.data_sources.gsp.eso import get_gsp_metadata_from_eso
@@ -44,6 +44,7 @@ def get_gsp_boundaries_from_eso_wgs84() -> gpd.GeoDataFrame:
 )
 @cache_response
 def get_gsp_boundaries(
+    request: Request,
     user: Auth0User = Security(get_user()),
 ) -> dict:
     """### Get GSP boundaries
@@ -74,6 +75,7 @@ def get_gsp_boundaries(
 )
 @cache_response
 def get_system_details(
+    request: Request,
     session: Session = Depends(get_session),
     gsp_id: Optional[int] = None,
     user: Auth0User = Security(get_user()),
