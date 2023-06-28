@@ -37,7 +37,7 @@ NationalYield = GSPYield
 
 # corresponds to route /v0/solar/GB/gsp/forecast/all
 @router.get(
-    "/forecast/all",
+    "/forecast/all/",
     response_model=ManyForecasts,
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
