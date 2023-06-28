@@ -48,7 +48,7 @@ def get_all_available_forecasts(
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
 ) -> ManyForecasts:
-    """### Get the latest information for all available forecasts for all GSPs
+    """### Get all forecasts for all GSPs
 
     The return object contains a forecast object with system details and
     forecast values for all GSPs.
@@ -57,9 +57,8 @@ def get_all_available_forecasts(
     pulled from the database.
 
     #### Parameters
-    - **historic**: boolean value set to True returns the forecasts of yesterday along with today's
-    forecasts for all GSPs
-
+    - **historic**: boolean that defaults to `true`, returning yesterday's and
+    today's forecasts for all GSPs
     """
 
     save_api_call_to_db(session=session, user=user, request=request)
@@ -114,18 +113,19 @@ def get_forecasts_for_a_specific_gsp(
 ) -> Union[Forecast, List[ForecastValue]]:
     """### Get recent forecast values for a specific GSP
 
-    Returns an 8-hour solar generation forecast for a specific GSP with option
-    to change the forecast horizon.
+    This route returns the most recent forecast for each _target_time_ for a 
+    specific GSP.
 
     The _forecast_horizon_minutes_ parameter allows
-    a user to query for a forecast closer than 8 hours to the target time.
+    a user to query for a forecast that is made this number, or horizon, of
+    minutes before the _target_time_.
 
     For example, if the target time is 10am today, the forecast made at 2am
     today is the 8-hour forecast for 10am, and the forecast made at 6am for
     10am today is the 4-hour forecast for 10am.
 
     #### Parameters
-    - **gsp_id**: **gsp_id** of the desired forecast
+    - **gsp_id**: *gsp_id* of the desired forecast
     - **forecast_horizon_minutes**: optional forecast horizon in minutes (ex. 60
     returns the latest forecast made 60 minutes before the target time)
     """
@@ -162,15 +162,15 @@ def get_truths_for_all_gsps(
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
 ) -> List[LocationWithGSPYields]:
-    """### Get PV_Live values for all GSPs for yesterday and/or today
+    """### Get PV_Live values for all GSPs for yesterday and today
 
     The return object is a series of real-time PV generation estimates or
-    truth values from PV_Live for all GSPs.
+    truth values from __PV_Live__ for all GSPs.
 
     Setting the _regime_ parameter to _day-after_ includes
-    the previous day's truth values for the GSPs. The default is _in-day__.
+    the previous day's truth values for the GSPs.
 
-    If regime is not specified, the most up-to-date GSP yield is returned.
+    If _regime_ is not specified, the parameter defaults to _in-day_.
 
     #### Parameters
     - **regime**: can choose __in-day__ or __day-after__
@@ -225,15 +225,15 @@ def get_truths_for_a_specific_gsp(
     """### Get PV_Live values for a specific GSP for yesterday and today
 
     The return object is a series of real-time solar energy generation
-    from PV_Live for a single GSP.
+    from __PV_Live__ for a single GSP.
 
     Setting the _regime_ parameter to _day-after_ includes
-    the previous day's truth values for the GSPs. The default is _in-day_.
+    the previous day's truth values for the GSPs. 
 
-    If regime is not specified, the most up-to-date GSP yield is returned.
+    If _regime_ is not specified, the parameter defaults to _in-day_.
 
     #### Parameters
-    - **gsp_id**: gsp_id of the requested forecast
+    - **gsp_id**: _gsp_id_ of the requested forecast
     - **regime**: can choose __in-day__ or __day-after__
     """
 
