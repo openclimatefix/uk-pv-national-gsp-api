@@ -42,7 +42,7 @@ NationalYield = GSPYield
 )
 @cache_response
 def get_all_available_forecasts(
-    request: Response,
+    request: Request,
     historic: Optional[bool] = True,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
