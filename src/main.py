@@ -212,9 +212,9 @@ app.include_router(system_router, prefix=f"{v0_route_system}/gsp")
 
 @app.get("/")
 def get_api_information():
-    """### Get basic information about the Nowcasting API
+    """### Get basic Quartz Solar API information
 
-    The object returned contains basic information about the Nowcasting API.
+    Returns a json object with basic information about the Quartz Solar API.
 
     """
 
@@ -225,6 +225,7 @@ def get_api_information():
         "version": version,
         "description": description,
         "documentation": "https://api.quartz.solar/docs",
+        "swagger ui": "https://api.quartz.solar/swagger",
     }
 
 
