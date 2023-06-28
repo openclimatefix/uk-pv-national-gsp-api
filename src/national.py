@@ -14,7 +14,6 @@ from database import (
     get_latest_forecast_values_for_a_specific_gsp_from_database,
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
-    save_api_call_to_db,
 )
 
 logger = structlog.stdlib.get_logger()
@@ -56,12 +55,6 @@ def get_national_forecast(
 
     """
     logger.debug("Get national forecasts")
-
-    save_api_call_to_db(session=session, user=user, request=request)
-
-    logger.debug("Get national forecasts")
-
-    save_api_call_to_db(session=session, user=user, request=request)
 
     logger.debug("Getting forecast.")
     national_forecast_values = get_latest_forecast_values_for_a_specific_gsp_from_database(
@@ -108,8 +101,6 @@ def get_national_pvlive(
     """
 
     logger.info(f"Get national PV Live estimates values " f"for regime {regime} for  {user}")
-
-    save_api_call_to_db(session=session, user=user, request=request)
 
     return get_truth_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=0, regime=regime

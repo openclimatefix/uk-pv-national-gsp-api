@@ -27,8 +27,6 @@ def get_status(request: Request, session: Session = Depends(get_session)) -> Sta
     route is where the OCF team communicates the forecast status to users.
 
     """
-    save_api_call_to_db(session=session, request=request)
-
     logger.debug("Get status")
     return get_latest_status_from_database(session=session)
 

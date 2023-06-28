@@ -22,7 +22,6 @@ from database import (
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
     get_truth_values_for_all_gsps_from_database,
-    save_api_call_to_db,
 )
 
 GSP_TOTAL = 317
@@ -60,8 +59,6 @@ def get_all_available_forecasts(
     - **historic**: boolean that defaults to `true`, returning yesterday's and
     today's forecasts for all GSPs
     """
-
-    save_api_call_to_db(session=session, user=user, request=request)
 
     logger.info(f"Get forecasts for all gsps. The option is {historic=} for user {user}")
 
@@ -130,8 +127,6 @@ def get_forecasts_for_a_specific_gsp(
     returns the latest forecast made 60 minutes before the target time)
     """
 
-    save_api_call_to_db(session=session, user=user, request=request)
-
     logger.info(f"Get forecasts for gsp id {gsp_id} forecast of forecast with only values.")
     logger.info(f"This is for user {user}")
 
@@ -175,8 +170,6 @@ def get_truths_for_all_gsps(
     #### Parameters
     - **regime**: can choose __in-day__ or __day-after__
     """
-    save_api_call_to_db(session=session, user=user, request=request)
-
     logger.info(f"Get PV Live estimates values for all gsp id and regime {regime} for user {user}")
 
     return get_truth_values_for_all_gsps_from_database(session=session, regime=regime)
@@ -236,8 +229,6 @@ def get_truths_for_a_specific_gsp(
     - **gsp_id**: _gsp_id_ of the requested forecast
     - **regime**: can choose __in-day__ or __day-after__
     """
-
-    save_api_call_to_db(session=session, user=user, request=request)
 
     logger.info(
         f"Get PV Live estimates values for gsp id {gsp_id} " f"and regime {regime} for user {user}"
