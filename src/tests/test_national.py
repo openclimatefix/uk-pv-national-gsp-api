@@ -47,7 +47,7 @@ def test_read_latest_national_values_no_properotes(db_session, api_client):
     )
     forecast.model = model
 
-    for f in forecast.forecast_values
+    for f in forecast.forecast_values:
         f._properties = None
 
     db_session.add(forecast)
