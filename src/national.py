@@ -29,8 +29,7 @@ class NationalForecastValue(ForecastValue):
     """One Forecast of generation at one timestamp include properties"""
 
     properties: dict = Field(
-        None,
-        description="Dictionary to hold properties of the forecast, like p_levels. "
+        None, description="Dictionary to hold properties of the forecast, like p_levels. "
     )
 
     @validator("properties")
@@ -39,9 +38,11 @@ class NationalForecastValue(ForecastValue):
         if v is None and cls._proerties is not None:
             v = cls._proerties
         else:
-            logger.warning('Using default properties for NationalForecastValue')
-            v = {'p_level10': cls.expected_power_generation_megawatts*0.9,
-                 'p_level90': cls.expected_power_generation_megawatts*1.1}
+            logger.warning("Using default properties for NationalForecastValue")
+            v = {
+                "p_level10": cls.expected_power_generation_megawatts * 0.9,
+                "p_level90": cls.expected_power_generation_megawatts * 1.1,
+            }
         return v
 
 
