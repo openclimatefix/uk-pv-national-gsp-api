@@ -138,7 +138,7 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
             # get blend of forecast values from CNN and Nationa_xg
             # this returns a list of ForecastValue objects
             forecast_values = get_blend_forecast_values_latest(
-                session=session, gsp_id=0, start_datetime=start_datetime
+                session=session, gsp_id=0, start_datetime=start_datetime, properties_model="National_xg"
             )
 
     else:
