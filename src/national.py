@@ -3,7 +3,7 @@ import os
 from typing import List, Optional, Union
 
 import structlog
-from pydantic import Field, validator
+from pydantic import Field
 from fastapi import APIRouter, Depends, Request, Security
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield
