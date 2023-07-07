@@ -3,10 +3,10 @@ import os
 from typing import List, Optional, Union
 
 import structlog
-from pydantic import Field
 from fastapi import APIRouter, Depends, Request, Security
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield
+from pydantic import Field
 from sqlalchemy.orm.session import Session
 
 from auth_utils import get_auth_implicit_scheme, get_user

@@ -1,7 +1,7 @@
 """ Test for main app """
 from datetime import datetime, timezone
-import numpy as np
 
+import numpy as np
 from freezegun import freeze_time
 from nowcasting_datamodel.fake import make_fake_national_forecast
 from nowcasting_datamodel.models import GSPYield, Location, LocationSQL
