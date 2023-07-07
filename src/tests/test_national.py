@@ -9,6 +9,7 @@ from nowcasting_datamodel.save.update import update_all_forecast_latest
 
 from database import get_session
 from main import app
+from national import NationalForecastValue
 
 
 def test_read_latest_national_values(db_session, api_client):
@@ -29,7 +30,36 @@ def test_read_latest_national_values(db_session, api_client):
     response = api_client.get("/v0/solar/GB/national/forecast")
     assert response.status_code == 200
 
-    _ = [ForecastValue(**f) for f in response.json()]
+    national_forecast_values = [NationalForecastValue(**f) for f in response.json()]
+    assert national_forecast_values[0].properties is not None
+
+
+def test_read_latest_national_values_no_properotes(db_session, api_client):
+    """Check main solar/GB/national/forecast route works
+
+    Check fake propreties are made
+    """
+
+    model = get_model(db_session, name="cnn", version="0.0.1")
+
+    forecast = make_fake_national_forecast(
+        session=db_session, t0_datetime_utc=datetime.now(tz=timezone.utc)
+    )
+    forecast.model = model
+
+    for f in forecast.forecast_values
+        f._properties = None
+
+    db_session.add(forecast)
+    update_all_forecast_latest(forecasts=[forecast], session=db_session, model_name="cnn")
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = api_client.get("/v0/solar/GB/national/forecast")
+    assert response.status_code == 200
+
+    national_forecast_values = [NationalForecastValue(**f) for f in response.json()]
+    assert national_forecast_values[0].properties is not None
 
 
 @freeze_time("2022-01-01")
