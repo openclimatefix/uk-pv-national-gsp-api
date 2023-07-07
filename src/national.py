@@ -3,6 +3,7 @@ import os
 from typing import List, Optional, Union
 
 import structlog
+from pydantic import Field, validator
 from fastapi import APIRouter, Depends, Request, Security
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield
@@ -22,6 +23,28 @@ logger = structlog.stdlib.get_logger()
 adjust_limit = float(os.getenv("ADJUST_MW_LIMIT", 0.0))
 
 router = APIRouter()
+
+
+class NationalForecastValue(ForecastValue):
+    """One Forecast of generation at one timestamp include properties"""
+
+    properties: dict = Field(
+        None,
+        description="Dictionary to hold properties of the forecast, like p_levels. "
+    )
+
+    @validator("properties")
+    def validate_properties(cls, v):
+        """Validate the solar_generation_kw field"""
+        if v is None and cls._proerties is not None:
+            v = cls._proerties
+        else:
+            logger.warning('Using default properties for NationalForecastValue')
+            v = {'p_level10': cls.expected_power_generation_megawatts*0.9,
+                 'p_level90': cls.expected_power_generation_megawatts*1.1}
+        return v
+
+
 NationalYield = GSPYield
 
 
@@ -36,7 +59,7 @@ def get_national_forecast(
     session: Session = Depends(get_session),
     forecast_horizon_minutes: Optional[int] = None,
     user: Auth0User = Security(get_user()),
-) -> Union[Forecast, List[ForecastValue]]:
+) -> Union[Forecast, List[NationalForecastValue]]:
     """Get the National Forecast
 
     This route returns the most recent forecast for each _target_time_.
