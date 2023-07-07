@@ -82,7 +82,6 @@ def get_national_forecast(
     # change to NationalForecastValue
     national_forecast_values = []
     for f in forecast_values:
-
         # change to NationalForecastValue
         plevels = f._properties
         national_forecast_value = NationalForecastValue(**f.__dict__)

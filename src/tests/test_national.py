@@ -36,7 +36,10 @@ def test_read_latest_national_values(db_session, api_client):
     national_forecast_values = [NationalForecastValue(**f) for f in response.json()]
     assert national_forecast_values[0].plevels is not None
     # index 24 is the middle of the day
-    assert national_forecast_values[24].plevels['plevel_10'] != national_forecast_values[0].expected_power_generation_megawatts*0.9
+    assert (
+        national_forecast_values[24].plevels["plevel_10"]
+        != national_forecast_values[0].expected_power_generation_megawatts * 0.9
+    )
 
 
 def test_read_latest_national_values_no_properotes(db_session, api_client):
@@ -66,8 +69,9 @@ def test_read_latest_national_values_no_properotes(db_session, api_client):
     national_forecast_values = [NationalForecastValue(**f) for f in response.json()]
     assert national_forecast_values[0].plevels is not None
     # index 24 is the middle of the day
-    assert np.round(national_forecast_values[24].plevels['plevel_10'],2) == np.round(national_forecast_values[
-        24].expected_power_generation_megawatts * 0.9,2)
+    assert np.round(national_forecast_values[24].plevels["plevel_10"], 2) == np.round(
+        national_forecast_values[24].expected_power_generation_megawatts * 0.9, 2
+    )
 
 
 @freeze_time("2022-01-01")
