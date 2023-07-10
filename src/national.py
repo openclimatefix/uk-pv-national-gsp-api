@@ -88,7 +88,7 @@ def get_national_forecast(
         national_forecast_value.plevels = plevels
 
         # add default values in, we will remove this at some point
-        if not isinstance(national_forecast_value.plevels, dict):
+        if (not isinstance(national_forecast_value.plevels, dict)) or (national_forecast_value.plevels == {}):
             logger.warning(
                 f"Using default properties for {national_forecast_value.__fields__.keys()}"
             )

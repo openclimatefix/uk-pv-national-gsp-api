@@ -42,7 +42,7 @@ def test_read_latest_national_values(db_session, api_client):
     )
 
 
-def test_read_latest_national_values_no_properotes(db_session, api_client):
+def test_read_latest_national_values_no_properties(db_session, api_client):
     """Check main solar/GB/national/forecast route works
 
     Check fake propreties are made
