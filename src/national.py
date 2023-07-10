@@ -87,7 +87,7 @@ def get_national_forecast(
         national_forecast_value = NationalForecastValue(**f.__dict__)
         national_forecast_value.plevels = plevels
 
-        # add default values in
+        # add default values in, we will remove this at some point
         if not isinstance(national_forecast_value.plevels, dict):
             logger.warning(
                 f"Using default properties for {national_forecast_value.__fields__.keys()}"
@@ -98,6 +98,7 @@ def get_national_forecast(
             }
             logger.debug(f"{national_forecast_value.plevels}")
 
+        # rename '10' and '90' to plevel_10 and plevel_90
         for c in ["10", "90"]:
             if c in national_forecast_value.plevels.keys():
                 national_forecast_value.plevels[
