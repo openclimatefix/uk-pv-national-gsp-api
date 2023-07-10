@@ -1,18 +1,52 @@
 """ Test for main app """
 from datetime import datetime, timezone
 
+import numpy as np
 from freezegun import freeze_time
 from nowcasting_datamodel.fake import make_fake_national_forecast
-from nowcasting_datamodel.models import ForecastValue, GSPYield, Location, LocationSQL
+from nowcasting_datamodel.models import GSPYield, Location, LocationSQL
 from nowcasting_datamodel.read.read import get_model
 from nowcasting_datamodel.save.update import update_all_forecast_latest
 
 from database import get_session
 from main import app
+from national import NationalForecastValue
 
 
 def test_read_latest_national_values(db_session, api_client):
     """Check main solar/GB/national/forecast route works"""
+
+    model = get_model(db_session, name="National_xg", version="0.0.1")
+
+    forecast = make_fake_national_forecast(
+        session=db_session, t0_datetime_utc=datetime.now(tz=timezone.utc)
+    )
+    forecast.model = model
+
+    assert forecast.forecast_values[0].properties is not None
+
+    db_session.add(forecast)
+    update_all_forecast_latest(forecasts=[forecast], session=db_session, model_name="National_xg")
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = api_client.get("/v0/solar/GB/national/forecast")
+    assert response.status_code == 200
+
+    national_forecast_values = [NationalForecastValue(**f) for f in response.json()]
+    assert national_forecast_values[0].plevels is not None
+    # index 24 is the middle of the day
+    assert (
+        national_forecast_values[24].plevels["plevel_10"]
+        != national_forecast_values[0].expected_power_generation_megawatts * 0.9
+    )
+
+
+def test_read_latest_national_values_no_properties(db_session, api_client):
+    """Check main solar/GB/national/forecast route works
+
+    Check fake propreties are made
+    """
 
     model = get_model(db_session, name="cnn", version="0.0.1")
 
@@ -20,6 +54,9 @@ def test_read_latest_national_values(db_session, api_client):
         session=db_session, t0_datetime_utc=datetime.now(tz=timezone.utc)
     )
     forecast.model = model
+
+    for f in forecast.forecast_values:
+        f.properties = None
 
     db_session.add(forecast)
     update_all_forecast_latest(forecasts=[forecast], session=db_session, model_name="cnn")
@@ -29,7 +66,12 @@ def test_read_latest_national_values(db_session, api_client):
     response = api_client.get("/v0/solar/GB/national/forecast")
     assert response.status_code == 200
 
-    _ = [ForecastValue(**f) for f in response.json()]
+    national_forecast_values = [NationalForecastValue(**f) for f in response.json()]
+    assert national_forecast_values[0].plevels is not None
+    # index 24 is the middle of the day
+    assert np.round(national_forecast_values[24].plevels["plevel_10"], 2) == np.round(
+        national_forecast_values[24].expected_power_generation_megawatts * 0.9, 2
+    )
 
 
 @freeze_time("2022-01-01")
