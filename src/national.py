@@ -21,6 +21,7 @@ logger = structlog.stdlib.get_logger()
 
 
 adjust_limit = float(os.getenv("ADJUST_MW_LIMIT", 0.0))
+default_plevels = bool(os.getenv("DEFAULT_PLEVELS", True))
 
 router = APIRouter()
 
@@ -94,10 +95,13 @@ def get_national_forecast(
             logger.warning(
                 f"Using default properties for {national_forecast_value.__fields__.keys()}"
             )
-            national_forecast_value.plevels = {
-                "plevel_10": national_forecast_value.expected_power_generation_megawatts * 0.8,
-                "plevel_90": national_forecast_value.expected_power_generation_megawatts * 1.2,
-            }
+            if default_plevels:
+                national_forecast_value.plevels = {
+                    "plevel_10": national_forecast_value.expected_power_generation_megawatts * 0.8,
+                    "plevel_90": national_forecast_value.expected_power_generation_megawatts * 1.2,
+                }
+            else:
+                national_forecast_value.plevels = {}
             logger.debug(f"{national_forecast_value.plevels}")
 
         # rename '10' and '90' to plevel_10 and plevel_90
