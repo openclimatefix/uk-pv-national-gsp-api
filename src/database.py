@@ -181,7 +181,7 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
                 start_datetime=start_datetime,
                 properties_model="National_xg",
                 weights=weights,
-                model_names=["cnn", "National_xg", "pvnet_v2"]
+                model_names=["cnn", "National_xg", "pvnet_v2"],
             )
 
     else:
@@ -191,7 +191,7 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
             start_datetime=start_datetime,
             forecast_horizon_minutes=forecast_horizon_minutes,
             weights=weights,
-            model_names=["cnn", "National_xg", "pvnet_v2"]
+            model_names=["cnn", "National_xg", "pvnet_v2"],
         )
 
     # convert to pydantic objects
