@@ -50,13 +50,13 @@ weights = [
     {
         # cnn to pvnet_v2
         "start_horizon_hour": 1,
-        "end_horizon_hour": 3,
+        "end_horizon_hour": 2,
         "start_weight": [1, 0, 0],
         "end_weight": [0, 0, 1],
     },
     {
         # pvnet_v2
-        "start_horizon_hour": 3,
+        "start_horizon_hour": 2,
         "end_horizon_hour": 7,
         "start_weight": [0, 0, 1],
         "end_weight": [0, 0, 1],
