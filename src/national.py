@@ -81,10 +81,10 @@ def get_national_forecast(
     forecast_values = [f.adjust(limit=adjust_limit) for f in forecast_values]
 
     if not get_plevels:
-        logger.debug('Not getting plevels')
+        logger.debug("Not getting plevels")
         national_forecast_values = [NationalForecastValue(**f.__dict__) for f in forecast_values]
     else:
-        logger.debug('Getting plevels')
+        logger.debug("Getting plevels")
         # change to NationalForecastValue
         national_forecast_values = []
         for f in forecast_values:
