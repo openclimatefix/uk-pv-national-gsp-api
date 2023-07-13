@@ -21,6 +21,7 @@ logger = structlog.stdlib.get_logger()
 
 
 adjust_limit = float(os.getenv("ADJUST_MW_LIMIT", 0.0))
+get_plevels = bool(os.getenv("GET_PLEVELS", True))
 
 router = APIRouter()
 
@@ -79,35 +80,40 @@ def get_national_forecast(
 
     forecast_values = [f.adjust(limit=adjust_limit) for f in forecast_values]
 
-    # change to NationalForecastValue
-    national_forecast_values = []
-    for f in forecast_values:
+    if not get_plevels:
+        logger.debug("Not getting plevels")
+        national_forecast_values = [NationalForecastValue(**f.__dict__) for f in forecast_values]
+    else:
+        logger.debug("Getting plevels")
         # change to NationalForecastValue
-        plevels = f._properties
-        national_forecast_value = NationalForecastValue(**f.__dict__)
-        national_forecast_value.plevels = plevels
+        national_forecast_values = []
+        for f in forecast_values:
+            # change to NationalForecastValue
+            plevels = f._properties
+            national_forecast_value = NationalForecastValue(**f.__dict__)
+            national_forecast_value.plevels = plevels
 
-        # add default values in, we will remove this at some point
-        if (not isinstance(national_forecast_value.plevels, dict)) or (
-            national_forecast_value.plevels == {}
-        ):
-            logger.warning(
-                f"Using default properties for {national_forecast_value.__fields__.keys()}"
-            )
-            national_forecast_value.plevels = {
-                "plevel_10": national_forecast_value.expected_power_generation_megawatts * 0.8,
-                "plevel_90": national_forecast_value.expected_power_generation_megawatts * 1.2,
-            }
-            logger.debug(f"{national_forecast_value.plevels}")
+            # add default values in, we will remove this at some point
+            if (not isinstance(national_forecast_value.plevels, dict)) or (
+                national_forecast_value.plevels == {}
+            ):
+                logger.warning(
+                    f"Using default properties for {national_forecast_value.__fields__.keys()}"
+                )
+                national_forecast_value.plevels = {
+                    "plevel_10": national_forecast_value.expected_power_generation_megawatts * 0.8,
+                    "plevel_90": national_forecast_value.expected_power_generation_megawatts * 1.2,
+                }
+                logger.debug(f"{national_forecast_value.plevels}")
 
-        # rename '10' and '90' to plevel_10 and plevel_90
-        for c in ["10", "90"]:
-            if c in national_forecast_value.plevels.keys():
-                national_forecast_value.plevels[
-                    f"plevel_{c}"
-                ] = national_forecast_value.plevels.pop(c)
+            # rename '10' and '90' to plevel_10 and plevel_90
+            for c in ["10", "90"]:
+                if c in national_forecast_value.plevels.keys():
+                    national_forecast_value.plevels[
+                        f"plevel_{c}"
+                    ] = national_forecast_value.plevels.pop(c)
 
-        national_forecast_values.append(national_forecast_value)
+            national_forecast_values.append(national_forecast_value)
 
     return national_forecast_values
 

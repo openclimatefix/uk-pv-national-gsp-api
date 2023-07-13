@@ -37,6 +37,44 @@ from utils import floor_30_minutes_dt, get_start_datetime
 
 logger = structlog.stdlib.get_logger()
 
+# merged from
+# - cnn
+# - pvnet_v2
+# - National_xg
+weights = [
+    {
+        # cnn
+        "end_horizon_hour": 1,
+        "end_weight": [1, 0, 0],
+    },
+    {
+        # cnn to pvnet_v2
+        "start_horizon_hour": 1,
+        "end_horizon_hour": 2,
+        "start_weight": [1, 0, 0],
+        "end_weight": [0, 0, 1],
+    },
+    {
+        # pvnet_v2
+        "start_horizon_hour": 2,
+        "end_horizon_hour": 7,
+        "start_weight": [0, 0, 1],
+        "end_weight": [0, 0, 1],
+    },
+    {
+        # pvnet_v2 to National_xg
+        "start_horizon_hour": 7,
+        "end_horizon_hour": 8,
+        "start_weight": [0, 0, 1],
+        "end_weight": [0, 1, 0],
+    },
+    {
+        # National_xg
+        "start_horizon_hour": 8,
+        "start_weight": [0, 1, 0],
+    },
+]
+
 
 def get_latest_status_from_database(session: Session) -> Status:
     """Get latest status from database"""
@@ -142,6 +180,8 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
                 gsp_id=0,
                 start_datetime=start_datetime,
                 properties_model="National_xg",
+                weights=weights,
+                model_names=["cnn", "National_xg", "pvnet_v2"],
             )
 
     else:
@@ -150,6 +190,8 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
             gsp_id=gsp_id,
             start_datetime=start_datetime,
             forecast_horizon_minutes=forecast_horizon_minutes,
+            weights=weights,
+            model_names=["cnn", "National_xg", "pvnet_v2"],
         )
 
     # convert to pydantic objects
