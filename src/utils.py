@@ -1,10 +1,10 @@
 """ Utils functions for main.py """
-import structlog
 import os
 from datetime import datetime, timedelta
 from typing import Optional, Union
 
 import numpy as np
+import structlog
 from nowcasting_datamodel.models import ForecastValue
 from pydantic import Field
 from pytz import timezone
