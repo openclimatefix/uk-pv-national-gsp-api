@@ -5,12 +5,22 @@ from datetime import datetime, timedelta
 from typing import Optional, Union
 
 import numpy as np
+from nowcasting_datamodel.models import ForecastValue
+from pydantic import Field
 from pytz import timezone
 
 logger = logging.getLogger(__name__)
 
 europe_london_tz = timezone("Europe/London")
 utc = timezone("UTC")
+
+
+class NationalForecastValue(ForecastValue):
+    """One Forecast of generation at one timestamp include properties"""
+
+    plevels: dict = Field(
+        None, description="Dictionary to hold properties of the forecast, like p_levels. "
+    )
 
 
 def floor_30_minutes_dt(dt):
@@ -101,3 +111,46 @@ def traces_sampler(sampling_context):
     else:
         # Default sample rate
         return 0.05
+
+
+def format_plevels(national_forecast_value: NationalForecastValue):
+    """
+    Format the plevels dictionary to have the correct keys.
+
+    1. if None set to default
+    2. rename 10 and 90 to plevel_10 and plevel_90
+    3. if 10 or 90 is None set to default
+
+    :param national_forecast_value:
+    :return:
+    """
+    logger.debug(f"{national_forecast_value.plevels}")
+    if (not isinstance(national_forecast_value.plevels, dict)) or (
+            national_forecast_value.plevels == {}
+    ):
+        logger.warning(
+            f"Using default properties for {national_forecast_value.__fields__.keys()}"
+        )
+        national_forecast_value.plevels = {
+            "plevel_10": national_forecast_value.expected_power_generation_megawatts * 0.8,
+            "plevel_90": national_forecast_value.expected_power_generation_megawatts * 1.2,
+        }
+        logger.debug(f"{national_forecast_value.plevels}")
+    # rename '10' and '90' to plevel_10 and plevel_90
+    for c in ["10", "90"]:
+        if c in national_forecast_value.plevels.keys():
+            national_forecast_value.plevels[
+                f"plevel_{c}"
+            ] = national_forecast_value.plevels.pop(c)
+
+    if national_forecast_value.plevels["plevel_10"] is None:
+        logger.debug(f"Setting plevel_10 to default")
+        national_forecast_value.plevels["plevel_10"] = (
+            national_forecast_value.expected_power_generation_megawatts * 0.8
+        )
+
+    if national_forecast_value.plevels["plevel_90"] is None:
+        logger.debug(f"Setting plevel_90 to default")
+        national_forecast_value.plevels["plevel_90"] = (
+            national_forecast_value.expected_power_generation_megawatts * 1.2
+        )
