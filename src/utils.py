@@ -1,5 +1,5 @@
 """ Utils functions for main.py """
-import logging
+import structlog
 import os
 from datetime import datetime, timedelta
 from typing import Optional, Union
@@ -9,7 +9,7 @@ from nowcasting_datamodel.models import ForecastValue
 from pydantic import Field
 from pytz import timezone
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger()
 
 europe_london_tz = timezone("Europe/London")
 utc = timezone("UTC")
@@ -134,6 +134,7 @@ def format_plevels(national_forecast_value: NationalForecastValue):
             "plevel_90": national_forecast_value.expected_power_generation_megawatts * 1.2,
         }
         logger.debug(f"{national_forecast_value.plevels}")
+
     # rename '10' and '90' to plevel_10 and plevel_90
     for c in ["10", "90"]:
         if c in national_forecast_value.plevels.keys():
