@@ -10,7 +10,7 @@ from nowcasting_datamodel.save.update import update_all_forecast_latest
 
 from database import get_session
 from main import app
-from national import NationalForecastValue
+from utils import NationalForecastValue
 
 
 def test_read_latest_national_values(db_session, api_client):

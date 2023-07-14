@@ -5,8 +5,7 @@ from typing import List, Optional, Union
 import structlog
 from fastapi import APIRouter, Depends, Request, Security
 from fastapi_auth0 import Auth0User
-from nowcasting_datamodel.models import Forecast, ForecastValue, GSPYield
-from pydantic import Field
+from nowcasting_datamodel.models import Forecast, GSPYield
 from sqlalchemy.orm.session import Session
 
 from auth_utils import get_auth_implicit_scheme, get_user
@@ -16,6 +15,7 @@ from database import (
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
 )
+from utils import NationalForecastValue, format_plevels
 
 logger = structlog.stdlib.get_logger()
 
@@ -24,15 +24,6 @@ adjust_limit = float(os.getenv("ADJUST_MW_LIMIT", 0.0))
 get_plevels = bool(os.getenv("GET_PLEVELS", True))
 
 router = APIRouter()
-
-
-class NationalForecastValue(ForecastValue):
-    """One Forecast of generation at one timestamp include properties"""
-
-    plevels: dict = Field(
-        None, description="Dictionary to hold properties of the forecast, like p_levels. "
-    )
-
 
 NationalYield = GSPYield
 
@@ -94,24 +85,7 @@ def get_national_forecast(
             national_forecast_value.plevels = plevels
 
             # add default values in, we will remove this at some point
-            if (not isinstance(national_forecast_value.plevels, dict)) or (
-                national_forecast_value.plevels == {}
-            ):
-                logger.warning(
-                    f"Using default properties for {national_forecast_value.__fields__.keys()}"
-                )
-                national_forecast_value.plevels = {
-                    "plevel_10": national_forecast_value.expected_power_generation_megawatts * 0.8,
-                    "plevel_90": national_forecast_value.expected_power_generation_megawatts * 1.2,
-                }
-                logger.debug(f"{national_forecast_value.plevels}")
-
-            # rename '10' and '90' to plevel_10 and plevel_90
-            for c in ["10", "90"]:
-                if c in national_forecast_value.plevels.keys():
-                    national_forecast_value.plevels[
-                        f"plevel_{c}"
-                    ] = national_forecast_value.plevels.pop(c)
+            format_plevels(national_forecast_value)
 
             national_forecast_values.append(national_forecast_value)
 
