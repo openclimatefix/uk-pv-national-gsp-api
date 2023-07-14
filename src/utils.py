@@ -140,13 +140,13 @@ def format_plevels(national_forecast_value: NationalForecastValue):
             national_forecast_value.plevels[f"plevel_{c}"] = national_forecast_value.plevels.pop(c)
 
     if national_forecast_value.plevels["plevel_10"] is None:
-        logger.debug(f"Setting plevel_10 to default")
+        logger.debug("Setting plevel_10 to default")
         national_forecast_value.plevels["plevel_10"] = (
             national_forecast_value.expected_power_generation_megawatts * 0.8
         )
 
     if national_forecast_value.plevels["plevel_90"] is None:
-        logger.debug(f"Setting plevel_90 to default")
+        logger.debug("Setting plevel_90 to default")
         national_forecast_value.plevels["plevel_90"] = (
             national_forecast_value.expected_power_generation_megawatts * 1.2
         )
