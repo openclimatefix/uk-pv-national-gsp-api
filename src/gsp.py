@@ -242,5 +242,5 @@ def get_truths_for_a_specific_gsp(
         return Response(None, status.HTTP_204_NO_CONTENT)
 
     return get_truth_values_for_a_specific_gsp_from_database(
-        session=session, gsp_id=gsp_id, regime=regime, start_datetime=start_datetime
+        session=session, gsp_id=gsp_id, regime=regime, start_datetime=start_datetime_utc
     )
