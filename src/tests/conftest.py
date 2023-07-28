@@ -1,11 +1,13 @@
 """ Pytest fixitures for tests """
 import os
+import tempfile
 
 import pytest
 from fastapi.testclient import TestClient
 from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.fake import make_fake_forecasts
 from nowcasting_datamodel.models.base import Base_PV
+from testcontainers.postgres import PostgresContainer
 
 from auth_utils import get_auth_implicit_scheme, get_user
 from database import get_session
@@ -25,21 +27,16 @@ def forecasts(db_session):
 @pytest.fixture
 def db_connection():
     """Pytest fixture for a database connection"""
-    # with tempfile.NamedTemporaryFile(suffix="db") as tmp:
-    #     set url option to not check same thread, this solves an error seen in testing
 
-    # url = f"sqlite:///{tmp.name}.db?check_same_thread=False"
-    # os.environ["DB_URL"] = url
-    # os.environ["DB_URL_PV"] = url
-    url = os.environ["DB_URL"]
-    connection = DatabaseConnection(url=url)
-    connection.create_all()
-    Base_PV.metadata.create_all(connection.engine)
+    with PostgresContainer("postgres:14.5") as postgres:
+        connection = DatabaseConnection(url=postgres.get_connection_url())
+        connection.create_all()
+        Base_PV.metadata.create_all(connection.engine)
 
-    yield connection
+        yield connection
 
-    connection.drop_all()
-    Base_PV.metadata.drop_all(connection.engine)
+        connection.drop_all()
+        Base_PV.metadata.drop_all(connection.engine)
 
 
 @pytest.fixture(scope="function", autouse=True)

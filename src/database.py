@@ -1,7 +1,6 @@
 """ Functions to read from the database and format """
 import os
-from datetime import datetime, timedelta
-from pytz import timezone
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 import structlog
@@ -254,7 +253,7 @@ def get_truth_values_for_a_specific_gsp_from_database(
     return get_gsp_yield(
         session=session,
         gsp_ids=[gsp_id],
-        start_datetime_utc=timezone("Europe/London").localize(start_datetime),
+        start_datetime_utc=start_datetime,
         regime=regime,
     )
 
