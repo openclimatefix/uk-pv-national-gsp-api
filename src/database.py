@@ -233,8 +233,10 @@ def get_latest_national_forecast_from_database(session: Session) -> Forecast:
 
 
 def get_truth_values_for_a_specific_gsp_from_database(
-    session: Session, gsp_id: int, regime: Optional[str] = "in-day",
-        start_datetime: Optional[datetime] = None
+    session: Session,
+    gsp_id: int,
+    regime: Optional[str] = "in-day",
+    start_datetime: Optional[datetime] = None,
 ) -> List[GSPYield]:
     """Get the truth value for one gsp for yesterday and today
 
