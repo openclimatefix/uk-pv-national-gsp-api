@@ -28,15 +28,26 @@ def forecasts(db_session):
 def db_connection():
     """Pytest fixture for a database connection"""
 
-    with PostgresContainer("postgres:14.5") as postgres:
-        connection = DatabaseConnection(url=postgres.get_connection_url())
-        connection.create_all()
-        Base_PV.metadata.create_all(connection.engine)
+    # -- Uncomment for dockerised testing --
+    # with PostgresContainer("postgres:14.5") as postgres:
+    #    connection = DatabaseConnection(url=postgres.get_connection_url())
+    #    connection.create_all()
+    #    Base_PV.metadata.create_all(connection.engine)
+    #
+    #    yield connection
+    #
+    #    connection.drop_all()
+    #    Base_PV.metadata.drop_all(connection.engine)
 
-        yield connection
+    url = os.environ["DB_URL"]
+    connection = DatabaseConnection(url=url)
+    connection.create_all()
+    Base_PV.metadata.create_all(connection.engine)
 
-        connection.drop_all()
-        Base_PV.metadata.drop_all(connection.engine)
+    yield connection
+
+    connection.drop_all()
+    Base_PV.metadata.drop_all(connection.engine)
 
 
 @pytest.fixture(scope="function", autouse=True)
