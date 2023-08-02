@@ -1,6 +1,7 @@
 """ Caching utils for api"""
 import json
 import os
+import time
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 
@@ -51,7 +52,7 @@ def cache_response(func):
             if var in route_variables:
                 route_variables.pop(var)
 
-        # make into string
+        # make route_variables into a string
         route_variables = json.dumps(route_variables)
 
         # check if its been called before
@@ -68,6 +69,27 @@ def cache_response(func):
             response[route_variables] = func(*args, **kwargs)
             last_updated[route_variables] = now
             return response[route_variables]
+
+        # re-run if response is not cached for some reason or is empty
+        if route_variables not in response or response[route_variables] is None:
+            logger.debug("not using cache as response is empty")
+            attempt = 0
+            # wait until response has been cached
+            while attempt < 10:
+                logger.debug(f"waiting for response to be cached, {attempt} seconds elapsed")
+                time.sleep(1)
+                attempt += 1
+                if route_variables in response and response[route_variables] is not None:
+                    logger.debug(
+                        f"response cached after {attempt} seconds, returning cached response"
+                    )
+                    break
+            if attempt >= 10:
+                # if response is not in cache after 10 seconds, re-run
+                logger.debug("response not cached after 10 seconds, re-running")
+                response[route_variables] = func(*args, **kwargs)
+                last_updated[route_variables] = now
+                return response[route_variables]
 
         # use cache
         logger.debug("Using cache route")
