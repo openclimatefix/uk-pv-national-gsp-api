@@ -9,6 +9,7 @@ from nowcasting_datamodel.models import (
     APIRequestSQL,
     Forecast,
     ForecastValue,
+    ForecastValueLatestSQL,
     ForecastValueSevenDaysSQL,
     ForecastValueSQL,
     GSPYield,
@@ -170,21 +171,9 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
     start_datetime = get_start_datetime()
 
     if forecast_horizon_minutes is None:
-        if gsp_id != 0:
-            forecast_values = get_forecast_values_latest(
-                session=session, gsp_id=gsp_id, start_datetime=start_datetime
-            )
-        else:
-            # get blend of forecast values from CNN and Nationa_xg
-            # this returns a list of ForecastValue objects
-            forecast_values = get_blend_forecast_values_latest(
-                session=session,
-                gsp_id=0,
-                start_datetime=start_datetime,
-                properties_model="National_xg",
-                weights=weights,
-                model_names=["cnn", "National_xg", "pvnet_v2"],
-            )
+        forecast_values = get_forecast_values_latest(
+            session=session, gsp_id=gsp_id, start_datetime=start_datetime, model_name="blend"
+        )
 
     else:
         forecast_values = get_blend_forecast_values_latest(
@@ -197,8 +186,10 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
         )
 
     # convert to pydantic objects
-    if isinstance(forecast_values[0], ForecastValueSevenDaysSQL) or isinstance(
-        forecast_values[0], ForecastValueSQL
+    if (
+        isinstance(forecast_values[0], ForecastValueSevenDaysSQL)
+        or isinstance(forecast_values[0], ForecastValueSQL)
+        or isinstance(forecast_values[0], ForecastValueLatestSQL)
     ):
         forecast_values = [ForecastValue.from_orm(f) for f in forecast_values]
 
@@ -253,12 +244,16 @@ def get_truth_values_for_a_specific_gsp_from_database(
 
 
 def get_truth_values_for_all_gsps_from_database(
-    session: Session, n_gsp: Optional[int] = N_GSP, regime: Optional[str] = "in-day"
+    session: Session,
+    start_gsp: Optional[int] = 1,
+    end_gsp: Optional[int] = N_GSP + 1,
+    regime: Optional[str] = "in-day",
 ) -> List[LocationWithGSPYields]:
     """Get the truth value for all gsps for yesterday and today
 
     :param session: sql session
-    :param n_gsp: the number of gsps we should load.
+    :param start_gsp: the start number of gsps we should load.
+    :param end_gsp: the end number of gsps we should load.
     :param regime: option for "in-day" or "day-after"
     :return: list of gsp yields
     """
@@ -267,7 +262,7 @@ def get_truth_values_for_all_gsps_from_database(
 
     locations = get_gsp_yield_by_location(
         session=session,
-        gsp_ids=list(range(1, n_gsp + 1)),
+        gsp_ids=list(range(start_gsp, end_gsp)),
         start_datetime_utc=start_datetime,
         regime=regime,
     )
