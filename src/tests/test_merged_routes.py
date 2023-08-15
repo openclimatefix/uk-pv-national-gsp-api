@@ -26,12 +26,11 @@ def test_read_forecast_values_gsp(db_session, api_client):
     )
 
     forecast = make_fake_forecast(
-        gsp_id=1, session=db_session, t0_datetime_utc=datetime(2023, 1, 1)
+        gsp_id=1, session=db_session, t0_datetime_utc=datetime(2023, 1, 1), model_name='blend'
     )
     forecast.forecast_values_latest.append(forecast_value_1_sql)
     forecast.forecast_values_latest.append(forecast_value_2_sql)
     forecast.forecast_values_latest.append(forecast_value_3_sql)
-    forecast.model.name = 'blend'
 
     # add to database
     db_session.add_all([forecast])

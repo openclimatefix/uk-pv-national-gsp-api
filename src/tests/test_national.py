@@ -26,7 +26,7 @@ def test_read_latest_national_values(db_session, api_client):
     assert forecast.forecast_values[0].properties is not None
 
     db_session.add(forecast)
-    update_all_forecast_latest(forecasts=[forecast], session=db_session, model_name="blend")
+    update_all_forecast_latest(forecasts=[forecast], session=db_session)
 
     app.dependency_overrides[get_session] = lambda: db_session
 
@@ -59,7 +59,7 @@ def test_read_latest_national_values_no_properties(db_session, api_client):
         f.properties = None
 
     db_session.add(forecast)
-    update_all_forecast_latest(forecasts=[forecast], session=db_session, model_name="blend")
+    update_all_forecast_latest(forecasts=[forecast], session=db_session)
 
     app.dependency_overrides[get_session] = lambda: db_session
 
