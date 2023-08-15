@@ -171,7 +171,6 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
     start_datetime = get_start_datetime()
 
     if forecast_horizon_minutes is None:
-
         forecast_values = get_forecast_values_latest(
             session=session, gsp_id=gsp_id, start_datetime=start_datetime, model_name="blend"
         )
