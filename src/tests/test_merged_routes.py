@@ -31,6 +31,7 @@ def test_read_forecast_values_gsp(db_session, api_client):
     forecast.forecast_values_latest.append(forecast_value_1_sql)
     forecast.forecast_values_latest.append(forecast_value_2_sql)
     forecast.forecast_values_latest.append(forecast_value_3_sql)
+    forecast.model.name = 'blend'
 
     # add to database
     db_session.add_all([forecast])

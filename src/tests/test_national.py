@@ -16,7 +16,7 @@ from utils import NationalForecastValue
 def test_read_latest_national_values(db_session, api_client):
     """Check main solar/GB/national/forecast route works"""
 
-    model = get_model(db_session, name="National_xg", version="0.0.1")
+    model = get_model(db_session, name="blend", version="0.0.1")
 
     forecast = make_fake_national_forecast(
         session=db_session, t0_datetime_utc=datetime.now(tz=timezone.utc)
@@ -26,7 +26,7 @@ def test_read_latest_national_values(db_session, api_client):
     assert forecast.forecast_values[0].properties is not None
 
     db_session.add(forecast)
-    update_all_forecast_latest(forecasts=[forecast], session=db_session, model_name="National_xg")
+    update_all_forecast_latest(forecasts=[forecast], session=db_session, model_name="blend")
 
     app.dependency_overrides[get_session] = lambda: db_session
 
@@ -48,7 +48,7 @@ def test_read_latest_national_values_no_properties(db_session, api_client):
     Check fake propreties are made
     """
 
-    model = get_model(db_session, name="cnn", version="0.0.1")
+    model = get_model(db_session, name="blend", version="0.0.1")
 
     forecast = make_fake_national_forecast(
         session=db_session, t0_datetime_utc=datetime.now(tz=timezone.utc)
@@ -59,7 +59,7 @@ def test_read_latest_national_values_no_properties(db_session, api_client):
         f.properties = None
 
     db_session.add(forecast)
-    update_all_forecast_latest(forecasts=[forecast], session=db_session, model_name="cnn")
+    update_all_forecast_latest(forecasts=[forecast], session=db_session, model_name="blend")
 
     app.dependency_overrides[get_session] = lambda: db_session
 

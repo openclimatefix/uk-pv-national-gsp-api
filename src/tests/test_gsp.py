@@ -23,6 +23,7 @@ def test_read_latest_one_gsp(db_session, api_client):
     """Check main solar/GB/gsp/{gsp_id}/forecast route works"""
 
     forecasts = make_fake_forecasts(gsp_ids=list(range(0, 2)), session=db_session, add_latest=True)
+    forecasts[1].model.name = "blend"
     db_session.add_all(forecasts)
     db_session.commit()
 
@@ -73,6 +74,7 @@ def test_read_latest_gsp_id_equal_to_total(db_session, api_client):
     """Check that request with gsp_id<318 returns 200"""
 
     forecasts = make_fake_forecasts(gsp_ids=[317], session=db_session, add_latest=True)
+    forecasts[0].model.name = 'blend'
     db_session.add_all(forecasts)
 
     app.dependency_overrides[get_session] = lambda: db_session
