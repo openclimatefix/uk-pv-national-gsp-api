@@ -171,7 +171,6 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
     start_datetime = get_start_datetime()
 
     if forecast_horizon_minutes is None:
-
         forecast_values = get_forecast_values_latest(
             session=session, gsp_id=gsp_id, start_datetime=start_datetime, model_name="blend"
         )
@@ -187,9 +186,11 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
         )
 
     # convert to pydantic objects
-    if isinstance(forecast_values[0], ForecastValueSevenDaysSQL) or \
-            isinstance(forecast_values[0], ForecastValueSQL) or \
-            isinstance(forecast_values[0], ForecastValueLatestSQL):
+    if (
+        isinstance(forecast_values[0], ForecastValueSevenDaysSQL)
+        or isinstance(forecast_values[0], ForecastValueSQL)
+        or isinstance(forecast_values[0], ForecastValueLatestSQL)
+    ):
         forecast_values = [ForecastValue.from_orm(f) for f in forecast_values]
 
     return forecast_values
@@ -243,7 +244,10 @@ def get_truth_values_for_a_specific_gsp_from_database(
 
 
 def get_truth_values_for_all_gsps_from_database(
-    session: Session, start_gsp: Optional[int] = 1, end_gsp: Optional[int] = N_GSP+1, regime: Optional[str] = "in-day"
+    session: Session,
+    start_gsp: Optional[int] = 1,
+    end_gsp: Optional[int] = N_GSP + 1,
+    regime: Optional[str] = "in-day",
 ) -> List[LocationWithGSPYields]:
     """Get the truth value for all gsps for yesterday and today
 
