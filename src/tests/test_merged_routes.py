@@ -4,6 +4,7 @@ from datetime import datetime
 from freezegun import freeze_time
 from nowcasting_datamodel.fake import make_fake_forecast
 from nowcasting_datamodel.models import ForecastValue, ForecastValueLatestSQL
+from nowcasting_datamodel.read.read import get_model
 
 from database import get_session
 from main import app
@@ -13,16 +14,18 @@ from main import app
 def test_read_forecast_values_gsp(db_session, api_client):
     """Check main solar/GB/gsp/{gsp_id}/forecast route works"""
 
+    model = get_model(session=db_session, name="blend", version="0.0.1")
+
     forecast_value_1_sql = ForecastValueLatestSQL(
-        target_time=datetime(2023, 6, 2), expected_power_generation_megawatts=1, gsp_id=1
+        target_time=datetime(2023, 6, 2), expected_power_generation_megawatts=1, gsp_id=1, model_id=model.id
     )
 
     forecast_value_2_sql = ForecastValueLatestSQL(
-        target_time=datetime(2023, 6, 1, 1), expected_power_generation_megawatts=2, gsp_id=1
+        target_time=datetime(2023, 6, 1, 1), expected_power_generation_megawatts=2, gsp_id=1, model_id=model.id
     )
 
     forecast_value_3_sql = ForecastValueLatestSQL(
-        target_time=datetime(2023, 6, 1), expected_power_generation_megawatts=3, gsp_id=1
+        target_time=datetime(2023, 6, 1), expected_power_generation_megawatts=3, gsp_id=1, model_id=model.id
     )
 
     forecast = make_fake_forecast(
@@ -34,6 +37,7 @@ def test_read_forecast_values_gsp(db_session, api_client):
 
     # add to database
     db_session.add_all([forecast])
+    db_session.commit()
 
     app.dependency_overrides[get_session] = lambda: db_session
 
