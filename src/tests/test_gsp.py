@@ -40,7 +40,7 @@ def test_read_latest_one_gsp(db_session, api_client):
 def test_read_latest_all_gsp(db_session, api_client):
     """Check main solar/GB/gsp/forecast/all route works"""
 
-    model = get_model(session=db_session, name="cnn", version="0.0.1")
+    model = get_model(session=db_session, name="blend", version="0.0.1")
 
     forecasts = make_fake_forecasts(
         gsp_ids=list(range(0, 10)),
@@ -91,7 +91,7 @@ def test_read_latest_gsp_id_equal_to_total(db_session, api_client):
 def test_read_latest_all_gsp_normalized(db_session, api_client):
     """Check main solar/GB/gsp/forecast/all normalized route works"""
 
-    model = get_model(session=db_session, name="cnn", version="0.0.1")
+    model = get_model(session=db_session, name="blend", version="0.0.1")
 
     forecasts = make_fake_forecasts(
         gsp_ids=list(range(0, 10)),
@@ -116,7 +116,7 @@ def test_read_latest_all_gsp_normalized(db_session, api_client):
 def test_read_latest_all_gsp_historic(db_session, api_client):
     """Check main solar/GB/gsp/forecast/all historic route works"""
 
-    model = get_model(session=db_session, name="cnn", version="0.0.1")
+    model = get_model(session=db_session, name="blend", version="0.0.1")
 
     forecasts = make_fake_forecasts(
         gsp_ids=list(range(0, 10)),
