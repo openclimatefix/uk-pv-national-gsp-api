@@ -262,8 +262,8 @@ def test_read_truths_for_all_gsp(db_session, api_client):
 
 
 @freeze_time("2022-01-01")
-def test_read_truths_for_all_gsp(db_session, api_client):
-    """Check main solar/GB/gsp/pvlive/all route works"""
+def test_read_truths_for_all_gsp_compact(db_session, api_client):
+    """Check main solar/GB/gsp/pvlive/all route works with compact flag"""
 
     gsp_yield_1 = GSPYield(datetime_utc=datetime(2022, 1, 2), solar_generation_kw=1)
     gsp_yield_1_sql = gsp_yield_1.to_orm()
