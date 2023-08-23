@@ -21,7 +21,7 @@ from database import (
     get_truth_values_for_a_specific_gsp_from_database,
     get_truth_values_for_all_gsps_from_database,
 )
-from pydantic_models import LocationWithGSPYields, GSPYield
+from pydantic_models import GSPYield, LocationWithGSPYields
 
 GSP_TOTAL = 317
 
@@ -66,7 +66,8 @@ def get_all_available_forecasts(
     forecasts.normalize()
 
     logger.info(
-        f"Got {len(forecasts.forecasts)} forecasts for all gsps. The option is {historic=} for user {user}"
+        f"Got {len(forecasts.forecasts)} forecasts for all gsps. "
+        f"The option is {historic=} for user {user}"
     )
 
     return forecasts

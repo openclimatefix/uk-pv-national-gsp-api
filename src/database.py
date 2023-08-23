@@ -32,7 +32,7 @@ from nowcasting_datamodel.read.read_user import get_user as get_user_from_db
 from nowcasting_datamodel.save.update import N_GSP
 from sqlalchemy.orm.session import Session
 
-from pydantic_models import LocationWithGSPYields, GSPYield
+from pydantic_models import GSPYield, LocationWithGSPYields
 from utils import floor_30_minutes_dt, get_start_datetime
 
 logger = structlog.stdlib.get_logger()
