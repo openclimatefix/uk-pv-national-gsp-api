@@ -17,7 +17,7 @@ from database import (
     get_truth_values_for_a_specific_gsp_from_database,
     get_truth_values_for_all_gsps_from_database,
 )
-from pydantic_models import GSPYield, LocationWithGSPYields, GSPGenerations
+from pydantic_models import GSPGenerations, GSPYield, LocationWithGSPYields
 
 GSP_TOTAL = 317
 
