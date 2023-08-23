@@ -16,6 +16,7 @@ from nowcasting_datamodel.save.update import update_all_forecast_latest
 
 from database import get_session
 from main import app
+from pydantic_models import GSPGenerations
 
 
 @freeze_time("2022-01-01")
@@ -258,3 +259,45 @@ def test_read_truths_for_all_gsp(db_session, api_client):
     location = [LocationWithGSPYields(**location) for location in r_json]
     assert len(location) == 2
     assert len(location[0].gsp_yields) == 2
+
+
+@freeze_time("2022-01-01")
+def test_read_truths_for_all_gsp(db_session, api_client):
+    """Check main solar/GB/gsp/pvlive/all route works"""
+
+    gsp_yield_1 = GSPYield(datetime_utc=datetime(2022, 1, 2), solar_generation_kw=1)
+    gsp_yield_1_sql = gsp_yield_1.to_orm()
+
+    gsp_yield_2 = GSPYield(datetime_utc=datetime(2022, 1, 1), solar_generation_kw=2)
+    gsp_yield_2_sql = gsp_yield_2.to_orm()
+
+    gsp_yield_3 = GSPYield(datetime_utc=datetime(2022, 1, 1, 12), solar_generation_kw=3)
+    gsp_yield_3_sql = gsp_yield_3.to_orm()
+
+    gsp_sql_1: LocationSQL = Location(
+        gsp_id=122, label="GSP_122", status_interval_minutes=5
+    ).to_orm()
+    gsp_sql_2: LocationSQL = Location(
+        gsp_id=123, label="GSP_123", status_interval_minutes=10
+    ).to_orm()
+
+    # add pv system to yield object
+    gsp_yield_1_sql.location = gsp_sql_1
+    gsp_yield_2_sql.location = gsp_sql_1
+    gsp_yield_3_sql.location = gsp_sql_2
+
+    # add to database
+    db_session.add_all([gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_sql_1, gsp_sql_2])
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = api_client.get("/v0/solar/GB/gsp/pvlive/all?compact=true")
+
+    assert response.status_code == 200
+
+    r_json = response.json()
+    assert len(r_json) == 2
+
+    datetimes_with_gsp_yields = [GSPGenerations(**location) for location in r_json]
+    assert len(datetimes_with_gsp_yields) == 2
+    assert len(datetimes_with_gsp_yields[0].generation_kw_by_gsp_id) == 2

@@ -45,7 +45,8 @@ class LocationWithGSPYields(Location):
         )
 
 
-class OneDatetimeManyGeneration(EnhancedBaseModel):
+class GSPGenerations(EnhancedBaseModel):
+    """ gsp yields for one a singel datetime"""
     datetime_utc: datetime = Field(..., description="The timestamp of the gsp yield")
     generation_kw_by_gsp_id: Dict[str, str] = Field(
         ...,
@@ -56,7 +57,7 @@ class OneDatetimeManyGeneration(EnhancedBaseModel):
 
 def convert_location_sql_to_many_datetime_many_generation(
     locations: List[LocationSQL],
-) -> List[OneDatetimeManyGeneration]:
+) -> List[GSPGenerations]:
     """Change LocationSQL to list of OneDatetimeGSPGeneration
 
     This converts a list of location objects to a list of OneDatetimeGSPGeneration objects.
@@ -87,7 +88,7 @@ def convert_location_sql_to_many_datetime_many_generation(
     many_gsp_generations = []
     for datetime_utc, gsp_generations in many_gsp_generation.items():
         many_gsp_generations.append(
-            OneDatetimeManyGeneration(
+            GSPGenerations(
                 datetime_utc=datetime_utc, generation_kw_by_gsp_id=gsp_generations
             )
         )
