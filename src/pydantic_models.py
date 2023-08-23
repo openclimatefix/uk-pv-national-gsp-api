@@ -23,6 +23,10 @@ class LocationWithGSPYields(Location):
     gsp_yields: Optional[List[GSPYield]] = Field([], description="List of gsp yields")
 
     def from_location_sql(self):
+        """ Change LocationWithGSPYieldsSQL to LocationWithGSPYields
+
+        LocationWithGSPYieldsSQL is defined in nowcasting_datamodel
+        """
 
         return LocationWithGSPYields(
             label=self.label,
