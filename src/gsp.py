@@ -17,7 +17,7 @@ from database import (
     get_truth_values_for_a_specific_gsp_from_database,
     get_truth_values_for_all_gsps_from_database,
 )
-from pydantic_models import GSPYield, LocationWithGSPYields
+from pydantic_models import GSPYield, LocationWithGSPYields, OneDatetimeManyForecastValues
 
 GSP_TOTAL = 317
 
@@ -32,7 +32,7 @@ NationalYield = GSPYield
 # corresponds to route /v0/solar/GB/gsp/forecast/all
 @router.get(
     "/forecast/all/",
-    response_model=ManyForecasts,
+    response_model=Union[ManyForecasts,List[OneDatetimeManyForecastValues]],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
@@ -41,7 +41,8 @@ def get_all_available_forecasts(
     historic: Optional[bool] = True,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
-) -> ManyForecasts:
+    compact: Optional[bool] = False,
+) -> Union[ManyForecasts,List[OneDatetimeManyForecastValues]]:
     """### Get all forecasts for all GSPs
 
     The return object contains a forecast object with system details and
@@ -57,14 +58,15 @@ def get_all_available_forecasts(
 
     logger.info(f"Get forecasts for all gsps. The option is {historic=} for user {user}")
 
-    forecasts = get_forecasts_from_database(session=session, historic=historic)
+    forecasts = get_forecasts_from_database(session=session, historic=historic, compact=compact)
 
-    forecasts.normalize()
+    if not compact:
+        forecasts.normalize()
 
-    logger.info(
-        f"Got {len(forecasts.forecasts)} forecasts for all gsps. "
-        f"The option is {historic=} for user {user}"
-    )
+        logger.info(
+            f"Got {len(forecasts.forecasts)} forecasts for all gsps. "
+            f"The option is {historic=} for user {user}"
+        )
 
     return forecasts
 

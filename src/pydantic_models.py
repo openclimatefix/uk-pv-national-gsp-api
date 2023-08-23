@@ -1,9 +1,9 @@
 """ pydantic models for API"""
 import logging
 from datetime import datetime
-from typing import List, Optional
+from typing import Dict, List, Optional
 
-from nowcasting_datamodel.models import Location
+from nowcasting_datamodel.models import ForecastSQL, Location
 from nowcasting_datamodel.models.utils import EnhancedBaseModel
 from pydantic import Field
 
@@ -43,3 +43,56 @@ class LocationWithGSPYields(Location):
                 for gsp_yield in self.gsp_yields
             ],
         )
+
+
+
+class OneDatetimeManyForecastValues(EnhancedBaseModel):
+    datetime_utc: datetime = Field(..., description="The timestamp of the gsp yield")
+    forecast_values: Dict[str, float] = Field(
+        ...,
+        description="List of generations by gsp_id. Key is gsp_id, value is generation_kw. "
+        "We keep this as a dictionary to keep the size of the file small ",
+    )
+
+
+
+def convert_forecasts_to_many_datetime_many_generation(
+    forecasts: List[ForecastSQL],
+) -> List[OneDatetimeManyForecastValues]:
+    """Change forecasts to list of OneDatetimeManyForecastValues
+
+    This converts a list of forecast objects to a list of OneDatetimeManyForecastValues objects.
+
+    N forecasts, which T forecast values each,
+    is converted into
+    T OneDatetimeManyForecastValues objects with N forecast values each.
+
+    This reduces the size of the object as the datetimes are not repeated for each forecast values.
+    """
+
+    many_forecast_values_by_datetime = {}
+
+    # loop over locations and gsp yields to create a dictionary of gsp generation by datetime
+    for forecast in forecasts:
+        gsp_id = forecast.location.gsp_id
+        for forecast_value in forecast.forecast_values_latest:
+
+            datetime_utc = forecast_value.target_time
+            forecast_mw = round(forecast_value.expected_power_generation_megawatts, 2)
+
+            # if the datetime object is not in the dictionary, add it
+            if datetime_utc not in many_forecast_values_by_datetime:
+                many_forecast_values_by_datetime[datetime_utc] = {gsp_id: forecast_mw}
+            else:
+                many_forecast_values_by_datetime[datetime_utc][gsp_id] = forecast_mw
+
+    # convert dictionary to list of OneDatetimeManyForecastValues objects
+    many_forecast_values = []
+    for datetime_utc, forecast_values in many_forecast_values_by_datetime.items():
+        many_forecast_values.append(
+            OneDatetimeManyForecastValues(
+                datetime_utc=datetime_utc, forecast_values=forecast_values
+            )
+        )
+
+    return many_forecast_values
