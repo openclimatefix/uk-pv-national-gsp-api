@@ -65,7 +65,9 @@ def get_all_available_forecasts(
 
     forecasts.normalize()
 
-    logger.info(f"Got {len(forecasts.forecasts)} forecasts for all gsps. The option is {historic=} for user {user}")
+    logger.info(
+        f"Got {len(forecasts.forecasts)} forecasts for all gsps. The option is {historic=} for user {user}"
+    )
 
     return forecasts
 

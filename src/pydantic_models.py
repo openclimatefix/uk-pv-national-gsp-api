@@ -1,16 +1,11 @@
+""" pydantic models for API"""
 import logging
 from datetime import datetime
-from typing import ClassVar, List, Optional
-
-from pydantic import Field, validator
-from sqlalchemy import Column, DateTime, Float, ForeignKey, Index, Integer, String
-from sqlalchemy.orm import relationship
-
-from nowcasting_datamodel.models.base import Base_Forecast
-from nowcasting_datamodel.models.utils import CreatedMixin, EnhancedBaseModel
-from nowcasting_datamodel.utils import datetime_must_have_timezone
+from typing import List, Optional
 
 from nowcasting_datamodel.models import Location
+from nowcasting_datamodel.models.utils import EnhancedBaseModel
+from pydantic import Field
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +33,8 @@ class LocationWithGSPYields(Location):
             installed_capacity_mw=self.installed_capacity_mw,
             gsp_yields=[
                 GSPYield(
-                    datetime_utc=gsp_yield.datetime_utc, solar_generation_kw=gsp_yield.solar_generation_kw
+                    datetime_utc=gsp_yield.datetime_utc,
+                    solar_generation_kw=gsp_yield.solar_generation_kw,
                 )
                 for gsp_yield in self.gsp_yields
             ],
