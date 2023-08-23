@@ -274,6 +274,9 @@ def test_read_truths_for_all_gsp_compact(db_session, api_client):
     gsp_yield_3 = GSPYield(datetime_utc=datetime(2022, 1, 1, 12), solar_generation_kw=3)
     gsp_yield_3_sql = gsp_yield_3.to_orm()
 
+    gsp_yield_4 = GSPYield(datetime_utc=datetime(2022, 1, 1, 12), solar_generation_kw=3)
+    gsp_yield_4_sql = gsp_yield_4.to_orm()
+
     gsp_sql_1: LocationSQL = Location(
         gsp_id=122, label="GSP_122", status_interval_minutes=5
     ).to_orm()
@@ -285,9 +288,12 @@ def test_read_truths_for_all_gsp_compact(db_session, api_client):
     gsp_yield_1_sql.location = gsp_sql_1
     gsp_yield_2_sql.location = gsp_sql_1
     gsp_yield_3_sql.location = gsp_sql_2
+    gsp_yield_4_sql.location = gsp_sql_1
 
     # add to database
-    db_session.add_all([gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_sql_1, gsp_sql_2])
+    db_session.add_all(
+        [gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_yield_4_sql, gsp_sql_1, gsp_sql_2]
+    )
 
     app.dependency_overrides[get_session] = lambda: db_session
 
@@ -296,8 +302,10 @@ def test_read_truths_for_all_gsp_compact(db_session, api_client):
     assert response.status_code == 200
 
     r_json = response.json()
-    assert len(r_json) == 2
+    assert len(r_json) == 3
 
     datetimes_with_gsp_yields = [GSPGenerations(**location) for location in r_json]
-    assert len(datetimes_with_gsp_yields) == 2
-    assert len(datetimes_with_gsp_yields[0].generation_kw_by_gsp_id) == 2
+    assert len(datetimes_with_gsp_yields) == 3
+    assert len(datetimes_with_gsp_yields[0].generation_kw_by_gsp_id) == 1
+    assert len(datetimes_with_gsp_yields[1].generation_kw_by_gsp_id) == 2
+    assert len(datetimes_with_gsp_yields[2].generation_kw_by_gsp_id) == 1
