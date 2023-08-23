@@ -168,7 +168,7 @@ def test_read_latest_all_gsp_historic_compact(db_session, api_client):
 
     assert len(r) > 50
     assert len(r[0].forecast_values) == 9  # dont get the national
-    assert r[0].forecast_values['1'] <= 13000
+    assert r[0].forecast_values["1"] <= 13000
 
 
 @freeze_time("2022-01-01")
