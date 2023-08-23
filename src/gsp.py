@@ -32,7 +32,7 @@ NationalYield = GSPYield
 # corresponds to route /v0/solar/GB/gsp/forecast/all
 @router.get(
     "/forecast/all/",
-    response_model=Union[ManyForecasts,List[OneDatetimeManyForecastValues]],
+    response_model=Union[ManyForecasts, List[OneDatetimeManyForecastValues]],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
@@ -42,7 +42,7 @@ def get_all_available_forecasts(
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
     compact: Optional[bool] = False,
-) -> Union[ManyForecasts,List[OneDatetimeManyForecastValues]]:
+) -> Union[ManyForecasts, List[OneDatetimeManyForecastValues]]:
     """### Get all forecasts for all GSPs
 
     The return object contains a forecast object with system details and

@@ -32,7 +32,12 @@ from nowcasting_datamodel.read.read_user import get_user as get_user_from_db
 from nowcasting_datamodel.save.update import N_GSP
 from sqlalchemy.orm.session import Session
 
-from pydantic_models import GSPYield, LocationWithGSPYields, OneDatetimeManyForecastValues, convert_forecasts_to_many_datetime_many_generation
+from pydantic_models import (
+    GSPYield,
+    LocationWithGSPYields,
+    OneDatetimeManyForecastValues,
+    convert_forecasts_to_many_datetime_many_generation,
+)
 from utils import floor_30_minutes_dt, get_start_datetime
 
 logger = structlog.stdlib.get_logger()
@@ -126,7 +131,6 @@ def get_forecasts_from_database(
         return convert_forecasts_to_many_datetime_many_generation(forecasts)
 
     else:
-
         # change to pydantic objects
         if historic:
             forecasts = [Forecast.from_orm_latest(forecast) for forecast in forecasts]

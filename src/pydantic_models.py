@@ -45,7 +45,6 @@ class LocationWithGSPYields(Location):
         )
 
 
-
 class OneDatetimeManyForecastValues(EnhancedBaseModel):
     datetime_utc: datetime = Field(..., description="The timestamp of the gsp yield")
     forecast_values: Dict[str, float] = Field(
@@ -53,7 +52,6 @@ class OneDatetimeManyForecastValues(EnhancedBaseModel):
         description="List of generations by gsp_id. Key is gsp_id, value is generation_kw. "
         "We keep this as a dictionary to keep the size of the file small ",
     )
-
 
 
 def convert_forecasts_to_many_datetime_many_generation(
@@ -76,7 +74,6 @@ def convert_forecasts_to_many_datetime_many_generation(
     for forecast in forecasts:
         gsp_id = forecast.location.gsp_id
         for forecast_value in forecast.forecast_values_latest:
-
             datetime_utc = forecast_value.target_time
             forecast_mw = round(forecast_value.expected_power_generation_megawatts, 2)
 
