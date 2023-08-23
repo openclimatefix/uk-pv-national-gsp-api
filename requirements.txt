@@ -1,4 +1,4 @@
-opencv-contrib-python-headless==4.5.5.64
+opencv-contrib-python-headless
 fastapi
 uvicorn[standard]
 pydantic
