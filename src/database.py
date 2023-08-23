@@ -243,11 +243,14 @@ def get_truth_values_for_a_specific_gsp_from_database(
     :param gsp_id: gsp id
     :param regime: option for "in-day" or "day-after"
     :param start_datetime: optional start datetime for the query.
-    If not set, defaults to N_HISTORY_DAYS env var, which defaults to yesterday.
+     If not set, after now, or set to over three days ago
+     defaults to N_HISTORY_DAYS env var, which defaults to yesterday.
     :return: list of gsp yields
     """
 
-    if start_datetime is None:
+    if start_datetime is None \
+       or start_datetime >= datetime.now(tz=timezone.utc) \
+       or datetime.now(tz=timezone.utc) - start_datetime > timedelta(days=3):
         start_datetime = get_start_datetime()
 
     return get_gsp_yield(
