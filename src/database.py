@@ -12,9 +12,7 @@ from nowcasting_datamodel.models import (
     ForecastValueLatestSQL,
     ForecastValueSevenDaysSQL,
     ForecastValueSQL,
-    GSPYield,
     Location,
-    LocationWithGSPYields,
     ManyForecasts,
     Status,
 )
@@ -35,6 +33,7 @@ from nowcasting_datamodel.save.update import N_GSP
 from sqlalchemy.orm.session import Session
 
 from utils import floor_30_minutes_dt, get_start_datetime
+from pydantic_models import LocationWithGSPYields, GSPYield
 
 logger = structlog.stdlib.get_logger()
 
