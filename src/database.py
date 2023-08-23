@@ -1,7 +1,7 @@
 """ Functions to read from the database and format """
 import os
 from datetime import datetime, timedelta, timezone
-from typing import List, Optional
+from typing import List, Optional, Union
 
 import structlog
 from nowcasting_datamodel.connection import DatabaseConnection
@@ -32,7 +32,12 @@ from nowcasting_datamodel.read.read_user import get_user as get_user_from_db
 from nowcasting_datamodel.save.update import N_GSP
 from sqlalchemy.orm.session import Session
 
-from pydantic_models import GSPYield, LocationWithGSPYields
+from pydantic_models import (
+    GSPYield,
+    LocationWithGSPYields,
+    OneDatetimeManyGeneration,
+    convert_location_sql_to_many_datetime_many_generation,
+)
 from utils import floor_30_minutes_dt, get_start_datetime
 
 logger = structlog.stdlib.get_logger()
@@ -247,7 +252,8 @@ def get_truth_values_for_all_gsps_from_database(
     start_gsp: Optional[int] = 1,
     end_gsp: Optional[int] = N_GSP + 1,
     regime: Optional[str] = "in-day",
-) -> List[LocationWithGSPYields]:
+    compact: Optional[bool] = False,
+) -> Union[List[LocationWithGSPYields], List[OneDatetimeManyGeneration]]:
     """Get the truth value for all gsps for yesterday and today
 
     :param session: sql session
@@ -266,7 +272,10 @@ def get_truth_values_for_all_gsps_from_database(
         regime=regime,
     )
 
-    return [LocationWithGSPYields.from_orm(location) for location in locations]
+    if compact:
+        return convert_location_sql_to_many_datetime_many_generation(locations)
+    else:
+        return [LocationWithGSPYields.from_orm(location) for location in locations]
 
 
 def get_gsp_system(session: Session, gsp_id: Optional[int] = None) -> List[Location]:

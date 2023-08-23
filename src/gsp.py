@@ -17,7 +17,7 @@ from database import (
     get_truth_values_for_a_specific_gsp_from_database,
     get_truth_values_for_all_gsps_from_database,
 )
-from pydantic_models import GSPYield, LocationWithGSPYields
+from pydantic_models import GSPYield, LocationWithGSPYields, OneDatetimeManyGeneration
 
 GSP_TOTAL = 317
 
@@ -147,7 +147,7 @@ def get_forecasts_for_a_specific_gsp(
 # corresponds to API route /v0/solar/GB/gsp/pvlive/all
 @router.get(
     "/pvlive/all",
-    response_model=List[LocationWithGSPYields],
+    response_model=Union[List[LocationWithGSPYields], List[OneDatetimeManyGeneration]],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
@@ -156,7 +156,8 @@ def get_truths_for_all_gsps(
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
-) -> List[LocationWithGSPYields]:
+    compact: Optional[bool] = False,
+) -> Union[List[LocationWithGSPYields], List[OneDatetimeManyGeneration]]:
     """### Get PV_Live values for all GSPs for yesterday and today
 
     The return object is a series of real-time PV generation estimates or
@@ -167,12 +168,17 @@ def get_truths_for_all_gsps(
 
     If _regime_ is not specified, the parameter defaults to _in-day_.
 
+    If _compact_ is set to true, the response will be a list of OneDatetimeManyGeneration objects.
+    This return object is significantly smaller, but less readable.
+
     #### Parameters
     - **regime**: can choose __in-day__ or __day-after__
     """
     logger.info(f"Get PV Live estimates values for all gsp id and regime {regime} for user {user}")
 
-    return get_truth_values_for_all_gsps_from_database(session=session, regime=regime)
+    return get_truth_values_for_all_gsps_from_database(
+        session=session, regime=regime, compact=compact
+    )
 
 
 @router.get(
