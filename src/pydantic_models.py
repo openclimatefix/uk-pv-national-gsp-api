@@ -23,7 +23,6 @@ class LocationWithGSPYields(Location):
     gsp_yields: Optional[List[GSPYield]] = Field([], description="List of gsp yields")
 
     def from_location_sql(self):
-
         return LocationWithGSPYields(
             label=self.label,
             gsp_id=self.gsp_id,
