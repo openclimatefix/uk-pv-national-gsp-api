@@ -16,6 +16,7 @@ from nowcasting_datamodel.save.update import update_all_forecast_latest
 
 from database import get_session
 from main import app
+from pydantic_models import OneDatetimeManyForecastValues
 
 
 @freeze_time("2022-01-01")
@@ -140,6 +141,34 @@ def test_read_latest_all_gsp_historic(db_session, api_client):
     assert len(r.forecasts[0].forecast_values) > 50
     assert r.forecasts[0].forecast_values[0].expected_power_generation_megawatts <= 13000
     assert r.forecasts[1].forecast_values[0].expected_power_generation_megawatts <= 10
+
+
+def test_read_latest_all_gsp_historic_compact(db_session, api_client):
+    """Check main solar/GB/gsp/forecast/all historic route works"""
+
+    model = get_model(session=db_session, name="blend", version="0.0.1")
+
+    forecasts = make_fake_forecasts(
+        gsp_ids=list(range(0, 10)),
+        session=db_session,
+        t0_datetime_utc=datetime.now(tz=timezone.utc),
+        historic=True,
+    )
+    [setattr(f, "model", model) for f in forecasts]
+    db_session.add_all(forecasts)
+    update_all_forecast_latest(forecasts=forecasts, session=db_session)
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = api_client.get("/v0/solar/GB/gsp/forecast/all/?historic=True&compact=True")
+
+    assert response.status_code == 200
+
+    r = [OneDatetimeManyForecastValues(**f) for f in response.json()]
+
+    assert len(r) > 50
+    assert len(r[0].forecast_values) == 9  # dont get the national
+    assert r[0].forecast_values['1'] <= 13000
 
 
 @freeze_time("2022-01-01")
