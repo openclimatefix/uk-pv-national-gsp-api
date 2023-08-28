@@ -183,6 +183,8 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
             start_datetime=start_datetime,
             forecast_horizon_minutes=forecast_horizon_minutes,
             model_name="blend",
+            model=ForecastValueSevenDaysSQL,
+            only_return_latest=True,
         )
 
     # convert to pydantic objects
