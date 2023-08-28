@@ -223,17 +223,28 @@ def get_latest_national_forecast_from_database(session: Session) -> Forecast:
 
 
 def get_truth_values_for_a_specific_gsp_from_database(
-    session: Session, gsp_id: int, regime: Optional[str] = "in-day"
+    session: Session,
+    gsp_id: int,
+    regime: Optional[str] = "in-day",
+    start_datetime: Optional[datetime] = None,
 ) -> List[GSPYield]:
     """Get the truth value for one gsp for yesterday and today
 
     :param session: sql session
     :param gsp_id: gsp id
     :param regime: option for "in-day" or "day-after"
+    :param start_datetime: optional start datetime for the query.
+     If not set, after now, or set to over three days ago
+     defaults to N_HISTORY_DAYS env var, which defaults to yesterday.
     :return: list of gsp yields
     """
 
-    start_datetime = get_start_datetime()
+    if (
+        start_datetime is None
+        or start_datetime >= datetime.now(tz=timezone.utc)
+        or datetime.now(tz=timezone.utc) - start_datetime > timedelta(days=3)
+    ):
+        start_datetime = get_start_datetime()
 
     return get_gsp_yield(
         session=session,
