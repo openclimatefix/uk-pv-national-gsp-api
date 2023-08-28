@@ -18,7 +18,6 @@ from nowcasting_datamodel.models import (
     ManyForecasts,
     Status,
 )
-from nowcasting_datamodel.read.blend.blend import get_blend_forecast_values_latest
 from nowcasting_datamodel.read.read import (
     get_all_gsp_ids_latest_forecast,
     get_all_locations,
