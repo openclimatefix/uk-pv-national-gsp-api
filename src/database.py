@@ -90,13 +90,16 @@ def get_latest_status_from_database(session: Session) -> Status:
 
 
 def get_forecasts_from_database(
-    session: Session, historic: Optional[bool] = False
+    session: Session,
+    historic: Optional[bool] = False,
+    start_datetime_utc: Optional[datetime] = None,
+    end_datetime_utc: Optional[datetime] = None,
 ) -> ManyForecasts:
     """Get forecasts from database for all GSPs"""
     # get the latest forecast for all gsps.
 
     if historic:
-        start_datetime = get_start_datetime()
+        start_datetime = get_start_datetime(start_datetime=start_datetime_utc)
 
         forecasts = get_all_gsp_ids_latest_forecast(
             session=session,
@@ -105,6 +108,7 @@ def get_forecasts_from_database(
             historic=True,
             include_national=False,
             model_name="blend",
+            end_target_time=end_datetime_utc,
         )
 
         logger.debug(f"Found {len(forecasts)} forecasts from database")
@@ -121,6 +125,7 @@ def get_forecasts_from_database(
             start_target_time=yesterday_start_datetime,
             preload_children=True,
             model_name="blend",
+            end_target_time=end_datetime_utc,
         )
 
     # change to pydantic objects
@@ -157,7 +162,11 @@ def get_forecasts_for_a_specific_gsp_from_database(
 
 
 def get_latest_forecast_values_for_a_specific_gsp_from_database(
-    session: Session, gsp_id: int, forecast_horizon_minutes: Optional[int] = None
+    session: Session,
+    gsp_id: int,
+    forecast_horizon_minutes: Optional[int] = None,
+    start_datetime_utc: Optional[datetime] = None,
+    end_datetime_utc: Optional[datetime] = None,
 ) -> List[ForecastValue]:
     """Get the forecast values for yesterday and today for one gsp
 
@@ -168,11 +177,15 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
     :return: list of latest forecat values
     """
 
-    start_datetime = get_start_datetime()
+    start_datetime = get_start_datetime(start_datetime=start_datetime_utc)
 
     if forecast_horizon_minutes is None:
         forecast_values = get_forecast_values_latest(
-            session=session, gsp_id=gsp_id, start_datetime=start_datetime, model_name="blend"
+            session=session,
+            gsp_id=gsp_id,
+            start_datetime=start_datetime,
+            model_name="blend",
+            end_datetime=end_datetime_utc,
         )
 
     else:
@@ -227,6 +240,7 @@ def get_truth_values_for_a_specific_gsp_from_database(
     gsp_id: int,
     regime: Optional[str] = "in-day",
     start_datetime: Optional[datetime] = None,
+    end_datetime: Optional[datetime] = None,
 ) -> List[GSPYield]:
     """Get the truth value for one gsp for yesterday and today
 
@@ -236,20 +250,17 @@ def get_truth_values_for_a_specific_gsp_from_database(
     :param start_datetime: optional start datetime for the query.
      If not set, after now, or set to over three days ago
      defaults to N_HISTORY_DAYS env var, which defaults to yesterday.
+    :param end_datetime: optional end datetime for the query.
     :return: list of gsp yields
     """
 
-    if (
-        start_datetime is None
-        or start_datetime >= datetime.now(tz=timezone.utc)
-        or datetime.now(tz=timezone.utc) - start_datetime > timedelta(days=3)
-    ):
-        start_datetime = get_start_datetime()
+    start_datetime = get_start_datetime(start_datetime=start_datetime)
 
     return get_gsp_yield(
         session=session,
         gsp_ids=[gsp_id],
         start_datetime_utc=start_datetime,
+        end_datetime_utc=end_datetime,
         regime=regime,
     )
 
@@ -259,6 +270,8 @@ def get_truth_values_for_all_gsps_from_database(
     start_gsp: Optional[int] = 1,
     end_gsp: Optional[int] = N_GSP + 1,
     regime: Optional[str] = "in-day",
+    start_datetime_utc: Optional[datetime] = None,
+    end_datetime_utc: Optional[datetime] = None,
 ) -> List[LocationWithGSPYields]:
     """Get the truth value for all gsps for yesterday and today
 
@@ -266,15 +279,20 @@ def get_truth_values_for_all_gsps_from_database(
     :param start_gsp: the start number of gsps we should load.
     :param end_gsp: the end number of gsps we should load.
     :param regime: option for "in-day" or "day-after"
+    :param start_datetime_utc: optional start datetime for the query.
+     If not set, after now, or set to over three days ago
+     defaults to N_HISTORY_DAYS env var, which defaults to yesterday.
+    :param end_datetime_utc: optional end datetime for the query.
     :return: list of gsp yields
     """
 
-    start_datetime = get_start_datetime()
+    start_datetime = get_start_datetime(start_datetime=start_datetime_utc)
 
     locations = get_gsp_yield_by_location(
         session=session,
         gsp_ids=list(range(start_gsp, end_gsp)),
         start_datetime_utc=start_datetime,
+        end_datetime_utc=end_datetime_utc,
         regime=regime,
     )
 

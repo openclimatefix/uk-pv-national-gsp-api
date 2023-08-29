@@ -47,6 +47,8 @@ def get_all_available_forecasts(
     historic: Optional[bool] = True,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
+    start_datetime_utc: Optional[datetime] = None,
+    end_datetime_utc: Optional[datetime] = None,
 ) -> ManyForecasts:
     """### Get all forecasts for all GSPs
 
@@ -59,11 +61,18 @@ def get_all_available_forecasts(
     #### Parameters
     - **historic**: boolean that defaults to `true`, returning yesterday's and
     today's forecasts for all GSPs
+    - **start_datetime_utc**: optional start datetime for the query.
+    - **end_datetime_utc**: optional end datetime for the query.
     """
 
     logger.info(f"Get forecasts for all gsps. The option is {historic=} for user {user}")
 
-    forecasts = get_forecasts_from_database(session=session, historic=historic)
+    forecasts = get_forecasts_from_database(
+        session=session,
+        historic=historic,
+        start_datetime_utc=start_datetime_utc,
+        end_datetime_utc=end_datetime_utc,
+    )
 
     forecasts.normalize()
 
@@ -108,6 +117,8 @@ def get_forecasts_for_a_specific_gsp(
     session: Session = Depends(get_session),
     forecast_horizon_minutes: Optional[int] = None,
     user: Auth0User = Security(get_user()),
+    start_datetime_utc: Optional[datetime] = None,
+    end_datetime_utc: Optional[datetime] = None,
 ) -> Union[Forecast, List[ForecastValue]]:
     """### Get recent forecast values for a specific GSP
 
@@ -125,6 +136,8 @@ def get_forecasts_for_a_specific_gsp(
     #### Parameters
     - **gsp_id**: *gsp_id* of the desired forecast
     - **forecast_horizon_minutes**: optional forecast horizon in minutes (ex. 60
+    - **start_datetime_utc**: optional start datetime for the query.
+    - **end_datetime_utc**: optional end datetime for the query.
     returns the latest forecast made 60 minutes before the target time)
     """
 
@@ -138,6 +151,8 @@ def get_forecasts_for_a_specific_gsp(
         session=session,
         gsp_id=gsp_id,
         forecast_horizon_minutes=forecast_horizon_minutes,
+        start_datetime_utc=start_datetime_utc,
+        end_datetime_utc=end_datetime_utc,
     )
 
     logger.debug("Got forecast values for a specific gsp.")
@@ -157,6 +172,8 @@ def get_truths_for_all_gsps(
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
+    start_datetime_utc: Optional[datetime] = None,
+    end_datetime_utc: Optional[datetime] = None,
 ) -> List[LocationWithGSPYields]:
     """### Get PV_Live values for all GSPs for yesterday and today
 
@@ -170,10 +187,17 @@ def get_truths_for_all_gsps(
 
     #### Parameters
     - **regime**: can choose __in-day__ or __day-after__
+    - **start_datetime_utc**: optional start datetime for the query.
+    - **end_datetime_utc**: optional end datetime for the query.
     """
     logger.info(f"Get PV Live estimates values for all gsp id and regime {regime} for user {user}")
 
-    return get_truth_values_for_all_gsps_from_database(session=session, regime=regime)
+    return get_truth_values_for_all_gsps_from_database(
+        session=session,
+        regime=regime,
+        start_datetime_utc=start_datetime_utc,
+        end_datetime_utc=end_datetime_utc,
+    )
 
 
 @router.get(
@@ -214,6 +238,7 @@ def get_truths_for_a_specific_gsp(
     gsp_id: int,
     regime: Optional[str] = None,
     start_datetime_utc: Optional[datetime] = None,
+    end_datetime_utc: Optional[datetime] = None,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
 ) -> List[GSPYield]:
@@ -231,6 +256,7 @@ def get_truths_for_a_specific_gsp(
     - **gsp_id**: _gsp_id_ of the requested forecast
     - **regime**: can choose __in-day__ or __day-after__
     - **start_datetime_utc**: optional start datetime for the query.
+    - **end_datetime_utc**: optional end datetime for the query.
     If not set, defaults to N_HISTORY_DAYS env var, which if not set defaults to yesterday.
     """
 
@@ -242,5 +268,9 @@ def get_truths_for_a_specific_gsp(
         return Response(None, status.HTTP_204_NO_CONTENT)
 
     return get_truth_values_for_a_specific_gsp_from_database(
-        session=session, gsp_id=gsp_id, regime=regime, start_datetime=start_datetime_utc
+        session=session,
+        gsp_id=gsp_id,
+        regime=regime,
+        start_datetime=start_datetime_utc,
+        end_datetime=end_datetime_utc,
     )
