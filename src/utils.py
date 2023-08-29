@@ -64,7 +64,9 @@ def floor_6_hours_dt(dt: datetime):
     return dt
 
 
-def get_start_datetime(n_history_days: Optional[Union[str, int]] = None, start_datetime:Optional[datetime] = None) -> datetime:
+def get_start_datetime(
+    n_history_days: Optional[Union[str, int]] = None, start_datetime: Optional[datetime] = None
+) -> datetime:
     """
     Get the start datetime for the query
 
@@ -79,11 +81,10 @@ def get_start_datetime(n_history_days: Optional[Union[str, int]] = None, start_d
     """
 
     if (
-            start_datetime is None
-            or start_datetime >= datetime.now(tz=timezone.utc)
-            or datetime.now(tz=timezone.utc) - start_datetime > timedelta(days=3)
+        start_datetime is None
+        or start_datetime >= datetime.now(tz=timezone.utc)
+        or datetime.now(tz=timezone.utc) - start_datetime > timedelta(days=3)
     ):
-
         if n_history_days is None:
             n_history_days = os.getenv("N_HISTORY_DAYS", "yesterday")
 
