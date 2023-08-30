@@ -1,7 +1,7 @@
 """ Functions to read from the database and format """
 import os
 from datetime import datetime, timedelta, timezone
-from typing import List, Optional
+from typing import List, Optional, Union
 
 import structlog
 from nowcasting_datamodel.connection import DatabaseConnection
@@ -32,7 +32,12 @@ from nowcasting_datamodel.read.read_user import get_user as get_user_from_db
 from nowcasting_datamodel.save.update import N_GSP
 from sqlalchemy.orm.session import Session
 
-from pydantic_models import GSPYield, LocationWithGSPYields
+from pydantic_models import (
+    GSPYield,
+    LocationWithGSPYields,
+    OneDatetimeManyForecastValues,
+    convert_forecasts_to_many_datetime_many_generation,
+)
 from utils import floor_30_minutes_dt, get_start_datetime
 
 logger = structlog.stdlib.get_logger()
@@ -89,8 +94,8 @@ def get_latest_status_from_database(session: Session) -> Status:
 
 
 def get_forecasts_from_database(
-    session: Session, historic: Optional[bool] = False
-) -> ManyForecasts:
+    session: Session, historic: Optional[bool] = False, compact: Optional[bool] = False
+) -> Union[ManyForecasts, List[OneDatetimeManyForecastValues]]:
     """Get forecasts from database for all GSPs"""
     # get the latest forecast for all gsps.
 
@@ -122,14 +127,18 @@ def get_forecasts_from_database(
             model_name="blend",
         )
 
-    # change to pydantic objects
-    if historic:
-        forecasts = [Forecast.from_orm_latest(forecast) for forecast in forecasts]
-    else:
-        forecasts = [Forecast.from_orm(forecast) for forecast in forecasts]
+    if compact:
+        return convert_forecasts_to_many_datetime_many_generation(forecasts)
 
-    # return as many forecasts
-    return ManyForecasts(forecasts=forecasts)
+    else:
+        # change to pydantic objects
+        if historic:
+            forecasts = [Forecast.from_orm_latest(forecast) for forecast in forecasts]
+        else:
+            forecasts = [Forecast.from_orm(forecast) for forecast in forecasts]
+
+        # return as many forecasts
+        return ManyForecasts(forecasts=forecasts)
 
 
 def get_forecasts_for_a_specific_gsp_from_database(
