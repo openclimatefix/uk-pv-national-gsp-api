@@ -69,11 +69,6 @@ def get_all_available_forecasts(
             f"The option is {historic=} for user {user}"
         )
 
-    logger.info(
-        f"Got {len(forecasts.forecasts)} forecasts for all gsps. "
-        f"The option is {historic=} for user {user}"
-    )
-
     return forecasts
 
 
