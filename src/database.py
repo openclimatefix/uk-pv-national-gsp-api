@@ -1,7 +1,7 @@
 """ Functions to read from the database and format """
 import os
 from datetime import datetime, timedelta, timezone
-from typing import Union, List, Optional
+from typing import List, Optional, Union
 
 import structlog
 from nowcasting_datamodel.connection import DatabaseConnection

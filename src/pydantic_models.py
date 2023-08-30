@@ -1,11 +1,9 @@
 """ pydantic models for API"""
 import logging
 from datetime import datetime
-from typing import Dict
-from typing import List, Optional
+from typing import Dict, List, Optional
 
-from nowcasting_datamodel.models import ForecastSQL
-from nowcasting_datamodel.models import Location
+from nowcasting_datamodel.models import ForecastSQL, Location
 from nowcasting_datamodel.models.utils import EnhancedBaseModel
 from pydantic import Field
 
@@ -48,6 +46,8 @@ class LocationWithGSPYields(Location):
 
 
 class OneDatetimeManyForecastValues(EnhancedBaseModel):
+    """One datetime with many forecast values"""
+
     datetime_utc: datetime = Field(..., description="The timestamp of the gsp yield")
     forecast_values: Dict[str, float] = Field(
         ...,
