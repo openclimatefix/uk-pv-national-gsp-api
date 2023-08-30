@@ -102,7 +102,6 @@ def get_forecasts_from_database(
     end_datetime_utc: Optional[datetime] = None,
     compact: Optional[bool] = False,
 ) -> Union[ManyForecasts, List[OneDatetimeManyForecastValues]]:
-
     """Get forecasts from database for all GSPs"""
     # get the latest forecast for all gsps.
 
