@@ -11,6 +11,7 @@ psycopg2-binary
 geopandas
 aiofiles
 pytest-cov
+testcontainers
 fastapi-auth0==0.3.0
 httpx
 structlog

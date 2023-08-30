@@ -1,4 +1,5 @@
 """Get GSP boundary data from eso """
+from datetime import datetime
 from typing import List, Optional, Union
 
 import structlog
@@ -67,6 +68,11 @@ def get_all_available_forecasts(
             f"Got {len(forecasts.forecasts)} forecasts for all gsps. "
             f"The option is {historic=} for user {user}"
         )
+
+    logger.info(
+        f"Got {len(forecasts.forecasts)} forecasts for all gsps. "
+        f"The option is {historic=} for user {user}"
+    )
 
     return forecasts
 
@@ -214,6 +220,7 @@ def get_truths_for_a_specific_gsp(
     request: Request,
     gsp_id: int,
     regime: Optional[str] = None,
+    start_datetime_utc: Optional[datetime] = None,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
 ) -> List[GSPYield]:
@@ -230,6 +237,8 @@ def get_truths_for_a_specific_gsp(
     #### Parameters
     - **gsp_id**: _gsp_id_ of the requested forecast
     - **regime**: can choose __in-day__ or __day-after__
+    - **start_datetime_utc**: optional start datetime for the query.
+    If not set, defaults to N_HISTORY_DAYS env var, which if not set defaults to yesterday.
     """
 
     logger.info(
@@ -240,5 +249,5 @@ def get_truths_for_a_specific_gsp(
         return Response(None, status.HTTP_204_NO_CONTENT)
 
     return get_truth_values_for_a_specific_gsp_from_database(
-        session=session, gsp_id=gsp_id, regime=regime
+        session=session, gsp_id=gsp_id, regime=regime, start_datetime=start_datetime_utc
     )

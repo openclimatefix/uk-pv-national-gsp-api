@@ -16,10 +16,10 @@ from nowcasting_datamodel.models import (
     ManyForecasts,
     Status,
 )
-from nowcasting_datamodel.read.blend.blend import get_blend_forecast_values_latest
 from nowcasting_datamodel.read.read import (
     get_all_gsp_ids_latest_forecast,
     get_all_locations,
+    get_forecast_values,
     get_forecast_values_latest,
     get_latest_forecast,
     get_latest_national_forecast,
@@ -184,13 +184,14 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
         )
 
     else:
-        forecast_values = get_blend_forecast_values_latest(
+        forecast_values = get_forecast_values(
             session=session,
             gsp_id=gsp_id,
             start_datetime=start_datetime,
             forecast_horizon_minutes=forecast_horizon_minutes,
-            weights=weights,
-            model_names=["cnn", "National_xg", "pvnet_v2"],
+            model_name="blend",
+            model=ForecastValueSevenDaysSQL,
+            only_return_latest=True,
         )
 
     # convert to pydantic objects
@@ -231,17 +232,28 @@ def get_latest_national_forecast_from_database(session: Session) -> Forecast:
 
 
 def get_truth_values_for_a_specific_gsp_from_database(
-    session: Session, gsp_id: int, regime: Optional[str] = "in-day"
+    session: Session,
+    gsp_id: int,
+    regime: Optional[str] = "in-day",
+    start_datetime: Optional[datetime] = None,
 ) -> List[GSPYield]:
     """Get the truth value for one gsp for yesterday and today
 
     :param session: sql session
     :param gsp_id: gsp id
     :param regime: option for "in-day" or "day-after"
+    :param start_datetime: optional start datetime for the query.
+     If not set, after now, or set to over three days ago
+     defaults to N_HISTORY_DAYS env var, which defaults to yesterday.
     :return: list of gsp yields
     """
 
-    start_datetime = get_start_datetime()
+    if (
+        start_datetime is None
+        or start_datetime >= datetime.now(tz=timezone.utc)
+        or datetime.now(tz=timezone.utc) - start_datetime > timedelta(days=3)
+    ):
+        start_datetime = get_start_datetime()
 
     return get_gsp_yield(
         session=session,
