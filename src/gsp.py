@@ -18,7 +18,7 @@ from database import (
     get_truth_values_for_a_specific_gsp_from_database,
     get_truth_values_for_all_gsps_from_database,
 )
-from pydantic_models import GSPGenerations, GSPYield, LocationWithGSPYields
+from pydantic_models import GSPYieldGroupByDatetime, GSPYield, LocationWithGSPYields
 
 GSP_TOTAL = 317
 
@@ -148,7 +148,7 @@ def get_forecasts_for_a_specific_gsp(
 # corresponds to API route /v0/solar/GB/gsp/pvlive/all
 @router.get(
     "/pvlive/all",
-    response_model=Union[List[LocationWithGSPYields], List[GSPGenerations]],
+    response_model=Union[List[LocationWithGSPYields], List[GSPYieldGroupByDatetime]],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
@@ -158,7 +158,7 @@ def get_truths_for_all_gsps(
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
     compact: Optional[bool] = False,
-) -> Union[List[LocationWithGSPYields], List[GSPGenerations]]:
+) -> Union[List[LocationWithGSPYields], List[GSPYieldGroupByDatetime]]:
     """### Get PV_Live values for all GSPs for yesterday and today
 
     The return object is a series of real-time PV generation estimates or

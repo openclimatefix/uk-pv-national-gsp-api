@@ -16,7 +16,7 @@ from nowcasting_datamodel.save.update import update_all_forecast_latest
 
 from database import get_session
 from main import app
-from pydantic_models import GSPGenerations
+from pydantic_models import GSPYieldGroupByDatetime
 
 
 @freeze_time("2022-01-01")
@@ -304,7 +304,7 @@ def test_read_truths_for_all_gsp_compact(db_session, api_client):
     r_json = response.json()
     assert len(r_json) == 3
 
-    datetimes_with_gsp_yields = [GSPGenerations(**location) for location in r_json]
+    datetimes_with_gsp_yields = [GSPYieldGroupByDatetime(**location) for location in r_json]
     assert len(datetimes_with_gsp_yields) == 3
     assert len(datetimes_with_gsp_yields[0].generation_kw_by_gsp_id) == 1
     assert len(datetimes_with_gsp_yields[1].generation_kw_by_gsp_id) == 2

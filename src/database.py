@@ -33,7 +33,7 @@ from nowcasting_datamodel.save.update import N_GSP
 from sqlalchemy.orm.session import Session
 
 from pydantic_models import (
-    GSPGenerations,
+    GSPYieldGroupByDatetime,
     GSPYield,
     LocationWithGSPYields,
     convert_location_sql_to_many_datetime_many_generation,
@@ -265,7 +265,7 @@ def get_truth_values_for_all_gsps_from_database(
     end_gsp: Optional[int] = N_GSP + 1,
     regime: Optional[str] = "in-day",
     compact: Optional[bool] = False,
-) -> Union[List[LocationWithGSPYields], List[GSPGenerations]]:
+) -> Union[List[LocationWithGSPYields], List[GSPYieldGroupByDatetime]]:
     """Get the truth value for all gsps for yesterday and today
 
     :param session: sql session
