@@ -42,7 +42,7 @@ logger = structlog.stdlib.get_logger()
 folder = os.path.dirname(os.path.abspath(__file__))
 
 title = "Quartz Solar API"
-version = "1.5.9"
+version = "1.5.14"
 
 sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN"),
@@ -90,7 +90,7 @@ page and checking out our
 “[list of good first issues](https://github.com/search?l=&p=1&q=user%3Aopenclimatefix+label%3A%22good+first+issue%22&ref=advsearch&type=Issues&utf8=%E2%9C%93&state=open)”!
 
 You can find more information about the Quartz Solar app and view screenshots
-of the UI on our [Notion page](https:/openclimatefix.notion.site/Nowcasting-Documentation-0d718915650e4f098470d695aa3494bf).
+of the UI on our [Notion page](https://openclimatefix.notion.site/Nowcasting-Documentation-0d718915650e4f098470d695aa3494bf).
 
 If you have any further questions, please don't hesitate to get in touch.
 

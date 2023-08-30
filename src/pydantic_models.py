@@ -1,9 +1,11 @@
 """ pydantic models for API"""
 import logging
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict
+from typing import List, Optional
 
-from nowcasting_datamodel.models import Location, LocationSQL
+from nowcasting_datamodel.models import Location
+from nowcasting_datamodel.models import LocationSQL
 from nowcasting_datamodel.models.utils import EnhancedBaseModel
 from pydantic import Field
 
