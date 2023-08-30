@@ -1,7 +1,7 @@
 """ Functions to read from the database and format """
 import os
 from datetime import datetime, timedelta, timezone
-from typing import List, Optional
+from typing import List, Optional, Union
 
 import structlog
 from nowcasting_datamodel.connection import DatabaseConnection
@@ -12,16 +12,14 @@ from nowcasting_datamodel.models import (
     ForecastValueLatestSQL,
     ForecastValueSevenDaysSQL,
     ForecastValueSQL,
-    GSPYield,
     Location,
-    LocationWithGSPYields,
     ManyForecasts,
     Status,
 )
-from nowcasting_datamodel.read.blend.blend import get_blend_forecast_values_latest
 from nowcasting_datamodel.read.read import (
     get_all_gsp_ids_latest_forecast,
     get_all_locations,
+    get_forecast_values,
     get_forecast_values_latest,
     get_latest_forecast,
     get_latest_national_forecast,
@@ -34,6 +32,14 @@ from nowcasting_datamodel.read.read_user import get_user as get_user_from_db
 from nowcasting_datamodel.save.update import N_GSP
 from sqlalchemy.orm.session import Session
 
+from pydantic_models import (
+    GSPYield,
+    GSPYieldGroupByDatetime,
+    LocationWithGSPYields,
+    OneDatetimeManyForecastValues,
+    convert_forecasts_to_many_datetime_many_generation,
+    convert_location_sql_to_many_datetime_many_generation,
+)
 from utils import floor_30_minutes_dt, get_start_datetime
 
 logger = structlog.stdlib.get_logger()
@@ -94,7 +100,9 @@ def get_forecasts_from_database(
     historic: Optional[bool] = False,
     start_datetime_utc: Optional[datetime] = None,
     end_datetime_utc: Optional[datetime] = None,
-) -> ManyForecasts:
+    compact: Optional[bool] = False,
+) -> Union[ManyForecasts, List[OneDatetimeManyForecastValues]]:
+
     """Get forecasts from database for all GSPs"""
     # get the latest forecast for all gsps.
 
@@ -128,14 +136,18 @@ def get_forecasts_from_database(
             end_target_time=end_datetime_utc,
         )
 
-    # change to pydantic objects
-    if historic:
-        forecasts = [Forecast.from_orm_latest(forecast) for forecast in forecasts]
-    else:
-        forecasts = [Forecast.from_orm(forecast) for forecast in forecasts]
+    if compact:
+        return convert_forecasts_to_many_datetime_many_generation(forecasts)
 
-    # return as many forecasts
-    return ManyForecasts(forecasts=forecasts)
+    else:
+        # change to pydantic objects
+        if historic:
+            forecasts = [Forecast.from_orm_latest(forecast) for forecast in forecasts]
+        else:
+            forecasts = [Forecast.from_orm(forecast) for forecast in forecasts]
+
+        # return as many forecasts
+        return ManyForecasts(forecasts=forecasts)
 
 
 def get_forecasts_for_a_specific_gsp_from_database(
@@ -189,13 +201,14 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
         )
 
     else:
-        forecast_values = get_blend_forecast_values_latest(
+        forecast_values = get_forecast_values(
             session=session,
             gsp_id=gsp_id,
             start_datetime=start_datetime,
             forecast_horizon_minutes=forecast_horizon_minutes,
-            weights=weights,
-            model_names=["cnn", "National_xg", "pvnet_v2"],
+            model_name="blend",
+            model=ForecastValueSevenDaysSQL,
+            only_return_latest=True,
         )
 
     # convert to pydantic objects
@@ -272,7 +285,8 @@ def get_truth_values_for_all_gsps_from_database(
     regime: Optional[str] = "in-day",
     start_datetime_utc: Optional[datetime] = None,
     end_datetime_utc: Optional[datetime] = None,
-) -> List[LocationWithGSPYields]:
+    compact: Optional[bool] = False,
+) -> Union[List[LocationWithGSPYields], List[GSPYieldGroupByDatetime]]:
     """Get the truth value for all gsps for yesterday and today
 
     :param session: sql session
@@ -296,7 +310,10 @@ def get_truth_values_for_all_gsps_from_database(
         regime=regime,
     )
 
-    return [LocationWithGSPYields.from_orm(location) for location in locations]
+    if compact:
+        return convert_location_sql_to_many_datetime_many_generation(locations)
+    else:
+        return [LocationWithGSPYields.from_orm(location) for location in locations]
 
 
 def get_gsp_system(session: Session, gsp_id: Optional[int] = None) -> List[Location]:

@@ -6,13 +6,7 @@ import structlog
 from fastapi import APIRouter, Depends, Request, Security, status
 from fastapi.responses import Response
 from fastapi_auth0 import Auth0User
-from nowcasting_datamodel.models import (
-    Forecast,
-    ForecastValue,
-    GSPYield,
-    LocationWithGSPYields,
-    ManyForecasts,
-)
+from nowcasting_datamodel.models import Forecast, ForecastValue, ManyForecasts
 from sqlalchemy.orm.session import Session
 
 from auth_utils import get_auth_implicit_scheme, get_user
@@ -23,6 +17,12 @@ from database import (
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
     get_truth_values_for_all_gsps_from_database,
+)
+from pydantic_models import (
+    GSPYield,
+    GSPYieldGroupByDatetime,
+    LocationWithGSPYields,
+    OneDatetimeManyForecastValues,
 )
 
 GSP_TOTAL = 317
@@ -38,7 +38,7 @@ NationalYield = GSPYield
 # corresponds to route /v0/solar/GB/gsp/forecast/all
 @router.get(
     "/forecast/all/",
-    response_model=ManyForecasts,
+    response_model=Union[ManyForecasts, List[OneDatetimeManyForecastValues]],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
@@ -49,7 +49,8 @@ def get_all_available_forecasts(
     user: Auth0User = Security(get_user()),
     start_datetime_utc: Optional[datetime] = None,
     end_datetime_utc: Optional[datetime] = None,
-) -> ManyForecasts:
+    compact: Optional[bool] = False,
+) -> Union[ManyForecasts, List[OneDatetimeManyForecastValues]]:
     """### Get all forecasts for all GSPs
 
     The return object contains a forecast object with system details and
@@ -72,9 +73,16 @@ def get_all_available_forecasts(
         historic=historic,
         start_datetime_utc=start_datetime_utc,
         end_datetime_utc=end_datetime_utc,
+        compact=compact,
     )
 
-    forecasts.normalize()
+    if not compact:
+        forecasts.normalize()
+
+        logger.info(
+            f"Got {len(forecasts.forecasts)} forecasts for all gsps. "
+            f"The option is {historic=} for user {user}"
+        )
 
     return forecasts
 
@@ -163,7 +171,7 @@ def get_forecasts_for_a_specific_gsp(
 # corresponds to API route /v0/solar/GB/gsp/pvlive/all
 @router.get(
     "/pvlive/all",
-    response_model=List[LocationWithGSPYields],
+    response_model=Union[List[LocationWithGSPYields], List[GSPYieldGroupByDatetime]],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
@@ -174,7 +182,8 @@ def get_truths_for_all_gsps(
     user: Auth0User = Security(get_user()),
     start_datetime_utc: Optional[datetime] = None,
     end_datetime_utc: Optional[datetime] = None,
-) -> List[LocationWithGSPYields]:
+    compact: Optional[bool] = False,
+) -> Union[List[LocationWithGSPYields], List[GSPYieldGroupByDatetime]]:
     """### Get PV_Live values for all GSPs for yesterday and today
 
     The return object is a series of real-time PV generation estimates or
@@ -184,6 +193,9 @@ def get_truths_for_all_gsps(
     the previous day's truth values for the GSPs.
 
     If _regime_ is not specified, the parameter defaults to _in-day_.
+
+    If _compact_ is set to true, the response will be a list of GSPGenerations objects.
+    This return object is significantly smaller, but less readable.
 
     #### Parameters
     - **regime**: can choose __in-day__ or __day-after__
@@ -197,6 +209,7 @@ def get_truths_for_all_gsps(
         regime=regime,
         start_datetime_utc=start_datetime_utc,
         end_datetime_utc=end_datetime_utc,
+        compact=compact,
     )
 
 
