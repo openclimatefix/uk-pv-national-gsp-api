@@ -33,8 +33,8 @@ from nowcasting_datamodel.save.update import N_GSP
 from sqlalchemy.orm.session import Session
 
 from pydantic_models import (
-    GSPYield,
     GSPGenerations,
+    GSPYield,
     LocationWithGSPYields,
     convert_location_sql_to_many_datetime_many_generation,
 )
