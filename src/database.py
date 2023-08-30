@@ -36,7 +36,9 @@ from pydantic_models import (
     GSPYieldGroupByDatetime,
     GSPYield,
     LocationWithGSPYields,
-    convert_location_sql_to_many_datetime_many_generation,
+    OneDatetimeManyForecastValues,
+    convert_forecasts_to_many_datetime_many_generation,
+    convert_location_sql_to_many_datetime_many_generation
 )
 from utils import floor_30_minutes_dt, get_start_datetime
 
@@ -94,8 +96,8 @@ def get_latest_status_from_database(session: Session) -> Status:
 
 
 def get_forecasts_from_database(
-    session: Session, historic: Optional[bool] = False
-) -> ManyForecasts:
+    session: Session, historic: Optional[bool] = False, compact: Optional[bool] = False
+) -> Union[ManyForecasts, List[OneDatetimeManyForecastValues]]:
     """Get forecasts from database for all GSPs"""
     # get the latest forecast for all gsps.
 
@@ -127,14 +129,18 @@ def get_forecasts_from_database(
             model_name="blend",
         )
 
-    # change to pydantic objects
-    if historic:
-        forecasts = [Forecast.from_orm_latest(forecast) for forecast in forecasts]
-    else:
-        forecasts = [Forecast.from_orm(forecast) for forecast in forecasts]
+    if compact:
+        return convert_forecasts_to_many_datetime_many_generation(forecasts)
 
-    # return as many forecasts
-    return ManyForecasts(forecasts=forecasts)
+    else:
+        # change to pydantic objects
+        if historic:
+            forecasts = [Forecast.from_orm_latest(forecast) for forecast in forecasts]
+        else:
+            forecasts = [Forecast.from_orm(forecast) for forecast in forecasts]
+
+        # return as many forecasts
+        return ManyForecasts(forecasts=forecasts)
 
 
 def get_forecasts_for_a_specific_gsp_from_database(
