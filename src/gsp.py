@@ -6,13 +6,7 @@ import structlog
 from fastapi import APIRouter, Depends, Request, Security, status
 from fastapi.responses import Response
 from fastapi_auth0 import Auth0User
-from nowcasting_datamodel.models import (
-    Forecast,
-    ForecastValue,
-    GSPYield,
-    LocationWithGSPYields,
-    ManyForecasts,
-)
+from nowcasting_datamodel.models import Forecast, ForecastValue, ManyForecasts
 from sqlalchemy.orm.session import Session
 
 from auth_utils import get_auth_implicit_scheme, get_user
@@ -24,6 +18,7 @@ from database import (
     get_truth_values_for_a_specific_gsp_from_database,
     get_truth_values_for_all_gsps_from_database,
 )
+from pydantic_models import GSPYield, LocationWithGSPYields
 
 GSP_TOTAL = 317
 
@@ -66,6 +61,11 @@ def get_all_available_forecasts(
     forecasts = get_forecasts_from_database(session=session, historic=historic)
 
     forecasts.normalize()
+
+    logger.info(
+        f"Got {len(forecasts.forecasts)} forecasts for all gsps. "
+        f"The option is {historic=} for user {user}"
+    )
 
     return forecasts
 
