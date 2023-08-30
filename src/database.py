@@ -34,9 +34,11 @@ from sqlalchemy.orm.session import Session
 
 from pydantic_models import (
     GSPYield,
+    GSPYieldGroupByDatetime,
     LocationWithGSPYields,
     OneDatetimeManyForecastValues,
     convert_forecasts_to_many_datetime_many_generation,
+    convert_location_sql_to_many_datetime_many_generation,
 )
 from utils import floor_30_minutes_dt, get_start_datetime
 
@@ -268,7 +270,8 @@ def get_truth_values_for_all_gsps_from_database(
     start_gsp: Optional[int] = 1,
     end_gsp: Optional[int] = N_GSP + 1,
     regime: Optional[str] = "in-day",
-) -> List[LocationWithGSPYields]:
+    compact: Optional[bool] = False,
+) -> Union[List[LocationWithGSPYields], List[GSPYieldGroupByDatetime]]:
     """Get the truth value for all gsps for yesterday and today
 
     :param session: sql session
@@ -287,7 +290,10 @@ def get_truth_values_for_all_gsps_from_database(
         regime=regime,
     )
 
-    return [LocationWithGSPYields.from_orm(location) for location in locations]
+    if compact:
+        return convert_location_sql_to_many_datetime_many_generation(locations)
+    else:
+        return [LocationWithGSPYields.from_orm(location) for location in locations]
 
 
 def get_gsp_system(session: Session, gsp_id: Optional[int] = None) -> List[Location]:
