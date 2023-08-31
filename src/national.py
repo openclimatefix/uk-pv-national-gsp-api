@@ -3,9 +3,9 @@ import os
 from typing import List, Optional, Union
 
 import structlog
-from fastapi import APIRouter, Depends, Request, Security, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request, Security
 from fastapi_auth0 import Auth0User
-from nowcasting_datamodel.models import Forecast
+from nowcasting_datamodel.read.read import get_latest_forecast_for_gsps
 from sqlalchemy.orm.session import Session
 
 from auth_utils import get_auth_implicit_scheme, get_user
@@ -15,7 +15,6 @@ from database import (
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
 )
-from nowcasting_datamodel.read.read import get_latest_forecast_for_gsps
 from pydantic_models import NationalYield, NationalForecast, NationalForecastValue
 from utils import format_plevels
 
@@ -65,7 +64,7 @@ def get_national_forecast(
         if forecast_horizon_minutes is not None:
             raise HTTPException(
                 status_code=404,
-                detail=f"Can not set forecast_horizon_minutes" f" when including metadata",
+                detail="Can not set forecast_horizon_minutes when including metadata",
             )
 
         forecast = get_latest_forecast_for_gsps(
