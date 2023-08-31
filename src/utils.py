@@ -64,7 +64,9 @@ def floor_6_hours_dt(dt: datetime):
     return dt
 
 
-def get_start_datetime(n_history_days: Optional[Union[str, int]] = None) -> datetime:
+def get_start_datetime(
+    n_history_days: Optional[Union[str, int]] = None, start_datetime: Optional[datetime] = None
+) -> datetime:
     """
     Get the start datetime for the query
 
@@ -72,23 +74,33 @@ def get_start_datetime(n_history_days: Optional[Union[str, int]] = None) -> date
     we 'N_HISTORY_DAYS' use env var to get number of days
 
     :param n_history_days: n_history
+    :param start_datetime: optional start datetime for the query.
+     If not set, after now, or set to over three days ago
+     defaults to N_HISTORY_DAYS env var, which defaults to yesterday.
     :return: start datetime
     """
 
-    if n_history_days is None:
-        n_history_days = os.getenv("N_HISTORY_DAYS", "yesterday")
+    if (
+        start_datetime is None
+        or start_datetime >= datetime.now(tz=timezone.utc)
+        or datetime.now(tz=timezone.utc) - start_datetime > timedelta(days=3)
+    ):
+        if n_history_days is None:
+            n_history_days = os.getenv("N_HISTORY_DAYS", "yesterday")
 
-    # get at most 2 days of data.
-    if n_history_days == "yesterday":
-        start_datetime = datetime.now(tz=europe_london_tz).date() - timedelta(days=1)
-        start_datetime = datetime.combine(start_datetime, datetime.min.time())
-        start_datetime = europe_london_tz.localize(start_datetime)
-        start_datetime = start_datetime.astimezone(utc)
+        # get at most 2 days of data.
+        if n_history_days == "yesterday":
+            start_datetime = datetime.now(tz=europe_london_tz).date() - timedelta(days=1)
+            start_datetime = datetime.combine(start_datetime, datetime.min.time())
+            start_datetime = europe_london_tz.localize(start_datetime)
+            start_datetime = start_datetime.astimezone(utc)
+        else:
+            start_datetime = datetime.now(tz=europe_london_tz) - timedelta(days=int(n_history_days))
+            start_datetime = floor_6_hours_dt(start_datetime)
+            start_datetime = start_datetime.astimezone(utc)
+        return start_datetime
     else:
-        start_datetime = datetime.now(tz=europe_london_tz) - timedelta(days=int(n_history_days))
-        start_datetime = floor_6_hours_dt(start_datetime)
-        start_datetime = start_datetime.astimezone(utc)
-    return start_datetime
+        return start_datetime
 
 
 def traces_sampler(sampling_context):
