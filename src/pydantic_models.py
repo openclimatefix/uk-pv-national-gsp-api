@@ -109,7 +109,10 @@ def convert_location_sql_to_many_datetime_many_generation(
 
 
 def convert_forecasts_to_many_datetime_many_generation(
-    forecasts: List[ForecastSQL], historic: bool = True
+    forecasts: List[ForecastSQL],
+    historic: bool = True,
+    start_datetime_utc: Optional[datetime] = None,
+    end_datetime_utc: Optional[datetime] = None,
 ) -> List[OneDatetimeManyForecastValues]:
     """Change forecasts to list of OneDatetimeManyForecastValues
 
@@ -134,6 +137,10 @@ def convert_forecasts_to_many_datetime_many_generation(
 
         for forecast_value in forecast_values:
             datetime_utc = forecast_value.target_time
+            if start_datetime_utc is not None and datetime_utc < start_datetime_utc:
+                continue
+            if end_datetime_utc is not None and datetime_utc > end_datetime_utc:
+                continue
             forecast_mw = round(forecast_value.expected_power_generation_megawatts, 2)
 
             # if the datetime object is not in the dictionary, add it

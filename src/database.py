@@ -40,7 +40,7 @@ from pydantic_models import (
     convert_forecasts_to_many_datetime_many_generation,
     convert_location_sql_to_many_datetime_many_generation,
 )
-from utils import floor_30_minutes_dt, get_start_datetime
+from utils import filter_forecast_values, floor_30_minutes_dt, get_start_datetime
 
 logger = structlog.stdlib.get_logger()
 
@@ -122,14 +122,17 @@ def get_forecasts_from_database(
 
     else:
         # To speed up read time we only look at the last 12 hours of results, and take floor 30 mins
-        yesterday_start_datetime = floor_30_minutes_dt(
-            datetime.now(tz=timezone.utc) - timedelta(hours=12)
-        )
+        if start_datetime_utc is None:
+            start_datetime_utc = floor_30_minutes_dt(
+                datetime.now(tz=timezone.utc) - timedelta(hours=12)
+            )
+
+        start_created_utc = floor_30_minutes_dt(datetime.now(tz=timezone.utc) - timedelta(hours=12))
 
         forecasts = get_all_gsp_ids_latest_forecast(
             session=session,
-            start_created_utc=yesterday_start_datetime,
-            start_target_time=yesterday_start_datetime,
+            start_created_utc=start_created_utc,
+            start_target_time=start_datetime_utc,
             preload_children=True,
             model_name="blend",
             end_target_time=end_datetime_utc,
@@ -137,7 +140,10 @@ def get_forecasts_from_database(
 
     if compact:
         return convert_forecasts_to_many_datetime_many_generation(
-            forecasts=forecasts, historic=historic
+            forecasts=forecasts,
+            historic=historic,
+            start_datetime_utc=start_datetime_utc,
+            end_datetime_utc=end_datetime_utc,
         )
 
     else:
@@ -146,6 +152,12 @@ def get_forecasts_from_database(
             forecasts = [Forecast.from_orm_latest(forecast) for forecast in forecasts]
         else:
             forecasts = [Forecast.from_orm(forecast) for forecast in forecasts]
+
+        forecasts = filter_forecast_values(
+            end_datetime_utc=end_datetime_utc,
+            forecasts=forecasts,
+            start_datetime_utc=start_datetime_utc,
+        )
 
         # return as many forecasts
         return ManyForecasts(forecasts=forecasts)

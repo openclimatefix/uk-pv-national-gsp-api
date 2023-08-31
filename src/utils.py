@@ -1,11 +1,11 @@
 """ Utils functions for main.py """
 import os
 from datetime import datetime, timedelta
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 import numpy as np
 import structlog
-from nowcasting_datamodel.models import ForecastValue
+from nowcasting_datamodel.models import Forecast, ForecastValue
 from pydantic import Field
 from pytz import timezone
 
@@ -64,6 +64,24 @@ def floor_6_hours_dt(dt: datetime):
     return dt
 
 
+def format_datetime(datetime_str: str = None):
+    """
+    Format datetime string to datetime object
+
+    If None return None, if not timezone, add UTC
+    :param datetime_str:
+    :return:
+    """
+    if datetime_str is None:
+        return None
+
+    else:
+        datetime_output = datetime.fromisoformat(datetime_str)
+        if datetime_output.tzinfo is None:
+            datetime_output = utc.localize(datetime_output)
+        return datetime_output
+
+
 def get_start_datetime(
     n_history_days: Optional[Union[str, int]] = None, start_datetime: Optional[datetime] = None
 ) -> datetime:
@@ -80,11 +98,9 @@ def get_start_datetime(
     :return: start datetime
     """
 
-    if (
-        start_datetime is None
-        or start_datetime >= datetime.now(tz=timezone.utc)
-        or datetime.now(tz=timezone.utc) - start_datetime > timedelta(days=3)
-    ):
+    now = datetime.now(tz=utc)
+
+    if start_datetime is None or now - start_datetime > timedelta(days=3):
         if n_history_days is None:
             n_history_days = os.getenv("N_HISTORY_DAYS", "yesterday")
 
@@ -163,3 +179,40 @@ def format_plevels(national_forecast_value: NationalForecastValue):
         national_forecast_value.plevels["plevel_90"] = (
             national_forecast_value.expected_power_generation_megawatts * 1.2
         )
+
+
+def filter_forecast_values(
+    forecasts: List[Forecast],
+    end_datetime_utc: Optional[datetime] = None,
+    start_datetime_utc: Optional[datetime] = None,
+) -> List[Forecast]:
+    """
+    Filter forecast values by start and end datetime
+
+    :param forecasts: list of forecasts
+    :param end_datetime_utc: start datetime
+    :param start_datetime_utc: e
+    :return:
+    """
+    if start_datetime_utc is not None or end_datetime_utc is not None:
+        logger.info(f"Filtering forecasts from {start_datetime_utc} to {end_datetime_utc}")
+        forecasts_filtered = []
+        for forecast in forecasts:
+            forecast_values = forecast.forecast_values
+            if start_datetime_utc is not None:
+                forecast_values = [
+                    forecast_value
+                    for forecast_value in forecast_values
+                    if forecast_value.target_time >= start_datetime_utc
+                ]
+            if end_datetime_utc is not None:
+                forecast_values = [
+                    forecast_value
+                    for forecast_value in forecast_values
+                    if forecast_value.target_time <= end_datetime_utc
+                ]
+            forecast.forecast_values = forecast_values
+
+            forecasts_filtered.append(forecast)
+        forecasts = forecasts_filtered
+    return forecasts

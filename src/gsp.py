@@ -1,5 +1,4 @@
 """Get GSP boundary data from eso """
-from datetime import datetime
 from typing import List, Optional, Union
 
 import structlog
@@ -24,6 +23,7 @@ from pydantic_models import (
     LocationWithGSPYields,
     OneDatetimeManyForecastValues,
 )
+from utils import format_datetime
 
 GSP_TOTAL = 317
 
@@ -47,8 +47,8 @@ def get_all_available_forecasts(
     historic: Optional[bool] = True,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
-    start_datetime_utc: Optional[datetime] = None,
-    end_datetime_utc: Optional[datetime] = None,
+    start_datetime_utc: Optional[str] = None,
+    end_datetime_utc: Optional[str] = None,
     compact: Optional[bool] = False,
 ) -> Union[ManyForecasts, List[OneDatetimeManyForecastValues]]:
     """### Get all forecasts for all GSPs
@@ -65,11 +65,14 @@ def get_all_available_forecasts(
     #### Parameters
     - **historic**: boolean that defaults to `true`, returning yesterday's and
     today's forecasts for all GSPs
-    - **start_datetime_utc**: optional start datetime for the query.
-    - **end_datetime_utc**: optional end datetime for the query.
+    - **start_datetime_utc**: optional start datetime for the query. e.g '2023-08-12 10:00:00+00:00'
+    - **end_datetime_utc**: optional end datetime for the query. e.g '2023-08-12 14:00:00+00:00'
     """
 
     logger.info(f"Get forecasts for all gsps. The option is {historic=} for user {user}")
+
+    start_datetime_utc = format_datetime(start_datetime_utc)
+    end_datetime_utc = format_datetime(end_datetime_utc)
 
     forecasts = get_forecasts_from_database(
         session=session,
@@ -128,8 +131,8 @@ def get_forecasts_for_a_specific_gsp(
     session: Session = Depends(get_session),
     forecast_horizon_minutes: Optional[int] = None,
     user: Auth0User = Security(get_user()),
-    start_datetime_utc: Optional[datetime] = None,
-    end_datetime_utc: Optional[datetime] = None,
+    start_datetime_utc: Optional[str] = None,
+    end_datetime_utc: Optional[str] = None,
 ) -> Union[Forecast, List[ForecastValue]]:
     """### Get recent forecast values for a specific GSP
 
@@ -154,6 +157,9 @@ def get_forecasts_for_a_specific_gsp(
 
     logger.info(f"Get forecasts for gsp id {gsp_id} forecast of forecast with only values.")
     logger.info(f"This is for user {user}")
+
+    start_datetime_utc = format_datetime(start_datetime_utc)
+    end_datetime_utc = format_datetime(end_datetime_utc)
 
     if gsp_id > GSP_TOTAL:
         return Response(None, status.HTTP_204_NO_CONTENT)
@@ -183,8 +189,8 @@ def get_truths_for_all_gsps(
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
-    start_datetime_utc: Optional[datetime] = None,
-    end_datetime_utc: Optional[datetime] = None,
+    start_datetime_utc: Optional[str] = None,
+    end_datetime_utc: Optional[str] = None,
     compact: Optional[bool] = False,
 ) -> Union[List[LocationWithGSPYields], List[GSPYieldGroupByDatetime]]:
     """### Get PV_Live values for all GSPs for yesterday and today
@@ -206,6 +212,9 @@ def get_truths_for_all_gsps(
     - **end_datetime_utc**: optional end datetime for the query.
     """
     logger.info(f"Get PV Live estimates values for all gsp id and regime {regime} for user {user}")
+
+    start_datetime_utc = format_datetime(start_datetime_utc)
+    end_datetime_utc = format_datetime(end_datetime_utc)
 
     return get_truth_values_for_all_gsps_from_database(
         session=session,
@@ -253,8 +262,8 @@ def get_truths_for_a_specific_gsp(
     request: Request,
     gsp_id: int,
     regime: Optional[str] = None,
-    start_datetime_utc: Optional[datetime] = None,
-    end_datetime_utc: Optional[datetime] = None,
+    start_datetime_utc: Optional[str] = None,
+    end_datetime_utc: Optional[str] = None,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
 ) -> List[GSPYield]:
@@ -279,6 +288,9 @@ def get_truths_for_a_specific_gsp(
     logger.info(
         f"Get PV Live estimates values for gsp id {gsp_id} " f"and regime {regime} for user {user}"
     )
+
+    start_datetime_utc = format_datetime(start_datetime_utc)
+    end_datetime_utc = format_datetime(end_datetime_utc)
 
     if gsp_id > GSP_TOTAL:
         return Response(None, status.HTTP_204_NO_CONTENT)
