@@ -90,10 +90,12 @@ Deployment of this service is now done through terraform cloud.
 ```mermaid
   graph TD;
       N1(national/forecast) --> Q1;
+      Q1{Include metadata?>} -->|no| Q2;
+      Q1 --> |yes| N2[NationalForecast];
       N4[ForecastValueLatest];
-      Q1{forecast horizon <br> minutes not None}
-      Q1-->|yes| N5[ForecastValueSevenDays];
-      Q1-->|no| N4;
+      Q2{forecast horizon <br> minutes not None}
+      Q2-->|yes| N5[ForecastValueSevenDays];
+      Q2-->|no| N4;
 
       NP1(national/pvlive)-->NP2;
       NP2[GSPYield];
