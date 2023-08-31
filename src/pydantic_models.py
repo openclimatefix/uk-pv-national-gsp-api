@@ -3,13 +3,7 @@ import logging
 from datetime import datetime
 from typing import Dict, List, Optional
 
-from nowcasting_datamodel.models import (
-    Forecast,
-    ForecastSQL,
-    ForecastValue,
-    Location,
-    LocationSQL,
-)
+from nowcasting_datamodel.models import Forecast, ForecastSQL, ForecastValue, Location, LocationSQL
 from nowcasting_datamodel.models.utils import EnhancedBaseModel
 from pydantic import Field
 
