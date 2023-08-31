@@ -15,7 +15,7 @@ from database import (
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
 )
-from pydantic_models import NationalForecast, NationalYield, NationalForecastValue
+from pydantic_models import NationalForecast, NationalForecastValue, NationalYield
 from utils import format_plevels
 
 logger = structlog.stdlib.get_logger()
