@@ -1,5 +1,4 @@
 """Get GSP boundary data from eso """
-from datetime import datetime
 from typing import List, Optional, Union
 
 import structlog

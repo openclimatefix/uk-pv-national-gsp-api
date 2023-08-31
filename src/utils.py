@@ -9,8 +9,6 @@ from nowcasting_datamodel.models import ForecastSQL, ForecastValue
 from pydantic import Field
 from pytz import timezone
 
-from database import logger
-
 logger = structlog.stdlib.get_logger()
 
 europe_london_tz = timezone("Europe/London")
