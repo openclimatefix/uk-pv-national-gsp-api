@@ -3,9 +3,9 @@ import os
 from typing import List, Optional, Union
 
 import structlog
-from fastapi import APIRouter, Depends, Request, Security
+from fastapi import APIRouter, Depends, HTTPException, Request, Security
 from fastapi_auth0 import Auth0User
-from nowcasting_datamodel.models import Forecast, GSPYield
+from nowcasting_datamodel.read.read import get_latest_forecast_for_gsps
 from sqlalchemy.orm.session import Session
 
 from auth_utils import get_auth_implicit_scheme, get_user
@@ -15,7 +15,8 @@ from database import (
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
 )
-from utils import NationalForecastValue, format_plevels
+from pydantic_models import NationalForecast, NationalForecastValue, NationalYield
+from utils import format_plevels
 
 logger = structlog.stdlib.get_logger()
 
@@ -25,12 +26,10 @@ get_plevels = bool(os.getenv("GET_PLEVELS", True))
 
 router = APIRouter()
 
-NationalYield = GSPYield
-
 
 @router.get(
     "/forecast",
-    response_model=Union[Forecast, List[NationalForecastValue]],
+    response_model=Union[NationalForecast, List[NationalForecastValue]],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
@@ -39,7 +38,8 @@ def get_national_forecast(
     session: Session = Depends(get_session),
     forecast_horizon_minutes: Optional[int] = None,
     user: Auth0User = Security(get_user()),
-) -> Union[Forecast, List[NationalForecastValue]]:
+    include_metadata: bool = False,
+) -> Union[NationalForecast, List[NationalForecastValue]]:
     """Get the National Forecast
 
     This route returns the most recent forecast for each _target_time_.
@@ -60,9 +60,24 @@ def get_national_forecast(
     logger.debug("Get national forecasts")
 
     logger.debug("Getting forecast.")
-    forecast_values = get_latest_forecast_values_for_a_specific_gsp_from_database(
-        session=session, gsp_id=0, forecast_horizon_minutes=forecast_horizon_minutes
-    )
+    if include_metadata:
+        if forecast_horizon_minutes is not None:
+            raise HTTPException(
+                status_code=404,
+                detail="Can not set forecast_horizon_minutes when including metadata",
+            )
+
+        forecast = get_latest_forecast_for_gsps(
+            session=session, gsp_ids=[0], model_name="blend", historic=True, preload_children=True
+        )
+        forecast = forecast[0]
+
+        forecast = NationalForecast.from_orm_latest(forecast)
+        forecast_values = forecast.forecast_values
+    else:
+        forecast_values = get_latest_forecast_values_for_a_specific_gsp_from_database(
+            session=session, gsp_id=0, forecast_horizon_minutes=forecast_horizon_minutes
+        )
 
     logger.debug(
         f"Got national forecasts with {len(forecast_values)} forecast values. "
@@ -88,8 +103,12 @@ def get_national_forecast(
             format_plevels(national_forecast_value)
 
             national_forecast_values.append(national_forecast_value)
-
-    return national_forecast_values
+    if include_metadata:
+        # return full forecast object
+        forecast.forecast_values = national_forecast_values
+        return forecast
+    else:
+        return national_forecast_values
 
 
 # corresponds to API route /v0/solar/GB/national/pvlive/, getting PV_Live NationalYield for GB

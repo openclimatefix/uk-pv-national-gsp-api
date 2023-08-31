@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 from typing import Dict, List, Optional
 
-from nowcasting_datamodel.models import ForecastSQL, Location, LocationSQL
+from nowcasting_datamodel.models import Forecast, ForecastSQL, ForecastValue, Location, LocationSQL
 from nowcasting_datamodel.models.utils import EnhancedBaseModel
 from pydantic import Field
 
@@ -159,3 +159,20 @@ def convert_forecasts_to_many_datetime_many_generation(
         )
 
     return many_forecast_values
+
+
+NationalYield = GSPYield
+
+
+class NationalForecastValue(ForecastValue):
+    """One Forecast of generation at one timestamp include properties"""
+
+    plevels: dict = Field(
+        None, description="Dictionary to hold properties of the forecast, like p_levels. "
+    )
+
+
+class NationalForecast(Forecast):
+    """One Forecast of generation at one timestamp"""
+
+    forecast_values: List[NationalForecastValue] = Field(..., description="List of forecast values")

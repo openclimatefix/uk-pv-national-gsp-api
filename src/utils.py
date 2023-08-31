@@ -5,22 +5,15 @@ from typing import List, Optional, Union
 
 import numpy as np
 import structlog
-from nowcasting_datamodel.models import Forecast, ForecastValue
-from pydantic import Field
+from nowcasting_datamodel.models import Forecast
 from pytz import timezone
+
+from pydantic_models import NationalForecastValue
 
 logger = structlog.stdlib.get_logger()
 
 europe_london_tz = timezone("Europe/London")
 utc = timezone("UTC")
-
-
-class NationalForecastValue(ForecastValue):
-    """One Forecast of generation at one timestamp include properties"""
-
-    plevels: dict = Field(
-        None, description="Dictionary to hold properties of the forecast, like p_levels. "
-    )
 
 
 def floor_30_minutes_dt(dt):

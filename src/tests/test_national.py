@@ -10,7 +10,7 @@ from nowcasting_datamodel.save.update import update_all_forecast_latest
 
 from database import get_session
 from main import app
-from utils import NationalForecastValue
+from pydantic_models import NationalForecast, NationalForecastValue
 
 
 def test_read_latest_national_values(db_session, api_client):
@@ -40,6 +40,58 @@ def test_read_latest_national_values(db_session, api_client):
         national_forecast_values[24].plevels["plevel_10"]
         != national_forecast_values[0].expected_power_generation_megawatts * 0.9
     )
+
+
+def test_get_national_forecast(db_session, api_client):
+    """Check main solar/GB/national/forecast route works"""
+
+    model = get_model(db_session, name="blend", version="0.0.1")
+
+    forecast = make_fake_national_forecast(
+        session=db_session, t0_datetime_utc=datetime.now(tz=timezone.utc)
+    )
+    forecast.model = model
+
+    assert forecast.forecast_values[0].properties is not None
+
+    db_session.add(forecast)
+    update_all_forecast_latest(forecasts=[forecast], session=db_session)
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = api_client.get("/v0/solar/GB/national/forecast?include_metadata=true")
+    assert response.status_code == 200
+
+    national_forecast = NationalForecast(**response.json())
+    assert national_forecast.forecast_values[0].plevels is not None
+    # index 24 is the middle of the day
+    assert (
+        national_forecast.forecast_values[24].plevels["plevel_10"]
+        != national_forecast.forecast_values[0].expected_power_generation_megawatts * 0.9
+    )
+
+
+def test_get_national_forecast_error(db_session, api_client):
+    """Check main solar/GB/national/forecast route works"""
+
+    model = get_model(db_session, name="blend", version="0.0.1")
+
+    forecast = make_fake_national_forecast(
+        session=db_session, t0_datetime_utc=datetime.now(tz=timezone.utc)
+    )
+    forecast.model = model
+
+    assert forecast.forecast_values[0].properties is not None
+
+    db_session.add(forecast)
+    update_all_forecast_latest(forecasts=[forecast], session=db_session)
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = api_client.get(
+        "/v0/solar/GB/national/forecast?include_metadata=true&forecast_horizon_minutes=60"
+    )
+    assert response.status_code == 404
 
 
 def test_read_latest_national_values_no_properties(db_session, api_client):
