@@ -130,7 +130,9 @@ def get_forecasts_from_database(
         )
 
     if compact:
-        return convert_forecasts_to_many_datetime_many_generation(forecasts)
+        return convert_forecasts_to_many_datetime_many_generation(
+            forecasts=forecasts, historic=historic
+        )
 
     else:
         # change to pydantic objects
