@@ -62,7 +62,6 @@ def get_national_forecast(
 
     logger.debug("Getting forecast.")
     if include_metadata:
-
         if forecast_horizon_minutes is not None:
             raise HTTPException(
                 status_code=404,
