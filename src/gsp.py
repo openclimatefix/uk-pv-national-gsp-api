@@ -57,6 +57,9 @@ def get_all_available_forecasts(
     This request may take a longer time to load because a lot of data is being
     pulled from the database.
 
+    If _compact_ is set to true, the response will be a list of GSPGenerations objects.
+    This return object is significantly smaller, but less readable.
+
     #### Parameters
     - **historic**: boolean that defaults to `true`, returning yesterday's and
     today's forecasts for all GSPs
