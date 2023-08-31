@@ -109,8 +109,7 @@ def convert_location_sql_to_many_datetime_many_generation(
 
 
 def convert_forecasts_to_many_datetime_many_generation(
-    forecasts: List[ForecastSQL],
-    historic: bool = True
+    forecasts: List[ForecastSQL], historic: bool = True
 ) -> List[OneDatetimeManyForecastValues]:
     """Change forecasts to list of OneDatetimeManyForecastValues
 
