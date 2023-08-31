@@ -5,7 +5,7 @@ from typing import List, Optional, Union
 
 import numpy as np
 import structlog
-from nowcasting_datamodel.models import ForecastValue, ForecastSQL
+from nowcasting_datamodel.models import ForecastSQL, ForecastValue
 from pydantic import Field
 from pytz import timezone
 
@@ -67,6 +67,13 @@ def floor_6_hours_dt(dt: datetime):
 
 
 def format_datetime(datetime_str: str = None):
+    """
+    Format datetime string to datetime object
+
+    If None return None, if not timezone, add UTC
+    :param datetime_str:
+    :return:
+    """
     if datetime_str is None:
         return None
 

@@ -40,7 +40,7 @@ from pydantic_models import (
     convert_forecasts_to_many_datetime_many_generation,
     convert_location_sql_to_many_datetime_many_generation,
 )
-from utils import floor_30_minutes_dt, get_start_datetime, filter_forecast_values
+from utils import floor_30_minutes_dt, filter_forecast_values, get_start_datetime
 
 logger = structlog.stdlib.get_logger()
 
