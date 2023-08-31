@@ -109,7 +109,7 @@ def convert_location_sql_to_many_datetime_many_generation(
 
 
 def convert_forecasts_to_many_datetime_many_generation(
-    forecasts: List[ForecastSQL],
+    forecasts: List[ForecastSQL], historic: bool = True
 ) -> List[OneDatetimeManyForecastValues]:
     """Change forecasts to list of OneDatetimeManyForecastValues
 
@@ -127,7 +127,12 @@ def convert_forecasts_to_many_datetime_many_generation(
     # loop over locations and gsp yields to create a dictionary of gsp generation by datetime
     for forecast in forecasts:
         gsp_id = forecast.location.gsp_id
-        for forecast_value in forecast.forecast_values_latest:
+        if historic:
+            forecast_values = forecast.forecast_values_latest
+        else:
+            forecast_values = forecast.forecast_values
+
+        for forecast_value in forecast_values:
             datetime_utc = forecast_value.target_time
             forecast_mw = round(forecast_value.expected_power_generation_megawatts, 2)
 
