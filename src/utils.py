@@ -64,6 +64,16 @@ def floor_6_hours_dt(dt: datetime):
     return dt
 
 
+def format_datetime(datetime_str: str = None):
+    if datetime_str is None:
+        return None
+
+    else:
+        datetime_output = datetime.fromisoformat(datetime_str)
+        if datetime_output.tzinfo is None:
+            datetime_output = europe_london_tz.localize(datetime_output)
+        return datetime_output
+
 def get_start_datetime(
     n_history_days: Optional[Union[str, int]] = None, start_datetime: Optional[datetime] = None
 ) -> datetime:
@@ -80,10 +90,11 @@ def get_start_datetime(
     :return: start datetime
     """
 
+    now = datetime.now(tz=utc)
+
     if (
         start_datetime is None
-        or start_datetime >= datetime.now(tz=timezone.utc)
-        or datetime.now(tz=timezone.utc) - start_datetime > timedelta(days=3)
+        or now - start_datetime > timedelta(days=3)
     ):
         if n_history_days is None:
             n_history_days = os.getenv("N_HISTORY_DAYS", "yesterday")
