@@ -127,9 +127,7 @@ def get_forecasts_from_database(
                 datetime.now(tz=timezone.utc) - timedelta(hours=12)
             )
 
-        start_created_utc = floor_30_minutes_dt(
-                datetime.now(tz=timezone.utc) - timedelta(hours=12)
-            )
+        start_created_utc = floor_30_minutes_dt(datetime.now(tz=timezone.utc) - timedelta(hours=12))
 
         forecasts = get_all_gsp_ids_latest_forecast(
             session=session,
@@ -142,7 +140,10 @@ def get_forecasts_from_database(
 
     if compact:
         return convert_forecasts_to_many_datetime_many_generation(
-            forecasts=forecasts, historic=historic, start_datetime_utc=start_datetime_utc, end_datetime_utc=end_datetime_utc
+            forecasts=forecasts,
+            historic=historic,
+            start_datetime_utc=start_datetime_utc,
+            end_datetime_utc=end_datetime_utc,
         )
 
     else:
