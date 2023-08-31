@@ -5,7 +5,7 @@ from typing import List, Optional, Union
 
 import numpy as np
 import structlog
-from nowcasting_datamodel.models import ForecastSQL, ForecastValue
+from nowcasting_datamodel.models import Forecast, ForecastValue
 from pydantic import Field
 from pytz import timezone
 
@@ -182,10 +182,10 @@ def format_plevels(national_forecast_value: NationalForecastValue):
 
 
 def filter_forecast_values(
-    forecasts: List[ForecastSQL],
+    forecasts: List[Forecast],
     end_datetime_utc: Optional[datetime] = None,
     start_datetime_utc: Optional[datetime] = None,
-) -> List[ForecastSQL]:
+) -> List[Forecast]:
     """
     Filter forecast values by start and end datetime
 

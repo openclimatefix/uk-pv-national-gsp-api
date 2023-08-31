@@ -153,7 +153,11 @@ def get_forecasts_from_database(
         else:
             forecasts = [Forecast.from_orm(forecast) for forecast in forecasts]
 
-        forecasts = filter_forecast_values(end_datetime_utc, forecasts, start_datetime_utc)
+        forecasts = filter_forecast_values(
+            end_datetime_utc=end_datetime_utc,
+            forecasts=forecasts,
+            start_datetime_utc=start_datetime_utc,
+        )
 
         # return as many forecasts
         return ManyForecasts(forecasts=forecasts)

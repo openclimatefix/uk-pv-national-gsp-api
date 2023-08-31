@@ -60,7 +60,7 @@ def test_read_latest_all_gsp(db_session, api_client):
 
     r = ManyForecasts(**response.json())
     assert len(r.forecasts) == 10
-    assert len(r.forecasts[0].forecast_values) == 112
+    assert len(r.forecasts[0].forecast_values) == 40
 
 
 def test_read_latest_gsp_id_greater_than_total(db_session, api_client):
