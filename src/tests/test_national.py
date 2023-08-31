@@ -88,7 +88,9 @@ def test_get_national_forecast_error(db_session, api_client):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = api_client.get("/v0/solar/GB/national/forecast?include_metadata=true&forecast_horizon_minutes=60")
+    response = api_client.get(
+        "/v0/solar/GB/national/forecast?include_metadata=true&forecast_horizon_minutes=60"
+    )
     assert response.status_code == 404
 
 
