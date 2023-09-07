@@ -149,12 +149,10 @@ def format_plevels(national_forecast_value: NationalForecastValue):
     if (not isinstance(national_forecast_value.plevels, dict)) or (
         national_forecast_value.plevels == {}
     ):
-        logger.warning(f"Using default properties for {national_forecast_value.__fields__.keys()}")
         national_forecast_value.plevels = {
             "plevel_10": national_forecast_value.expected_power_generation_megawatts * 0.8,
             "plevel_90": national_forecast_value.expected_power_generation_megawatts * 1.2,
         }
-        logger.debug(f"{national_forecast_value.plevels}")
 
     # rename '10' and '90' to plevel_10 and plevel_90
     for c in ["10", "90"]:
@@ -162,13 +160,11 @@ def format_plevels(national_forecast_value: NationalForecastValue):
             national_forecast_value.plevels[f"plevel_{c}"] = national_forecast_value.plevels.pop(c)
 
     if national_forecast_value.plevels["plevel_10"] is None:
-        logger.debug("Setting plevel_10 to default")
         national_forecast_value.plevels["plevel_10"] = (
             national_forecast_value.expected_power_generation_megawatts * 0.8
         )
 
     if national_forecast_value.plevels["plevel_90"] is None:
-        logger.debug("Setting plevel_90 to default")
         national_forecast_value.plevels["plevel_90"] = (
             national_forecast_value.expected_power_generation_megawatts * 1.2
         )
