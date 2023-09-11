@@ -117,7 +117,7 @@ def get_forecasts_from_database(
             include_national=False,
             model_name="blend",
             end_target_time=end_datetime_utc,
-            gsp_ids=gsp_ids
+            gsp_ids=gsp_ids,
         )
 
         logger.debug(f"Found {len(forecasts)} forecasts from database")
@@ -318,7 +318,7 @@ def get_truth_values_for_all_gsps_from_database(
     start_datetime = get_start_datetime(start_datetime=start_datetime_utc)
 
     if gsp_ids is None:
-        gsp_ids = list(range(1, N_GSP+1))
+        gsp_ids = list(range(1, N_GSP + 1))
 
     locations = get_gsp_yield_by_location(
         session=session,
