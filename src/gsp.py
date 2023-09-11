@@ -50,6 +50,7 @@ def get_all_available_forecasts(
     start_datetime_utc: Optional[str] = None,
     end_datetime_utc: Optional[str] = None,
     compact: Optional[bool] = False,
+    gsp_ids: Optional[str] = None,
 ) -> Union[ManyForecasts, List[OneDatetimeManyForecastValues]]:
     """### Get all forecasts for all GSPs
 
@@ -62,6 +63,9 @@ def get_all_available_forecasts(
     If _compact_ is set to true, the response will be a list of GSPGenerations objects.
     This return object is significantly smaller, but less readable.
 
+    _gsp_ids_ is a list of integers that correspond to the GSP ids.
+    If this is 1,2,3,4 the response will only contain those GSPs.
+
     #### Parameters
     - **historic**: boolean that defaults to `true`, returning yesterday's and
     today's forecasts for all GSPs
@@ -70,6 +74,9 @@ def get_all_available_forecasts(
     """
 
     logger.info(f"Get forecasts for all gsps. The option is {historic=} for user {user}")
+
+    if gsp_ids is not None:
+        gsp_ids = [int(gsp_id) for gsp_id in gsp_ids.split(",")]
 
     start_datetime_utc = format_datetime(start_datetime_utc)
     end_datetime_utc = format_datetime(end_datetime_utc)
@@ -80,6 +87,7 @@ def get_all_available_forecasts(
         start_datetime_utc=start_datetime_utc,
         end_datetime_utc=end_datetime_utc,
         compact=compact,
+        gsp_ids=gsp_ids,
     )
 
     if not compact:
@@ -192,6 +200,7 @@ def get_truths_for_all_gsps(
     start_datetime_utc: Optional[str] = None,
     end_datetime_utc: Optional[str] = None,
     compact: Optional[bool] = False,
+    gsp_ids: Optional[str] = None,
 ) -> Union[List[LocationWithGSPYields], List[GSPYieldGroupByDatetime]]:
     """### Get PV_Live values for all GSPs for yesterday and today
 
@@ -213,6 +222,9 @@ def get_truths_for_all_gsps(
     """
     logger.info(f"Get PV Live estimates values for all gsp id and regime {regime} for user {user}")
 
+    if gsp_ids is not None:
+        gsp_ids = [int(gsp_id) for gsp_id in gsp_ids.split(",")]
+
     start_datetime_utc = format_datetime(start_datetime_utc)
     end_datetime_utc = format_datetime(end_datetime_utc)
 
@@ -222,6 +234,7 @@ def get_truths_for_all_gsps(
         start_datetime_utc=start_datetime_utc,
         end_datetime_utc=end_datetime_utc,
         compact=compact,
+        gsp_ids=gsp_ids,
     )
 
 

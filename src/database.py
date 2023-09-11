@@ -101,6 +101,7 @@ def get_forecasts_from_database(
     start_datetime_utc: Optional[datetime] = None,
     end_datetime_utc: Optional[datetime] = None,
     compact: Optional[bool] = False,
+    gsp_ids: Optional[List[str]] = None,
 ) -> Union[ManyForecasts, List[OneDatetimeManyForecastValues]]:
     """Get forecasts from database for all GSPs"""
     # get the latest forecast for all gsps.
@@ -116,6 +117,7 @@ def get_forecasts_from_database(
             include_national=False,
             model_name="blend",
             end_target_time=end_datetime_utc,
+            gsp_ids=gsp_ids
         )
 
         logger.debug(f"Found {len(forecasts)} forecasts from database")
@@ -136,6 +138,7 @@ def get_forecasts_from_database(
             preload_children=True,
             model_name="blend",
             end_target_time=end_datetime_utc,
+            gsp_ids=gsp_ids,
         )
 
     if compact:
@@ -293,31 +296,33 @@ def get_truth_values_for_a_specific_gsp_from_database(
 
 def get_truth_values_for_all_gsps_from_database(
     session: Session,
-    start_gsp: Optional[int] = 1,
-    end_gsp: Optional[int] = N_GSP + 1,
     regime: Optional[str] = "in-day",
     start_datetime_utc: Optional[datetime] = None,
     end_datetime_utc: Optional[datetime] = None,
     compact: Optional[bool] = False,
+    gsp_ids: Optional[List[int]] = None,
 ) -> Union[List[LocationWithGSPYields], List[GSPYieldGroupByDatetime]]:
     """Get the truth value for all gsps for yesterday and today
 
     :param session: sql session
-    :param start_gsp: the start number of gsps we should load.
-    :param end_gsp: the end number of gsps we should load.
     :param regime: option for "in-day" or "day-after"
     :param start_datetime_utc: optional start datetime for the query.
      If not set, after now, or set to over three days ago
      defaults to N_HISTORY_DAYS env var, which defaults to yesterday.
     :param end_datetime_utc: optional end datetime for the query.
+    :param compact: if True, return a list of GSPYieldGroupByDatetime objects
+    :param gsp_ids: optional list of gsp ids to load
     :return: list of gsp yields
     """
 
     start_datetime = get_start_datetime(start_datetime=start_datetime_utc)
 
+    if gsp_ids is None:
+        gsp_ids = list(range(1, N_GSP+1))
+
     locations = get_gsp_yield_by_location(
         session=session,
-        gsp_ids=list(range(start_gsp, end_gsp)),
+        gsp_ids=gsp_ids,
         start_datetime_utc=start_datetime,
         end_datetime_utc=end_datetime_utc,
         regime=regime,

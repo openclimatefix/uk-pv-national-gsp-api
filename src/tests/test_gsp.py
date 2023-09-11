@@ -63,6 +63,31 @@ def test_read_latest_all_gsp(db_session, api_client):
     assert len(r.forecasts[0].forecast_values) == 40
 
 
+def test_read_latest_all_gsp_filter_gsp(db_session, api_client):
+    """Check main solar/GB/gsp/forecast/all route works"""
+
+    model = get_model(session=db_session, name="blend", version="0.0.1")
+
+    forecasts = make_fake_forecasts(
+        gsp_ids=list(range(0, 10)),
+        session=db_session,
+        t0_datetime_utc=datetime.now(tz=timezone.utc),
+    )
+    [setattr(f, "model", model) for f in forecasts]
+
+    db_session.add_all(forecasts)
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = api_client.get("/v0/solar/GB/gsp/forecast/all/?historic=False&gsp_ids=1,2,3")
+
+    assert response.status_code == 200
+
+    r = ManyForecasts(**response.json())
+    assert len(r.forecasts) == 3
+    assert len(r.forecasts[0].forecast_values) == 40
+
+
 def test_read_latest_gsp_id_greater_than_total(db_session, api_client):
     """Check that request with gsp_id>=318 returns 204"""
 
@@ -247,51 +272,8 @@ def test_read_truths_for_gsp_id_less_than_total(db_session, api_client):
     _ = [GSPYield(**gsp_yield) for gsp_yield in r_json]
 
 
-@freeze_time("2022-01-01")
-def test_read_truths_for_all_gsp(db_session, api_client):
-    """Check main solar/GB/gsp/pvlive/all route works"""
 
-    gsp_yield_1 = GSPYield(datetime_utc=datetime(2022, 1, 2), solar_generation_kw=1)
-    gsp_yield_1_sql = gsp_yield_1.to_orm()
-
-    gsp_yield_2 = GSPYield(datetime_utc=datetime(2022, 1, 1), solar_generation_kw=2)
-    gsp_yield_2_sql = gsp_yield_2.to_orm()
-
-    gsp_yield_3 = GSPYield(datetime_utc=datetime(2022, 1, 1, 12), solar_generation_kw=3)
-    gsp_yield_3_sql = gsp_yield_3.to_orm()
-
-    gsp_sql_1: LocationSQL = Location(
-        gsp_id=122, label="GSP_122", status_interval_minutes=5
-    ).to_orm()
-    gsp_sql_2: LocationSQL = Location(
-        gsp_id=123, label="GSP_123", status_interval_minutes=10
-    ).to_orm()
-
-    # add pv system to yield object
-    gsp_yield_1_sql.location = gsp_sql_1
-    gsp_yield_2_sql.location = gsp_sql_1
-    gsp_yield_3_sql.location = gsp_sql_2
-
-    # add to database
-    db_session.add_all([gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_sql_1, gsp_sql_2])
-
-    app.dependency_overrides[get_session] = lambda: db_session
-
-    response = api_client.get("/v0/solar/GB/gsp/pvlive/all")
-
-    assert response.status_code == 200
-
-    r_json = response.json()
-    assert len(r_json) == 2
-
-    location = [LocationWithGSPYields(**location) for location in r_json]
-    assert len(location) == 2
-    assert len(location[0].gsp_yields) == 2
-
-
-@freeze_time("2022-01-01")
-def test_read_truths_for_all_gsp_compact(db_session, api_client):
-    """Check main solar/GB/gsp/pvlive/all route works with compact flag"""
+def setup_gsp_yield_data(db_session):
 
     gsp_yield_1 = GSPYield(datetime_utc=datetime(2022, 1, 2), solar_generation_kw=1)
     gsp_yield_1_sql = gsp_yield_1.to_orm()
@@ -319,9 +301,54 @@ def test_read_truths_for_all_gsp_compact(db_session, api_client):
     gsp_yield_4_sql.location = gsp_sql_1
 
     # add to database
-    db_session.add_all(
-        [gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_yield_4_sql, gsp_sql_1, gsp_sql_2]
-    )
+    db_session.add_all([gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_yield_4_sql, gsp_sql_1, gsp_sql_2])
+
+
+@freeze_time("2022-01-01")
+def test_read_truths_for_all_gsp(db_session, api_client):
+    """Check main solar/GB/gsp/pvlive/all route works"""
+
+    setup_gsp_yield_data(db_session=db_session)
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = api_client.get("/v0/solar/GB/gsp/pvlive/all")
+
+    assert response.status_code == 200
+
+    r_json = response.json()
+    assert len(r_json) == 2
+
+    location = [LocationWithGSPYields(**location) for location in r_json]
+    assert len(location) == 2
+    assert len(location[0].gsp_yields) == 3
+
+
+@freeze_time("2022-01-01")
+def test_read_truths_for_all_gsp(db_session, api_client):
+    """Check main solar/GB/gsp/pvlive/all route works"""
+
+    setup_gsp_yield_data(db_session=db_session)
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = api_client.get("/v0/solar/GB/gsp/pvlive/all?gsp_ids=122")
+
+    assert response.status_code == 200
+
+    r_json = response.json()
+    assert len(r_json) == 1
+
+    location = [LocationWithGSPYields(**location) for location in r_json]
+    assert len(location) == 1
+    assert len(location[0].gsp_yields) == 3
+
+
+@freeze_time("2022-01-01")
+def test_read_truths_for_all_gsp_compact(db_session, api_client):
+    """Check main solar/GB/gsp/pvlive/all route works with compact flag"""
+
+    setup_gsp_yield_data(db_session=db_session)
 
     app.dependency_overrides[get_session] = lambda: db_session
 
