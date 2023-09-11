@@ -325,7 +325,7 @@ def test_read_truths_for_all_gsp(db_session, api_client):
 
 
 @freeze_time("2022-01-01")
-def test_read_truths_for_all_gsp(db_session, api_client):
+def test_read_truths_for_all_gsp_filter_gsp(db_session, api_client):
     """Check main solar/GB/gsp/pvlive/all route works"""
 
     setup_gsp_yield_data(db_session=db_session)
