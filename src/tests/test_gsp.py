@@ -272,9 +272,7 @@ def test_read_truths_for_gsp_id_less_than_total(db_session, api_client):
     _ = [GSPYield(**gsp_yield) for gsp_yield in r_json]
 
 
-
 def setup_gsp_yield_data(db_session):
-
     gsp_yield_1 = GSPYield(datetime_utc=datetime(2022, 1, 2), solar_generation_kw=1)
     gsp_yield_1_sql = gsp_yield_1.to_orm()
 
@@ -301,7 +299,9 @@ def setup_gsp_yield_data(db_session):
     gsp_yield_4_sql.location = gsp_sql_1
 
     # add to database
-    db_session.add_all([gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_yield_4_sql, gsp_sql_1, gsp_sql_2])
+    db_session.add_all(
+        [gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_yield_4_sql, gsp_sql_1, gsp_sql_2]
+    )
 
 
 @freeze_time("2022-01-01")
