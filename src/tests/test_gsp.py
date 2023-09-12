@@ -5,6 +5,7 @@ from freezegun import freeze_time
 from nowcasting_datamodel.fake import make_fake_forecasts
 from nowcasting_datamodel.models import (
     ForecastValue,
+    ForecastValueSevenDaysSQL,
     GSPYield,
     Location,
     LocationSQL,
@@ -12,6 +13,7 @@ from nowcasting_datamodel.models import (
     ManyForecasts,
 )
 from nowcasting_datamodel.read.read import get_model
+from nowcasting_datamodel.save.save import save_all_forecast_values_seven_days
 from nowcasting_datamodel.save.update import update_all_forecast_latest
 
 from database import get_session
@@ -36,6 +38,38 @@ def test_read_latest_one_gsp(db_session, api_client):
     assert response.status_code == 200
 
     _ = [ForecastValue(**f) for f in response.json()]
+
+
+def test_read_latest_one_gsp_filter_creation_utc(db_session, api_client):
+    """Check main solar/GB/gsp/{gsp_id}/forecast route works"""
+
+    with freeze_time("2022-01-01"):
+        forecasts = make_fake_forecasts(
+            gsp_ids=list(range(0, 2)), session=db_session, model_name="blend", n_fake_forecasts=10
+        )
+        db_session.add_all(forecasts)
+        db_session.commit()
+        save_all_forecast_values_seven_days(forecasts=forecasts, session=db_session)
+
+    with freeze_time("2022-01-02"):
+        forecasts_2 = make_fake_forecasts(
+            gsp_ids=list(range(0, 2)), session=db_session, model_name="blend", n_fake_forecasts=10
+        )
+        db_session.add_all(forecasts_2)
+        db_session.commit()
+        save_all_forecast_values_seven_days(forecasts=forecasts_2, session=db_session)
+        assert len(db_session.query(ForecastValueSevenDaysSQL).all()) == 2 * 2 * 10
+
+    with freeze_time("2022-01-03"):
+        app.dependency_overrides[get_session] = lambda: db_session
+
+        response = api_client.get("/v0/solar/GB/gsp/1/forecast?creation_limit_utc=2022-01-02")
+
+        assert response.status_code == 200
+
+        f = [ForecastValue(**f) for f in response.json()]
+        assert len(f) == 10
+        assert f[0].target_time == forecasts[1].forecast_values[0].target_time
 
 
 def test_read_latest_all_gsp(db_session, api_client):

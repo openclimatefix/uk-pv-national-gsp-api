@@ -195,6 +195,7 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
     forecast_horizon_minutes: Optional[int] = None,
     start_datetime_utc: Optional[datetime] = None,
     end_datetime_utc: Optional[datetime] = None,
+    creation_utc_limit: Optional[datetime] = None,
 ) -> List[ForecastValue]:
     """Get the forecast values for yesterday and today for one gsp
 
@@ -207,7 +208,7 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
 
     start_datetime = get_start_datetime(start_datetime=start_datetime_utc)
 
-    if forecast_horizon_minutes is None:
+    if (forecast_horizon_minutes is None) and (creation_utc_limit is None):
         forecast_values = get_forecast_values_latest(
             session=session,
             gsp_id=gsp_id,
@@ -225,6 +226,7 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
             model_name="blend",
             model=ForecastValueSevenDaysSQL,
             only_return_latest=True,
+            created_utc_limit=creation_utc_limit,
         )
 
     # convert to pydantic objects
