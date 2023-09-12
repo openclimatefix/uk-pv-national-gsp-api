@@ -141,6 +141,7 @@ def get_forecasts_for_a_specific_gsp(
     user: Auth0User = Security(get_user()),
     start_datetime_utc: Optional[str] = None,
     end_datetime_utc: Optional[str] = None,
+    creation_limit_utc: Optional[str] = None,
 ) -> Union[Forecast, List[ForecastValue]]:
     """### Get recent forecast values for a specific GSP
 
@@ -160,6 +161,7 @@ def get_forecasts_for_a_specific_gsp(
     - **forecast_horizon_minutes**: optional forecast horizon in minutes (ex. 60
     - **start_datetime_utc**: optional start datetime for the query.
     - **end_datetime_utc**: optional end datetime for the query.
+    - **creation_utc_limit**: optional, only return forecasts made before this datetime.
     returns the latest forecast made 60 minutes before the target time)
     """
 
@@ -178,6 +180,7 @@ def get_forecasts_for_a_specific_gsp(
         forecast_horizon_minutes=forecast_horizon_minutes,
         start_datetime_utc=start_datetime_utc,
         end_datetime_utc=end_datetime_utc,
+        creation_utc_limit=creation_limit_utc,
     )
 
     logger.debug("Got forecast values for a specific gsp.")
