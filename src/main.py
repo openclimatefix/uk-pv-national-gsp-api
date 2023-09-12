@@ -42,7 +42,7 @@ logger = structlog.stdlib.get_logger()
 folder = os.path.dirname(os.path.abspath(__file__))
 
 title = "Quartz Solar API"
-version = "1.5.24"
+version = "1.5.25"
 
 sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN"),
