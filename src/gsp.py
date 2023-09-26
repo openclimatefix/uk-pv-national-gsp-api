@@ -1,7 +1,7 @@
 """Get GSP boundary data from eso """
+import os
 from typing import List, Optional, Union
 
-import os
 import structlog
 from fastapi import APIRouter, Depends, Request, Security, status
 from fastapi.responses import Response
