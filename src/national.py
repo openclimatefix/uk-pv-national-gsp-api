@@ -16,7 +16,7 @@ from database import (
     get_truth_values_for_a_specific_gsp_from_database,
 )
 from pydantic_models import NationalForecast, NationalForecastValue, NationalYield
-from utils import format_plevels
+from utils import format_datetime, format_plevels
 
 logger = structlog.stdlib.get_logger()
 
@@ -65,6 +65,10 @@ def get_national_forecast(
 
     """
     logger.debug("Get national forecasts")
+
+    start_datetime_utc = format_datetime(start_datetime_utc)
+    end_datetime_utc = format_datetime(end_datetime_utc)
+    creation_limit_utc = format_datetime(creation_limit_utc)
 
     logger.debug("Getting forecast.")
     if include_metadata:
