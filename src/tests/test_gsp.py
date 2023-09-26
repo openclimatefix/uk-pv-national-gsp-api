@@ -39,7 +39,7 @@ def test_read_latest_one_gsp(db_session, api_client):
 
     _ = [ForecastValue(**f) for f in response.json()]
 
-    
+
 @freeze_time("2022-01-01")
 def test_read_latest_one_gsp_national(db_session, api_client):
     """Check main solar/GB/gsp/{gsp_id}/forecast route works"""
