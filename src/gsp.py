@@ -1,6 +1,7 @@
 """Get GSP boundary data from eso """
 from typing import List, Optional, Union
 
+import os
 import structlog
 from fastapi import APIRouter, Depends, Request, Security, status
 from fastapi.responses import Response
@@ -29,6 +30,7 @@ GSP_TOTAL = 317
 
 
 logger = structlog.stdlib.get_logger()
+adjust_limit = float(os.getenv("ADJUST_MW_LIMIT", 0.0))
 
 
 router = APIRouter()
@@ -182,6 +184,11 @@ def get_forecasts_for_a_specific_gsp(
         end_datetime_utc=end_datetime_utc,
         creation_utc_limit=creation_limit_utc,
     )
+
+    if gsp_id == 0:
+        forecast_values_for_specific_gsp = [
+            f.adjust(limit=adjust_limit) for f in forecast_values_for_specific_gsp
+        ]
 
     logger.debug("Got forecast values for a specific gsp.")
 
