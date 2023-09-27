@@ -16,7 +16,7 @@ from database import (
     get_truth_values_for_a_specific_gsp_from_database,
 )
 from pydantic_models import NationalForecast, NationalForecastValue, NationalYield
-from utils import format_plevels
+from utils import format_datetime, format_plevels
 
 logger = structlog.stdlib.get_logger()
 
@@ -39,6 +39,9 @@ def get_national_forecast(
     forecast_horizon_minutes: Optional[int] = None,
     user: Auth0User = Security(get_user()),
     include_metadata: bool = False,
+    start_datetime_utc: Optional[str] = None,
+    end_datetime_utc: Optional[str] = None,
+    creation_limit_utc: Optional[str] = None,
 ) -> Union[NationalForecast, List[NationalForecastValue]]:
     """Get the National Forecast
 
@@ -55,9 +58,17 @@ def get_national_forecast(
     #### Parameters
     - **forecast_horizon_minutes**: optional forecast horizon in minutes (ex.
     60 returns the forecast made an hour before the target time)
+    - **start_datetime_utc**: optional start datetime for the query.
+    - **end_datetime_utc**: optional end datetime for the query.
+    - **creation_utc_limit**: optional, only return forecasts made before this datetime.
+    Note you can only go 7 days back at the moment
 
     """
     logger.debug("Get national forecasts")
+
+    start_datetime_utc = format_datetime(start_datetime_utc)
+    end_datetime_utc = format_datetime(end_datetime_utc)
+    creation_limit_utc = format_datetime(creation_limit_utc)
 
     logger.debug("Getting forecast.")
     if include_metadata:
@@ -68,7 +79,14 @@ def get_national_forecast(
             )
 
         forecast = get_latest_forecast_for_gsps(
-            session=session, gsp_ids=[0], model_name="blend", historic=True, preload_children=True
+            session=session,
+            gsp_ids=[0],
+            model_name="blend",
+            historic=True,
+            preload_children=True,
+            start_target_time=start_datetime_utc,
+            end_target_time=end_datetime_utc,
+            start_created_utc=creation_limit_utc,
         )
         forecast = forecast[0]
 
@@ -76,7 +94,12 @@ def get_national_forecast(
         forecast_values = forecast.forecast_values
     else:
         forecast_values = get_latest_forecast_values_for_a_specific_gsp_from_database(
-            session=session, gsp_id=0, forecast_horizon_minutes=forecast_horizon_minutes
+            session=session,
+            gsp_id=0,
+            forecast_horizon_minutes=forecast_horizon_minutes,
+            start_datetime_utc=start_datetime_utc,
+            end_datetime_utc=end_datetime_utc,
+            creation_utc_limit=creation_limit_utc,
         )
 
     logger.debug(

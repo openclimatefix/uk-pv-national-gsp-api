@@ -6,6 +6,7 @@ from freezegun import freeze_time
 from nowcasting_datamodel.fake import make_fake_national_forecast
 from nowcasting_datamodel.models import GSPYield, Location, LocationSQL
 from nowcasting_datamodel.read.read import get_model
+from nowcasting_datamodel.save.save import save_all_forecast_values_seven_days
 from nowcasting_datamodel.save.update import update_all_forecast_latest
 
 from database import get_session
@@ -40,6 +41,66 @@ def test_read_latest_national_values(db_session, api_client):
         national_forecast_values[24].plevels["plevel_10"]
         != national_forecast_values[0].expected_power_generation_megawatts * 0.9
     )
+
+
+def test_read_latest_national_values_creation_limit(db_session, api_client):
+    """Check main solar/GB/national/forecast route works"""
+
+    with freeze_time("2023-01-01"):
+        model = get_model(db_session, name="blend", version="0.0.1")
+
+        forecast = make_fake_national_forecast(
+            session=db_session, t0_datetime_utc=datetime.now(tz=timezone.utc)
+        )
+        forecast.model = model
+        db_session.add(forecast)
+        update_all_forecast_latest(forecasts=[forecast], session=db_session)
+        save_all_forecast_values_seven_days(forecasts=[forecast], session=db_session)
+
+    with freeze_time("2023-01-02"):
+        app.dependency_overrides[get_session] = lambda: db_session
+
+        response = api_client.get("/v0/solar/GB/national/forecast?creation_limit_utc=2023-01-02")
+        assert response.status_code == 200
+
+        national_forecast_values = [NationalForecastValue(**f) for f in response.json()]
+        assert len(national_forecast_values) == 16
+
+        response = api_client.get("/v0/solar/GB/national/forecast?creation_limit_utc=2022-12-31")
+        assert response.status_code == 200
+
+        national_forecast_values = [NationalForecastValue(**f) for f in response.json()]
+        assert len(national_forecast_values) == 0
+
+
+def test_read_latest_national_values_start_and_end_filters(db_session, api_client):
+    """Check main solar/GB/national/forecast route works"""
+
+    with freeze_time("2023-01-01"):
+        model = get_model(db_session, name="blend", version="0.0.1")
+
+        forecast = make_fake_national_forecast(
+            session=db_session, t0_datetime_utc=datetime.now(tz=timezone.utc)
+        )
+        forecast.model = model
+        db_session.add(forecast)
+        update_all_forecast_latest(forecasts=[forecast], session=db_session)
+
+        app.dependency_overrides[get_session] = lambda: db_session
+
+        response = api_client.get("/v0/solar/GB/national/forecast?start_datetime_utc=2023-01-01")
+        assert response.status_code == 200
+
+        national_forecast_values = [NationalForecastValue(**f) for f in response.json()]
+        assert len(national_forecast_values) == 16
+
+        response = api_client.get(
+            "/v0/solar/GB/national/forecast?start_datetime_utc=2023-01-01&end_datetime_utc=2023-01-01 04:00"  # noqa
+        )
+        assert response.status_code == 200
+
+        national_forecast_values = [NationalForecastValue(**f) for f in response.json()]
+        assert len(national_forecast_values) == 9
 
 
 def test_get_national_forecast(db_session, api_client):

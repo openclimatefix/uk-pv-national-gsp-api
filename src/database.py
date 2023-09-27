@@ -229,6 +229,9 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
             created_utc_limit=creation_utc_limit,
         )
 
+    if len(forecast_values) == 0:
+        return []
+
     # convert to pydantic objects
     if (
         isinstance(forecast_values[0], ForecastValueSevenDaysSQL)
