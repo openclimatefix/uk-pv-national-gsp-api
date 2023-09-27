@@ -5,7 +5,7 @@ from typing import Dict, List, Optional
 
 from nowcasting_datamodel.models import Forecast, ForecastSQL, ForecastValue, Location, LocationSQL
 from nowcasting_datamodel.models.utils import EnhancedBaseModel
-from pydantic import Field
+from pydantic import Field, validator
 
 logger = logging.getLogger(__name__)
 
@@ -15,6 +15,11 @@ class GSPYield(EnhancedBaseModel):
 
     datetime_utc: datetime = Field(..., description="The timestamp of the gsp yield")
     solar_generation_kw: float = Field(..., description="The amount of solar generation")
+
+    @validator("solar_generation_kw")
+    def result_check(cls, v):
+        """Round to 2 decimal places"""
+        return round(v, 2)
 
 
 class LocationWithGSPYields(Location):
@@ -170,6 +175,11 @@ class NationalForecastValue(ForecastValue):
     plevels: dict = Field(
         None, description="Dictionary to hold properties of the forecast, like p_levels. "
     )
+
+    @validator("expected_power_generation_megawatts")
+    def result_check(cls, v):
+        """Round to 2 decimal places"""
+        return round(v, 2)
 
 
 class NationalForecast(Forecast):
