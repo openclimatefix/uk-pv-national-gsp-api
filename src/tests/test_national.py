@@ -150,7 +150,7 @@ def test_read_latest_national_values_start_and_end_filters_inculde_metadata(db_s
         assert response.status_code == 200
 
         national_forecast = NationalForecast(**response.json())
-        assert len(national_forecasts.forecast_values) == 16
+        assert len(national_forecast.forecast_values) == 16
 
         response = api_client.get(
             "/v0/solar/GB/national/forecast?start_datetime_utc=2023-01-01&end_datetime_utc=2023-01-01 04:00&include_metadata=true"  # noqa
@@ -158,7 +158,7 @@ def test_read_latest_national_values_start_and_end_filters_inculde_metadata(db_s
         assert response.status_code == 200
 
         national_forecast = NationalForecast(**response.json())
-        assert len(national_forecasts.forecast_values) == 9
+        assert len(national_forecast.forecast_values) == 9
 
 
 def test_get_national_forecast_error(db_session, api_client):
