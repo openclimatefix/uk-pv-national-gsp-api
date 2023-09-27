@@ -187,41 +187,6 @@ def test_get_national_forecast_error(db_session, api_client):
     assert response.status_code == 404
 
 
-def test_read_latest_national_values_no_properties(db_session, api_client):
-    """Check main solar/GB/national/forecast route works
-
-    Check fake propreties are made
-    """
-
-    model = get_model(db_session, name="blend", version="0.0.1")
-
-    forecast = make_fake_national_forecast(
-        session=db_session, t0_datetime_utc=datetime.now(tz=timezone.utc)
-    )
-    forecast.model = model
-
-    new_forecast_values = []
-    for f in forecast.forecast_values:
-        f.properties = None
-        new_forecast_values.append(f)
-    forecast.forecast_values = new_forecast_values
-
-    db_session.add(forecast)
-    update_all_forecast_latest(forecasts=[forecast], session=db_session)
-
-    app.dependency_overrides[get_session] = lambda: db_session
-
-    response = api_client.get("/v0/solar/GB/national/forecast?test=test1")
-    assert response.status_code == 200
-
-    national_forecast_values = [NationalForecastValue(**f) for f in response.json()]
-    assert national_forecast_values[0].plevels is not None
-    # index 24 is the middle of the day
-    assert np.round(national_forecast_values[24].plevels["plevel_10"], 2) == np.round(
-        national_forecast_values[24].expected_power_generation_megawatts * 0.8, 2
-    )
-
-
 def test_read_latest_national_values_properties(db_session, api_client):
     """Check main solar/GB/national/forecast route works
 

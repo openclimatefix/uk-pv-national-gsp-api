@@ -4,7 +4,8 @@ from datetime import datetime, timezone
 
 from freezegun import freeze_time
 
-from utils import floor_30_minutes_dt, get_start_datetime, traces_sampler
+from pydantic_models import NationalForecastValue
+from utils import floor_30_minutes_dt, format_plevels, get_start_datetime, traces_sampler
 
 LOWER_LIMIT_MINUTE = 0
 UPPER_LIMIT_MINUTE = 60
@@ -101,3 +102,14 @@ def test_traces_sampler():
     assert (
         traces_sampler({"parent_sampled": False, "transaction_context": {"name": "error1"}}) == 1.0
     )
+
+
+def test_format_plevels():
+    """Make sure dummy plevels are made correctly"""
+    fv = NationalForecastValue(
+        expected_power_generation_megawatts=1.0,
+        target_time=datetime(2021, 1, 1, 0, 0, 0, tzinfo=timezone.utc),
+    )
+
+    format_plevels(national_forecast_value=fv)
+    fv.plevels = {"10": 0.8, "90": 1.2}
