@@ -222,6 +222,7 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
             session=session,
             gsp_id=gsp_id,
             start_datetime=start_datetime,
+            end_datetime=end_datetime_utc,
             forecast_horizon_minutes=forecast_horizon_minutes,
             model_name="blend",
             model=ForecastValueSevenDaysSQL,

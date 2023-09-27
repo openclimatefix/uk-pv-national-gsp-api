@@ -16,7 +16,7 @@ from database import (
     get_truth_values_for_a_specific_gsp_from_database,
 )
 from pydantic_models import NationalForecast, NationalForecastValue, NationalYield
-from utils import format_datetime, format_plevels
+from utils import filter_forecast_values, format_datetime, format_plevels
 
 logger = structlog.stdlib.get_logger()
 
@@ -78,20 +78,35 @@ def get_national_forecast(
                 detail="Can not set forecast_horizon_minutes when including metadata",
             )
 
+        if creation_limit_utc is None:
+            historic = True
+        else:
+            historic = False
+
         forecast = get_latest_forecast_for_gsps(
             session=session,
             gsp_ids=[0],
             model_name="blend",
-            historic=True,
+            historic=historic,
             preload_children=True,
             start_target_time=start_datetime_utc,
             end_target_time=end_datetime_utc,
-            start_created_utc=creation_limit_utc,
+            end_created_utc=creation_limit_utc,
         )
         forecast = forecast[0]
 
-        forecast = NationalForecast.from_orm_latest(forecast)
-        forecast_values = forecast.forecast_values
+        if historic:
+            forecast = NationalForecast.from_orm_latest(forecast)
+        else:
+            forecast = NationalForecast.from_orm(forecast)
+
+        forecasts = filter_forecast_values(
+            forecasts=[forecast],
+            start_datetime_utc=start_datetime_utc,
+            end_datetime_utc=end_datetime_utc,
+        )
+        forecast_values = forecasts[0].forecast_values
+
     else:
         forecast_values = get_latest_forecast_values_for_a_specific_gsp_from_database(
             session=session,
