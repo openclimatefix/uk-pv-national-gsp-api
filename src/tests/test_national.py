@@ -237,7 +237,8 @@ def test_read_latest_national_values_properties(db_session, api_client):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = api_client.get("/v0/solar/GB/national/forecast")
+    # add test=test2 makes sure the cache is not used
+    response = api_client.get("/v0/solar/GB/national/forecast?test=test2")
     assert response.status_code == 200
 
     national_forecast_values = [NationalForecastValue(**f) for f in response.json()]
