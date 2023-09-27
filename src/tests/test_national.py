@@ -95,7 +95,7 @@ def test_read_latest_national_values_start_and_end_filters(db_session, api_clien
         assert len(national_forecast_values) == 16
 
         response = api_client.get(
-            "/v0/solar/GB/national/forecast?start_datetime_utc=2023-01-01&end_datetime_utc=2023-01-01 04:00" # noqa
+            "/v0/solar/GB/national/forecast?start_datetime_utc=2023-01-01&end_datetime_utc=2023-01-01 04:00"  # noqa
         )
         assert response.status_code == 200
 
