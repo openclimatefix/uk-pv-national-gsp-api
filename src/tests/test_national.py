@@ -200,8 +200,11 @@ def test_read_latest_national_values_no_properties(db_session, api_client):
     )
     forecast.model = model
 
+    new_forecast_values = []
     for f in forecast.forecast_values:
         f.properties = None
+        new_forecast_values.append(f)
+    forecast.forecast_values = new_forecast_values
 
     db_session.add(forecast)
     update_all_forecast_latest(forecasts=[forecast], session=db_session)
