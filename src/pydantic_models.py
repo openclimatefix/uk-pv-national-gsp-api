@@ -182,7 +182,6 @@ class NationalForecastValue(ForecastValue):
         return round(v, 2)
 
 
-
 class NationalForecast(Forecast):
     """One Forecast of generation at one timestamp"""
 
