@@ -18,7 +18,7 @@ class GSPYield(EnhancedBaseModel):
 
     @validator("solar_generation_kw")
     def result_check(cls, v):
-        """round to 2 decimal places"""
+        """Round to 2 decimal places"""
         return round(v, 2)
 
 
@@ -178,7 +178,7 @@ class NationalForecastValue(ForecastValue):
 
     @validator("expected_power_generation_megawatts")
     def result_check(cls, v):
-        """round to 2 decimal places"""
+        """Round to 2 decimal places"""
         return round(v, 2)
 
 
