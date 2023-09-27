@@ -131,6 +131,35 @@ def test_get_national_forecast(db_session, api_client):
         != national_forecast.forecast_values[0].expected_power_generation_megawatts * 0.9
     )
 
+def test_read_latest_national_values_start_and_end_filters_inculde_metadata(db_session, api_client):
+    """Check main solar/GB/national/forecast route works"""
+
+    with freeze_time("2023-01-01"):
+        model = get_model(db_session, name="blend", version="0.0.1")
+
+        forecast = make_fake_national_forecast(
+            session=db_session, t0_datetime_utc=datetime.now(tz=timezone.utc)
+        )
+        forecast.model = model
+        db_session.add(forecast)
+        update_all_forecast_latest(forecasts=[forecast], session=db_session)
+
+        app.dependency_overrides[get_session] = lambda: db_session
+
+        response = api_client.get("/v0/solar/GB/national/forecast?start_datetime_utc=2023-01-01&include_metadata=true") # noqa
+        assert response.status_code == 200
+
+        national_forecast = NationalForecast(**response.json())
+        assert len(national_forecasts.forecast_values) == 16
+
+        response = api_client.get(
+            "/v0/solar/GB/national/forecast?start_datetime_utc=2023-01-01&end_datetime_utc=2023-01-01 04:00&include_metadata=true"  # noqa
+        )
+        assert response.status_code == 200
+
+        national_forecast = NationalForecast(**response.json())
+        assert len(national_forecasts.forecast_values) == 9
+
 
 def test_get_national_forecast_error(db_session, api_client):
     """Check main solar/GB/national/forecast route works"""
