@@ -149,24 +149,27 @@ def format_plevels(national_forecast_value: NationalForecastValue):
     if (not isinstance(national_forecast_value.plevels, dict)) or (
         national_forecast_value.plevels == {}
     ):
+        power = national_forecast_value.expected_power_generation_megawatts
         national_forecast_value.plevels = {
-            "plevel_10": national_forecast_value.expected_power_generation_megawatts * 0.8,
-            "plevel_90": national_forecast_value.expected_power_generation_megawatts * 1.2,
+            "plevel_10": round(power * 0.8, 2),
+            "plevel_90": round(power * 1.2, 2),
         }
 
     # rename '10' and '90' to plevel_10 and plevel_90
     for c in ["10", "90"]:
         if c in national_forecast_value.plevels.keys():
-            national_forecast_value.plevels[f"plevel_{c}"] = national_forecast_value.plevels.pop(c)
+            national_forecast_value.plevels[f"plevel_{c}"] = round(
+                national_forecast_value.plevels.pop(c), 2
+            )
 
     if national_forecast_value.plevels["plevel_10"] is None:
-        national_forecast_value.plevels["plevel_10"] = (
-            national_forecast_value.expected_power_generation_megawatts * 0.8
+        national_forecast_value.plevels["plevel_10"] = round(
+            national_forecast_value.expected_power_generation_megawatts * 0.8, 2
         )
 
     if national_forecast_value.plevels["plevel_90"] is None:
-        national_forecast_value.plevels["plevel_90"] = (
-            national_forecast_value.expected_power_generation_megawatts * 1.2
+        national_forecast_value.plevels["plevel_90"] = round(
+            national_forecast_value.expected_power_generation_megawatts * 1.2, 2
         )
 
 
