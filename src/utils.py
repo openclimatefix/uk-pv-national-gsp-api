@@ -93,7 +93,7 @@ def get_start_datetime(
 
     now = datetime.now(tz=utc)
 
-    if start_datetime is None or now - start_datetime > timedelta(days=3):
+    if start_datetime is None:
         if n_history_days is None:
             n_history_days = os.getenv("N_HISTORY_DAYS", "yesterday")
 
