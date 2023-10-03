@@ -218,10 +218,13 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
         )
 
     else:
-
-        if creation_utc_limit is not None and creation_utc_limit < datetime.now(tz=timezone.utc) - timedelta(days=7):
+        if creation_utc_limit is not None and creation_utc_limit < datetime.now(
+            tz=timezone.utc
+        ) - timedelta(days=7):
             model = ForecastValueSQL
-        elif start_datetime_utc is not None and start_datetime_utc < datetime.now(tz=timezone.utc) - timedelta(days=7):
+        elif start_datetime_utc is not None and start_datetime_utc < datetime.now(
+            tz=timezone.utc
+        ) - timedelta(days=7):
             model = ForecastValueSQL
         else:
             model = ForecastValueSevenDaysSQL
