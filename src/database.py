@@ -206,7 +206,7 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
     :return: list of latest forecat values
     """
 
-    start_datetime = get_start_datetime(start_datetime=start_datetime_utc)
+    start_datetime = get_start_datetime(start_datetime=start_datetime_utc, days=365)
 
     if (forecast_horizon_minutes is None) and (creation_utc_limit is None):
         forecast_values = get_forecast_values_latest(
