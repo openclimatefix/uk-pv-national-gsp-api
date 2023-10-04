@@ -206,7 +206,7 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
     :return: list of latest forecat values
     """
 
-    start_datetime = get_start_datetime(start_datetime=start_datetime_utc)
+    start_datetime = get_start_datetime(start_datetime=start_datetime_utc, days=365)
 
     if (forecast_horizon_minutes is None) and (creation_utc_limit is None):
         forecast_values = get_forecast_values_latest(
@@ -218,6 +218,17 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
         )
 
     else:
+        if creation_utc_limit is not None and creation_utc_limit < datetime.now(
+            tz=timezone.utc
+        ) - timedelta(days=7):
+            model = ForecastValueSQL
+        elif start_datetime_utc is not None and start_datetime_utc < datetime.now(
+            tz=timezone.utc
+        ) - timedelta(days=7):
+            model = ForecastValueSQL
+        else:
+            model = ForecastValueSevenDaysSQL
+
         forecast_values = get_forecast_values(
             session=session,
             gsp_id=gsp_id,
@@ -225,7 +236,7 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
             end_datetime=end_datetime_utc,
             forecast_horizon_minutes=forecast_horizon_minutes,
             model_name="blend",
-            model=ForecastValueSevenDaysSQL,
+            model=model,
             only_return_latest=True,
             created_utc_limit=creation_utc_limit,
         )

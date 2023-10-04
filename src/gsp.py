@@ -172,6 +172,7 @@ def get_forecasts_for_a_specific_gsp(
 
     start_datetime_utc = format_datetime(start_datetime_utc)
     end_datetime_utc = format_datetime(end_datetime_utc)
+    creation_limit_utc = format_datetime(creation_limit_utc)
 
     if gsp_id > GSP_TOTAL:
         return Response(None, status.HTTP_204_NO_CONTENT)

@@ -76,7 +76,9 @@ def format_datetime(datetime_str: str = None):
 
 
 def get_start_datetime(
-    n_history_days: Optional[Union[str, int]] = None, start_datetime: Optional[datetime] = None
+    n_history_days: Optional[Union[str, int]] = None,
+    start_datetime: Optional[datetime] = None,
+    days: Optional[int] = 3,
 ) -> datetime:
     """
     Get the start datetime for the query
@@ -88,12 +90,13 @@ def get_start_datetime(
     :param start_datetime: optional start datetime for the query.
      If not set, after now, or set to over three days ago
      defaults to N_HISTORY_DAYS env var, which defaults to yesterday.
+    :param days: number of days limit the data by
     :return: start datetime
     """
 
     now = datetime.now(tz=utc)
 
-    if start_datetime is None or now - start_datetime > timedelta(days=3):
+    if start_datetime is None or now - start_datetime > timedelta(days=days):
         if n_history_days is None:
             n_history_days = os.getenv("N_HISTORY_DAYS", "yesterday")
 
