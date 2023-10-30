@@ -24,7 +24,7 @@ from pydantic_models import (
     LocationWithGSPYields,
     OneDatetimeManyForecastValues,
 )
-from utils import format_datetime
+from utils import format_datetime, limiter, N_CALLS_PER_HOUR
 
 GSP_TOTAL = 317
 
@@ -44,6 +44,7 @@ NationalYield = GSPYield
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
+@limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_all_available_forecasts(
     request: Request,
     historic: Optional[bool] = True,
@@ -111,6 +112,7 @@ def get_all_available_forecasts(
     responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
 @cache_response
+@limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_forecasts_for_a_specific_gsp_old_route(
     request: Request,
     gsp_id: int,
@@ -135,6 +137,7 @@ def get_forecasts_for_a_specific_gsp_old_route(
     responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
 @cache_response
+@limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_forecasts_for_a_specific_gsp(
     request: Request,
     gsp_id: int,
@@ -203,6 +206,7 @@ def get_forecasts_for_a_specific_gsp(
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
+@limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_truths_for_all_gsps(
     request: Request,
     regime: Optional[str] = None,
@@ -257,6 +261,7 @@ def get_truths_for_all_gsps(
     responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
 @cache_response
+@limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_truths_for_a_specific_gsp_old_route(
     request: Request,
     gsp_id: int,
@@ -282,6 +287,7 @@ def get_truths_for_a_specific_gsp_old_route(
     responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
 @cache_response
+@limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_truths_for_a_specific_gsp(
     request: Request,
     gsp_id: int,

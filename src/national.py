@@ -16,7 +16,7 @@ from database import (
     get_truth_values_for_a_specific_gsp_from_database,
 )
 from pydantic_models import NationalForecast, NationalForecastValue, NationalYield
-from utils import filter_forecast_values, format_datetime, format_plevels
+from utils import filter_forecast_values, format_datetime, format_plevels, limiter, N_CALLS_PER_HOUR
 
 logger = structlog.stdlib.get_logger()
 
@@ -33,6 +33,7 @@ router = APIRouter()
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
+@limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_national_forecast(
     request: Request,
     session: Session = Depends(get_session),
@@ -156,6 +157,7 @@ def get_national_forecast(
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
+@limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_national_pvlive(
     request: Request,
     regime: Optional[str] = None,

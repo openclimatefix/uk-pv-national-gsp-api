@@ -1,5 +1,8 @@
 """ Utils functions for main.py """
 import os
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+
 from datetime import datetime, timedelta
 from typing import List, Optional, Union
 
@@ -14,6 +17,8 @@ logger = structlog.stdlib.get_logger()
 
 europe_london_tz = timezone("Europe/London")
 utc = timezone("UTC")
+limiter = Limiter(key_func=get_remote_address)
+N_CALLS_PER_HOUR = 3600
 
 
 def floor_30_minutes_dt(dt):

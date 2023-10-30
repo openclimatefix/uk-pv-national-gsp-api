@@ -10,6 +10,7 @@ from sqlalchemy.orm.session import Session
 
 from cache import cache_response
 from database import get_latest_status_from_database, get_session, save_api_call_to_db
+from utils import limiter, N_CALLS_PER_HOUR
 
 logger = structlog.stdlib.get_logger()
 
@@ -20,6 +21,7 @@ forecast_error_hours = float(os.getenv("FORECAST_ERROR_HOURS", 2.0))
 
 @router.get("/status", response_model=Status)
 @cache_response
+@limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_status(request: Request, session: Session = Depends(get_session)) -> Status:
     """### Get status for the database and forecasts
 
@@ -32,6 +34,7 @@ def get_status(request: Request, session: Session = Depends(get_session)) -> Sta
 
 
 @router.get("/check_last_forecast_run", include_in_schema=False)
+@limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def check_last_forecast(request: Request, session: Session = Depends(get_session)) -> datetime:
     """Check to that a forecast has run with in the last 2 hours"""
 
