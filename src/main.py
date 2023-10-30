@@ -17,7 +17,7 @@ from national import router as national_router
 from redoc_theme import get_redoc_html_with_theme
 from status import router as status_router
 from system import router as system_router
-from utils import traces_sampler, limiter
+from utils import limiter, traces_sampler
 
 # flake8: noqa E501
 

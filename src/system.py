@@ -13,7 +13,7 @@ from sqlalchemy.orm.session import Session
 from auth_utils import get_auth_implicit_scheme, get_user
 from cache import cache_response
 from database import get_gsp_system, get_session
-from utils import limiter, N_CALLS_PER_HOUR
+from utils import N_CALLS_PER_HOUR, limiter
 
 # flake8: noqa: E501
 logger = structlog.stdlib.get_logger()

@@ -16,7 +16,7 @@ from database import (
     get_truth_values_for_a_specific_gsp_from_database,
 )
 from pydantic_models import NationalForecast, NationalForecastValue, NationalYield
-from utils import filter_forecast_values, format_datetime, format_plevels, limiter, N_CALLS_PER_HOUR
+from utils import N_CALLS_PER_HOUR, filter_forecast_values, format_datetime, format_plevels, limiter
 
 logger = structlog.stdlib.get_logger()
 

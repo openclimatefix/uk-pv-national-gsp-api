@@ -24,7 +24,7 @@ from pydantic_models import (
     LocationWithGSPYields,
     OneDatetimeManyForecastValues,
 )
-from utils import format_datetime, limiter, N_CALLS_PER_HOUR
+from utils import N_CALLS_PER_HOUR, format_datetime, limiter
 
 GSP_TOTAL = 317
 
