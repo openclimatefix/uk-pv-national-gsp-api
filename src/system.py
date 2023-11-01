@@ -13,6 +13,7 @@ from sqlalchemy.orm.session import Session
 from auth_utils import get_auth_implicit_scheme, get_user
 from cache import cache_response
 from database import get_gsp_system, get_session
+from utils import N_CALLS_PER_HOUR, limiter
 
 # flake8: noqa: E501
 logger = structlog.stdlib.get_logger()
@@ -43,6 +44,7 @@ def get_gsp_boundaries_from_eso_wgs84() -> gpd.GeoDataFrame:
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
+@limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_gsp_boundaries(
     request: Request,
     session: Session = Depends(get_session),
@@ -75,6 +77,7 @@ def get_gsp_boundaries(
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
+@limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_system_details(
     request: Request,
     session: Session = Depends(get_session),
