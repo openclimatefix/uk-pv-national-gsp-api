@@ -141,8 +141,8 @@ def test_get_national_forecast_null_plevels(db_session, api_client):
         session=db_session, t0_datetime_utc=datetime.now(tz=timezone.utc)
     )
     forecast.model = model
-    forecast.forecast_values[0].properties = None
-    forecast.forecast_values[1].properties = {"10": None, "90": None}
+    for i in range(len(forecast.forecast_values)):
+        forecast.forecast_values[i].properties = {"10": None, "90": None}
 
     db_session.add(forecast)
     update_all_forecast_latest(forecasts=[forecast], session=db_session)
