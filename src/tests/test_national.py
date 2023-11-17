@@ -154,14 +154,11 @@ def test_get_national_forecast_null_plevels(db_session, api_client):
 
     national_forecast = NationalForecast(**response.json())
     assert national_forecast.forecast_values[0].plevels is not None
-    assert (
-            national_forecast.forecast_values[0].plevels["plevel_10"]
-            == round(national_forecast.forecast_values[0].expected_power_generation_megawatts * 0.8,2)
+    assert national_forecast.forecast_values[0].plevels["plevel_10"] == round(
+        national_forecast.forecast_values[0].expected_power_generation_megawatts * 0.8, 2
     )
-    assert (
-            national_forecast.forecast_values[1].plevels["plevel_10"]
-            == round(national_forecast.forecast_values[1].expected_power_generation_megawatts * 0.8,2)
-
+    assert national_forecast.forecast_values[1].plevels["plevel_10"] == round(
+        national_forecast.forecast_values[1].expected_power_generation_megawatts * 0.8, 2
     )
 
 
