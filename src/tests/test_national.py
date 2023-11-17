@@ -131,6 +131,7 @@ def test_get_national_forecast(db_session, api_client):
         != national_forecast.forecast_values[0].expected_power_generation_megawatts * 0.9
     )
 
+
 def test_get_national_forecast_null_plevels(db_session, api_client):
     """Check main solar/GB/national/forecast route works"""
 
@@ -154,10 +155,9 @@ def test_get_national_forecast_null_plevels(db_session, api_client):
     national_forecast = NationalForecast(**response.json())
     assert national_forecast.forecast_values[0].plevels is not None
     assert (
-            national_forecast.forecast_values[0].plevels["plevel_10"]
-            == national_forecast.forecast_values[0].expected_power_generation_megawatts * 0.8
+        national_forecast.forecast_values[0].plevels["plevel_10"]
+        == national_forecast.forecast_values[0].expected_power_generation_megawatts * 0.8
     )
-
 
 
 def test_read_latest_national_values_start_and_end_filters_include_metadata(db_session, api_client):
