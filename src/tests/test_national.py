@@ -131,8 +131,36 @@ def test_get_national_forecast(db_session, api_client):
         != national_forecast.forecast_values[0].expected_power_generation_megawatts * 0.9
     )
 
+def test_get_national_forecast_null_plevels(db_session, api_client):
+    """Check main solar/GB/national/forecast route works"""
 
-def test_read_latest_national_values_start_and_end_filters_inculde_metadata(db_session, api_client):
+    model = get_model(db_session, name="blend", version="0.0.1")
+
+    forecast = make_fake_national_forecast(
+        session=db_session, t0_datetime_utc=datetime.now(tz=timezone.utc)
+    )
+    forecast.model = model
+    forecast.forecast_values[0].properties = None
+    forecast.forecast_values[1].properties = {"10": None, "90": None}
+
+    db_session.add(forecast)
+    update_all_forecast_latest(forecasts=[forecast], session=db_session)
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = api_client.get("/v0/solar/GB/national/forecast?include_metadata=true")
+    assert response.status_code == 200
+
+    national_forecast = NationalForecast(**response.json())
+    assert national_forecast.forecast_values[0].plevels is not None
+    assert (
+            national_forecast.forecast_values[0].plevels["plevel_10"]
+            == national_forecast.forecast_values[0].expected_power_generation_megawatts * 0.8
+    )
+
+
+
+def test_read_latest_national_values_start_and_end_filters_include_metadata(db_session, api_client):
     """Check main solar/GB/national/forecast route works"""
 
     with freeze_time("2023-01-01"):
