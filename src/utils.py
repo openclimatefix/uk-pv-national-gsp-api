@@ -152,7 +152,6 @@ def format_plevels(national_forecast_value: NationalForecastValue):
     :param national_forecast_value:
     :return:
     """
-    logger.debug(f"{national_forecast_value.plevels}")
     power = national_forecast_value.expected_power_generation_megawatts
     if (not isinstance(national_forecast_value.plevels, dict)) or (
         national_forecast_value.plevels == {}
@@ -167,10 +166,21 @@ def format_plevels(national_forecast_value: NationalForecastValue):
     # rename '10' and '90' to plevel_10 and plevel_90
     for c in ["10", "90"]:
         if c in national_forecast_value.plevels.keys():
-            national_forecast_value.plevels[f"plevel_{c}"] = round(
-                national_forecast_value.plevels.pop(c), 2
-            )
 
+            # get value
+            value = national_forecast_value.plevels.pop(c)
+
+            # check if Null
+            if value is None:
+                logger.warning(f"plevel_{c} is None, therefore will be used the default value")
+            else:
+                # round value
+                value = round(value, 2)
+
+            # set new key
+            national_forecast_value.plevels[f"plevel_{c}"] = value
+
+    # set default values
     if national_forecast_value.plevels["plevel_10"] is None:
         national_forecast_value.plevels["plevel_10"] = round(power * 0.8, 2)
 
