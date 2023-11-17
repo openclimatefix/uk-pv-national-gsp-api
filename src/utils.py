@@ -166,7 +166,6 @@ def format_plevels(national_forecast_value: NationalForecastValue):
     # rename '10' and '90' to plevel_10 and plevel_90
     for c in ["10", "90"]:
         if c in national_forecast_value.plevels.keys():
-
             # get value
             value = national_forecast_value.plevels.pop(c)
 

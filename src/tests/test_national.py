@@ -161,8 +161,8 @@ def test_get_national_forecast_null_plevels(db_session, api_client):
     assert (
             national_forecast.forecast_values[1].plevels["plevel_10"]
             == round(national_forecast.forecast_values[1].expected_power_generation_megawatts * 0.8,2)
-    )
 
+    )
 
 
 def test_read_latest_national_values_start_and_end_filters_include_metadata(db_session, api_client):
