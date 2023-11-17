@@ -169,7 +169,7 @@ def format_plevels(national_forecast_value: NationalForecastValue):
             # get value
             value = national_forecast_value.plevels.pop(c)
 
-            # check if Null
+            # check if None
             if value is None:
                 logger.warning(f"plevel_{c} is None, therefore will be used the default value")
             else:
