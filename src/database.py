@@ -42,6 +42,9 @@ from pydantic_models import (
 )
 from utils import filter_forecast_values, floor_30_minutes_dt, get_start_datetime
 
+db_conn = DatabaseConnection(url=os.getenv("DB_URL", "not_set"))
+pv_db_conn = DatabaseConnection(url=os.getenv("DB_URL_PV", "not_set"))
+
 logger = structlog.stdlib.get_logger()
 
 # merged from
@@ -257,17 +260,15 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
 
 def get_session():
     """Get database settion"""
-    connection = DatabaseConnection(url=os.getenv("DB_URL", "not_set"))
 
-    with connection.get_session() as s:
+    with db_conn.get_session() as s:
         yield s
 
 
 def get_session_pv():
     """Get database sessions to pv database"""
-    connection = DatabaseConnection(url=os.getenv("DB_URL_PV", "not_set"))
 
-    with connection.get_session() as s:
+    with pv_db_conn.get_session() as s:
         yield s
 
 
