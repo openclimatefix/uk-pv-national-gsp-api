@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM python:3.11-slim
 
 # copy files requirements
 COPY ./requirements.txt /app/requirements.txt
@@ -18,6 +18,9 @@ WORKDIR /app
 # copy files over
 COPY ./src /app/src
 COPY ./script /app/script
+
+# pin coverage
+RUN pip install -U coverage
 
 # make sure 'src' is in python path - this is so imports work
 ENV PYTHONPATH=${PYTHONPATH}:/app/src
