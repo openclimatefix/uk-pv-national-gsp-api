@@ -20,7 +20,7 @@ COPY ./src /app/src
 COPY ./script /app/script
 
 # pin coverage
-RUN pip install coverage==6.5.0
+RUN pip install -U coverage
 
 # make sure 'src' is in python path - this is so imports work
 ENV PYTHONPATH=${PYTHONPATH}:/app/src
