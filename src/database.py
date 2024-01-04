@@ -43,7 +43,6 @@ from pydantic_models import (
 from utils import filter_forecast_values, floor_30_minutes_dt, get_start_datetime
 
 db_conn = DatabaseConnection(url=os.getenv("DB_URL", "not_set"))
-pv_db_conn = DatabaseConnection(url=os.getenv("DB_URL_PV", "not_set"))
 
 logger = structlog.stdlib.get_logger()
 
@@ -262,13 +261,6 @@ def get_session():
     """Get database settion"""
 
     with db_conn.get_session() as s:
-        yield s
-
-
-def get_session_pv():
-    """Get database sessions to pv database"""
-
-    with pv_db_conn.get_session() as s:
         yield s
 
 
