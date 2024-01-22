@@ -13,6 +13,33 @@ logger = structlog.stdlib.get_logger()
 
 CACHE_TIME_SECONDS = 120
 cache_time_seconds = int(os.getenv("CACHE_TIME_SECONDS", CACHE_TIME_SECONDS))
+DELETE_CACHE_TIME_SECONDS = 240
+delete_cache_time_seconds = int(os.getenv("DELETE_CACHE_TIME_SECONDS", DELETE_CACHE_TIME_SECONDS))
+
+
+def remove_old_cache(
+    last_updated: dict, response: dict, remove_cache_time_seconds: float = delete_cache_time_seconds
+):
+    """
+    Remove old cache entries from the cache
+
+    :param last_updated: dict of last updated times
+    :param response: dict of responses, same keys as last_updated
+    :param remove_cache_time_seconds: the amount of time, after which the cache should be removed
+    """
+    now = datetime.now(tz=timezone.utc)
+    logger.info("Removing old cache entries")
+    keys_to_remove = []
+    for key, value in last_updated.items():
+        if now - timedelta(seconds=remove_cache_time_seconds) > value:
+            logger.debug(f"Removing {key} from cache, ({value})")
+            keys_to_remove.append(key)
+
+    for key in keys_to_remove:
+        last_updated.pop(key)
+        response.pop(key)
+
+    return last_updated, response
 
 
 def cache_response(func):
@@ -51,6 +78,8 @@ def cache_response(func):
         for var in ["session", "user", "request"]:
             if var in route_variables:
                 route_variables.pop(var)
+
+        last_updated, response = remove_old_cache(last_updated, response)
 
         # make route_variables into a string
         route_variables = json.dumps(route_variables)

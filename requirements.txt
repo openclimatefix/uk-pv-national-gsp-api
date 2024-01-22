@@ -17,3 +17,4 @@ httpx
 structlog
 sentry-sdk
 slowapi
+pathy==0.10.3
