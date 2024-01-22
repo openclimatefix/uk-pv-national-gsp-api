@@ -1,5 +1,5 @@
 opencv-contrib-python-headless
-fastapi
+fastapi==0.108.0
 uvicorn[standard]
 pydantic
 numpy
