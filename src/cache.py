@@ -74,8 +74,8 @@ def cache_response(func):
         request = route_variables.get("request", None)
         save_api_call_to_db(session=session, user=user, request=request)
 
-        if 'background_tasks' in route_variables:
-            route_variables['background_tasks'].add_task(cache_response, last_updated)
+        if "background_tasks" in route_variables:
+            route_variables["background_tasks"].add_task(cache_response, last_updated)
 
         # drop session and user
         for var in ["session", "user", "request"]:
