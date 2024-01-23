@@ -41,8 +41,10 @@ def remove_old_cache(
             last_updated.pop(key)
             response.pop(key)
         except KeyError:
-            logger.warning(f"Could not remove {key} from cache. "
-                           f"This could be because it has already been removed")
+            logger.warning(
+                f"Could not remove {key} from cache. "
+                f"This could be because it has already been removed"
+            )
 
     return last_updated, response
 
