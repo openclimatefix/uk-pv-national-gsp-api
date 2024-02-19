@@ -1,4 +1,5 @@
 """ pydantic models for API"""
+
 import logging
 from datetime import datetime
 from typing import Dict, List, Optional
