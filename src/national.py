@@ -24,7 +24,9 @@ logger = structlog.stdlib.get_logger()
 adjust_limit = float(os.getenv("ADJUST_MW_LIMIT", 0.0))
 get_plevels = bool(os.getenv("GET_PLEVELS", True))
 
-router = APIRouter()
+router = APIRouter(
+    tags=["National"],
+)
 
 
 @router.get(
