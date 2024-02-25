@@ -33,7 +33,9 @@ logger = structlog.stdlib.get_logger()
 adjust_limit = float(os.getenv("ADJUST_MW_LIMIT", 0.0))
 
 
-router = APIRouter()
+router = APIRouter(
+    tags=["GSP"],
+)
 NationalYield = GSPYield
 
 
