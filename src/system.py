@@ -7,7 +7,6 @@ import structlog
 from fastapi import APIRouter, Depends, Request, Security
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.models import GSPYield, Location
-from nowcasting_dataset.data_sources.gsp.eso import get_gsp_metadata_from_eso
 from sqlalchemy.orm.session import Session
 
 from auth_utils import get_auth_implicit_scheme, get_user
@@ -21,54 +20,6 @@ logger = structlog.stdlib.get_logger()
 
 router = APIRouter()
 NationalYield = GSPYield
-
-
-def get_gsp_boundaries_from_eso_wgs84() -> gpd.GeoDataFrame:
-    """Get GSP boundaries in lat/lon format (EPSG:4326)"""
-
-    # get gsp boundaries
-    boundaries = get_gsp_metadata_from_eso()
-
-    # change to lat/lon - https://epsg.io/4326
-    boundaries = boundaries.to_crs(4326)
-
-    # fill nans
-    boundaries = boundaries.fillna("")
-
-    return boundaries
-
-
-# corresponds to API route /v0/system/GB/gsp/boundaries
-@router.get(
-    "/boundaries",
-    dependencies=[Depends(get_auth_implicit_scheme())],
-)
-@cache_response
-@limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
-def get_gsp_boundaries(
-    request: Request,
-    session: Session = Depends(get_session),
-    user: Auth0User = Security(get_user()),
-) -> dict:
-    """### Get GSP boundaries
-
-    Returns an object with GSP boundaries provided by National Grid ESO.
-
-    [This is a wrapper around the dataset](https://data.nationalgrideso.com/systemgis-boundaries-for-gb-grid-supply-points).
-
-    The return object is in EPSG:4326 (ie. contains latitude & longitude
-    coordinates).
-
-    """
-
-    logger.info(f"Getting all GSP boundaries for user {user}")
-
-    json_string = get_gsp_boundaries_from_eso_wgs84().to_json()
-
-    json.loads(json_string)
-
-    return json.loads(json_string)
-
 
 # corresponds to API route /v0/system/GB/gsp/, get system details for all GSPs
 @router.get(
