@@ -19,7 +19,9 @@ from utils import N_CALLS_PER_HOUR, limiter
 logger = structlog.stdlib.get_logger()
 
 
-router = APIRouter()
+router = APIRouter(
+    tags=["System"],
+)
 NationalYield = GSPYield
 
 
