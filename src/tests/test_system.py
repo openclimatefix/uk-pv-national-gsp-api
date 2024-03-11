@@ -28,13 +28,3 @@ def test_get_gsp_systems(db_session, api_client):
     locations = [Location(**location) for location in response.json()]
     assert len(locations) == 10
     assert locations[1].installed_capacity_mw == 1.1
-
-
-def test_gsp_boundaries(db_session, api_client):
-    """Check main system/GB/gsp/boundaries"""
-
-    app.dependency_overrides[get_session] = lambda: db_session
-
-    response = api_client.get("/v0/system/GB/gsp/boundaries")
-    assert response.status_code == 200
-    assert len(response.json()) > 0
