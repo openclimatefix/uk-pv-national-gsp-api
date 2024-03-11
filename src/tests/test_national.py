@@ -215,8 +215,10 @@ def test_read_latest_national_values_properties(db_session, api_client):
     national_forecast_values = [NationalForecastValue(**f) for f in response.json()]
     assert national_forecast_values[0].plevels is not None
     # index 24 is the middle of the day
-    assert np.abs(np.round(national_forecast_values[24].plevels["plevel_10"], 2) - np.round(
-        national_forecast_values[24].expected_power_generation_megawatts * 0.9, 2) < 0.02
+    assert np.abs(
+        np.round(national_forecast_values[24].plevels["plevel_10"], 2)
+        - np.round(national_forecast_values[24].expected_power_generation_megawatts * 0.9, 2)
+        < 0.02
     )
 
 
