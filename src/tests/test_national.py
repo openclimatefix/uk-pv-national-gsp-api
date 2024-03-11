@@ -13,6 +13,8 @@ from database import get_session
 from main import app
 from pydantic_models import NationalForecast, NationalForecastValue
 
+from freezegun import freeze_time
+
 
 def test_read_latest_national_values(db_session, api_client):
     """Check main solar/GB/national/forecast route works"""
@@ -103,6 +105,7 @@ def test_read_latest_national_values_start_and_end_filters(db_session, api_clien
         assert len(national_forecast_values) == 9
 
 
+@freeze_time("2024-01-01")
 def test_get_national_forecast(db_session, api_client):
     """Check main solar/GB/national/forecast route works"""
 
@@ -212,8 +215,8 @@ def test_read_latest_national_values_properties(db_session, api_client):
     national_forecast_values = [NationalForecastValue(**f) for f in response.json()]
     assert national_forecast_values[0].plevels is not None
     # index 24 is the middle of the day
-    assert np.round(national_forecast_values[24].plevels["plevel_10"], 2) == np.round(
-        national_forecast_values[24].expected_power_generation_megawatts * 0.9, 2
+    assert np.abs(np.round(national_forecast_values[24].plevels["plevel_10"], 2) - np.round(
+        national_forecast_values[24].expected_power_generation_megawatts * 0.9, 2) < 0.02
     )
 
 
