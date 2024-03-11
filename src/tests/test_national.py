@@ -13,8 +13,6 @@ from database import get_session
 from main import app
 from pydantic_models import NationalForecast, NationalForecastValue
 
-from freezegun import freeze_time
-
 
 def test_read_latest_national_values(db_session, api_client):
     """Check main solar/GB/national/forecast route works"""
