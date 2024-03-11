@@ -21,6 +21,7 @@ logger = structlog.stdlib.get_logger()
 router = APIRouter()
 NationalYield = GSPYield
 
+
 # corresponds to API route /v0/system/GB/gsp/, get system details for all GSPs
 @router.get(
     "/",
