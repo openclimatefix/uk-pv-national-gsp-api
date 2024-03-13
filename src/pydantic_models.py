@@ -90,10 +90,10 @@ def convert_location_sql_to_many_datetime_many_generation(
 
     # loop over locations and gsp yields to create a dictionary of gsp generation by datetime
     for location in locations:
-        gsp_id = location.gsp_id
+        gsp_id = str(location.gsp_id)
         for gsp_yield in location.gsp_yields:
             datetime_utc = gsp_yield.datetime_utc
-            solar_generation_kw = round(gsp_yield.solar_generation_kw, 2)
+            solar_generation_kw = str(round(gsp_yield.solar_generation_kw, 2))
 
             # if the datetime object is not in the dictionary, add it
             if gsp_yield.datetime_utc not in many_gsp_generation:
@@ -134,7 +134,7 @@ def convert_forecasts_to_many_datetime_many_generation(
 
     # loop over locations and gsp yields to create a dictionary of gsp generation by datetime
     for forecast in forecasts:
-        gsp_id = forecast.location.gsp_id
+        gsp_id = str(forecast.location.gsp_id)
         if historic:
             forecast_values = forecast.forecast_values_latest
         else:
