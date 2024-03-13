@@ -106,6 +106,15 @@ def get_all_available_forecasts(
             f"The option is {historic=} for user {user}"
         )
 
+        # adjust gsp_id 0
+        if 0 in gsp_ids:
+            idx = [i for i, forecasts in enumerate(forecasts.forecasts) if forecasts.location.gsp_id == 0]
+            if len(idx) > 0:
+                logger.info(f"Adjusting forecast values for gsp id 0, {adjust_limit}")
+                forecasts.forecasts[idx[0]] = forecasts.forecasts[idx[0]].adjust(limit=adjust_limit)
+            else:
+                logger.warning(f"Could not find gsp id 0 in the forecasts")
+
     return forecasts
 
 
