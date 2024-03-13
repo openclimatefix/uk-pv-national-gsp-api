@@ -56,6 +56,7 @@ def get_all_available_forecasts(
     end_datetime_utc: Optional[str] = None,
     compact: Optional[bool] = False,
     gsp_ids: Optional[str] = None,
+    creation_limit_utc: Optional[str] = None,
 ) -> Union[ManyForecasts, List[OneDatetimeManyForecastValues]]:
     """### Get all forecasts for all GSPs
 
@@ -85,6 +86,7 @@ def get_all_available_forecasts(
 
     start_datetime_utc = format_datetime(start_datetime_utc)
     end_datetime_utc = format_datetime(end_datetime_utc)
+    creation_limit_utc = format_datetime(creation_limit_utc)
 
     forecasts = get_forecasts_from_database(
         session=session,
@@ -93,6 +95,7 @@ def get_all_available_forecasts(
         end_datetime_utc=end_datetime_utc,
         compact=compact,
         gsp_ids=gsp_ids,
+        creation_utc_limit=creation_limit_utc,
     )
 
     if not compact:
@@ -102,6 +105,16 @@ def get_all_available_forecasts(
             f"Got {len(forecasts.forecasts)} forecasts for all gsps. "
             f"The option is {historic=} for user {user}"
         )
+
+        # adjust gsp_id 0
+        idx = [
+            i for i, forecasts in enumerate(forecasts.forecasts) if forecasts.location.gsp_id == 0
+        ]
+        if len(idx) > 0:
+            logger.info(f"Adjusting forecast values for gsp id 0, {adjust_limit}")
+            forecasts.forecasts[idx[0]] = forecasts.forecasts[idx[0]].adjust(limit=adjust_limit)
+        else:
+            logger.debug("Not running adjuster as no gsp_id==0 were found")
 
     return forecasts
 

@@ -1,5 +1,6 @@
 """ pydantic models for API"""
 import logging
+import os
 from datetime import datetime
 from typing import Dict, List, Optional
 
@@ -8,6 +9,9 @@ from nowcasting_datamodel.models.utils import EnhancedBaseModel
 from pydantic import Field, validator
 
 logger = logging.getLogger(__name__)
+
+
+adjust_limit = float(os.getenv("ADJUST_MW_LIMIT", 0.0))
 
 
 class GSPYield(EnhancedBaseModel):
@@ -146,7 +150,23 @@ def convert_forecasts_to_many_datetime_many_generation(
                 continue
             if end_datetime_utc is not None and datetime_utc > end_datetime_utc:
                 continue
-            forecast_mw = round(forecast_value.expected_power_generation_megawatts, 2)
+
+            forecast_mw = forecast_value.expected_power_generation_megawatts
+
+            # adjust the value if gsp id 0, this is the national
+            if gsp_id == "0":
+                adjust_mw = forecast_value.adjust_mw
+                if adjust_mw > adjust_limit:
+                    adjust_mw = adjust_limit
+                elif adjust_mw < -adjust_limit:
+                    adjust_mw = -adjust_limit
+
+                forecast_mw = forecast_mw - adjust_mw
+
+                if forecast_mw < 0:
+                    forecast_mw = 0.0
+
+            forecast_mw = round(forecast_mw, 2)
 
             # if the datetime object is not in the dictionary, add it
             if datetime_utc not in many_forecast_values_by_datetime:

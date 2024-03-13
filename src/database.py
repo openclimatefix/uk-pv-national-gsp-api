@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 from typing import List, Optional, Union
 
 import structlog
+from fastapi.exceptions import HTTPException
 from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.models import (
     APIRequestSQL,
@@ -104,11 +105,20 @@ def get_forecasts_from_database(
     end_datetime_utc: Optional[datetime] = None,
     compact: Optional[bool] = False,
     gsp_ids: Optional[List[str]] = None,
+    creation_utc_limit: Optional[datetime] = None,
 ) -> Union[ManyForecasts, List[OneDatetimeManyForecastValues]]:
     """Get forecasts from database for all GSPs"""
     # get the latest forecast for all gsps.
 
     if historic:
+        if creation_utc_limit is not None:
+            raise HTTPException(
+                status_code=400,
+                detail="creation_utc_limit is not supported for historic=True forecasts. "
+                "These forecast are continuously updated, "
+                "compare to a forecast made a particular time.",
+            )
+
         start_datetime = get_start_datetime(start_datetime=start_datetime_utc)
 
         forecasts = get_all_gsp_ids_latest_forecast(
@@ -130,8 +140,12 @@ def get_forecasts_from_database(
             start_datetime_utc = floor_30_minutes_dt(
                 datetime.now(tz=timezone.utc) - timedelta(hours=12)
             )
-
-        start_created_utc = floor_30_minutes_dt(datetime.now(tz=timezone.utc) - timedelta(hours=12))
+        if creation_utc_limit is None:
+            start_created_utc = floor_30_minutes_dt(
+                datetime.now(tz=timezone.utc) - timedelta(hours=12)
+            )
+        else:
+            start_created_utc = creation_utc_limit - timedelta(hours=12)
 
         forecasts = get_all_gsp_ids_latest_forecast(
             session=session,
@@ -140,6 +154,7 @@ def get_forecasts_from_database(
             preload_children=True,
             model_name="blend",
             end_target_time=end_datetime_utc,
+            end_created_utc=creation_utc_limit,
             gsp_ids=gsp_ids,
         )
 
