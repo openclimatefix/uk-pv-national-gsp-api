@@ -107,17 +107,16 @@ def get_all_available_forecasts(
         )
 
         # adjust gsp_id 0
-        if 0 in gsp_ids:
-            idx = [
-                i
-                for i, forecasts in enumerate(forecasts.forecasts)
-                if forecasts.location.gsp_id == 0
-            ]
-            if len(idx) > 0:
-                logger.info(f"Adjusting forecast values for gsp id 0, {adjust_limit}")
-                forecasts.forecasts[idx[0]] = forecasts.forecasts[idx[0]].adjust(limit=adjust_limit)
-            else:
-                logger.warning("Could not find gsp id 0 in the forecasts")
+        idx = [
+            i
+            for i, forecasts in enumerate(forecasts.forecasts)
+            if forecasts.location.gsp_id == 0
+        ]
+        if len(idx) > 0:
+            logger.info(f"Adjusting forecast values for gsp id 0, {adjust_limit}")
+            forecasts.forecasts[idx[0]] = forecasts.forecasts[idx[0]].adjust(limit=adjust_limit)
+        else:
+            logger.debug("Not running adjuster as no gsp_id==0 were found")
 
     return forecasts
 
