@@ -154,7 +154,7 @@ def convert_forecasts_to_many_datetime_many_generation(
             forecast_mw = forecast_value.expected_power_generation_megawatts
 
             # adjust the value if gsp id 0, this is the national
-            if gsp_id == '0':
+            if gsp_id == "0":
                 adjust_mw = forecast_value.adjust_mw
                 if adjust_mw > adjust_limit:
                     adjust_mw = adjust_limit
