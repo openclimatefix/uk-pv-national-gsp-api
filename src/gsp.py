@@ -108,9 +108,7 @@ def get_all_available_forecasts(
 
         # adjust gsp_id 0
         idx = [
-            i
-            for i, forecasts in enumerate(forecasts.forecasts)
-            if forecasts.location.gsp_id == 0
+            i for i, forecasts in enumerate(forecasts.forecasts) if forecasts.location.gsp_id == 0
         ]
         if len(idx) > 0:
             logger.info(f"Adjusting forecast values for gsp id 0, {adjust_limit}")
