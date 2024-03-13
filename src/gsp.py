@@ -113,7 +113,7 @@ def get_all_available_forecasts(
                 logger.info(f"Adjusting forecast values for gsp id 0, {adjust_limit}")
                 forecasts.forecasts[idx[0]] = forecasts.forecasts[idx[0]].adjust(limit=adjust_limit)
             else:
-                logger.warning(f"Could not find gsp id 0 in the forecasts")
+                logger.warning("Could not find gsp id 0 in the forecasts")
 
     return forecasts
 

@@ -115,7 +115,8 @@ def get_forecasts_from_database(
             raise HTTPException(
                 status_code=400,
                 detail="creation_utc_limit is not supported for historic=True forecasts. "
-                "These forecast are continuously updated, compare to a forecast made a particular time.",
+                "These forecast are continuously updated, "
+                       "compare to a forecast made a particular time.",
             )
 
         start_datetime = get_start_datetime(start_datetime=start_datetime_utc)
