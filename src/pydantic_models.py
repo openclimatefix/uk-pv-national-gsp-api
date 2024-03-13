@@ -54,7 +54,7 @@ class GSPYieldGroupByDatetime(EnhancedBaseModel):
     """gsp yields for one a singel datetime"""
 
     datetime_utc: datetime = Field(..., description="The timestamp of the gsp yield")
-    generation_kw_by_gsp_id: Dict[str, str] = Field(
+    generation_kw_by_gsp_id: Dict[int, float] = Field(
         ...,
         description="List of generations by gsp_id. Key is gsp_id, value is generation_kw. "
         "We keep this as a dictionary to keep the size of the file small ",
@@ -65,7 +65,7 @@ class OneDatetimeManyForecastValues(EnhancedBaseModel):
     """One datetime with many forecast values"""
 
     datetime_utc: datetime = Field(..., description="The timestamp of the gsp yield")
-    forecast_values: Dict[str, float] = Field(
+    forecast_values: Dict[int, float] = Field(
         ...,
         description="List of forecasts by gsp_id. Key is gsp_id, value is generation_kw. "
         "We keep this as a dictionary to keep the size of the file small ",
