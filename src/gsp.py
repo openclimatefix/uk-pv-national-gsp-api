@@ -95,7 +95,7 @@ def get_all_available_forecasts(
         end_datetime_utc=end_datetime_utc,
         compact=compact,
         gsp_ids=gsp_ids,
-        creation_utc_limit=creation_limit_utc
+        creation_utc_limit=creation_limit_utc,
     )
 
     if not compact:

@@ -111,12 +111,11 @@ def get_forecasts_from_database(
     # get the latest forecast for all gsps.
 
     if historic:
-
         if creation_utc_limit is not None:
             raise HTTPException(
                 status_code=400,
                 detail="creation_utc_limit is not supported for historic=True forecasts. "
-                       "These forecast are continuously updated, compare to a forecast made a particular time."
+                "These forecast are continuously updated, compare to a forecast made a particular time.",
             )
 
         start_datetime = get_start_datetime(start_datetime=start_datetime_utc)
@@ -135,7 +134,6 @@ def get_forecasts_from_database(
         logger.debug(f"Found {len(forecasts)} forecasts from database")
 
     else:
-
         # To speed up read time we only look at the last 12 hours of results, and take floor 30 mins
         if start_datetime_utc is None:
             start_datetime_utc = floor_30_minutes_dt(
