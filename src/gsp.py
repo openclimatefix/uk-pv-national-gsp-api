@@ -56,6 +56,7 @@ def get_all_available_forecasts(
     end_datetime_utc: Optional[str] = None,
     compact: Optional[bool] = False,
     gsp_ids: Optional[str] = None,
+    creation_limit_utc: Optional[str] = None,
 ) -> Union[ManyForecasts, List[OneDatetimeManyForecastValues]]:
     """### Get all forecasts for all GSPs
 
@@ -85,6 +86,7 @@ def get_all_available_forecasts(
 
     start_datetime_utc = format_datetime(start_datetime_utc)
     end_datetime_utc = format_datetime(end_datetime_utc)
+    creation_limit_utc = format_datetime(creation_limit_utc)
 
     forecasts = get_forecasts_from_database(
         session=session,
@@ -93,6 +95,7 @@ def get_all_available_forecasts(
         end_datetime_utc=end_datetime_utc,
         compact=compact,
         gsp_ids=gsp_ids,
+        creation_utc_limit=creation_limit_utc
     )
 
     if not compact:
