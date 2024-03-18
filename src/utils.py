@@ -1,4 +1,5 @@
 """ Utils functions for main.py """
+
 import os
 from datetime import datetime, timedelta
 from typing import List, Optional, Union
