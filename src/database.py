@@ -386,11 +386,14 @@ def get_gsp_system(session: Session, gsp_id: Optional[int] = None) -> List[Locat
 
 def save_api_call_to_db(request, session, user=None):
     """
-    Save api call to database
+    Save API call to database
 
     If the user does not have an email address, we will save the email as unknown
-    :param request:
-    :return:
+
+    :param request: The API request object
+    :param session: The database session
+    :param user: The user object (optional)
+    :return: None
     """
 
     url = str(request.url)
