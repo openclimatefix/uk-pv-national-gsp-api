@@ -1,4 +1,5 @@
 """ Test for main app """
+
 from main import version
 
 
