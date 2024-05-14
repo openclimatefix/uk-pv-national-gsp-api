@@ -197,7 +197,11 @@ class NationalForecastValue(ForecastValue):
     )
 
     expected_power_generation_normalized: float = Field(
-        "exclude the normalized power", exclude=True
+        None,
+        ge=0,
+        description="exclude the normalized power",
+        exclude=True,
+        default=None,
     )
 
     @validator("expected_power_generation_megawatts")
