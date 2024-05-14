@@ -192,6 +192,11 @@ NationalYield = GSPYield
 class NationalForecastValue(ForecastValue):
     """One Forecast of generation at one timestamp include properties"""
 
+    class Config:
+        fields = {
+            "expected_power_generation_normalized": {"exclude": True},
+        }
+
     plevels: dict = Field(
         None, description="Dictionary to hold properties of the forecast, like p_levels. "
     )
