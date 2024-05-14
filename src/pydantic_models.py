@@ -192,14 +192,11 @@ NationalYield = GSPYield
 class NationalForecastValue(ForecastValue):
     """One Forecast of generation at one timestamp include properties"""
 
-    class Config: # noqa
-        fields = {
-            "expected_power_generation_normalized": {"exclude": True},
-        }
-
     plevels: dict = Field(
         None, description="Dictionary to hold properties of the forecast, like p_levels. "
     )
+
+    expected_power_generation_normalized: float = Field('exclude the normalized power', exclude=True)
 
     @validator("expected_power_generation_megawatts")
     def result_check(cls, v):
