@@ -196,7 +196,7 @@ class NationalForecastValue(ForecastValue):
         None, description="Dictionary to hold properties of the forecast, like p_levels. "
     )
 
-    expected_power_generation_normalized: Optional[float] = Field(
+    expected_power_generation_normalized: float = Field(
         "exclude the normalized power", exclude=True
     )
 
