@@ -1,4 +1,5 @@
 """ Test for main app """
+
 from datetime import datetime, timezone
 
 import numpy as np
