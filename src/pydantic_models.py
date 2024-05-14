@@ -201,7 +201,6 @@ class NationalForecastValue(ForecastValue):
         ge=0,
         description="exclude the normalized power",
         exclude=True,
-        default=None,
     )
 
     @validator("expected_power_generation_megawatts")
