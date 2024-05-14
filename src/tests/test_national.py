@@ -42,6 +42,7 @@ def test_read_latest_national_values(db_session, api_client):
         national_forecast_values[24].plevels["plevel_10"]
         != national_forecast_values[0].expected_power_generation_megawatts * 0.9
     )
+    assert "expected_power_generation_normalized" not in national_forecast_values[0].model_dump()
 
 
 def test_read_latest_national_values_creation_limit(db_session, api_client):

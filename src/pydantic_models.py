@@ -197,6 +197,13 @@ class NationalForecastValue(ForecastValue):
         None, description="Dictionary to hold properties of the forecast, like p_levels. "
     )
 
+    expected_power_generation_normalized: Optional[float] = Field(
+        None,
+        ge=0,
+        description="exclude the normalized power",
+        exclude=True,
+    )
+
     @validator("expected_power_generation_megawatts")
     def result_check(cls, v):
         """Round to 2 decimal places"""
