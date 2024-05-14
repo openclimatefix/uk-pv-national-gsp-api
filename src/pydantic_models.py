@@ -192,7 +192,7 @@ NationalYield = GSPYield
 class NationalForecastValue(ForecastValue):
     """One Forecast of generation at one timestamp include properties"""
 
-    class Config:
+    class Config: # noqa
         fields = {
             "expected_power_generation_normalized": {"exclude": True},
         }
