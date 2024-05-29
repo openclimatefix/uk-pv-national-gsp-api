@@ -105,9 +105,15 @@ def update_last_data(
 
     # get last value
     latest_input_data = get_latest_input_data_last_updated(session=session)
-    current_date = getattr(latest_input_data, component)
 
-    if current_date < modified_date:
+    update = True
+    if latest_input_data is not None:
+        if hasattr(latest_input_data, component):
+            current_date = getattr(latest_input_data, component)
+            if current_date >= modified_date:
+                update = False
+
+    if update:
         # update the database
         update_latest_input_data_last_updated(
             session=session, component=component, update_datetime=modified_date

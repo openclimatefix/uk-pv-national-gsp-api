@@ -99,6 +99,12 @@ def test_check_last_forecast_gsp(db_session):
     assert len(data) == 1
     assert data[0].gsp.isoformat() == datetime(2023, 1, 3, tzinfo=timezone.utc).isoformat()
 
+    # check no updates is made, as file modified datetime is the same
+    response = client.get("/v0/solar/GB/update_last_data?component=gsp")
+    assert response.status_code == 200, response.text
+    data = db_session.query(InputDataLastUpdatedSQL).all()
+    assert len(data) == 1
+
 
 def test_check_last_forecast_file(db_session):
     """Check check_last_forecast_run works fine"""
