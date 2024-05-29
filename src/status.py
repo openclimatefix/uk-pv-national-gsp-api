@@ -7,7 +7,10 @@ import fsspec
 import structlog
 from fastapi import APIRouter, Depends, HTTPException, Request
 from nowcasting_datamodel.models import ForecastSQL, GSPYieldSQL, Status
-from nowcasting_datamodel.read.read import update_latest_input_data_last_updated
+from nowcasting_datamodel.read.read import (
+    get_latest_input_data_last_updated,
+    update_latest_input_data_last_updated,
+)
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm.session import Session
 
@@ -100,9 +103,14 @@ def update_last_data(
         fs = fsspec.open(file).fs
         modified_date = fs.modified(file)
 
-    # update the database
-    update_latest_input_data_last_updated(
-        session=session, component=component, update_datetime=modified_date
-    )
+    # get last value
+    latest_input_data = get_latest_input_data_last_updated(session=session)
+    current_date = getattr(latest_input_data, component)
+
+    if current_date < modified_date:
+        # update the database
+        update_latest_input_data_last_updated(
+            session=session, component=component, update_datetime=modified_date
+        )
 
     return modified_date
