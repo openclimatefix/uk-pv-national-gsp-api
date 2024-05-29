@@ -9,9 +9,9 @@ from nowcasting_datamodel.models import (
     APIRequestSQL,
     ForecastSQL,
     GSPYield,
+    InputDataLastUpdatedSQL,
     Location,
     LocationSQL,
-    InputDataLastUpdatedSQL,
     Status,
     UserSQL,
 )
