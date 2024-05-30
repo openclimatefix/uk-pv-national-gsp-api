@@ -18,3 +18,4 @@ sentry-sdk
 slowapi
 pathy==0.10.3
 fsspec
+s3fs
