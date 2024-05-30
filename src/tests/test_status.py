@@ -1,10 +1,22 @@
 """ Test for main app """
 
+import os
+import tempfile
 from datetime import datetime, timedelta, timezone
 
+import fsspec
 from fastapi.testclient import TestClient
 from freezegun import freeze_time
-from nowcasting_datamodel.models import APIRequestSQL, ForecastSQL, Status, UserSQL
+from nowcasting_datamodel.models import (
+    APIRequestSQL,
+    ForecastSQL,
+    GSPYield,
+    InputDataLastUpdatedSQL,
+    Location,
+    LocationSQL,
+    Status,
+    UserSQL,
+)
 
 from database import get_session
 from main import app
@@ -63,3 +75,66 @@ def test_check_last_forecast_error(db_session):
 
     response = client.get("/v0/solar/GB/check_last_forecast_run")
     assert response.status_code == 404
+
+
+@freeze_time("2023-01-03")
+def test_check_last_forecast_gsp(db_session):
+    """Check check_last_forecast_run works fine"""
+
+    gsp_yield_1 = GSPYield(datetime_utc=datetime(2022, 1, 2), solar_generation_kw=1)
+    gsp_yield_1_sql = gsp_yield_1.to_orm()
+
+    gsp_sql_1: LocationSQL = Location(
+        gsp_id=0, label="national", status_interval_minutes=5
+    ).to_orm()
+    gsp_yield_1_sql.location = gsp_sql_1
+
+    # add to database
+    db_session.add_all([gsp_yield_1_sql, gsp_sql_1])
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = client.get("/v0/solar/GB/update_last_data?component=gsp")
+    assert response.status_code == 200, response.text
+
+    data = db_session.query(InputDataLastUpdatedSQL).all()
+    assert len(data) == 1
+    assert data[0].gsp.isoformat() == datetime(2023, 1, 3, tzinfo=timezone.utc).isoformat()
+
+    # check no updates is made, as file modified datetime is the same
+    response = client.get("/v0/solar/GB/update_last_data?component=gsp")
+    assert response.status_code == 200, response.text
+    data = db_session.query(InputDataLastUpdatedSQL).all()
+    assert len(data) == 1
+
+
+def test_check_last_forecast_file(db_session):
+    """Check check_last_forecast_run works fine"""
+
+    gsp_yield_1 = GSPYield(datetime_utc=datetime(2022, 1, 2), solar_generation_kw=1)
+    gsp_yield_1_sql = gsp_yield_1.to_orm()
+
+    gsp_sql_1: LocationSQL = Location(
+        gsp_id=0, label="national", status_interval_minutes=5
+    ).to_orm()
+    gsp_yield_1_sql.location = gsp_sql_1
+
+    # add to database
+    db_session.add_all([gsp_yield_1_sql, gsp_sql_1])
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    # create temp file
+    with tempfile.TemporaryDirectory() as tmp:
+        filename = os.path.join(tmp, "text.txt")
+        with open(filename, "w") as f:
+            f.write("test")
+        fs = fsspec.open(filename).fs
+        modified_date = fs.modified(filename)
+
+        response = client.get(f"/v0/solar/GB/update_last_data?component=nwp&file={filename}")
+        assert response.status_code == 200
+
+        data = db_session.query(InputDataLastUpdatedSQL).all()
+        assert len(data) == 1
+        assert data[0].nwp.isoformat() == modified_date.isoformat()
