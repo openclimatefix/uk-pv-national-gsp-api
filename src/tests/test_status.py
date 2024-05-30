@@ -1,5 +1,7 @@
 """ Test for main app """
 
+import os
+import tempfile
 from datetime import datetime, timedelta, timezone
 
 import fsspec
@@ -123,14 +125,16 @@ def test_check_last_forecast_file(db_session):
     app.dependency_overrides[get_session] = lambda: db_session
 
     # create temp file
-    with open("test.txt", "w") as f:
-        f.write("test")
-    fs = fsspec.open("test.txt").fs
-    modified_date = fs.modified("test.txt")
+    with tempfile.TemporaryDirectory() as tmp:
+        filename = os.path.join(tmp, "text.txt")
+        with open(filename, "w") as f:
+            f.write("test")
+        fs = fsspec.open(filename).fs
+        modified_date = fs.modified(filename)
 
-    response = client.get("/v0/solar/GB/update_last_data?component=nwp&file=test.txt")
-    assert response.status_code == 200
+        response = client.get(f"/v0/solar/GB/update_last_data?component=nwp&file={filename}")
+        assert response.status_code == 200
 
-    data = db_session.query(InputDataLastUpdatedSQL).all()
-    assert len(data) == 1
-    assert data[0].nwp.isoformat() == modified_date.isoformat()
+        data = db_session.query(InputDataLastUpdatedSQL).all()
+        assert len(data) == 1
+        assert data[0].nwp.isoformat() == modified_date.isoformat()
