@@ -2,7 +2,7 @@ name: Test Docker image
 on:
   push:
   pull_request:
-    types: [ opened, reopened ]
+    types: [opened, reopened]
   schedule:
     - cron: "0 12 * * 1"
 
