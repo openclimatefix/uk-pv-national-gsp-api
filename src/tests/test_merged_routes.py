@@ -5,7 +5,7 @@ from datetime import datetime
 from freezegun import freeze_time
 from nowcasting_datamodel.fake import make_fake_forecast
 from nowcasting_datamodel.models import ForecastValue, ForecastValueLatestSQL
-from nowcasting_datamodel.read.read import get_model
+from nowcasting_datamodel.read.read_models import get_model
 
 from database import get_session
 from main import app
