@@ -13,7 +13,7 @@ from nowcasting_datamodel.models import (
     LocationWithGSPYields,
     ManyForecasts,
 )
-from nowcasting_datamodel.read.read import get_model
+from nowcasting_datamodel.read.read_models import get_model
 from nowcasting_datamodel.save.save import save_all_forecast_values_seven_days
 from nowcasting_datamodel.save.update import update_all_forecast_latest
 
