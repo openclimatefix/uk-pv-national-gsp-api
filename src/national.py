@@ -1,9 +1,11 @@
 """National API routes"""
 
 import os
+from datetime import datetime
 from typing import List, Optional, Union
 
 import structlog
+import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException, Request, Security
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.read.read import get_latest_forecast_for_gsps
@@ -16,11 +18,12 @@ from database import (
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
 )
+from elexonpy.api_client import ApiClient
+from elexonpy.api.generation_forecast_api import GenerationForecastApi
 from pydantic_models import NationalForecast, NationalForecastValue, NationalYield
 from utils import N_CALLS_PER_HOUR, filter_forecast_values, format_datetime, format_plevels, limiter
 
 logger = structlog.stdlib.get_logger()
-
 
 adjust_limit = float(os.getenv("ADJUST_MW_LIMIT", 0.0))
 get_plevels = bool(os.getenv("GET_PLEVELS", True))
@@ -29,6 +32,9 @@ router = APIRouter(
     tags=["National"],
 )
 
+# Initialize Elexon API client
+api_client = ApiClient()
+forecast_api = GenerationForecastApi(api_client)
 
 @router.get(
     "/forecast",
