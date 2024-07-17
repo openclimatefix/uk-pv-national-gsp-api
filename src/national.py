@@ -36,6 +36,7 @@ router = APIRouter(
 api_client = ApiClient()
 forecast_api = GenerationForecastApi(api_client)
 
+
 @router.get(
     "/forecast",
     response_model=Union[NationalForecast, List[NationalForecastValue]],
