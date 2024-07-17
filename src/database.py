@@ -46,31 +46,31 @@ from pydantic_models import (
 from utils import filter_forecast_values, floor_30_minutes_dt, get_start_datetime
 
 
-class BaseDBClient(abc.ABC):
-    """This is a base class for database clients with one static method get_client().
+class BaseDBConnection(abc.ABC):
+    """This is a base class for database connections with one static method get_connection().
 
     Methods
     -------
-    get_client : static method
-        It gets the database client. If a valid Postgresql database URL is set in
-        the "DB_URL" environment variable, get_client returns an instance
-        of DatabaseConnection(). If not, it returns an instance of the DummyDBClient.
+    get_connection : static method
+        It gets the database connection. If a valid Postgresql database URL is set in
+        the "DB_URL" environment variable, get_connection returns an instance
+        of DatabaseConnection(). If not, it returns an instance of the DummyDBConnection.
     """
 
     @staticmethod
-    def get_client():
+    def get_connection():
         """
-        Get the database client.
+        Get the database connection.
         """
         db_url = os.getenv("DB_URL")
         if db_url and db_url.find("postgresql") != -1:
             return DatabaseConnection(url=db_url)
         else:
-            return DummyDBClient()
+            return DummyDBConnection()
 
 
-class DummyDBClient(BaseDBClient):
-    """The DummyDBClient serves as a placeholder database client
+class DummyDBConnection(BaseDBConnection):
+    """The DummyDBConnection serves as a placeholder database connection
 
     This might be useful when a valid Postgresql
     database connection is not available. in testing or development environments.
@@ -79,7 +79,7 @@ class DummyDBClient(BaseDBClient):
     https://github.com/openclimatefix/india-api/blob/f4e3b776194290d78e1c9702b792cbb88edf4b90/src/india_api/cmd/main.py#L12
     ) repository.
 
-    It inherits from the BaseDBClient class and implements the methods accordingly.
+    It inherits from the BaseDBConnection class and implements the methods accordingly.
 
     Methods
     ----------
@@ -89,7 +89,7 @@ class DummyDBClient(BaseDBClient):
     """
 
     def __init__(self):
-        """Initializes the DummyDBClient"""
+        """Initializes the DummyDBConnection"""
         pass
 
     def get_session(self):
@@ -97,12 +97,12 @@ class DummyDBClient(BaseDBClient):
         return None
 
 
-def get_db_client() -> BaseDBClient:
-    """Return either the datamodel client or a dummy client"""
-    return BaseDBClient.get_client()
+def get_db_connection() -> BaseDBConnection:
+    """Return either the datamodel connection or a dummy connection"""
+    return BaseDBConnection.get_connection()
 
 
-db_conn = get_db_client()
+db_conn = get_db_connection()
 
 logger = structlog.stdlib.get_logger()
 
