@@ -2,7 +2,7 @@ opencv-contrib-python-headless
 fastapi
 uvicorn[standard]
 pydantic
-numpy==1.26.4
+numpy
 requests
 nowcasting_datamodel==1.5.52
 sqlalchemy
