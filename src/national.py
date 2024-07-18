@@ -195,3 +195,28 @@ def get_national_pvlive(
     return get_truth_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=0, regime=regime
     )
+
+
+@router.get(
+    "/bmrs",
+    response_model=dict,
+    # dependencies=[Depends(get_auth_implicit_scheme())],
+    summary="Get BMRS Forecast",
+)
+# @cache_response
+@limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
+def get_bmrs_forecast(
+    request: Request,
+    # session: Session = Depends(get_session),
+    # user: Auth0User = Security(get_user()),
+) -> dict:
+    """
+
+    This route returns the most recent BMRS forecast for each _target_time_.
+
+    #### Parameters
+
+    """
+    logger.debug("Get bmrs forecast")
+
+    return {"message": "This route is not yet implemented. Please check back later."}
