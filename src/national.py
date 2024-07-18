@@ -201,15 +201,16 @@ def get_national_pvlive(
 
 @router.get("/bmrs", summary="Get BMRS Forecast")
 def get_bmrs_forecast(
-    start_datetime_utc: datetime = Query(default=datetime.utcnow() - timedelta(days=3), description="Start date and time in UTC"),
-    end_datetime_utc: datetime = Query(default=datetime.utcnow() + timedelta(days=3), description="End date and time in UTC"),
-    process_type: str = Query("Day Ahead", description="Process type")
+    start_datetime_utc: datetime = Query(
+        default=datetime.utcnow() - timedelta(days=3), description="Start date and time in UTC"
+    ),
+    end_datetime_utc: datetime = Query(
+        default=datetime.utcnow() + timedelta(days=3), description="End date and time in UTC"
+    ),
+    process_type: str = Query("Day Ahead", description="Process type"),
 ):
     response = forecast_api.forecast_generation_wind_and_solar_day_ahead_get(
-        _from=start_datetime_utc,
-        to=end_datetime_utc,
-        process_type=process_type,
-        format='json'
+        _from=start_datetime_utc, to=end_datetime_utc, process_type=process_type, format="json"
     )
 
     df = pd.DataFrame([item.to_dict() for item in response.data])
