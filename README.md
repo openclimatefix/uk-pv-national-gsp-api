@@ -38,7 +38,12 @@ cd src && uvicorn main:app --reload
 
 You may need to run the following additional installation `pip install git+https://github.com/SheffieldSolar/PV_Live-API#pvlive_api` for `pvlive-api`, as in the Dockerfile.
 
-## Docker
+> If you don't have a local database set up, you can leave the `DB_URL` string empty (default not set) and the API will still run and return routes such as `http://localhost:8000/` for API info and any other non-DB routes with DB dependencies e.g. session/caching commented out.
+>
+> You will not be able to access any routes using the DB client / database, but for local development of new routes this should work for now, until we reinstate dynamic fake data as a dependable dev tool.
+
+## [ Docker ]
+### 🛑 Currently non-functional, needs updating to migrate database to match datamodel
 
 1. Make sure docker is installed on your system.
 2. Use `docker-compose up`
@@ -62,7 +67,7 @@ as Actions when code is pushed to GitHub.
 You can run the formatters and linters locally. To do that:
 
 1. [Install pre-commit](https://pre-commit.com/#install)
-2. Check the install worked via `pre-commit --version`
+2. Check the install worked via `pre-commit --v`
 3. Install the git hooks script via `pre-commit install`
 
 # Deployment

@@ -1,5 +1,6 @@
 """ Functions to read from the database and format """
 
+import abc
 import os
 from datetime import datetime, timedelta, timezone
 from typing import List, Optional, Union
@@ -44,7 +45,64 @@ from pydantic_models import (
 )
 from utils import filter_forecast_values, floor_30_minutes_dt, get_start_datetime
 
-db_conn = DatabaseConnection(url=os.getenv("DB_URL", "not_set"))
+
+class BaseDBConnection(abc.ABC):
+    """This is a base class for database connections with one static method get_connection().
+
+    Methods
+    -------
+    get_connection : static method
+        It gets the database connection. If a valid Postgresql database URL is set in
+        the "DB_URL" environment variable, get_connection returns an instance
+        of DatabaseConnection(). If not, it returns an instance of the DummyDBConnection.
+    """
+
+    @staticmethod
+    def get_connection():
+        """
+        Get the database connection.
+        """
+        db_url = os.getenv("DB_URL")
+        if db_url and db_url.find("postgresql") != -1:
+            return DatabaseConnection(url=db_url)
+        else:
+            return DummyDBConnection()
+
+
+class DummyDBConnection(BaseDBConnection):
+    """The DummyDBConnection serves as a placeholder database connection
+
+    This might be useful when a valid Postgresql
+    database connection is not available. in testing or development environments.
+    Feel free to improve on this implementation and submit a pull request!
+    A better example can be found in the [india-api](
+    https://github.com/openclimatefix/india-api/blob/f4e3b776194290d78e1c9702b792cbb88edf4b90/src/india_api/cmd/main.py#L12
+    ) repository.
+
+    It inherits from the BaseDBConnection class and implements the methods accordingly.
+
+    Methods
+    ----------
+    get_session:
+        Returns None for now, but should mock the session if possible,
+        if we keep the current DB/datamodel implementation.
+    """
+
+    def __init__(self):
+        """Initializes the DummyDBConnection"""
+        pass
+
+    def get_session(self):
+        """Returns None for now, but mock the session if we keep the current implementation."""
+        return None
+
+
+def get_db_connection() -> BaseDBConnection:
+    """Return either the datamodel connection or a dummy connection"""
+    return BaseDBConnection.get_connection()
+
+
+db_conn = get_db_connection()
 
 logger = structlog.stdlib.get_logger()
 
