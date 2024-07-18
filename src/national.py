@@ -1,12 +1,12 @@
 """National API routes"""
 
 import os
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional, Union
 
 import structlog
 import pandas as pd
-from fastapi import APIRouter, Depends, HTTPException, Request, Security
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Security
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.read.read import get_latest_forecast_for_gsps
 from sqlalchemy.orm.session import Session
@@ -18,10 +18,11 @@ from database import (
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
 )
-from elexonpy.api_client import ApiClient
-from elexonpy.api.generation_forecast_api import GenerationForecastApi
+
 from pydantic_models import NationalForecast, NationalForecastValue, NationalYield
 from utils import N_CALLS_PER_HOUR, filter_forecast_values, format_datetime, format_plevels, limiter
+from elexonpy.api_client import ApiClient
+from elexonpy.api.generation_forecast_api import GenerationForecastApi
 
 logger = structlog.stdlib.get_logger()
 
@@ -198,26 +199,19 @@ def get_national_pvlive(
     )
 
 
-@router.get(
-    "/bmrs",
-    response_model=dict,
-    # dependencies=[Depends(get_auth_implicit_scheme())],
-    summary="Get BMRS Forecast",
-)
-# @cache_response
-@limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
+@router.get("/bmrs", summary="Get BMRS Forecast")
 def get_bmrs_forecast(
-    request: Request,
-    # session: Session = Depends(get_session),
-    # user: Auth0User = Security(get_user()),
-) -> dict:
-    """
+    start_datetime_utc: datetime = Query(default=datetime.utcnow() - timedelta(days=3), description="Start date and time in UTC"),
+    end_datetime_utc: datetime = Query(default=datetime.utcnow() + timedelta(days=3), description="End date and time in UTC"),
+    process_type: str = Query("Day Ahead", description="Process type")
+):
+    response = forecast_api.forecast_generation_wind_and_solar_day_ahead_get(
+        _from=start_datetime_utc,
+        to=end_datetime_utc,
+        process_type=process_type,
+        format='json'
+    )
 
-    This route returns the most recent BMRS forecast for each _target_time_.
+    df = pd.DataFrame([item.to_dict() for item in response.data])
 
-    #### Parameters
-
-    """
-    logger.debug("Get bmrs forecast")
-
-    return {"message": "This route is not yet implemented. Please check back later."}
+    return {"data": df.to_dict(orient="records")}

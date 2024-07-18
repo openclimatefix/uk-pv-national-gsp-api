@@ -19,7 +19,6 @@ from redoc_theme import get_redoc_html_with_theme
 from status import router as status_router
 from system import router as system_router
 from utils import limiter, traces_sampler
-
 # flake8: noqa E501
 
 structlog.configure(
@@ -208,7 +207,7 @@ thirty_minutes = timedelta(minutes=30)
 # Dependency
 v0_route_solar = "/v0/solar/GB"
 v0_route_system = "/v0/system/GB"
-
+app.include_router(national_router, prefix="/v0/solar/national")
 app.include_router(national_router, prefix=f"{v0_route_solar}/national")
 app.include_router(gsp_router, prefix=f"{v0_route_solar}/gsp")
 app.include_router(status_router, prefix=f"{v0_route_solar}")
