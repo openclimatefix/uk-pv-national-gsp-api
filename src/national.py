@@ -1,28 +1,27 @@
-"""National API routes"""
+"""Fetch BMRS forecast data."""
 
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from typing import List, Optional, Union
 
-import structlog
 import pandas as pd
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, Security
-from fastapi_auth0 import Auth0User
-from nowcasting_datamodel.read.read import get_latest_forecast_for_gsps
 from sqlalchemy.orm.session import Session
 
+import structlog
 from auth_utils import get_auth_implicit_scheme, get_user
 from cache import cache_response
 from database import (
-    get_latest_forecast_values_for_a_specific_gsp_from_database,
-    get_session,
-    get_truth_values_for_a_specific_gsp_from_database,
-)
-
-from pydantic_models import NationalForecast, NationalForecastValue, NationalYield
-from utils import N_CALLS_PER_HOUR, filter_forecast_values, format_datetime, format_plevels, limiter
-from elexonpy.api_client import ApiClient
+    get_latest_forecast_values_for_a_specific_gsp_from_database, get_session,
+    get_truth_values_for_a_specific_gsp_from_database)
 from elexonpy.api.generation_forecast_api import GenerationForecastApi
+from elexonpy.api_client import ApiClient
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Security
+from fastapi_auth0 import Auth0User
+from nowcasting_datamodel.read.read import get_latest_forecast_for_gsps
+from pydantic_models import (NationalForecast, NationalForecastValue,
+                             NationalYield)
+from utils import (N_CALLS_PER_HOUR, filter_forecast_values, format_datetime,
+                   format_plevels, limiter)
 
 logger = structlog.stdlib.get_logger()
 
@@ -36,6 +35,40 @@ router = APIRouter(
 # Initialize Elexon API client
 api_client = ApiClient()
 forecast_api = GenerationForecastApi(api_client)
+
+
+@router.get("/bmrs", summary="Get BMRS Forecast")
+def get_bmrs_forecast(
+    start_datetime_utc: datetime = Query(
+        default=datetime.utcnow() - timedelta(days=3), description="Start date and time in UTC"
+    ),
+    end_datetime_utc: datetime = Query(
+        default=datetime.utcnow() + timedelta(days=3), description="End date and time in UTC"
+    ),
+    process_type: str = Query("Day Ahead", description="Process type"),
+):
+    """
+    Fetch BMRS solar forecasts from the Elexon API.
+
+    Parameters:
+    - start_datetime_utc (datetime): Start date and time in UTC.
+    - end_datetime_utc (datetime): End date and time in UTC.
+    - process_type (str): Process type for the forecast.
+
+    Returns:
+    - dict: Dictionary containing the fetched BMRS forecast data.
+
+    """
+    # Fetch data using the forecast API
+    response = forecast_api.forecast_generation_wind_and_solar_day_ahead_get(
+        _from=start_datetime_utc, to=end_datetime_utc, process_type=process_type, format="json"
+    )
+
+    # Convert response to DataFrame
+    df = pd.DataFrame([item.to_dict() for item in response.data])
+
+    # Return as JSON
+    return {"data": df.to_dict(orient="records")}
 
 
 @router.get(
@@ -55,7 +88,9 @@ def get_national_forecast(
     end_datetime_utc: Optional[str] = None,
     creation_limit_utc: Optional[str] = None,
 ) -> Union[NationalForecast, List[NationalForecastValue]]:
-    """Get the National Forecast
+    """
+
+    Fetch national forecasts.
 
     This route returns the most recent forecast for each _target_time_.
 
@@ -74,6 +109,9 @@ def get_national_forecast(
     - **end_datetime_utc**: optional end datetime for the query.
     - **creation_utc_limit**: optional, only return forecasts made before this datetime.
     Note you can only go 7 days back at the moment
+
+    Returns:
+        dict: The national forecast data.
 
     """
     logger.debug("Get national forecasts")
@@ -175,7 +213,7 @@ def get_national_pvlive(
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
 ) -> List[NationalYield]:
-    """### Get national PV_Live values for yesterday and/or today
+    """### Get national PV_Live values.
 
     Returns a series of real-time solar energy generation readings from
     PV_Live for all of Great Britain.
@@ -190,29 +228,10 @@ def get_national_pvlive(
 
     #### Parameters
     - **regime**: can choose __in-day__ or __day-after__
-    """
 
+    """
     logger.info(f"Get national PV Live estimates values " f"for regime {regime} for  {user}")
 
     return get_truth_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=0, regime=regime
     )
-
-
-@router.get("/bmrs", summary="Get BMRS Forecast")
-def get_bmrs_forecast(
-    start_datetime_utc: datetime = Query(
-        default=datetime.utcnow() - timedelta(days=3), description="Start date and time in UTC"
-    ),
-    end_datetime_utc: datetime = Query(
-        default=datetime.utcnow() + timedelta(days=3), description="End date and time in UTC"
-    ),
-    process_type: str = Query("Day Ahead", description="Process type"),
-):
-    response = forecast_api.forecast_generation_wind_and_solar_day_ahead_get(
-        _from=start_datetime_utc, to=end_datetime_utc, process_type=process_type, format="json"
-    )
-
-    df = pd.DataFrame([item.to_dict() for item in response.data])
-
-    return {"data": df.to_dict(orient="records")}
