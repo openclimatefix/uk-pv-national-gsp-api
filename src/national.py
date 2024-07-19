@@ -66,7 +66,7 @@ def get_elexon_forecast(
             _from=start_datetime_utc.isoformat(),
             to=end_datetime_utc.isoformat(),
             process_type=process_type,
-            format="json"
+            format="json",
         )
 
         if not response.data:
@@ -76,7 +76,7 @@ def get_elexon_forecast(
         df = pd.DataFrame([item.to_dict() for item in response.data])
 
         # Filter to include only solar forecasts
-        solar_df = df[df['business_type'] == 'Solar generation']
+        solar_df = df[df["business_type"] == "Solar generation"]
         result = {"data": solar_df.to_dict(orient="records")}
 
         return result
