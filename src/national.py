@@ -40,7 +40,7 @@ forecast_api = GenerationForecastApi(api_client)
 @router.get("/bmrs", summary="Get BMRS Forecast")
 
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
-def get_bmrs_forecast(
+def get_elexon_forecast(
     request: Request,
     start_datetime_utc: datetime = Query(
         default=datetime.utcnow() - timedelta(days=3), description="Start date and time in UTC"
