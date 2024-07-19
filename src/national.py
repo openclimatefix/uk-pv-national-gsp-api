@@ -38,7 +38,6 @@ forecast_api = GenerationForecastApi(api_client)
 
 
 @router.get("/bmrs", summary="Get BMRS Forecast")
-
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_elexon_forecast(
     request: Request,
