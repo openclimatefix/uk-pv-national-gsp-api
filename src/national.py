@@ -37,7 +37,7 @@ api_client = ApiClient()
 forecast_api = GenerationForecastApi(api_client)
 
 
-@router.get("/bmrs", summary="Get BMRS Forecast")
+@router.get("/bmrs", summary="Get BMRS Solar Forecast")
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_elexon_forecast(
     request: Request,
@@ -58,19 +58,31 @@ def get_elexon_forecast(
     - process_type (str): Process type for the forecast.
 
     Returns:
-    - dict: Dictionary containing the fetched BMRS forecast data.
-
+    - dict: Dictionary containing the fetched BMRS solar forecast data.
     """
-    # Fetch data using the forecast API
-    response = forecast_api.forecast_generation_wind_and_solar_day_ahead_get(
-        _from=start_datetime_utc, to=end_datetime_utc, process_type=process_type, format="json"
-    )
+    try:
+        # Fetch data using the forecast API
+        response = forecast_api.forecast_generation_wind_and_solar_day_ahead_get(
+            _from=start_datetime_utc.isoformat(),
+            to=end_datetime_utc.isoformat(),
+            process_type=process_type,
+            format="json"
+        )
 
-    # Convert response to DataFrame
-    df = pd.DataFrame([item.to_dict() for item in response.data])
+        if not response.data:
+            return {"data": []}
 
-    # Return as JSON
-    return {"data": df.to_dict(orient="records")}
+        # Convert response to DataFrame
+        df = pd.DataFrame([item.to_dict() for item in response.data])
+
+        # Filter to include only solar forecasts
+        solar_df = df[df['business_type'] == 'Solar generation']
+        result = {"data": solar_df.to_dict(orient="records")}
+
+        return result
+
+    except Exception as e:
+        return {"error": str(e)}
 
 
 @router.get(
