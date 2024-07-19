@@ -59,6 +59,9 @@ def get_elexon_forecast(
 
     Returns:
     - dict: Dictionary containing the fetched BMRS solar forecast data.
+
+    - External API Link: [Elexon API Documentation](https://bmrs.elexon.co.uk/api-documentation/endpoint/forecast/generation/wind-and-solar/day-ahead
+
     """
     try:
         # Fetch data using the forecast API
