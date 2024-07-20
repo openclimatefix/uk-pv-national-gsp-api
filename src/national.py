@@ -1,4 +1,4 @@
-"""Fetch BMRS forecast data."""
+"""National API routes"""
 
 import os
 from datetime import datetime, timedelta
