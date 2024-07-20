@@ -37,7 +37,7 @@ api_client = ApiClient()
 forecast_api = GenerationForecastApi(api_client)
 
 
-@router.get("/bmrs", summary="Get BMRS Solar Forecast")
+@router.get("/elexon", summary="Get BMRS Solar Forecast")
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_elexon_forecast(
     request: Request,
