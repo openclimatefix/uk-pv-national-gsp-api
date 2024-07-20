@@ -60,32 +60,26 @@ def get_elexon_forecast(
     Returns:
     - dict: Dictionary containing the fetched BMRS solar forecast data.
 
-    - External API Link: [Elexon API Documentation](https://bmrs.elexon.co.uk/api-documentation/endpoint/forecast/generation/wind-and-solar/day-ahead
+    - External API Link: [Elexon API Documentation](https://bmrs.elexon.co.uk/api-documentation/endpoint/forecast/generation/wind-and-solar/day-ahead)
 
     """
-    try:
-        # Fetch data using the forecast API
-        response = forecast_api.forecast_generation_wind_and_solar_day_ahead_get(
-            _from=start_datetime_utc.isoformat(),
-            to=end_datetime_utc.isoformat(),
-            process_type=process_type,
-            format="json",
-        )
+    response = forecast_api.forecast_generation_wind_and_solar_day_ahead_get(
+        _from=start_datetime_utc.isoformat(),
+        to=end_datetime_utc.isoformat(),
+        process_type=process_type,
+        format="json",
+    )
 
-        if not response.data:
-            return {"data": []}
+    if not response.data:
+        return {"data": []}
 
-        # Convert response to DataFrame
-        df = pd.DataFrame([item.to_dict() for item in response.data])
+    df = pd.DataFrame([item.to_dict() for item in response.data])
 
-        # Filter to include only solar forecasts
-        solar_df = df[df["business_type"] == "Solar generation"]
-        result = {"data": solar_df.to_dict(orient="records")}
+    # Filter to include only solar forecasts
+    solar_df = df[df["business_type"] == "Solar generation"]
+    result = {"data": solar_df.to_dict(orient="records")}
 
-        return result
-
-    except Exception as e:
-        return {"error": str(e)}
+    return result
 
 
 @router.get(
