@@ -5,9 +5,14 @@ from datetime import datetime, timedelta
 from typing import List, Optional, Union
 
 import pandas as pd
+import structlog
+from elexonpy.api.generation_forecast_api import GenerationForecastApi
+from elexonpy.api_client import ApiClient
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Security
+from fastapi_auth0 import Auth0User
+from nowcasting_datamodel.read.read import get_latest_forecast_for_gsps
 from sqlalchemy.orm.session import Session
 
-import structlog
 from auth_utils import get_auth_implicit_scheme, get_user
 from cache import cache_response
 from database import (
@@ -15,11 +20,6 @@ from database import (
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
 )
-from elexonpy.api.generation_forecast_api import GenerationForecastApi
-from elexonpy.api_client import ApiClient
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, Security
-from fastapi_auth0 import Auth0User
-from nowcasting_datamodel.read.read import get_latest_forecast_for_gsps
 from pydantic_models import NationalForecast, NationalForecastValue, NationalYield
 from utils import N_CALLS_PER_HOUR, filter_forecast_values, format_datetime, format_plevels, limiter
 
@@ -52,16 +52,18 @@ def get_elexon_forecast(
     """
     Fetch BMRS solar forecasts from the Elexon API.
 
-    Parameters:
-    - start_datetime_utc (datetime): Start date and time in UTC.
-    - end_datetime_utc (datetime): End date and time in UTC.
-    - process_type (str): Process type for the forecast.
+    Args:
+        request (Request): The request object containing metadata about the HTTP request.
+        start_datetime_utc (datetime): The start date and time in UTC.
+        end_datetime_utc (datetime): The end date and time in UTC.
+        process_type (str): The type of process (e.g., 'Day Ahead').
 
     Returns:
-    - dict: Dictionary containing the fetched BMRS solar forecast data.
+        dict: Dictionary containing the fetched BMRS solar forecast data.
 
-    - External API Link: [Elexon API Documentation](https://bmrs.elexon.co.uk/api-documentation/endpoint/forecast/generation/wind-and-solar/day-ahead)
-
+    External API:
+        [Elexon API Documentation]
+        (https://bmrs.elexon.co.uk/api-documentation/endpoint/forecast/generation/wind-and-solar/day-ahead)
     """
     response = forecast_api.forecast_generation_wind_and_solar_day_ahead_get(
         _from=start_datetime_utc.isoformat(),
