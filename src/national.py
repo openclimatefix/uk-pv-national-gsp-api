@@ -224,7 +224,7 @@ def get_national_pvlive(
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
 ) -> List[NationalYield]:
-    """### Get national PV_Live values.
+    """### Get national PV_Live values for yesterday and/or today
 
     Returns a series of real-time solar energy generation readings from
     PV_Live for all of Great Britain.
