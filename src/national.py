@@ -50,7 +50,7 @@ def get_elexon_forecast(
     process_type: str = Query("Day Ahead", description="Process type"),
 ):
     """
-    Fetch BMRS solar forecasts from the Elexon API.
+    Fetch BMRS Solar and wind(?) forecasts from the Elexon API.
 
     Args:
         request (Request): The request object containing metadata about the HTTP request.
