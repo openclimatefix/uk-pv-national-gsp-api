@@ -37,7 +37,7 @@ api_client = ApiClient()
 forecast_api = GenerationForecastApi(api_client)
 
 
-@router.get("/elexon", summary="Get BMRS Solar Forecast")
+@router.get("/elexon", summary="Get elexon Solar Forecast")
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_elexon_forecast(
     request: Request,
@@ -50,7 +50,7 @@ def get_elexon_forecast(
     process_type: str = Query("Day Ahead", description="Process type"),
 ):
     """
-    Fetch BMRS Solar and wind(?) forecasts from the Elexon API.
+    Fetch elexon Solar and wind(?) forecasts from the Elexon API.
 
     Args:
         request (Request): The request object containing metadata about the HTTP request.
@@ -59,11 +59,11 @@ def get_elexon_forecast(
         process_type (str): The type of process (e.g., 'Day Ahead').
 
     Returns:
-        dict: Dictionary containing the fetched BMRS solar forecast data.
+        dict: Dictionary containing the fetched elexon solar forecast data.
 
     External API:
         [Elexon API Documentation]
-        (https://bmrs.elexon.co.uk/api-documentation/endpoint/forecast/generation/wind-and-solar/day-ahead)
+        (https://elexon.elexon.co.uk/api-documentation/endpoint/forecast/generation/wind-and-solar/day-ahead)
     """
     response = forecast_api.forecast_generation_wind_and_solar_day_ahead_get(
         _from=start_datetime_utc.isoformat(),
