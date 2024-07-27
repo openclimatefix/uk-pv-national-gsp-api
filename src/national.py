@@ -20,7 +20,13 @@ from database import (
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
 )
-from pydantic_models import NationalForecast, NationalForecastValue, NationalYield
+from pydantic_models import (
+    NationalForecast,
+    NationalForecastValue,
+    NationalYield,
+    SolarForecastResponse,
+    SolarForecastValue,
+)
 from utils import N_CALLS_PER_HOUR, filter_forecast_values, format_datetime, format_plevels, limiter
 
 logger = structlog.stdlib.get_logger()
@@ -59,29 +65,52 @@ def get_elexon_forecast(
         process_type (str): The type of process (e.g., 'Day Ahead').
 
     Returns:
-        dict: Dictionary containing the fetched elexon solar forecast data.
-
-    External API:
-        [Elexon API Documentation]
-        (https://elexon.elexon.co.uk/api-documentation/endpoint/forecast/generation/wind-and-solar/day-ahead)
+        SolarForecastResponse: The forecast data wrapped in a SolarForecastResponse model.
     """
-    response = forecast_api.forecast_generation_wind_and_solar_day_ahead_get(
-        _from=start_datetime_utc.isoformat(),
-        to=end_datetime_utc.isoformat(),
-        process_type=process_type,
-        format="json",
-    )
+    try:
+        response = forecast_api.forecast_generation_wind_and_solar_day_ahead_get(
+            _from=start_datetime_utc.isoformat(),
+            to=end_datetime_utc.isoformat(),
+            process_type=process_type,
+            format="json",
+        )
 
-    if not response.data:
-        return {"data": []}
+        if not response.data:
+            return SolarForecastResponse(data=[])
 
-    df = pd.DataFrame([item.to_dict() for item in response.data])
+        df = pd.DataFrame([item.to_dict() for item in response.data])
+        logger.debug("DataFrame Columns: %s", df.columns)
+        logger.debug("DataFrame Sample: %s", df.head())
 
-    # Filter to include only solar forecasts
-    solar_df = df[df["business_type"] == "Solar generation"]
-    result = {"data": solar_df.to_dict(orient="records")}
+        # Filter to include only solar forecasts
+        solar_df = df[df["business_type"] == "Solar generation"]
+        logger.debug("Filtered Solar DataFrame: %s", solar_df.head())
 
-    return result
+        forecast_values = []
+        for _, row in solar_df.iterrows():
+            try:
+                forecast_values.append(
+                    SolarForecastValue(
+                        timestamp=pd.to_datetime(row["publish_time"]).to_pydatetime(),
+                        expected_power_generation_megawatts=row.get("quantity"),
+                        plevels=None,
+                    )
+                )
+            except KeyError as e:
+                logger.error("KeyError: %s. Data: %s", str(e), row)
+                raise HTTPException(status_code=500, detail="Internal Server Error")
+            except Exception as e:
+                logger.error(
+                    "Error during DataFrame to Model conversion: %s. Data: %s", str(e), row
+                )
+                raise HTTPException(status_code=500, detail="Internal Server Error")
+
+        result = SolarForecastResponse(data=forecast_values)
+        return result
+
+    except Exception as e:
+        logger.error("Unhandled exception: %s", str(e))
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
 @router.get(
