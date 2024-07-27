@@ -223,9 +223,6 @@ class SolarForecastValue(BaseModel):
     expected_power_generation_megawatts: Optional[float] = Field(
         None, ge=0, description="Expected power generation in megawatts"
     )
-    plevels: Optional[str] = Field(
-        None, description="String representing properties of the forecast"
-    )
 
     @validator("expected_power_generation_megawatts")
     def result_check(cls, v):
