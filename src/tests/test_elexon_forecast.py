@@ -10,24 +10,14 @@ def mock_data():
     return {
         "data": [
             {
-                "publish_time": "2024-07-24T16:45:09+00:00",
-                "process_type": "Day ahead",
-                "business_type": "Solar generation",
-                "psr_type": "Solar",
-                "start_time": "2024-07-25T23:30:00+00:00",
-                "settlement_date": "2024-07-26",
-                "settlement_period": 2,
-                "quantity": 0,
+                "timestamp": "2024-07-24T16:45:09+00:00",
+                "expected_power_generation_megawatts": 0,
+                "plevels": None,
             },
             {
-                "publish_time": "2024-07-24T16:45:09+00:00",
-                "process_type": "Day ahead",
-                "business_type": "Solar generation",
-                "psr_type": "Solar",
-                "start_time": "2024-07-25T23:00:00+00:00",
-                "settlement_date": "2024-07-26",
-                "settlement_period": 1,
-                "quantity": 0,
+                "timestamp": "2024-07-24T16:45:09+00:00",
+                "expected_power_generation_megawatts": 0,
+                "plevels": None,
             },
         ]
     }
