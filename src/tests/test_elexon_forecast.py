@@ -1,11 +1,9 @@
+from typing import Optional
 from unittest.mock import patch
 
 import pandas as pd
 
 from pydantic_models import BaseModel
-from typing import Optional
-
-# InsightsApiModelsResponsesResponseWithMetadata1InsightsApiModelsResponsesTransparencyDayAheadGenerationForWindAndSolar
 
 API_URL = "/v0/solar/GB/national/elexon"
 
