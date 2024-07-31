@@ -7,7 +7,7 @@ from typing import Dict, List, Optional
 
 from nowcasting_datamodel.models import Forecast, ForecastSQL, ForecastValue, Location, LocationSQL
 from nowcasting_datamodel.models.utils import EnhancedBaseModel
-from pydantic import Field, validator
+from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
@@ -214,3 +214,25 @@ class NationalForecast(Forecast):
     """One Forecast of generation at one timestamp"""
 
     forecast_values: List[NationalForecastValue] = Field(..., description="List of forecast values")
+
+
+class SolarForecastValue(BaseModel):
+    """Represents a single solar forecast entry"""
+
+    timestamp: datetime = Field(..., description="Timestamp of the forecast")
+    expected_power_generation_megawatts: Optional[float] = Field(
+        None, ge=0, description="Expected power generation in megawatts"
+    )
+
+    @validator("expected_power_generation_megawatts")
+    def result_check(cls, v):
+        """Round to 2 decimal places"""
+        if v is not None:
+            return round(v, 2)
+        return v
+
+
+class SolarForecastResponse(BaseModel):
+    """Wrapper for a list of solar forecast values"""
+
+    data: List[SolarForecastValue] = Field(..., description="List of solar forecast values")
