@@ -30,7 +30,7 @@ def test_get_elexon_forecast_with_data(mock_data, api_client):
         )
         m.get(url, json=mock_data, headers={"Content-Type": "application/json"})
 
-        response = api_client.get(url)
+        response = api_client.get('/v0/solar/GB/national/elexon')
         print("Response Headers:", response.headers)
         # Assertions
         assert response.status_code == 200
