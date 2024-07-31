@@ -41,7 +41,9 @@ router = APIRouter(
 # Initialize Elexon API client
 api_client = ApiClient()
 forecast_api = GenerationForecastApi(api_client)
-forecast_generation_wind_and_solar_day_ahead_get = forecast_api.forecast_generation_wind_and_solar_day_ahead_get
+forecast_generation_wind_and_solar_day_ahead_get = (
+    forecast_api.forecast_generation_wind_and_solar_day_ahead_get
+)
 
 
 @router.get("/elexon", summary="Get elexon Solar Forecast")
@@ -100,9 +102,7 @@ def get_elexon_forecast(
             logger.error("KeyError: %s. Data: %s", str(e), row)
             raise HTTPException(status_code=500, detail="Internal Server Error")
         except Exception as e:
-            logger.error(
-                "Error during DataFrame to Model conversion: %s. Data: %s", str(e), row
-            )
+            logger.error("Error during DataFrame to Model conversion: %s. Data: %s", str(e), row)
             raise HTTPException(status_code=500, detail="Internal Server Error")
 
     result = SolarForecastResponse(data=forecast_values)

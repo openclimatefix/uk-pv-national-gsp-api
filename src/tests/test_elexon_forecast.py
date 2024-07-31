@@ -56,4 +56,3 @@ def test_get_elexon_forecast_with_data(mock_function, api_client):
     for i in range(len(api_data)):
         assert api_data[i]["expected_power_generation_megawatts"] == mock_data[i].quantity
         assert pd.Timestamp(api_data[i]["timestamp"]) == pd.Timestamp(mock_data[i].publish_time)
-
