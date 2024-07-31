@@ -71,12 +71,18 @@ def get_elexon_forecast(
         SolarForecastResponse: The forecast data wrapped in a SolarForecastResponse model.
     """
 
-    response = forecast_generation_wind_and_solar_day_ahead_get(
-        _from=start_datetime_utc.isoformat(),
-        to=end_datetime_utc.isoformat(),
-        process_type=process_type,
-        format="json",
-    )
+    try:
+        response = forecast_generation_wind_and_solar_day_ahead_get(
+            _from=start_datetime_utc.isoformat(),
+            to=end_datetime_utc.isoformat(),
+            process_type=process_type,
+            format="json",
+        )
+    except Exception as e:
+        logger.error("Unhandled exception when collecting ELexon Data: %s", str(e))
+        raise HTTPException(
+            status_code=500, detail="Internal Server Error when collecting Elexon Data"
+        )
 
     if not response.data:
         return SolarForecastResponse(data=[])
