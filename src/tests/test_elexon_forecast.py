@@ -6,7 +6,6 @@ import pytest
 
 from pydantic_models import BaseModel, SolarForecastResponse
 
-
 API_URL = "/v0/solar/GB/national/elexon"
 
 
@@ -66,8 +65,6 @@ def test_get_elexon_forecast(api_client):
     # Assertions
     assert response.status_code == 200
     assert response.headers.get("Content-Type") == "application/json"
-
-    api_data = response.json()["data"]
 
     solar_forecast = SolarForecastResponse(**response.json())
 
