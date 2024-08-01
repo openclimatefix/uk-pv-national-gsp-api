@@ -2,8 +2,10 @@ from typing import Optional
 from unittest.mock import patch
 
 import pandas as pd
+import pytest
 
-from pydantic_models import BaseModel
+from pydantic_models import BaseModel, SolarForecastResponse
+
 
 API_URL = "/v0/solar/GB/national/elexon"
 
@@ -40,7 +42,7 @@ class MockResponse:
 
 
 @patch("national.forecast_generation_wind_and_solar_day_ahead_get")
-def test_get_elexon_forecast_with_data(mock_function, api_client):
+def test_get_elexon_forecast_mock(mock_function, api_client):
     mock_function.return_value = MockResponse()
 
     response = api_client.get("/v0/solar/GB/national/elexon")
@@ -54,3 +56,19 @@ def test_get_elexon_forecast_with_data(mock_function, api_client):
     for i in range(len(api_data)):
         assert api_data[i]["expected_power_generation_megawatts"] == mock_data[i].quantity
         assert pd.Timestamp(api_data[i]["timestamp"]) == pd.Timestamp(mock_data[i].publish_time)
+
+
+@pytest.mark.integration
+def test_get_elexon_forecast(api_client):
+
+    response = api_client.get("/v0/solar/GB/national/elexon")
+
+    # Assertions
+    assert response.status_code == 200
+    assert response.headers.get("Content-Type") == "application/json"
+
+    api_data = response.json()["data"]
+
+    solar_forecast = SolarForecastResponse(**response.json())
+
+    assert len(solar_forecast.data) > 0
