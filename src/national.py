@@ -212,7 +212,6 @@ def get_national_pvlive(
     )
 
 
-
 @router.get("/elexon", summary="Get elexon Solar Forecast")
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_elexon_forecast(
