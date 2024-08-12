@@ -6,8 +6,6 @@ import pytest
 
 from pydantic_models import BaseModel, SolarForecastResponse
 
-API_URL = "/v0/solar/GB/national/elexon"
-
 
 class MockClass(BaseModel):
 
@@ -22,13 +20,13 @@ class MockClass(BaseModel):
 mock_data = [
     MockClass(
         **{
-            "publish_time": "2024-07-24T16:45:09+00:00",
+            "start_time": "2024-07-24T16:00:00+00:00",
             "quantity": 0,
         }
     ),
     MockClass(
         **{
-            "publish_time": "2024-07-24T16:45:09+00:00",
+            "start_time": "2024-07-24T16:30:00+00:00",
             "quantity": 0,
         }
     ),
@@ -40,7 +38,7 @@ class MockResponse:
         self.data = mock_data
 
 
-@patch("national.forecast_generation_wind_and_solar_day_ahead_get")
+@patch("national.elexon_forecast_generation_wind_and_solar_day_ahead_get")
 def test_get_elexon_forecast_mock(mock_function, api_client):
     mock_function.return_value = MockResponse()
 

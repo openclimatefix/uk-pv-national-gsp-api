@@ -40,79 +40,10 @@ router = APIRouter(
 
 # Initialize Elexon API client
 api_client = ApiClient()
-forecast_api = GenerationForecastApi(api_client)
-forecast_generation_wind_and_solar_day_ahead_get = (
-    forecast_api.forecast_generation_wind_and_solar_day_ahead_get
+elexon_forecast_api = GenerationForecastApi(api_client)
+elexon_forecast_generation_wind_and_solar_day_ahead_get = (
+    elexon_forecast_api.forecast_generation_wind_and_solar_day_ahead_get
 )
-
-
-@router.get("/elexon", summary="Get elexon Solar Forecast")
-@limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
-def get_elexon_forecast(
-    request: Request,
-    start_datetime_utc: datetime = Query(
-        default=datetime.utcnow() - timedelta(days=3), description="Start date and time in UTC"
-    ),
-    end_datetime_utc: datetime = Query(
-        default=datetime.utcnow() + timedelta(days=3), description="End date and time in UTC"
-    ),
-    process_type: str = Query("Day Ahead", description="Process type"),
-):
-    """
-    Fetch elexon Solar and wind(?) forecasts from the Elexon API.
-
-    Args:
-        request (Request): The request object containing metadata about the HTTP request.
-        start_datetime_utc (datetime): The start date and time in UTC.
-        end_datetime_utc (datetime): The end date and time in UTC.
-        process_type (str): The type of process (e.g., 'Day Ahead').
-
-    Returns:
-        SolarForecastResponse: The forecast data wrapped in a SolarForecastResponse model.
-    """
-
-    try:
-        response = forecast_generation_wind_and_solar_day_ahead_get(
-            _from=start_datetime_utc.isoformat(),
-            to=end_datetime_utc.isoformat(),
-            process_type=process_type,
-            format="json",
-        )
-    except Exception as e:
-        logger.error("Unhandled exception when collecting ELexon Data: %s", str(e))
-        raise HTTPException(
-            status_code=500, detail="Internal Server Error when collecting Elexon Data"
-        )
-
-    if not response.data:
-        return SolarForecastResponse(data=[])
-
-    df = pd.DataFrame([item.to_dict() for item in response.data])
-    logger.debug("DataFrame Columns: %s", df.columns)
-    logger.debug("DataFrame Sample: %s", df.head())
-
-    # Filter to include only solar forecasts
-    solar_df = df[df["business_type"] == "Solar generation"]
-    logger.debug("Filtered Solar DataFrame: %s", solar_df.head())
-
-    forecast_values = []
-    for _, row in solar_df.iterrows():
-        try:
-            forecast_values.append(
-                SolarForecastValue(
-                    timestamp=pd.to_datetime(row["publish_time"]).to_pydatetime(),
-                    expected_power_generation_megawatts=row.get("quantity"),
-                )
-            )
-        except KeyError as e:
-            logger.error("KeyError: %s. Data: %s", str(e), row)
-            raise HTTPException(status_code=500, detail="Internal Server Error")
-        except Exception as e:
-            logger.error("Error during DataFrame to Model conversion: %s. Data: %s", str(e), row)
-            raise HTTPException(status_code=500, detail="Internal Server Error")
-
-    result = SolarForecastResponse(data=forecast_values)
-    return result
 
 
 @router.get(
@@ -279,3 +210,73 @@ def get_national_pvlive(
     return get_truth_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=0, regime=regime
     )
+
+
+
+@router.get("/elexon", summary="Get elexon Solar Forecast")
+@limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
+def get_elexon_forecast(
+    request: Request,
+    start_datetime_utc: datetime = Query(
+        default=datetime.utcnow() - timedelta(days=3), description="Start date and time in UTC"
+    ),
+    end_datetime_utc: datetime = Query(
+        default=datetime.utcnow() + timedelta(days=3), description="End date and time in UTC"
+    ),
+    process_type: str = Query("Day Ahead", description="Process type"),
+):
+    """
+    Fetch elexon Solar forecasts from the Elexon API.
+
+    #### Parameters:
+    - **start_datetime_utc** (datetime): The start date and time in UTC.
+    - **end_datetime_utc** (datetime): The end date and time in UTC.
+    - **process_type** (str): The type of process
+            (e.g., 'Day Ahead', 'Intraday Process' or  'Intraday Total').
+
+    Returns:
+        SolarForecastResponse: The forecast data wrapped in a SolarForecastResponse model.
+    """
+
+    try:
+        response = elexon_forecast_generation_wind_and_solar_day_ahead_get(
+            _from=start_datetime_utc.isoformat(),
+            to=end_datetime_utc.isoformat(),
+            process_type=process_type,
+            format="json",
+        )
+    except Exception as e:
+        logger.error("Unhandled exception when collecting ELexon Data: %s", str(e))
+        raise HTTPException(
+            status_code=500, detail="Internal Server Error when collecting Elexon Data"
+        )
+
+    if not response.data:
+        return SolarForecastResponse(data=[])
+
+    df = pd.DataFrame([item.to_dict() for item in response.data])
+    logger.debug("DataFrame Columns: %s", df.columns)
+    logger.debug("DataFrame Sample: %s", df.head())
+
+    # Filter to include only solar forecasts
+    solar_df = df[df["business_type"] == "Solar generation"]
+    logger.debug("Filtered Solar DataFrame: %s", solar_df.head())
+
+    forecast_values = []
+    for _, row in solar_df.iterrows():
+        try:
+            forecast_values.append(
+                SolarForecastValue(
+                    timestamp=pd.to_datetime(row["start_time"]).to_pydatetime(),
+                    expected_power_generation_megawatts=row.get("quantity"),
+                )
+            )
+        except KeyError as e:
+            logger.error("KeyError: %s. Data: %s", str(e), row)
+            raise HTTPException(status_code=500, detail="Internal Server Error")
+        except Exception as e:
+            logger.error("Error during DataFrame to Model conversion: %s. Data: %s", str(e), row)
+            raise HTTPException(status_code=500, detail="Internal Server Error")
+
+    result = SolarForecastResponse(data=forecast_values)
+    return result
