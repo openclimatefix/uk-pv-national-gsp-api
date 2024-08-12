@@ -9,7 +9,7 @@ from pydantic_models import BaseModel, SolarForecastResponse
 
 class MockClass(BaseModel):
 
-    publish_time: str
+    start_time: str
     quantity: float
     business_type: Optional[str] = "Solar generation"
 
@@ -52,7 +52,7 @@ def test_get_elexon_forecast_mock(mock_function, api_client):
     assert len(api_data) == len(mock_data)
     for i in range(len(api_data)):
         assert api_data[i]["expected_power_generation_megawatts"] == mock_data[i].quantity
-        assert pd.Timestamp(api_data[i]["timestamp"]) == pd.Timestamp(mock_data[i].publish_time)
+        assert pd.Timestamp(api_data[i]["timestamp"]) == pd.Timestamp(mock_data[i].start_time)
 
 
 @pytest.mark.integration
