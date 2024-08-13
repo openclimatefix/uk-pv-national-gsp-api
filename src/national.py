@@ -41,9 +41,6 @@ router = APIRouter(
 # Initialize Elexon API client
 api_client = ApiClient()
 elexon_forecast_api = GenerationForecastApi(api_client)
-elexon_forecast_generation_wind_and_solar_day_ahead_get = (
-    elexon_forecast_api.forecast_generation_wind_and_solar_day_ahead_get
-)
 
 
 @router.get(
@@ -238,7 +235,7 @@ def get_elexon_forecast(
     """
 
     try:
-        response = elexon_forecast_generation_wind_and_solar_day_ahead_get(
+        response = elexon_forecast_api.forecast_generation_wind_and_solar_day_ahead_get(
             _from=start_datetime_utc.isoformat(),
             to=end_datetime_utc.isoformat(),
             process_type=process_type,

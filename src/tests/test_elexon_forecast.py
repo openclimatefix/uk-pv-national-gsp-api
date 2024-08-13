@@ -1,14 +1,16 @@
 from typing import Optional
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pandas as pd
 import pytest
+from elexonpy.api.generation_forecast_api import GenerationForecastApi
 
 from pydantic_models import BaseModel, SolarForecastResponse
 
+API_URL = "/v0/solar/GB/national/elexon"
+
 
 class MockClass(BaseModel):
-
     start_time: str
     quantity: float
     business_type: Optional[str] = "Solar generation"
@@ -31,18 +33,17 @@ mock_data = [
         }
     ),
 ]
+mock_response = MagicMock()
+mock_response.data = mock_data
 
 
-class MockResponse:
-    def __init__(self):
-        self.data = mock_data
-
-
-@patch("national.elexon_forecast_generation_wind_and_solar_day_ahead_get")
+@patch.object(GenerationForecastApi, "forecast_generation_wind_and_solar_day_ahead_get")
 def test_get_elexon_forecast_mock(mock_function, api_client):
-    mock_function.return_value = MockResponse()
+    # Set mock_response
+    mock_function.return_value = mock_response
 
-    response = api_client.get("/v0/solar/GB/national/elexon")
+    # Call the API endpoint
+    response = api_client.get(API_URL)
     print("Response Headers:", response.headers)
     # Assertions
     assert response.status_code == 200
@@ -57,8 +58,7 @@ def test_get_elexon_forecast_mock(mock_function, api_client):
 
 @pytest.mark.integration
 def test_get_elexon_forecast(api_client):
-
-    response = api_client.get("/v0/solar/GB/national/elexon")
+    response = api_client.get(API_URL)
 
     # Assertions
     assert response.status_code == 200
