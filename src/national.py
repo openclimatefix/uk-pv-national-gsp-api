@@ -1,10 +1,14 @@
 """National API routes"""
 
 import os
+from datetime import datetime, timedelta
 from typing import List, Optional, Union
 
+import pandas as pd
 import structlog
-from fastapi import APIRouter, Depends, HTTPException, Request, Security
+from elexonpy.api.generation_forecast_api import GenerationForecastApi
+from elexonpy.api_client import ApiClient
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Security
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.read.read import get_latest_forecast_for_gsps
 from sqlalchemy.orm.session import Session
@@ -16,11 +20,16 @@ from database import (
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
 )
-from pydantic_models import NationalForecast, NationalForecastValue, NationalYield
+from pydantic_models import (
+    NationalForecast,
+    NationalForecastValue,
+    NationalYield,
+    SolarForecastResponse,
+    SolarForecastValue,
+)
 from utils import N_CALLS_PER_HOUR, filter_forecast_values, format_datetime, format_plevels, limiter
 
 logger = structlog.stdlib.get_logger()
-
 
 adjust_limit = float(os.getenv("ADJUST_MW_LIMIT", 0.0))
 get_plevels = bool(os.getenv("GET_PLEVELS", True))
@@ -28,6 +37,10 @@ get_plevels = bool(os.getenv("GET_PLEVELS", True))
 router = APIRouter(
     tags=["National"],
 )
+
+# Initialize Elexon API client
+api_client = ApiClient()
+elexon_forecast_api = GenerationForecastApi(api_client)
 
 
 @router.get(
@@ -47,7 +60,9 @@ def get_national_forecast(
     end_datetime_utc: Optional[str] = None,
     creation_limit_utc: Optional[str] = None,
 ) -> Union[NationalForecast, List[NationalForecastValue]]:
-    """Get the National Forecast
+    """
+
+    Fetch national forecasts.
 
     This route returns the most recent forecast for each _target_time_.
 
@@ -66,6 +81,9 @@ def get_national_forecast(
     - **end_datetime_utc**: optional end datetime for the query.
     - **creation_utc_limit**: optional, only return forecasts made before this datetime.
     Note you can only go 7 days back at the moment
+
+    Returns:
+        dict: The national forecast data.
 
     """
     logger.debug("Get national forecasts")
@@ -182,8 +200,8 @@ def get_national_pvlive(
 
     #### Parameters
     - **regime**: can choose __in-day__ or __day-after__
-    """
 
+    """
     logger.info(f"Get national PV Live estimates values " f"for regime {regime} for  {user}")
 
     return get_truth_values_for_a_specific_gsp_from_database(
@@ -191,26 +209,70 @@ def get_national_pvlive(
     )
 
 
-@router.get(
-    "/bmrs",
-    response_model=dict,
-    # dependencies=[Depends(get_auth_implicit_scheme())],
-    summary="Get BMRS Forecast",
-)
-# @cache_response
+@router.get("/elexon", summary="Get elexon Solar Forecast")
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
-def get_bmrs_forecast(
+def get_elexon_forecast(
     request: Request,
-    # session: Session = Depends(get_session),
-    # user: Auth0User = Security(get_user()),
-) -> dict:
+    start_datetime_utc: datetime = Query(
+        default=datetime.utcnow() - timedelta(days=3), description="Start date and time in UTC"
+    ),
+    end_datetime_utc: datetime = Query(
+        default=datetime.utcnow() + timedelta(days=3), description="End date and time in UTC"
+    ),
+    process_type: str = Query("Day Ahead", description="Process type"),
+):
+    """
+    Fetch elexon Solar forecasts from the Elexon API.
+
+    #### Parameters:
+    - **start_datetime_utc** (datetime): The start date and time in UTC.
+    - **end_datetime_utc** (datetime): The end date and time in UTC.
+    - **process_type** (str): The type of process
+            (e.g., 'Day Ahead', 'Intraday Process' or  'Intraday Total').
+
+    Returns:
+        SolarForecastResponse: The forecast data wrapped in a SolarForecastResponse model.
     """
 
-    This route returns the most recent BMRS forecast for each _target_time_.
+    try:
+        response = elexon_forecast_api.forecast_generation_wind_and_solar_day_ahead_get(
+            _from=start_datetime_utc.isoformat(),
+            to=end_datetime_utc.isoformat(),
+            process_type=process_type,
+            format="json",
+        )
+    except Exception as e:
+        logger.error("Unhandled exception when collecting ELexon Data: %s", str(e))
+        raise HTTPException(
+            status_code=500, detail="Internal Server Error when collecting Elexon Data"
+        )
 
-    #### Parameters
+    if not response.data:
+        return SolarForecastResponse(data=[])
 
-    """
-    logger.debug("Get bmrs forecast")
+    df = pd.DataFrame([item.to_dict() for item in response.data])
+    logger.debug("DataFrame Columns: %s", df.columns)
+    logger.debug("DataFrame Sample: %s", df.head())
 
-    return {"message": "This route is not yet implemented. Please check back later."}
+    # Filter to include only solar forecasts
+    solar_df = df[df["business_type"] == "Solar generation"]
+    logger.debug("Filtered Solar DataFrame: %s", solar_df.head())
+
+    forecast_values = []
+    for _, row in solar_df.iterrows():
+        try:
+            forecast_values.append(
+                SolarForecastValue(
+                    timestamp=pd.to_datetime(row["start_time"]).to_pydatetime(),
+                    expected_power_generation_megawatts=row.get("quantity"),
+                )
+            )
+        except KeyError as e:
+            logger.error("KeyError: %s. Data: %s", str(e), row)
+            raise HTTPException(status_code=500, detail="Internal Server Error")
+        except Exception as e:
+            logger.error("Error during DataFrame to Model conversion: %s. Data: %s", str(e), row)
+            raise HTTPException(status_code=500, detail="Internal Server Error")
+
+    result = SolarForecastResponse(data=forecast_values)
+    return result
