@@ -52,6 +52,8 @@ sentry_sdk.init(
     environment=os.getenv("ENVIRONMENT", "local"),
     traces_sampler=traces_sampler,
 )
+sentry_sdk.set_tag("app_name", "quartz-solar-api")
+sentry_sdk.set_tag("version", version)
 
 # noqa: E501
 description = """
