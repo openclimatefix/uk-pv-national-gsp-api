@@ -241,15 +241,16 @@ def get_truths_for_all_gsps(
     Setting the _regime_ parameter to _day-after_ includes
     the previous day's truth values for the GSPs.
 
-    If _regime_ is not specified, the parameter defaults to _in-day_.
+    If _regime_ is not specified, the parameter defaults to None and returns PV Live Updated
+    values where available, falling back to available PV Live Estimated values.
 
     If _compact_ is set to true, the response will be a list of GSPGenerations objects.
     This return object is significantly smaller, but less readable.
 
     #### Parameters
-    - **regime**: can choose __in-day__ or __day-after__
-    - **start_datetime_utc**: optional start datetime for the query.
-    - **end_datetime_utc**: optional end datetime for the query.
+    - **regime**: (optional) can choose __in-day__ or __day-after__
+    - **start_datetime_utc**: (optional) start datetime for the query.
+    - **end_datetime_utc**: (optional) end datetime for the query.
     """
     logger.info(f"Get PV Live estimates values for all gsp id and regime {regime} for user {user}")
 
