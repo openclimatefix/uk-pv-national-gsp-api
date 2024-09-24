@@ -11,7 +11,7 @@ from pytz import timezone
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from pydantic_models import NationalForecastValue
+from .pydantic_models import NationalForecastValue
 
 logger = structlog.stdlib.get_logger()
 
