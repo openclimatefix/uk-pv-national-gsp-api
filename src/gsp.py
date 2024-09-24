@@ -1,6 +1,7 @@
 """Get GSP boundary data from eso """
 
 import os
+import sys
 from typing import List, Optional, Union
 
 import structlog
@@ -28,6 +29,8 @@ from .pydantic_models import (
     OneDatetimeManyForecastValues,
 )
 from .utils import N_CALLS_PER_HOUR, format_datetime, limiter
+
+sys.path.append("C:/nowcasting_datamodel")
 
 GSP_TOTAL = 317
 
