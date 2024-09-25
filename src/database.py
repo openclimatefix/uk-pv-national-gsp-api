@@ -35,7 +35,7 @@ from nowcasting_datamodel.read.read_user import get_user as get_user_from_db
 from nowcasting_datamodel.save.update import N_GSP
 from sqlalchemy.orm.session import Session
 
-from .pydantic_models import (
+from pydantic_models import (
     GSPYield,
     GSPYieldGroupByDatetime,
     LocationWithGSPYields,
@@ -43,7 +43,7 @@ from .pydantic_models import (
     convert_forecasts_to_many_datetime_many_generation,
     convert_location_sql_to_many_datetime_many_generation,
 )
-from .utils import filter_forecast_values, floor_30_minutes_dt, get_start_datetime
+from utils import filter_forecast_values, floor_30_minutes_dt, get_start_datetime
 
 
 class BaseDBConnection(abc.ABC):

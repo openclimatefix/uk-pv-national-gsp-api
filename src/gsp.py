@@ -1,7 +1,6 @@
 """Get GSP boundary data from eso """
 
 import os
-import sys
 from typing import List, Optional, Union
 
 import structlog
@@ -13,24 +12,22 @@ from nowcasting_datamodel.fake import make_fake_forecast
 from nowcasting_datamodel.models import Forecast, ForecastValue, ManyForecasts
 from sqlalchemy.orm.session import Session
 
-from .auth_utils import get_auth_implicit_scheme, get_user
-from .cache import cache_response
-from .database import (
+from auth_utils import get_auth_implicit_scheme, get_user
+from cache import cache_response
+from database import (
     get_forecasts_from_database,
     get_latest_forecast_values_for_a_specific_gsp_from_database,
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
     get_truth_values_for_all_gsps_from_database,
 )
-from .pydantic_models import (
+from pydantic_models import (
     GSPYield,
     GSPYieldGroupByDatetime,
     LocationWithGSPYields,
     OneDatetimeManyForecastValues,
 )
-from .utils import N_CALLS_PER_HOUR, format_datetime, limiter
-
-sys.path.append("C:/nowcasting_datamodel")
+from utils import N_CALLS_PER_HOUR, format_datetime, limiter
 
 GSP_TOTAL = 317
 
