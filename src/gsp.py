@@ -29,6 +29,8 @@ from pydantic_models import (
 )
 from utils import N_CALLS_PER_HOUR, format_datetime, limiter
 
+# sys.path.append("C:/nowcasting_datamodel")
+
 GSP_TOTAL = 317
 
 
@@ -88,7 +90,7 @@ def get_all_available_forecasts(
     - **end_datetime_utc**: optional end datetime for the query. e.g '2023-08-12 14:00:00+00:00'
     """
     if is_fake:
-        make_fake_forecast()
+        make_fake_forecast(session=session)
 
     logger.info(f"Get forecasts for all gsps. The option is {historic=} for user {user}")
 
@@ -149,7 +151,7 @@ def get_forecasts_for_a_specific_gsp_old_route(
     """Redirects old API route to new route /v0/solar/GB/gsp/{gsp_id}/forecast"""
 
     if is_fake:
-        make_fake_forecast()
+        make_fake_forecast(gsp_id=gsp_id, session=session)
 
     return get_forecasts_for_a_specific_gsp(
         request=request,
@@ -200,7 +202,7 @@ def get_forecasts_for_a_specific_gsp(
     returns the latest forecast made 60 minutes before the target time)
     """
     if is_fake:
-        make_fake_forecast()
+        make_fake_forecast(gsp_id=gsp_id, session=session)
 
     logger.info(f"Get forecasts for gsp id {gsp_id} forecast of forecast with only values.")
     logger.info(f"This is for user {user}")
@@ -268,7 +270,7 @@ def get_truths_for_all_gsps(
     - **end_datetime_utc**: optional end datetime for the query.
     """
     if is_fake:
-        make_fake_forecast()
+        make_fake_forecast(session=session)
 
     logger.info(f"Get PV Live estimates values for all gsp id and regime {regime} for user {user}")
 
@@ -307,7 +309,7 @@ def get_truths_for_a_specific_gsp_old_route(
     """Redirects old API route to new route /v0/solar/GB/gsp/{gsp_id}/pvlive"""
 
     if is_fake:
-        make_fake_forecast()
+        make_fake_forecast(gsp_id=gsp_id, session=session)
 
     return get_truths_for_a_specific_gsp(
         request=request,
@@ -355,7 +357,7 @@ def get_truths_for_a_specific_gsp(
     """
 
     if is_fake:
-        make_fake_forecast()
+        make_fake_forecast(gsp_id=gsp_id, session=session)
 
     logger.info(
         f"Get PV Live estimates values for gsp id {gsp_id} " f"and regime {regime} for user {user}"

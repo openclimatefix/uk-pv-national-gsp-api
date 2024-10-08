@@ -3,10 +3,12 @@
 from datetime import datetime, timezone
 
 from freezegun import freeze_time
-from nowcasting_datamodel.fake import make_fake_forecasts
+from nowcasting_datamodel.fake import make_fake_forecast, make_fake_forecasts
 from nowcasting_datamodel.models import (
+    ForecastSQL,
     ForecastValue,
     ForecastValueSevenDaysSQL,
+    ForecastValueSQL,
     GSPYield,
     Location,
     LocationSQL,
@@ -418,3 +420,41 @@ def test_read_truths_for_all_gsp_compact(db_session, api_client):
     assert len(datetimes_with_gsp_yields[0].generation_kw_by_gsp_id) == 1
     assert len(datetimes_with_gsp_yields[1].generation_kw_by_gsp_id) == 2
     assert len(datetimes_with_gsp_yields[2].generation_kw_by_gsp_id) == 1
+
+
+@freeze_time("2024-01-01")
+def test_forecasts_for_specific_gsps(db_session, api_client, gsp_id=1):
+    """Test if route /v0/solar/GB/gsp/{gsp_id}/forecast works"""
+
+    # Using some dummy values
+    forecast_value = [
+        ForecastValueSQL(
+            target_time=datetime(2024, 2, 1, tzinfo=timezone.utc),
+            expected_power_generation_megawatts=50.0,
+            adjust_mw=0.2,
+            properties={},
+            forecast_id=1,
+            created_utc=datetime(2024, 2, 1, tzinfo=timezone.utc),
+        )
+    ]
+
+    forecasts = make_fake_forecast(
+        gsp_id=gsp_id,
+        session=db_session,
+        forecast_values=forecast_value,
+        add_latest=True,
+        model_name="fake_model",
+    )
+    db_session.add(forecasts)
+    db_session.commit()
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = api_client.get(f"/v0/solar/GB/gsp/{gsp_id}/forecast")
+    assert response.status_code == 200
+
+    forecast_from_db = db_session.query(ForecastSQL).filter_by(id=forecasts.id).first()
+
+    # Run tests for the presence of forecast values in the DB and that they're not negative
+    for value in forecast_from_db.forecast_values:
+        assert value.expected_power_generation_megawatts is not None
+        assert value.expected_power_generation_megawatts > 0
