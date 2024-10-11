@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, Request, Security, status
 from fastapi.responses import Response
 from fastapi_auth0 import Auth0User
-from nowcasting_datamodel.fake import make_fake_forecast
+from nowcasting_datamodel.fake import make_fake_forecast, make_fake_forecasts
 from nowcasting_datamodel.models import Forecast, ForecastValue, ManyForecasts
 from sqlalchemy.orm.session import Session
 
@@ -29,8 +29,6 @@ from pydantic_models import (
 )
 from utils import N_CALLS_PER_HOUR, format_datetime, limiter
 
-# sys.path.append("C:/nowcasting_datamodel")
-
 GSP_TOTAL = 317
 
 
@@ -50,7 +48,7 @@ def is_fake():
     return int(os.environ.get("FAKE", 0))
 
 
-# corresponds to route /v0/solar/GB/gsp/forecast/all
+# corresponds to route /v0/solar/GB/gsp/forecast/all/
 @router.get(
     "/forecast/all/",
     response_model=Union[ManyForecasts, List[OneDatetimeManyForecastValues]],
@@ -90,11 +88,14 @@ def get_all_available_forecasts(
     - **end_datetime_utc**: optional end datetime for the query. e.g '2023-08-12 14:00:00+00:00'
     """
     if is_fake:
-        make_fake_forecast(session=session)
+        if gsp_ids is None:
+            gsp_ids = [int(gsp_id) for gsp_id in range(GSP_TOTAL)]
+
+        make_fake_forecasts(gsp_ids=gsp_ids, session=session)
 
     logger.info(f"Get forecasts for all gsps. The option is {historic=} for user {user}")
 
-    if gsp_ids is not None:
+    if isinstance(gsp_ids, str):
         gsp_ids = [int(gsp_id) for gsp_id in gsp_ids.split(",")]
 
     start_datetime_utc = format_datetime(start_datetime_utc)
@@ -270,11 +271,14 @@ def get_truths_for_all_gsps(
     - **end_datetime_utc**: optional end datetime for the query.
     """
     if is_fake:
-        make_fake_forecast(session=session)
+        if gsp_ids is None:
+            gsp_ids = [int(gsp_id) for gsp_id in range(GSP_TOTAL)]
+
+        make_fake_forecasts(gsp_ids=gsp_ids, session=session)
 
     logger.info(f"Get PV Live estimates values for all gsp id and regime {regime} for user {user}")
 
-    if gsp_ids is not None:
+    if isinstance(gsp_ids, str):
         gsp_ids = [int(gsp_id) for gsp_id in gsp_ids.split(",")]
 
     start_datetime_utc = format_datetime(start_datetime_utc)
