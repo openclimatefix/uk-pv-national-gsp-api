@@ -3,12 +3,10 @@
 from datetime import datetime, timezone
 
 from freezegun import freeze_time
-from nowcasting_datamodel.fake import make_fake_forecast, make_fake_forecasts
+from nowcasting_datamodel.fake import make_fake_forecasts
 from nowcasting_datamodel.models import (
-    ForecastSQL,
     ForecastValue,
     ForecastValueSevenDaysSQL,
-    ForecastValueSQL,
     GSPYield,
     Location,
     LocationSQL,
@@ -20,7 +18,6 @@ from nowcasting_datamodel.save.save import save_all_forecast_values_seven_days
 from nowcasting_datamodel.save.update import update_all_forecast_latest
 
 from database import get_session
-from gsp import GSP_TOTAL
 from main import app
 from pydantic_models import GSPYieldGroupByDatetime, OneDatetimeManyForecastValues
 
@@ -421,163 +418,3 @@ def test_read_truths_for_all_gsp_compact(db_session, api_client):
     assert len(datetimes_with_gsp_yields[0].generation_kw_by_gsp_id) == 1
     assert len(datetimes_with_gsp_yields[1].generation_kw_by_gsp_id) == 2
     assert len(datetimes_with_gsp_yields[2].generation_kw_by_gsp_id) == 1
-
-
-@freeze_time("2024-01-01")
-def test_forecasts_for_specific_gsps(db_session, api_client, gsp_id=1):
-    """Test if route /v0/solar/GB/gsp/{gsp_id}/forecast works
-    Please set _gsp_id_ to any non-zero integer that is <= GSP_TOTAL
-    """
-
-    # Using some dummy values
-    forecast_value = [
-        ForecastValueSQL(
-            target_time=datetime(2024, 2, 1, tzinfo=timezone.utc),
-            expected_power_generation_megawatts=50.0,
-            adjust_mw=0.2,
-            properties={},
-            forecast_id=1,
-            created_utc=datetime(2024, 2, 1, tzinfo=timezone.utc),
-        )
-    ]
-
-    forecasts = make_fake_forecast(
-        gsp_id=gsp_id,
-        session=db_session,
-        forecast_values=forecast_value,
-        add_latest=True,
-        model_name="fake_model",
-    )
-    db_session.add(forecasts)
-    db_session.commit()
-    app.dependency_overrides[get_session] = lambda: db_session
-
-    response = api_client.get(f"/v0/solar/GB/gsp/{gsp_id}/forecast")
-    assert response.status_code == 200
-
-    forecast_from_db = db_session.query(ForecastSQL).filter_by(id=forecasts.id).first()
-
-    # Run tests for the presence of forecast values in the DB and that they're not negative
-    for value in forecast_from_db.forecast_values:
-        assert value.expected_power_generation_megawatts is not None
-        assert value.expected_power_generation_megawatts > 0
-
-
-@freeze_time("2024-01-01")
-def test_get_all_available_forecasts(db_session, api_client):
-    """Test if route /v0/solar/GB/gsp/forecast/all/ works"""
-
-    gsp_ids = [int(gsp_id) for gsp_id in range(GSP_TOTAL)]
-
-    # Using some dummy values
-    forecast_value = [
-        ForecastValueSQL(
-            target_time=datetime(2024, 2, 1, tzinfo=timezone.utc),
-            expected_power_generation_megawatts=50.0,
-            adjust_mw=0.2,
-            properties={},
-            forecast_id=1,
-            created_utc=datetime(2024, 2, 1, tzinfo=timezone.utc),
-        )
-    ]
-
-    forecasts = make_fake_forecasts(
-        gsp_ids=gsp_ids,
-        session=db_session,
-        forecast_values=forecast_value,
-        add_latest=True,
-        model_name="fake_model",
-    )
-    db_session.add_all(forecasts)
-    db_session.commit()
-    app.dependency_overrides[get_session] = lambda: db_session
-
-    response = api_client.get("/v0/solar/GB/gsp/forecast/all/")
-    assert response.status_code == 200
-
-    forecast_from_db = db_session.query(ForecastSQL).filter_by(id=forecasts[0].id).first()
-
-    # Run tests for the presence of forecast values in the DB and that they're not negative
-    for value in forecast_from_db.forecast_values:
-        assert value.expected_power_generation_megawatts is not None
-        assert value.expected_power_generation_megawatts > 0
-
-
-@freeze_time("2024-01-01")
-def test_get_truths_for_all_gsps(db_session, api_client):
-    """Test is route /v0/solar/GB/gsp/pvlive/all/ works"""
-
-    gsp_ids = [int(gsp_id) for gsp_id in range(GSP_TOTAL)]
-
-    # Using some dummy values
-    forecast_value = [
-        ForecastValueSQL(
-            target_time=datetime(2024, 2, 1, tzinfo=timezone.utc),
-            expected_power_generation_megawatts=50.0,
-            adjust_mw=0.2,
-            properties={},
-            forecast_id=1,
-            created_utc=datetime(2024, 2, 1, tzinfo=timezone.utc),
-        )
-    ]
-
-    forecasts = make_fake_forecasts(
-        gsp_ids=gsp_ids,
-        session=db_session,
-        forecast_values=forecast_value,
-        add_latest=True,
-        model_name="fake_model",
-    )
-    db_session.add_all(forecasts)
-    db_session.commit()
-    app.dependency_overrides[get_session] = lambda: db_session
-
-    response = api_client.get("/v0/solar/GB/gsp/pvlive/all/")
-    assert response.status_code == 200
-
-    forecast_from_db = db_session.query(ForecastSQL).filter_by(id=forecasts[0].id).first()
-
-    # Run tests for the presence of forecast values in the DB and that they're not negative
-    for value in forecast_from_db.forecast_values:
-        assert value.expected_power_generation_megawatts is not None
-        assert value.expected_power_generation_megawatts > 0
-
-
-@freeze_time("2024-01-01")
-def test_get_truths_for_a_specific_gsp(db_session, api_client, gsp_id=1):
-    """Test is route /v0/solar/GB/gsp/{gsp_id}/pvlive works
-    Please set _gsp_id_ to any non-zero integer that is <= GSP_TOTAL
-    """
-
-    # Using some dummy values
-    forecast_value = [
-        ForecastValueSQL(
-            target_time=datetime(2024, 2, 1, tzinfo=timezone.utc),
-            expected_power_generation_megawatts=50.0,
-            adjust_mw=0.2,
-            properties={},
-            forecast_id=1,
-            created_utc=datetime(2024, 2, 1, tzinfo=timezone.utc),
-        )
-    ]
-
-    forecasts = make_fake_forecast(
-        gsp_id=gsp_id,
-        session=db_session,
-        forecast_values=forecast_value,
-        add_latest=True,
-        model_name="fake_model",
-    )
-    db_session.add(forecasts)
-    db_session.commit()
-    app.dependency_overrides[get_session] = lambda: db_session
-
-    response = api_client.get(f"/v0/solar/GB/gsp/{gsp_id}/pvlive")
-    assert response.status_code == 200
-
-    forecast_from_db = db_session.query(ForecastSQL).filter_by(id=forecasts.id).first()
-
-    # Run tests for the presence of forecast values in the DB and that they're not negative
-    for value in forecast_from_db.forecast_values:
-        assert value.expected_power_generation_megawatts is not None
-        assert value.expected_power_generation_megawatts > 0
