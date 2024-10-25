@@ -45,7 +45,7 @@ NationalYield = GSPYield
 
 def is_fake():
     """Start FAKE environment"""
-    return int(os.environ.get("FAKE", 1))
+    return int(os.environ.get("FAKE", 0))
 
 
 # corresponds to route /v0/solar/GB/gsp/forecast/all/
