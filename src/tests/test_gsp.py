@@ -457,14 +457,12 @@ def test_is_fake_specific_gsp(monkeypatch, db_session, api_client, gsp_id=1, pyt
     forecast_from_db = db_session.query(ForecastSQL).filter_by(id=forecasts.id).first()
     test_printer = pytest_print if pytest_print is not None else print
 
+    # Run tests for the presence of forecast values in the DB and that they're not negative
     for value in forecast_from_db.forecast_values:
         test_printer(
             f"-----FAKE POWER GENERATION VALUES FOR GSP ID: {gsp_id}-----:\n",
             value.expected_power_generation_megawatts,
         )
-
-    # Run tests for the presence of forecast values in the DB and that they're not negative
-    for value in forecast_from_db.forecast_values:
         assert value.expected_power_generation_megawatts is not None
         assert value.expected_power_generation_megawatts >= 0.0
 
@@ -506,14 +504,12 @@ def test_is_fake_get_truths_for_a_specific_gsp(
     forecast_from_db = db_session.query(ForecastSQL).filter_by(id=forecasts.id).first()
     test_printer = pytest_print if pytest_print is not None else print
 
+    # Run tests for the presence of forecast values in the DB and that they're not negative
     for value in forecast_from_db.forecast_values:
         test_printer(
             f"-----FAKE POWER GENERATION VALUES FOR GSP ID: {gsp_id}-----:\n",
             value.expected_power_generation_megawatts,
         )
-
-    # Run tests for the presence of forecast values in the DB and that they're not negative
-    for value in forecast_from_db.forecast_values:
         assert value.expected_power_generation_megawatts is not None
         assert value.expected_power_generation_megawatts >= 0.0
 
@@ -553,14 +549,12 @@ def test_is_fake_all_available_forecasts(monkeypatch, db_session, api_client, py
     forecast_from_db = db_session.query(ForecastSQL).filter_by(id=forecasts[0].id).first()
     test_printer = pytest_print if pytest_print is not None else print
 
+    # Run tests for the presence of forecast values in the DB and that they're not negative
     for value in forecast_from_db.forecast_values:
         test_printer(
             "-----FAKE POWER GENERATION VALUES FOR ALL GSPs-----:\n",
             value.expected_power_generation_megawatts,
         )
-
-    # Run tests for the presence of forecast values in the DB and that they're not negative
-    for value in forecast_from_db.forecast_values:
         assert value.expected_power_generation_megawatts is not None
         assert value.expected_power_generation_megawatts >= 0.0
 
@@ -600,13 +594,11 @@ def test_is_fake_get_truths_for_all_gsps(monkeypatch, db_session, api_client, py
     forecast_from_db = db_session.query(ForecastSQL).filter_by(id=forecasts[0].id).first()
     test_printer = pytest_print if pytest_print is not None else print
 
+    # Run tests for the presence of forecast values in the DB and that they're not negative
     for value in forecast_from_db.forecast_values:
         test_printer(
             "-----FAKE POWER GENERATION VALUES FOR ALL GSPs-----:\n",
             value.expected_power_generation_megawatts,
         )
-
-    # Run tests for the presence of forecast values in the DB and that they're not negative
-    for value in forecast_from_db.forecast_values:
         assert value.expected_power_generation_megawatts is not None
         assert value.expected_power_generation_megawatts >= 0.0

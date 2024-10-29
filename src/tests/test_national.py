@@ -4,13 +4,14 @@ from datetime import datetime, timezone
 
 import numpy as np
 from freezegun import freeze_time
-from nowcasting_datamodel.fake import make_fake_national_forecast
-from nowcasting_datamodel.models import GSPYield, Location, LocationSQL
+from nowcasting_datamodel.fake import make_fake_forecasts, make_fake_national_forecast
+from nowcasting_datamodel.models import ForecastSQL, GSPYield, Location, LocationSQL
 from nowcasting_datamodel.read.read_models import get_model
 from nowcasting_datamodel.save.save import save_all_forecast_values_seven_days
 from nowcasting_datamodel.save.update import update_all_forecast_latest
 
 from database import get_session
+from gsp import GSP_TOTAL, is_fake
 from main import app
 from pydantic_models import NationalForecast, NationalForecastValue
 
@@ -255,3 +256,97 @@ def test_read_truth_national_gsp(db_session, api_client):
     r_json = response.json()
     assert len(r_json) == 3
     _ = [GSPYield(**gsp_yield) for gsp_yield in r_json]
+
+
+def test_is_fake_national_all_available_forecasts(
+    monkeypatch, db_session, api_client, pytest_print=None
+):
+    """### Test FAKE environment for all GSPs are populating
+    with fake data.
+
+    #### Parameters
+    - **pytest_print**: If you'd like to inspect the forecast values
+    in the FAKE environment, please use 'pytest -s' in the CLI to inspect
+    the values. Using the -s switch should enable the print statement.
+    Otherwise can use 'pytest -v' and it will run the tests as normal and
+    suppress the verbose print statements.
+    """
+
+    monkeypatch.setenv("FAKE", "1")
+    assert is_fake() == 1
+    # Connect to DB endpoint
+    response = api_client.get("/v0/solar/GB/national/forecast")
+    assert response.status_code == 200
+
+    gsp_ids = [int(gsp_id) for gsp_id in range(GSP_TOTAL)]
+
+    forecasts = make_fake_forecasts(
+        gsp_ids=gsp_ids,
+        session=db_session,
+        forecast_values=None,
+        add_latest=True,
+        historic=True,
+        model_name="fake_model",
+    )
+    db_session.add_all(forecasts)
+    db_session.commit()
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    forecast_from_db = db_session.query(ForecastSQL).filter_by(id=forecasts[0].id).first()
+    test_printer = pytest_print if pytest_print is not None else print
+
+    # Run tests for the presence of forecast values in the DB and that they're not negative
+    for value in forecast_from_db.forecast_values:
+        test_printer(
+            "-----FAKE POWER GENERATION VALUES FOR NATIONAL-----:\n",
+            value.expected_power_generation_megawatts,
+        )
+        assert value.expected_power_generation_megawatts is not None
+        assert value.expected_power_generation_megawatts >= 0.0
+
+
+def test_is_fake_national_get_truths_for_all_gsps(
+    monkeypatch, db_session, api_client, pytest_print=None
+):
+    """### Test FAKE environment for all GSPs for yesterday and today
+    are populating with fake data.
+
+    #### Parameters
+    - **pytest_print**: If you'd like to inspect the forecast values
+    in the FAKE environment, please use 'pytest -s' in the CLI to inspect
+    the values. Using the -s switch should enable the print statement.
+    Otherwise can use 'pytest -v' and it will run the tests as normal and
+    suppress the verbose print statements.
+    """
+
+    monkeypatch.setenv("FAKE", "1")
+    assert is_fake() == 1
+    # Connect to DB endpoint
+    response = api_client.get("/v0/solar/GB/national/pvlive/")
+    assert response.status_code == 200
+
+    gsp_ids = [int(gsp_id) for gsp_id in range(GSP_TOTAL)]
+
+    forecasts = make_fake_forecasts(
+        gsp_ids=gsp_ids,
+        session=db_session,
+        forecast_values=None,
+        add_latest=True,
+        historic=True,
+        model_name="fake_model",
+    )
+    db_session.add_all(forecasts)
+    db_session.commit()
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    forecast_from_db = db_session.query(ForecastSQL).filter_by(id=forecasts[0].id).first()
+    test_printer = pytest_print if pytest_print is not None else print
+
+    # Run tests for the presence of forecast values in the DB and that they're not negative
+    for value in forecast_from_db.forecast_values:
+        test_printer(
+            "-----FAKE POWER GENERATION VALUES FOR TRUTH VALUES-----:\n",
+            value.expected_power_generation_megawatts,
+        )
+        assert value.expected_power_generation_megawatts is not None
+        assert value.expected_power_generation_megawatts >= 0.0
