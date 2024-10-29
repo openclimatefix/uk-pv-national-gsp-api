@@ -87,6 +87,10 @@ def get_all_available_forecasts(
     - **start_datetime_utc**: optional start datetime for the query. e.g '2023-08-12 10:00:00+00:00'
     - **end_datetime_utc**: optional end datetime for the query. e.g '2023-08-12 14:00:00+00:00'
     """
+
+    if isinstance(gsp_ids, str):
+        gsp_ids = [int(gsp_id) for gsp_id in gsp_ids.split(",")]
+
     if is_fake:
         if gsp_ids is None:
             gsp_ids = [int(gsp_id) for gsp_id in range(GSP_TOTAL)]
@@ -94,9 +98,6 @@ def get_all_available_forecasts(
         make_fake_forecasts(gsp_ids=gsp_ids, session=session)
 
     logger.info(f"Get forecasts for all gsps. The option is {historic=} for user {user}")
-
-    if isinstance(gsp_ids, str):
-        gsp_ids = [int(gsp_id) for gsp_id in gsp_ids.split(",")]
 
     start_datetime_utc = format_datetime(start_datetime_utc)
     end_datetime_utc = format_datetime(end_datetime_utc)
@@ -270,6 +271,10 @@ def get_truths_for_all_gsps(
     - **start_datetime_utc**: optional start datetime for the query.
     - **end_datetime_utc**: optional end datetime for the query.
     """
+
+    if isinstance(gsp_ids, str):
+        gsp_ids = [int(gsp_id) for gsp_id in gsp_ids.split(",")]
+
     if is_fake:
         if gsp_ids is None:
             gsp_ids = [int(gsp_id) for gsp_id in range(GSP_TOTAL)]
@@ -277,9 +282,6 @@ def get_truths_for_all_gsps(
         make_fake_forecasts(gsp_ids=gsp_ids, session=session)
 
     logger.info(f"Get PV Live estimates values for all gsp id and regime {regime} for user {user}")
-
-    if isinstance(gsp_ids, str):
-        gsp_ids = [int(gsp_id) for gsp_id in gsp_ids.split(",")]
 
     start_datetime_utc = format_datetime(start_datetime_utc)
     end_datetime_utc = format_datetime(end_datetime_utc)
