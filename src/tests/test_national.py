@@ -290,7 +290,7 @@ def test_is_fake_national_all_available_forecasts(
     test_printer = pytest_print if pytest_print is not None else print
 
     # Run tests for the presence of forecast values in the DB and that they're not negative
-    for value in forecasts[0].forecast_values:
+    for value in forecasts.forecast_values:
         test_printer(
             "-----FAKE POWER GENERATION VALUES FOR NATIONAL-----:\n",
             value.expected_power_generation_megawatts,
@@ -331,7 +331,7 @@ def test_is_fake_national_get_truths_for_all_gsps(
     test_printer = pytest_print if pytest_print is not None else print
 
     # Run tests for the presence of forecast values in the DB and that they're not negative
-    for value in forecasts[0].forecast_values:
+    for value in forecasts.forecast_values:
         test_printer(
             "-----FAKE POWER GENERATION VALUES FOR TRUTH VALUES-----:\n",
             value.expected_power_generation_megawatts,
