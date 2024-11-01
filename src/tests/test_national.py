@@ -4,14 +4,14 @@ from datetime import datetime, timezone
 
 import numpy as np
 from freezegun import freeze_time
-from nowcasting_datamodel.fake import make_fake_forecasts, make_fake_national_forecast
-from nowcasting_datamodel.models import ForecastSQL, GSPYield, Location, LocationSQL
+from nowcasting_datamodel.fake import make_fake_forecast, make_fake_national_forecast
+from nowcasting_datamodel.models import GSPYield, Location, LocationSQL
 from nowcasting_datamodel.read.read_models import get_model
 from nowcasting_datamodel.save.save import save_all_forecast_values_seven_days
 from nowcasting_datamodel.save.update import update_all_forecast_latest
 
 from database import get_session
-from gsp import GSP_TOTAL, is_fake
+from gsp import is_fake
 from main import app
 from pydantic_models import NationalForecast, NationalForecastValue
 
@@ -278,25 +278,19 @@ def test_is_fake_national_all_available_forecasts(
     response = api_client.get("/v0/solar/GB/national/forecast")
     assert response.status_code == 200
 
-    gsp_ids = [int(gsp_id) for gsp_id in range(GSP_TOTAL)]
-
-    forecasts = make_fake_forecasts(
-        gsp_ids=gsp_ids,
+    forecasts = make_fake_forecast(
+        gsp_id=0,
         session=db_session,
         forecast_values=None,
         add_latest=True,
         historic=True,
         model_name="fake_model",
     )
-    db_session.add_all(forecasts)
-    db_session.commit()
-    app.dependency_overrides[get_session] = lambda: db_session
 
-    forecast_from_db = db_session.query(ForecastSQL).filter_by(id=forecasts[0].id).first()
     test_printer = pytest_print if pytest_print is not None else print
 
     # Run tests for the presence of forecast values in the DB and that they're not negative
-    for value in forecast_from_db.forecast_values:
+    for value in forecasts[0].forecast_values:
         test_printer(
             "-----FAKE POWER GENERATION VALUES FOR NATIONAL-----:\n",
             value.expected_power_generation_megawatts,
@@ -325,25 +319,19 @@ def test_is_fake_national_get_truths_for_all_gsps(
     response = api_client.get("/v0/solar/GB/national/pvlive/")
     assert response.status_code == 200
 
-    gsp_ids = [int(gsp_id) for gsp_id in range(GSP_TOTAL)]
-
-    forecasts = make_fake_forecasts(
-        gsp_ids=gsp_ids,
+    forecasts = make_fake_forecast(
+        gsp_id=0,
         session=db_session,
         forecast_values=None,
         add_latest=True,
         historic=True,
         model_name="fake_model",
     )
-    db_session.add_all(forecasts)
-    db_session.commit()
-    app.dependency_overrides[get_session] = lambda: db_session
 
-    forecast_from_db = db_session.query(ForecastSQL).filter_by(id=forecasts[0].id).first()
     test_printer = pytest_print if pytest_print is not None else print
 
     # Run tests for the presence of forecast values in the DB and that they're not negative
-    for value in forecast_from_db.forecast_values:
+    for value in forecasts[0].forecast_values:
         test_printer(
             "-----FAKE POWER GENERATION VALUES FOR TRUTH VALUES-----:\n",
             value.expected_power_generation_megawatts,

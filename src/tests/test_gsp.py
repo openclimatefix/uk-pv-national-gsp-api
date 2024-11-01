@@ -5,7 +5,6 @@ from datetime import datetime, timezone
 from freezegun import freeze_time
 from nowcasting_datamodel.fake import make_fake_forecast, make_fake_forecasts
 from nowcasting_datamodel.models import (
-    ForecastSQL,
     ForecastValue,
     ForecastValueSevenDaysSQL,
     GSPYield,
@@ -450,15 +449,11 @@ def test_is_fake_specific_gsp(monkeypatch, db_session, api_client, gsp_id=1, pyt
         historic=True,
         model_name="fake_model",
     )
-    db_session.add(forecasts)
-    db_session.commit()
-    app.dependency_overrides[get_session] = lambda: db_session
 
-    forecast_from_db = db_session.query(ForecastSQL).filter_by(id=forecasts.id).first()
     test_printer = pytest_print if pytest_print is not None else print
 
     # Run tests for the presence of forecast values in the DB and that they're not negative
-    for value in forecast_from_db.forecast_values:
+    for value in forecasts.forecast_values:
         test_printer(
             f"-----FAKE POWER GENERATION VALUES FOR GSP ID: {gsp_id}-----:\n",
             value.expected_power_generation_megawatts,
@@ -497,15 +492,11 @@ def test_is_fake_get_truths_for_a_specific_gsp(
         historic=True,
         model_name="fake_model",
     )
-    db_session.add(forecasts)
-    db_session.commit()
-    app.dependency_overrides[get_session] = lambda: db_session
 
-    forecast_from_db = db_session.query(ForecastSQL).filter_by(id=forecasts.id).first()
     test_printer = pytest_print if pytest_print is not None else print
 
     # Run tests for the presence of forecast values in the DB and that they're not negative
-    for value in forecast_from_db.forecast_values:
+    for value in forecasts.forecast_values:
         test_printer(
             f"-----FAKE POWER GENERATION VALUES FOR GSP ID: {gsp_id}-----:\n",
             value.expected_power_generation_megawatts,
@@ -532,7 +523,7 @@ def test_is_fake_all_available_forecasts(monkeypatch, db_session, api_client, py
     response = api_client.get("/v0/solar/GB/gsp/forecast/all/")
     assert response.status_code == 200
 
-    gsp_ids = [int(gsp_id) for gsp_id in range(GSP_TOTAL)]
+    gsp_ids = [int(gsp_id) for gsp_id in range(1, GSP_TOTAL)]
 
     forecasts = make_fake_forecasts(
         gsp_ids=gsp_ids,
@@ -542,15 +533,11 @@ def test_is_fake_all_available_forecasts(monkeypatch, db_session, api_client, py
         historic=True,
         model_name="fake_model",
     )
-    db_session.add_all(forecasts)
-    db_session.commit()
-    app.dependency_overrides[get_session] = lambda: db_session
 
-    forecast_from_db = db_session.query(ForecastSQL).filter_by(id=forecasts[0].id).first()
     test_printer = pytest_print if pytest_print is not None else print
 
     # Run tests for the presence of forecast values in the DB and that they're not negative
-    for value in forecast_from_db.forecast_values:
+    for value in forecasts[0].forecast_values:
         test_printer(
             "-----FAKE POWER GENERATION VALUES FOR ALL GSPs-----:\n",
             value.expected_power_generation_megawatts,
@@ -577,7 +564,7 @@ def test_is_fake_get_truths_for_all_gsps(monkeypatch, db_session, api_client, py
     response = api_client.get("/v0/solar/GB/gsp/pvlive/all/")
     assert response.status_code == 200
 
-    gsp_ids = [int(gsp_id) for gsp_id in range(GSP_TOTAL)]
+    gsp_ids = [int(gsp_id) for gsp_id in range(1, GSP_TOTAL)]
 
     forecasts = make_fake_forecasts(
         gsp_ids=gsp_ids,
@@ -587,15 +574,11 @@ def test_is_fake_get_truths_for_all_gsps(monkeypatch, db_session, api_client, py
         historic=True,
         model_name="fake_model",
     )
-    db_session.add_all(forecasts)
-    db_session.commit()
-    app.dependency_overrides[get_session] = lambda: db_session
 
-    forecast_from_db = db_session.query(ForecastSQL).filter_by(id=forecasts[0].id).first()
     test_printer = pytest_print if pytest_print is not None else print
 
     # Run tests for the presence of forecast values in the DB and that they're not negative
-    for value in forecast_from_db.forecast_values:
+    for value in forecasts[0].forecast_values:
         test_printer(
             "-----FAKE POWER GENERATION VALUES FOR ALL GSPs-----:\n",
             value.expected_power_generation_megawatts,

@@ -93,7 +93,7 @@ def get_all_available_forecasts(
 
     if is_fake:
         if gsp_ids is None:
-            gsp_ids = [int(gsp_id) for gsp_id in range(GSP_TOTAL)]
+            gsp_ids = [int(gsp_id) for gsp_id in range(1, GSP_TOTAL)]
 
         make_fake_forecasts(gsp_ids=gsp_ids, session=session)
 
@@ -277,7 +277,7 @@ def get_truths_for_all_gsps(
 
     if is_fake:
         if gsp_ids is None:
-            gsp_ids = [int(gsp_id) for gsp_id in range(GSP_TOTAL)]
+            gsp_ids = [int(gsp_id) for gsp_id in range(1, GSP_TOTAL)]
 
         make_fake_forecasts(gsp_ids=gsp_ids, session=session)
 
