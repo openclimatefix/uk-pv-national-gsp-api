@@ -4,15 +4,15 @@ from datetime import datetime, timezone
 
 import numpy as np
 from freezegun import freeze_time
-from nowcasting_datamodel.fake import make_fake_forecast, make_fake_national_forecast
+from nowcasting_datamodel.fake import make_fake_national_forecast
 from nowcasting_datamodel.models import GSPYield, Location, LocationSQL
 from nowcasting_datamodel.read.read_models import get_model
 from nowcasting_datamodel.save.save import save_all_forecast_values_seven_days
 from nowcasting_datamodel.save.update import update_all_forecast_latest
 
 from database import get_session
-from gsp import is_fake
 from main import app
+from national import is_fake
 from pydantic_models import NationalForecast, NationalForecastValue
 
 
@@ -258,18 +258,9 @@ def test_read_truth_national_gsp(db_session, api_client):
     _ = [GSPYield(**gsp_yield) for gsp_yield in r_json]
 
 
-def test_is_fake_national_all_available_forecasts(
-    monkeypatch, db_session, api_client, pytest_print=None
-):
-    """### Test FAKE environment for all GSPs are populating
+def test_is_fake_national_all_available_forecasts(monkeypatch, api_client):
+    """Test FAKE environment for all GSPs are populating
     with fake data.
-
-    #### Parameters
-    - **pytest_print**: If you'd like to inspect the forecast values
-    in the FAKE environment, please use 'pytest -s' in the CLI to inspect
-    the values. Using the -s switch should enable the print statement.
-    Otherwise can use 'pytest -v' and it will run the tests as normal and
-    suppress the verbose print statements.
     """
 
     monkeypatch.setenv("FAKE", "1")
@@ -278,39 +269,13 @@ def test_is_fake_national_all_available_forecasts(
     response = api_client.get("/v0/solar/GB/national/forecast")
     assert response.status_code == 200
 
-    forecasts = make_fake_forecast(
-        gsp_id=0,
-        session=db_session,
-        forecast_values=None,
-        add_latest=True,
-        historic=True,
-        model_name="fake_model",
-    )
-
-    test_printer = pytest_print if pytest_print is not None else print
-
-    # Run tests for the presence of forecast values in the DB and that they're not negative
-    for value in forecasts.forecast_values:
-        test_printer(
-            "-----FAKE POWER GENERATION VALUES FOR NATIONAL-----:\n",
-            value.expected_power_generation_megawatts,
-        )
-        assert value.expected_power_generation_megawatts is not None
-        assert value.expected_power_generation_megawatts >= 0.0
+    national_forecast_values = [NationalForecastValue(**f) for f in response.json()]
+    assert national_forecast_values is not None
 
 
-def test_is_fake_national_get_truths_for_all_gsps(
-    monkeypatch, db_session, api_client, pytest_print=None
-):
-    """### Test FAKE environment for all GSPs for yesterday and today
+def test_is_fake_national_get_truths_for_all_gsps(monkeypatch, api_client):
+    """Test FAKE environment for all GSPs for yesterday and today
     are populating with fake data.
-
-    #### Parameters
-    - **pytest_print**: If you'd like to inspect the forecast values
-    in the FAKE environment, please use 'pytest -s' in the CLI to inspect
-    the values. Using the -s switch should enable the print statement.
-    Otherwise can use 'pytest -v' and it will run the tests as normal and
-    suppress the verbose print statements.
     """
 
     monkeypatch.setenv("FAKE", "1")
@@ -319,22 +284,5 @@ def test_is_fake_national_get_truths_for_all_gsps(
     response = api_client.get("/v0/solar/GB/national/pvlive/")
     assert response.status_code == 200
 
-    forecasts = make_fake_forecast(
-        gsp_id=0,
-        session=db_session,
-        forecast_values=None,
-        add_latest=True,
-        historic=True,
-        model_name="fake_model",
-    )
-
-    test_printer = pytest_print if pytest_print is not None else print
-
-    # Run tests for the presence of forecast values in the DB and that they're not negative
-    for value in forecasts.forecast_values:
-        test_printer(
-            "-----FAKE POWER GENERATION VALUES FOR TRUTH VALUES-----:\n",
-            value.expected_power_generation_megawatts,
-        )
-        assert value.expected_power_generation_megawatts is not None
-        assert value.expected_power_generation_megawatts >= 0.0
+    national_forecast_values = [NationalForecastValue(**f) for f in response.json()]
+    assert national_forecast_values is not None

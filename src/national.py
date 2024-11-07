@@ -14,27 +14,21 @@ from nowcasting_datamodel.fake import make_fake_forecast
 from nowcasting_datamodel.read.read import get_latest_forecast_for_gsps
 from sqlalchemy.orm.session import Session
 
-from .auth_utils import get_auth_implicit_scheme, get_user
-from .cache import cache_response
-from .database import (
+from auth_utils import get_auth_implicit_scheme, get_user
+from cache import cache_response
+from database import (
     get_latest_forecast_values_for_a_specific_gsp_from_database,
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
 )
-from .pydantic_models import (
+from pydantic_models import (
     NationalForecast,
     NationalForecastValue,
     NationalYield,
     SolarForecastResponse,
     SolarForecastValue,
 )
-from .utils import (
-    N_CALLS_PER_HOUR,
-    filter_forecast_values,
-    format_datetime,
-    format_plevels,
-    limiter,
-)
+from utils import N_CALLS_PER_HOUR, filter_forecast_values, format_datetime, format_plevels, limiter
 
 logger = structlog.stdlib.get_logger()
 
