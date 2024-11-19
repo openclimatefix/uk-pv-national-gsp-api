@@ -16,6 +16,7 @@ from nowcasting_datamodel.models import (
 from nowcasting_datamodel.read.read_models import get_model
 from nowcasting_datamodel.save.save import save_all_forecast_values_seven_days
 from nowcasting_datamodel.save.update import update_all_forecast_latest
+from pytest import fixture
 
 from database import get_session
 from gsp import is_fake
@@ -53,8 +54,10 @@ def test_read_latest_one_gsp_national(db_session, api_client):
     db_session.commit()
 
     app.dependency_overrides[get_session] = lambda: db_session
+    yield db_session
 
-    response = api_client.get("/v0/solar/GB/gsp/0/forecast")
+    # response = api_client.get("/v0/solar/GB/gsp/0/forecast")
+    response = api_client.get("/v0/solar/GB/gsp/forecast/0")
 
     assert response.status_code == 200
 
@@ -277,6 +280,7 @@ def test_read_truths_for_a_specific_gsp(db_session, api_client):
     db_session.add_all([gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_sql_1])
 
     app.dependency_overrides[get_session] = lambda: db_session
+    yield db_session
 
     response = api_client.get("/v0/solar/GB/gsp/pvlive/122")
 
@@ -316,6 +320,7 @@ def test_read_truths_for_gsp_id_less_than_total(db_session, api_client):
     db_session.add_all([gsp_yield_sql, gsp_sql])
 
     app.dependency_overrides[get_session] = lambda: db_session
+    yield db_session
 
     response = api_client.get(f"/v0/solar/GB/gsp/pvlive/{gsp_id}")
 
@@ -327,6 +332,7 @@ def test_read_truths_for_gsp_id_less_than_total(db_session, api_client):
     _ = [GSPYield(**gsp_yield) for gsp_yield in r_json]
 
 
+@fixture
 def setup_gsp_yield_data(db_session):
     gsp_yield_1 = GSPYield(datetime_utc=datetime(2022, 1, 2), solar_generation_kw=1)
     gsp_yield_1_sql = gsp_yield_1.to_orm()
@@ -366,6 +372,7 @@ def test_read_truths_for_all_gsp(db_session, api_client):
     setup_gsp_yield_data(db_session=db_session)
 
     app.dependency_overrides[get_session] = lambda: db_session
+    yield db_session
 
     response = api_client.get("/v0/solar/GB/gsp/pvlive/all")
 
@@ -386,6 +393,7 @@ def test_read_truths_for_all_gsp_filter_gsp(db_session, api_client):
     setup_gsp_yield_data(db_session=db_session)
 
     app.dependency_overrides[get_session] = lambda: db_session
+    yield db_session
 
     response = api_client.get("/v0/solar/GB/gsp/pvlive/all?gsp_ids=122")
 
@@ -406,6 +414,7 @@ def test_read_truths_for_all_gsp_compact(db_session, api_client):
     setup_gsp_yield_data(db_session=db_session)
 
     app.dependency_overrides[get_session] = lambda: db_session
+    yield db_session
 
     response = api_client.get("/v0/solar/GB/gsp/pvlive/all?compact=true")
 
@@ -438,6 +447,9 @@ def test_is_fake_specific_gsp(monkeypatch, api_client, gsp_id=1):
     forecast_value = [ForecastValue(**f) for f in response.json()]
     assert forecast_value is not None
 
+    # Disable is_fake environment
+    monkeypatch.setenv("FAKE", "0")
+
 
 def test_is_fake_get_truths_for_a_specific_gsp(monkeypatch, api_client, gsp_id=1):
     """### Test FAKE environment specific _gsp_id_ routes are populating
@@ -456,6 +468,9 @@ def test_is_fake_get_truths_for_a_specific_gsp(monkeypatch, api_client, gsp_id=1
     forecast_value = [ForecastValue(**f) for f in response.json()]
     assert forecast_value is not None
 
+    # Disable is_fake environment
+    monkeypatch.setenv("FAKE", "0")
+
 
 def test_is_fake_all_available_forecasts(monkeypatch, api_client):
     """Test FAKE environment for all GSPs are populating
@@ -471,6 +486,9 @@ def test_is_fake_all_available_forecasts(monkeypatch, api_client):
     all_forecasts = ManyForecasts(**response.json())
     assert all_forecasts is not None
 
+    # Disable is_fake environment
+    monkeypatch.setenv("FAKE", "0")
+
 
 def test_is_fake_get_truths_for_all_gsps(monkeypatch, api_client):
     """Test FAKE environment for all GSPs for yesterday and today
@@ -485,3 +503,6 @@ def test_is_fake_get_truths_for_all_gsps(monkeypatch, api_client):
 
     all_forecasts = [ManyForecasts(**f) for f in response.json()]
     assert all_forecasts is not None
+
+    # Disable is_fake environment
+    monkeypatch.setenv("FAKE", "0")
