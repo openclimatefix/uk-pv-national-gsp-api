@@ -96,13 +96,13 @@ def test_read_latest_one_gsp_filter_creation_utc(db_session, api_client):
         assert f[0].target_time == forecasts[1].forecast_values[0].target_time
 
 
-def test_read_latest_all_gsp(db_session, api_client):
+def test_read_latest_all_gsp(db_session, api_client, gsp_ids=list(range(0, 10))):
     """Check main solar/GB/gsp/forecast/all route works"""
 
     model = get_model(session=db_session, name="blend", version="0.0.1")
 
     forecasts = make_fake_forecasts(
-        gsp_ids=list(range(0, 10)),
+        gsp_ids=gsp_ids,
         session=db_session,
         t0_datetime_utc=datetime.now(tz=timezone.utc),
     )
@@ -112,7 +112,10 @@ def test_read_latest_all_gsp(db_session, api_client):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = api_client.get("/v0/solar/GB/gsp/forecast/all/?historic=False")
+    gsp_ids_str = ", ".join(map(str, gsp_ids))
+    response = api_client.get(
+        f"/v0/solar/GB/gsp/forecast/all/?historic=False&gsp_ids={gsp_ids_str}"
+    )
 
     assert response.status_code == 200
 
@@ -172,13 +175,13 @@ def test_read_latest_gsp_id_equal_to_total(db_session, api_client):
     _ = [ForecastValue(**f) for f in response.json()]
 
 
-def test_read_latest_all_gsp_normalized(db_session, api_client):
+def test_read_latest_all_gsp_normalized(db_session, api_client, gsp_ids=list(range(0, 10))):
     """Check main solar/GB/gsp/forecast/all normalized route works"""
 
     model = get_model(session=db_session, name="blend", version="0.0.1")
 
     forecasts = make_fake_forecasts(
-        gsp_ids=list(range(0, 10)),
+        gsp_ids=gsp_ids,
         session=db_session,
         t0_datetime_utc=datetime.now(tz=timezone.utc),
     )
@@ -187,7 +190,10 @@ def test_read_latest_all_gsp_normalized(db_session, api_client):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = api_client.get("/v0/solar/GB/gsp/forecast/all/?historic=False&normalize=True")
+    gsp_ids_str = ", ".join(map(str, gsp_ids))
+    response = api_client.get(
+        f"/v0/solar/GB/gsp/forecast/all/?historic=False&normalize=True&gsp_ids={gsp_ids_str}"
+    )
 
     assert response.status_code == 200
 
