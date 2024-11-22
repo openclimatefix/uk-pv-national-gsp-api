@@ -249,8 +249,9 @@ def test_read_truth_national_gsp(db_session, api_client):
     db_session.add_all([gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_sql_1])
 
     app.dependency_overrides[get_session] = lambda: db_session
+    yield db_session
 
-    response = api_client.get("/v0/solar/GB/national/pvlive/")
+    response = api_client.get("/v0/solar/GB/national/pvlive/0")
     assert response.status_code == 200
 
     r_json = response.json()
