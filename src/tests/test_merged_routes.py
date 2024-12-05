@@ -51,7 +51,7 @@ def test_read_forecast_values_gsp(db_session, api_client):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = api_client.get("/v0/solar/GB/gsp/1/forecast")
+    response = api_client.get("/v0/solar/GB/gsp/forecast/1")
     assert response.status_code == 200
 
     r_json = response.json()
