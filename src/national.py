@@ -79,7 +79,7 @@ def get_national_forecast(
     60 returns the forecast made an hour before the target time)
     - **start_datetime_utc**: optional start datetime for the query.
     - **end_datetime_utc**: optional end datetime for the query.
-    - **creation_utc_limit**: optional, only return forecasts made before this datetime.
+    - **creation_limit_utc**: optional, only return forecasts made before this datetime.
     Note you can only go 7 days back at the moment
 
     Returns:
