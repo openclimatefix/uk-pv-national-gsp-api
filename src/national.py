@@ -10,7 +10,7 @@ from elexonpy.api.generation_forecast_api import GenerationForecastApi
 from elexonpy.api_client import ApiClient
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Security
 from fastapi_auth0 import Auth0User
-from nowcasting_datamodel.fake import make_fake_forecast
+from nowcasting_datamodel.fake import make_fake_forecast, make_fake_gsp_yields
 from nowcasting_datamodel.read.read import get_latest_forecast_for_gsps
 from sqlalchemy.orm.session import Session
 
@@ -215,7 +215,7 @@ def get_national_pvlive(
     logger.info(f"Get national PV Live estimates values " f"for regime {regime} for  {user}")
 
     if is_fake:
-        make_fake_forecast(gsp_id=gsp_id, session=session)
+        make_fake_gsp_yields(gsp_ids=List[gsp_id], session=session)
 
     return get_truth_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=gsp_id, regime=regime
