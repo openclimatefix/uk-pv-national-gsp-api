@@ -19,7 +19,7 @@ from nowcasting_datamodel.save.update import update_all_forecast_latest
 from pytest import fixture
 
 from database import get_session
-from gsp import is_fake
+from gsp import GSP_TOTAL, is_fake
 from main import app
 from pydantic_models import GSPYieldGroupByDatetime, OneDatetimeManyForecastValues
 
@@ -302,7 +302,7 @@ def test_read_pvlive_for_gsp_id_over_total(db_session, api_client):
     """Check solar/GB/gsp/pvlive returns 204 when gsp_id over total"""
 
     gsp_id = 318
-    response = api_client.get(f"/v0/solar/GB/gsp/pvlive/{gsp_id}")
+    response = api_client.get(f"/v0/solar/GB/gsp/{gsp_id}/pvlive")
 
     assert response.status_code == 204
 
@@ -496,18 +496,22 @@ def test_is_fake_all_available_forecasts(monkeypatch, api_client):
     monkeypatch.setenv("FAKE", "0")
 
 
-def test_is_fake_get_truths_for_all_gsps(monkeypatch, api_client):
+def test_is_fake_get_truths_for_all_gsps(
+    monkeypatch, api_client, gsp_ids=list(range(1, GSP_TOTAL))
+):
     """Test FAKE environment for all GSPs for yesterday and today
     are populating with fake data.
     """
 
     monkeypatch.setenv("FAKE", "1")
     assert is_fake() == 1
+
     # Connect to DB endpoint
-    response = api_client.get("/v0/solar/GB/gsp/pvlive/all/")
+    gsp_ids_str = ", ".join(map(str, gsp_ids))
+    response = api_client.get(f"/v0/solar/GB/gsp/pvlive/all?gsp_ids={gsp_ids_str}")
     assert response.status_code == 200
 
-    all_forecasts = [ManyForecasts(**f) for f in response.json()]
+    all_forecasts = [LocationWithGSPYields(**f) for f in response.json()]
     assert all_forecasts is not None
 
     # Disable is_fake environment
