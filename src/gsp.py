@@ -277,7 +277,7 @@ def get_truths_for_all_gsps(
 
     if is_fake:
         if gsp_ids is None:
-            gsp_ids = [List[int(gsp_id)] for gsp_id in range(1, GSP_TOTAL)]
+            gsp_ids = [int(gsp_id) for gsp_id in range(1, GSP_TOTAL)]
 
         make_fake_gsp_yields(gsp_ids=gsp_ids, session=session)
 
@@ -315,7 +315,7 @@ def get_truths_for_a_specific_gsp_old_route(
     """Redirects old API route to new route /v0/solar/GB/gsp/{gsp_id}/pvlive"""
 
     if is_fake:
-        make_fake_gsp_yields(gsp_ids=List[gsp_id], session=session)
+        make_fake_gsp_yields(gsp_ids=[gsp_id], session=session)
 
     return get_truths_for_a_specific_gsp(
         request=request,
