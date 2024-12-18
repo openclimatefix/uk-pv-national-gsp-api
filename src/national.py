@@ -190,7 +190,6 @@ def get_national_forecast(
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_national_pvlive(
     request: Request,
-    gsp_id: int = 0,
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
@@ -215,10 +214,10 @@ def get_national_pvlive(
     logger.info(f"Get national PV Live estimates values " f"for regime {regime} for  {user}")
 
     if is_fake:
-        make_fake_gsp_yields(gsp_ids=[gsp_id], session=session)
+        make_fake_gsp_yields(gsp_ids=[0], session=session)
 
     return get_truth_values_for_a_specific_gsp_from_database(
-        session=session, gsp_id=gsp_id, regime=regime
+        session=session, gsp_id=0, regime=regime
     )
 
 
