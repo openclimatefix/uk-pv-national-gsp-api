@@ -91,7 +91,7 @@ def get_all_available_forecasts(
     if isinstance(gsp_ids, str):
         gsp_ids = [int(gsp_id) for gsp_id in gsp_ids.split(",")]
 
-    if is_fake:
+    if is_fake():
         if gsp_ids is None:
             gsp_ids = [int(gsp_id) for gsp_id in range(1, GSP_TOTAL)]
 
@@ -152,7 +152,7 @@ def get_forecasts_for_a_specific_gsp_old_route(
 ) -> Union[Forecast, List[ForecastValue]]:
     """Redirects old API route to new route /v0/solar/GB/gsp/{gsp_id}/forecast"""
 
-    if is_fake:
+    if is_fake():
         make_fake_forecast(gsp_id=gsp_id, session=session)
 
     return get_forecasts_for_a_specific_gsp(
@@ -203,7 +203,7 @@ def get_forecasts_for_a_specific_gsp(
     - **creation_utc_limit**: optional, only return forecasts made before this datetime.
     returns the latest forecast made 60 minutes before the target time)
     """
-    if is_fake:
+    if is_fake():
         make_fake_forecast(gsp_id=gsp_id, session=session)
 
     logger.info(f"Get forecasts for gsp id {gsp_id} forecast of forecast with only values.")
@@ -275,7 +275,7 @@ def get_truths_for_all_gsps(
     if isinstance(gsp_ids, str):
         gsp_ids = [int(gsp_id) for gsp_id in gsp_ids.split(",")]
 
-    if is_fake:
+    if is_fake():
         if gsp_ids is None:
             gsp_ids = [int(gsp_id) for gsp_id in range(1, GSP_TOTAL)]
 
@@ -314,7 +314,7 @@ def get_truths_for_a_specific_gsp_old_route(
 ) -> List[GSPYield]:
     """Redirects old API route to new route /v0/solar/GB/gsp/{gsp_id}/pvlive"""
 
-    if is_fake:
+    if is_fake():
         make_fake_gsp_yields(gsp_ids=[gsp_id], session=session)
 
     return get_truths_for_a_specific_gsp(
@@ -362,7 +362,7 @@ def get_truths_for_a_specific_gsp(
     If not set, defaults to N_HISTORY_DAYS env var, which if not set defaults to yesterday.
     """
 
-    if is_fake:
+    if is_fake():
         make_fake_forecast(gsp_id=gsp_id, session=session)
 
     logger.info(

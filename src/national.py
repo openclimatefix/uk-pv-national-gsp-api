@@ -213,7 +213,7 @@ def get_national_pvlive(
     """
     logger.info(f"Get national PV Live estimates values " f"for regime {regime} for  {user}")
 
-    if is_fake:
+    if is_fake():
         make_fake_gsp_yields(gsp_ids=[0], session=session)
 
     return get_truth_values_for_a_specific_gsp_from_database(
