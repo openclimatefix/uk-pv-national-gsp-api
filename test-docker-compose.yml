@@ -21,6 +21,8 @@ services:
       - DB_URL_PV=postgresql://postgres:postgres@postgres_db:5432/postgres
       - GIT_PYTHON_REFRESH=quiet
       - LOG_LEVEL=DEBUG
+      - CACHE_TIME_SECONDS=0
+      - DELETE_CACHE_TIME_SECONDS=0
     command: >
       bash -c "pytest --cov=./src
       && coverage report -m
