@@ -37,6 +37,8 @@ def remove_old_cache(
             logger.debug(f"Removing {key} from cache, ({value})")
             keys_to_remove.append(key)
 
+    logger.debug(f"Removing {len(keys_to_remove)} keys from cache")
+
     for key in keys_to_remove:
         try:
             last_updated.pop(key)
@@ -129,7 +131,7 @@ def cache_response(func):
                 return response[route_variables]
 
         # use cache
-        logger.debug("Using cache route")
+        logger.debug(f"Using cache route, cache made at {last_updated[route_variables]}")
         return response[route_variables]
 
     return wrapper
