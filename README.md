@@ -88,6 +88,7 @@ Deployment of this service is now done through terraform cloud.
 - `FORECAST_ERROR_HOURS` - using route `/v0/system/GBstatus/check_last_forecast_run` we can check if a forecast has
         been made in the last `FORECAST_ERROR_HOURS` hours
 - `ADJUST_MW_LIMIT` - the maximum the api is allowed to adjust the national forecast by
+- `FAKE` - This allows fake data to be used, rather than connecting to a database
 
 ## Routes to SQL tables
 
