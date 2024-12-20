@@ -12,7 +12,6 @@ from nowcasting_datamodel.save.update import update_all_forecast_latest
 
 from database import get_session
 from main import app
-from national import is_fake
 from pydantic_models import NationalForecast, NationalForecastValue
 
 
@@ -257,39 +256,3 @@ def test_read_truth_national_gsp(db_session, api_client):
     r_json = response.json()
     assert len(r_json) == 3
     _ = [GSPYield(**gsp_yield) for gsp_yield in r_json]
-
-
-def test_is_fake_national_all_available_forecasts(monkeypatch, api_client):
-    """Test FAKE environment for all GSPs are populating
-    with fake data.
-    """
-
-    monkeypatch.setenv("FAKE", "1")
-    assert is_fake() == 1
-    # Connect to DB endpoint
-    response = api_client.get("/v0/solar/GB/national/forecast")
-    assert response.status_code == 200
-
-    national_forecast_values = [NationalForecastValue(**f) for f in response.json()]
-    assert national_forecast_values is not None
-
-    # Disable is_fake environment
-    monkeypatch.setenv("FAKE", "0")
-
-
-def test_is_fake_national_get_truths_for_all_gsps(monkeypatch, api_client):
-    """Test FAKE environment for all GSPs for yesterday and today
-    are populating with fake data.
-    """
-
-    monkeypatch.setenv("FAKE", "1")
-    assert is_fake() == 1
-    # Connect to DB endpoint
-    response = api_client.get("/v0/solar/GB/national/pvlive/")
-    assert response.status_code == 200
-
-    national_forecast_values = [NationalForecastValue(**f) for f in response.json()]
-    assert national_forecast_values is not None
-
-    # Disable is_fake environment
-    monkeypatch.setenv("FAKE", "0")
