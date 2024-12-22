@@ -37,6 +37,7 @@ def remove_old_cache(
             logger.debug(f"Removing {key} from cache, ({value})")
             keys_to_remove.append(key)
 
+    del last_updated_copy
     logger.debug(f"Removing {len(keys_to_remove)} keys from cache")
 
     for key in keys_to_remove:

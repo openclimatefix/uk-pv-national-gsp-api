@@ -1,5 +1,6 @@
 """ Main FastAPI app """
 
+import logging
 import os
 import time
 from datetime import timedelta
@@ -21,6 +22,8 @@ from system import router as system_router
 from utils import limiter, traces_sampler
 
 # flake8: noqa E501
+
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 
 structlog.configure(
     processors=[
@@ -45,7 +48,7 @@ logger = structlog.stdlib.get_logger()
 folder = os.path.dirname(os.path.abspath(__file__))
 
 title = "Quartz Solar API"
-version = "1.5.60"
+version = "1.5.61"
 
 sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN"),
