@@ -64,7 +64,7 @@ class BaseDBConnection(abc.ABC):
         """
         db_url = os.getenv("DB_URL")
         if db_url and db_url.find("postgresql") != -1:
-            return DatabaseConnection(url=db_url)
+            return DatabaseConnection(url=db_url, echo=False)
         else:
             return DummyDBConnection()
 

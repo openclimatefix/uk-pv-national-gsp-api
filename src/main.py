@@ -4,6 +4,7 @@ import os
 import time
 from datetime import timedelta
 
+import logging
 import sentry_sdk
 import structlog
 from fastapi import FastAPI, Request
@@ -21,6 +22,8 @@ from system import router as system_router
 from utils import limiter, traces_sampler
 
 # flake8: noqa E501
+
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 
 structlog.configure(
     processors=[
