@@ -1,10 +1,10 @@
 """ Main FastAPI app """
 
+import logging
 import os
 import time
 from datetime import timedelta
 
-import logging
 import sentry_sdk
 import structlog
 from fastapi import FastAPI, Request
