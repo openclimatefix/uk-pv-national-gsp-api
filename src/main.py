@@ -1,5 +1,6 @@
 """ Main FastAPI app """
 
+import logging
 import os
 import time
 from datetime import timedelta
@@ -21,6 +22,8 @@ from system import router as system_router
 from utils import limiter, traces_sampler
 
 # flake8: noqa E501
+
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 
 structlog.configure(
     processors=[
