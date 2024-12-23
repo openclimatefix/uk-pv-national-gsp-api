@@ -23,9 +23,8 @@ from utils import limiter, traces_sampler
 
 # flake8: noqa E501
 
-logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
-
 structlog.configure(
+    wrapper_class=structlog.make_filtering_bound_logger(logging.INFO),
     processors=[
         structlog.processors.EventRenamer("message", replace_by="_event"),
         structlog.stdlib.PositionalArgumentsFormatter(),
