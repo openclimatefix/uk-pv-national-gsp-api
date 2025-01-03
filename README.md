@@ -34,7 +34,7 @@ You will need to set the following environmental variables:
 - `ADJUST_MW_LIMIT` - the maximum the api is allowed to adjust the national forecast by
 - `FAKE` - This allows fake data to be used, rather than connecting to a database
 
-Note you will need a database set up at `DB_URL`. This show following the datamodel in [nowcasting_datamodel](https://github.com/openclimatefix/nowcasting_datamodel)
+Note you will need a database set up at `DB_URL`. This should use the datamodel in [nowcasting_datamodel](https://github.com/openclimatefix/nowcasting_datamodel)
 
 ## Documentation
 
