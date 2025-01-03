@@ -1,87 +1,31 @@
-# Nowcasting API
+# UK PV National and GSP API
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-15-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-[![codecov](https://codecov.io/gh/openclimatefix/nowcasting_api/branch/main/graph/badge.svg?token=W7L3X72M1O)](https://codecov.io/gh/openclimatefix/nowcasting_api)
+[![tags badge](https://img.shields.io/github/v/tag/openclimatefix/uk-pv-national-gsp-api?include_prereleases&sort=semver&color=FFAC5F)](https://github.com/openclimatefix/uk-pv-national-gsp-api/tags)
+[![ease of contribution: medium](https://img.shields.io/badge/ease%20of%20contribution:%20medium-f4900c)](https://github.com/openclimatefix#how-easy-is-it-to-get-involved)
+[![Test Docker image](https://github.com/openclimatefix/uk-pv-national-gsp-api/actions/workflows/test-docker.yaml/badge.svg)](https://github.com/openclimatefix/uk-pv-national-gsp-api/actions/workflows/test-docker.yaml)
 
-
-API for hosting nowcasting solar predictions.
-Will just return 'dummy' numbers until about mid-2022!
+API for hosting nowcasting solar predictions. This is for GSP and National forecasts in the UK.
 
 We use [FastAPI](https://fastapi.tiangolo.com/).
 
-# Documentation
+## Installation
 
-Documentation can be viewed at `/docs` or `/swagger`. This is automatically generated from the code.
+Pull the docker image from
 
-# Setup and Run
-
-This can be done it two different ways: With Python or with Docker.
-
-## Python
-
-### Create a virtual env
-
-```bash
-python3 -m venv ./venv
-source venv/bin/activate
+```
+docker pull openclimatefix/nowcasting_api:latest
 ```
 
-### Install Requirements and Run
-
-```bash
-pip install -r requirements.txt
-cd src && uvicorn main:app --reload
-```
-
-You may need to run the following additional installation `pip install git+https://github.com/SheffieldSolar/PV_Live-API#pvlive_api` for `pvlive-api`, as in the Dockerfile.
-
-> If you don't have a local database set up, you can leave the `DB_URL` string empty (default not set) and the API will still run and return routes such as `http://localhost:8000/` for API info and any other non-DB routes with DB dependencies e.g. session/caching commented out.
->
-> You will not be able to access any routes using the DB client / database, but for local development of new routes this should work for now, until we reinstate dynamic fake data as a dependable dev tool.
-
-## [ Docker ]
-### 🛑 Currently non-functional, needs updating to migrate database to match datamodel
-
-1. Make sure docker is installed on your system.
-2. Use `docker-compose up`
-   in the main directory to start up the application.
-3. You will now be able to access it on `http://localhost:80`
-
-### Tests
-
-TO run tests use the following command
-```bash
-docker stop $(docker ps -a -q)
-docker-compose -f test-docker-compose.yml build
-docker-compose -f test-docker-compose.yml run api
-```
-
-# Development
-
-We use `pre-commit` to manage various pre-commit hooks. All hooks are also run
-as Actions when code is pushed to GitHub.
-
-You can run the formatters and linters locally. To do that:
-
-1. [Install pre-commit](https://pre-commit.com/#install)
-2. Check the install worked via `pre-commit --v`
-3. Install the git hooks script via `pre-commit install`
-
-# Deployment
-
-Deployment of this service is now done through terraform cloud.
-
-# Environmental Variables
-
+You will need to set the following environmental variables:
 - `AUTH0_DOMAIN` - The Auth0 domain which can be collected from the Applications/Applications tab. It should be something like
 'XXXXXXX.eu.auth0.com'
 - `AUTH0_API_AUDIENCE` - THE Auth0 api audience, this can be collected from the Applications/APIs tab. It should be something like
 `https://XXXXXXXXXX.eu.auth0.com/api/v2/`
 - `DB_URL`- The Forecast database URL used to get GSP forecast data
-- `DB_URL_PV` - The PV database URL, used to get PV data
 - `ORIGINS` - Endpoints that are valid CORS origins. See [FastAPI documentation](https://fastapi.tiangolo.com/tutorial/cors/).
 - `N_HISTORY_DAYS` - Default is just to load data from today and yesterday,
     but we can set this to 5, if we want the api always to return 5 days of data
@@ -90,9 +34,57 @@ Deployment of this service is now done through terraform cloud.
 - `ADJUST_MW_LIMIT` - the maximum the api is allowed to adjust the national forecast by
 - `FAKE` - This allows fake data to be used, rather than connecting to a database
 
-## Routes to SQL tables
+Note you will need a database set up at `DB_URL`. This should use the datamodel in [nowcasting_datamodel](https://github.com/openclimatefix/nowcasting_datamodel)
 
-### National
+## Documentation
+
+Live documentation can be viewed at `https://api.quartz.solar/docs` or `https://api.quartz.solar/swagger`.
+This is automatically generated from the code.
+
+## Development
+
+This can be done it two different ways: With Python or with Docker.
+
+### Python
+
+Create a virtual env
+
+```bash
+python3 -m venv ./venv
+source venv/bin/activate
+```
+
+Install Requirements and Run
+
+```bash
+pip install -r requirements.txt
+cd src && uvicorn main:app --reload
+```
+
+Warning:
+If you don't have a local database set up, you can leave the `DB_URL` string empty (default not set)
+and set `FAKE=True` and the API will return fake data. This is a work in progress,
+so some routes might be need to be updated
+
+### Docker
+ 🛑 Currently non-functional, needs updating to migrate database to match datamodel
+
+1. Make sure docker is installed on your system.
+2. Use `docker-compose up`
+   in the main directory to start up the application.
+3. You will now be able to access it on `http://localhost:80`
+
+### Running the test suite
+
+To run tests use the following command
+```bash
+docker stop $(docker ps -a -q)
+docker-compose -f test-docker-compose.yml build
+docker-compose -f test-docker-compose.yml run api
+```
+
+### Routes to SQL tables
+#### National
 ```mermaid
   graph TD;
       N1(national/forecast) --> Q1;
@@ -107,7 +99,7 @@ Deployment of this service is now done through terraform cloud.
       NP2[GSPYield];
 ```
 
-### GSP
+#### GSP
 ```mermaid
   graph TD;
       G1(gsp/forecast/all);
@@ -125,7 +117,7 @@ Deployment of this service is now done through terraform cloud.
       GP4[GSPYield];
 ```
 
-### Extras
+#### Extras
 
 ```mermaid
   graph TD;
@@ -138,11 +130,23 @@ Deployment of this service is now done through terraform cloud.
 ```
 
 
+## FAQ
+
+TODO
 
 
+## Contributing and community
+
+[![issues badge](https://img.shields.io/github/issues/openclimatefix/uk-pv-national-gsp-api?color=FFAC5F)](https://github.com/openclimatefix/ocf-template/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc)
+
+- PR's are welcome! See the [Organisation Profile](https://github.com/openclimatefix) for details on contributing
+- Find out about our other projects in the [here](https://github.com/openclimatefix/.github/tree/main/profile)
+- Check out the [OCF blog](https://openclimatefix.org/blog) for updates
+- Follow OCF on [LinkedIn](https://uk.linkedin.com/company/open-climate-fix)
 
 
-# Contributors ✨
+## Contributors
+
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
@@ -180,4 +184,8 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+---
+
+*Part of the [Open Climate Fix](https://github.com/orgs/openclimatefix/people) community.*
+
+<img src="https://cdn.prod.website-files.com/62d92550f6774db58d441cca/6324a2038936ecda71599a8b_OCF_Logo_black_trans.png" style="background-color:white;" />
