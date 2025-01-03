@@ -39,7 +39,7 @@ def db_connection():
     #    Base_PV.metadata.drop_all(connection.engine)
 
     url = os.environ["DB_URL"]
-    connection = DatabaseConnection(url=url)
+    connection = DatabaseConnection(url=url, echo=False)
     connection.create_all()
     Base_PV.metadata.create_all(connection.engine)
 

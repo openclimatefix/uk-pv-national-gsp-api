@@ -14,7 +14,6 @@ services:
     image: openclimatefix/nowcasting_datamodel
     environment:
       - DB_URL=postgresql://postgres:postgres@postgres:5432/postgres
-      - DB_URL_PV=postgresql://postgres:postgres@postgres:5432/postgres
     depends_on:
       - "postgres"
 
@@ -31,7 +30,6 @@ services:
       - 8000:8000
     environment:
       - DB_URL=postgresql://postgres:postgres@postgres:5432/postgres
-      - DB_URL_PV=postgresql://postgres:postgres@postgres:5432/postgres
       - AUTH0_DOMAIN=nowcasting-dev.eu.auth0.com
       - AUTH0_API_AUDIENCE=https://nowcasting-api-eu-auth0.com/
     volumes:
