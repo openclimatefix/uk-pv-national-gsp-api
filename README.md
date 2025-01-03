@@ -3,12 +3,12 @@
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-15-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
- 
+
 [![tags badge](https://img.shields.io/github/v/tag/openclimatefix/uk-pv-national-gsp-api?include_prereleases&sort=semver&color=FFAC5F)](https://github.com/openclimatefix/uk-pv-national-gsp-api/tags)
 [![ease of contribution: medium](https://img.shields.io/badge/ease%20of%20contribution:%20medium-f4900c)](https://github.com/openclimatefix#how-easy-is-it-to-get-involved)
 [![Test Docker image](https://github.com/openclimatefix/uk-pv-national-gsp-api/actions/workflows/test-docker.yaml/badge.svg)](https://github.com/openclimatefix/uk-pv-national-gsp-api/actions/workflows/test-docker.yaml)
 
-API for hosting nowcasting solar predictions. This is for GSP and National forecasts in the UK. 
+API for hosting nowcasting solar predictions. This is for GSP and National forecasts in the UK.
 
 We use [FastAPI](https://fastapi.tiangolo.com/).
 
@@ -38,7 +38,7 @@ Note you will need a database set up at `DB_URL`. This show following the datamo
 
 ## Documentation
 
-Live documentation can be viewed at `https://api.quartz.solar/docs` or `https://api.quartz.solar/swagger`. 
+Live documentation can be viewed at `https://api.quartz.solar/docs` or `https://api.quartz.solar/swagger`.
 This is automatically generated from the code.
 
 ## Development
@@ -61,9 +61,9 @@ pip install -r requirements.txt
 cd src && uvicorn main:app --reload
 ```
 
-Warning: 
-If you don't have a local database set up, you can leave the `DB_URL` string empty (default not set) 
-and set `FAKE=True` and the API will return fake data. This is a work in progress, 
+Warning:
+If you don't have a local database set up, you can leave the `DB_URL` string empty (default not set)
+and set `FAKE=True` and the API will return fake data. This is a work in progress,
 so some routes might be need to be updated
 
 ### Docker
