@@ -99,7 +99,7 @@ def cache_response(func):
         # make route_variables into a string\
         # TODO add url
         # TODO sort route variables alphabetically
-        url = request.url
+        # url = request.url
         route_variables = json.dumps(route_variables)
 
         # use case
@@ -128,9 +128,9 @@ def cache_response(func):
                     if route_variables in response:
                         return response[route_variables]
                     else:
-                        logger.warning(f"Process finished running but response not "
-                                       f"in cache. Setting this route as not running, "
-                                       f"and continuing")
+                        logger.warning("Process finished running but response not "
+                                       "in cache. Setting this route as not running, "
+                                       "and continuing")
                         currently_running[route_variables] = False
                         break
 
