@@ -36,7 +36,7 @@ You will need to set the following environmental variables:
 - `QUERY_WAIT_SECONDS` - The number of seconds to wait for an on going query
 - `CACHE_TIME_SECONDS` - The time in seconds to cache the data is used for
 - `DELETE_CACHE_TIME_SECONDS` - The time in seconds to after which the cache is delete
-- `LOGLEVEL` - The log level for the application. 
+- `LOGLEVEL` - The log level for the application.
 
 Note you will need a database set up at `DB_URL`. This should use the datamodel in [nowcasting_datamodel](https://github.com/openclimatefix/nowcasting_datamodel)
 
