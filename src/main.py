@@ -25,7 +25,8 @@ from utils import limiter, traces_sampler
 
 structlog.configure(
     wrapper_class=structlog.make_filtering_bound_logger(
-        getattr(logging, os.getenv('LOGLEVEL','INFO'))),
+        getattr(logging, os.getenv("LOGLEVEL", "INFO"))
+    ),
     processors=[
         structlog.processors.EventRenamer("message", replace_by="_event"),
         structlog.stdlib.PositionalArgumentsFormatter(),
@@ -48,7 +49,7 @@ logger = structlog.stdlib.get_logger()
 folder = os.path.dirname(os.path.abspath(__file__))
 
 title = "Quartz Solar API"
-version = "1.5.66"
+version = "1.5.67"
 
 sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN"),
