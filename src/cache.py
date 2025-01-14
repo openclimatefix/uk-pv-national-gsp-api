@@ -125,9 +125,11 @@ def cache_response(func):
                     if route_variables in response:
                         return response[route_variables]
                     else:
-                        logger.warning(f"Waited {QUERY_WAIT_SECONDS} seconds but response not "
-                                       f"in cache. Setting this route as not running, "
-                                       f"and continuing")
+                        logger.warning(
+                            f"Waited {QUERY_WAIT_SECONDS} seconds but response not "
+                            f"in cache. Setting this route as not running, "
+                            f"and continuing"
+                        )
                         currently_running[route_variables] = False
                         break
 

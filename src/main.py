@@ -25,7 +25,8 @@ from utils import limiter, traces_sampler
 
 structlog.configure(
     wrapper_class=structlog.make_filtering_bound_logger(
-        getattr(logging, os.getenv('LOGLEVEL','INFO'))),
+        getattr(logging, os.getenv("LOGLEVEL", "INFO"))
+    ),
     processors=[
         structlog.processors.EventRenamer("message", replace_by="_event"),
         structlog.stdlib.PositionalArgumentsFormatter(),
