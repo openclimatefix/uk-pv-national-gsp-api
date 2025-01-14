@@ -17,7 +17,7 @@ cache_time_seconds = int(os.getenv("CACHE_TIME_SECONDS", CACHE_TIME_SECONDS))
 DELETE_CACHE_TIME_SECONDS = 240
 delete_cache_time_seconds = int(os.getenv("DELETE_CACHE_TIME_SECONDS", DELETE_CACHE_TIME_SECONDS))
 
-N_ATTEMPTS = int(os.getenv("N_ATTEMPTS", 10))
+QUERY_WAIT_SECONDS = int(os.getenv("QUERY_WAIT_SECONDS", 10))
 
 
 def remove_old_cache(
@@ -114,7 +114,7 @@ def cache_response(func):
         if currently_running.get(route_variables, False):
             logger.debug("Route is being called somewhere else, so waiting for it to finish")
             attempt = 0
-            while attempt < N_ATTEMPTS:
+            while attempt < QUERY_WAIT_SECONDS:
                 logger.debug(f"waiting for route to finish, {attempt} seconds elapsed")
                 time.sleep(1)
                 attempt += 1
@@ -164,7 +164,7 @@ def cache_response(func):
             logger.debug("not using cache as response is empty")
             attempt = 0
             # wait until response has been cached
-            while attempt < N_ATTEMPTS:
+            while attempt < QUERY_WAIT_SECONDS:
                 logger.debug(f"waiting for response to be cached, {attempt} seconds elapsed")
                 time.sleep(1)
                 attempt += 1
@@ -173,7 +173,7 @@ def cache_response(func):
                         f"response cached after {attempt} seconds, returning cached response"
                     )
                     break
-            if attempt >= N_ATTEMPTS:
+            if attempt >= QUERY_WAIT_SECONDS:
                 # if response is not in cache after 10 seconds, re-run
                 logger.debug("response not cached after 10 seconds, re-running")
 

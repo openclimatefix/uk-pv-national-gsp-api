@@ -33,7 +33,7 @@ You will need to set the following environmental variables:
         been made in the last `FORECAST_ERROR_HOURS` hours
 - `ADJUST_MW_LIMIT` - the maximum the api is allowed to adjust the national forecast by
 - `FAKE` - This allows fake data to be used, rather than connecting to a database
-- `N_ATTEMPTS` - The number of seconds to wait for an on going query
+- `QUERY_WAIT_SECONDS` - The number of seconds to wait for an on going query
 - `CACHE_TIME_SECONDS` - The time in seconds to cache the data is used for
 - `DELETE_CACHE_TIME_SECONDS` - The time in seconds to after which the cache is delete
 
