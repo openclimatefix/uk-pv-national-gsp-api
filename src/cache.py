@@ -31,7 +31,7 @@ def remove_old_cache(
     :param remove_cache_time_seconds: the amount of time, after which the cache should be removed
     """
     now = datetime.now(tz=timezone.utc)
-    logger.info("Removing old cache entries")
+    logger.info("Checking and removing old cache entries")
     keys_to_remove = []
     last_updated_copy = last_updated.copy()
     for key, value in last_updated_copy.items():
