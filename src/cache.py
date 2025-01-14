@@ -17,7 +17,7 @@ cache_time_seconds = int(os.getenv("CACHE_TIME_SECONDS", CACHE_TIME_SECONDS))
 DELETE_CACHE_TIME_SECONDS = 240
 delete_cache_time_seconds = int(os.getenv("DELETE_CACHE_TIME_SECONDS", DELETE_CACHE_TIME_SECONDS))
 
-QUERY_WAIT_SECONDS = int(os.getenv("QUERY_WAIT_SECONDS", 10))
+QUERY_WAIT_SECONDS = int(os.getenv("QUERY_WAIT_SECONDS", 30))
 
 
 def remove_old_cache(
@@ -112,7 +112,7 @@ def cache_response(func):
 
         # 1.0
         if currently_running.get(route_variables, False):
-            logger.debug("Route is being called somewhere else, so waiting for it to finish")
+            logger.debug("1.0 Route is being called somewhere else, so waiting for it to finish")
             attempt = 0
             while attempt < QUERY_WAIT_SECONDS:
                 logger.debug(f"waiting for route to finish, {attempt} seconds elapsed")
@@ -125,14 +125,19 @@ def cache_response(func):
                     if route_variables in response:
                         return response[route_variables]
                     else:
-                        logger.warning("route finished, but response not in cache")
+                        logger.warning(
+                            f"Waited {QUERY_WAIT_SECONDS} seconds but response not "
+                            f"in cache. Setting this route as not running, "
+                            f"and continuing"
+                        )
+                        currently_running[route_variables] = False
                         break
 
         # 1.1 check if its been called before and not currently running
         if (route_variables not in last_updated) and (
             not currently_running.get(route_variables, False)
         ):
-            logger.debug("First time this is route run, and not running now")
+            logger.debug("1.1 First time this is route run, and not running now")
 
             # run the route
             currently_running[route_variables] = True
@@ -161,7 +166,7 @@ def cache_response(func):
 
         # 1.3. re-run if response is not cached for some reason or is empty
         if route_variables not in response or response[route_variables] is None:
-            logger.debug("not using cache as response is empty")
+            logger.debug("1.3 not using cache as response is empty")
             attempt = 0
             # wait until response has been cached
             while attempt < QUERY_WAIT_SECONDS:
