@@ -99,7 +99,6 @@ def cache_response(func):
         # make route_variables into a string
         route_variables = json.dumps(route_variables)
 
-
         # use case
         # A. First time we call this the route -> call the route (1.1)
         # B. Second time we call the route, but its running at the moment. Wait for it to finish. (1.0)
@@ -128,7 +127,9 @@ def cache_response(func):
                         break
 
         # 1.1 check if its been called before and not currently running
-        if (route_variables not in last_updated) and (not currently_running.get(route_variables, False)):
+        if (route_variables not in last_updated) and (
+            not currently_running.get(route_variables, False)
+        ):
             logger.debug("First time this is route run, and not running now")
 
             # run the route
@@ -141,9 +142,12 @@ def cache_response(func):
 
         # 1.2 rerun if cache time out is up and not currently running
         now = datetime.now(tz=timezone.utc)
-        if now - timedelta(seconds=cache_time_seconds) > last_updated[route_variables] \
-                and (not currently_running.get(route_variables, False)):
-            logger.debug(f"Not using cache as longer than {cache_time_seconds} seconds, and not running now")
+        if now - timedelta(seconds=cache_time_seconds) > last_updated[route_variables] and (
+            not currently_running.get(route_variables, False)
+        ):
+            logger.debug(
+                f"Not using cache as longer than {cache_time_seconds} seconds, and not running now"
+            )
 
             # run the route
             currently_running[route_variables] = True
