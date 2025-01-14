@@ -128,9 +128,11 @@ def cache_response(func):
                     if route_variables in response:
                         return response[route_variables]
                     else:
-                        logger.warning("Process finished running but response not "
-                                       "in cache. Setting this route as not running, "
-                                       "and continuing")
+                        logger.warning(
+                            "Process finished running but response not "
+                            "in cache. Setting this route as not running, "
+                            "and continuing"
+                        )
                         currently_running[route_variables] = False
                         break
 
