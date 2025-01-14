@@ -174,8 +174,8 @@ def cache_response(func):
                     )
                     break
             if attempt >= QUERY_WAIT_SECONDS:
-                # if response is not in cache after 10 seconds, re-run
-                logger.debug("response not cached after 10 seconds, re-running")
+                # if response is not in cache after QUERY_WAIT_SECONDS seconds, re-run
+                logger.debug(f"response not cached after {QUERY_WAIT_SECONDS} seconds, re-running")
 
                 # run the route
                 currently_running[route_variables] = True
