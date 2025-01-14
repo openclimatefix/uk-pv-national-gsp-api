@@ -96,7 +96,10 @@ def cache_response(func):
 
         last_updated, response = remove_old_cache(last_updated, response)
 
-        # make route_variables into a string
+        # make route_variables into a string\
+        # TODO add url
+        # TODO sort route variables alphabetically
+        # url = request.url
         route_variables = json.dumps(route_variables)
 
         # use case
@@ -126,12 +129,19 @@ def cache_response(func):
                         return response[route_variables]
                     else:
                         logger.warning(
-                            f"Waited {QUERY_WAIT_SECONDS} seconds but response not "
-                            f"in cache. Setting this route as not running, "
-                            f"and continuing"
+                            "Process finished running but response not "
+                            "in cache. Setting this route as not running, "
+                            "and continuing"
                         )
                         currently_running[route_variables] = False
                         break
+
+            logger.warning(
+                f"Waited {QUERY_WAIT_SECONDS} seconds but response not "
+                f"in cache. Setting this route as not running, "
+                f"and continuing"
+            )
+            currently_running[route_variables] = False
 
         # 1.1 check if its been called before and not currently running
         if (route_variables not in last_updated) and (
@@ -149,7 +159,9 @@ def cache_response(func):
 
         # 1.2 rerun if cache time out is up and not currently running
         now = datetime.now(tz=timezone.utc)
-        if now - timedelta(seconds=cache_time_seconds) > last_updated[route_variables] and (
+        if route_variables not in last_updated:
+            pass
+        elif now - timedelta(seconds=cache_time_seconds) > last_updated.get(route_variables) and (
             not currently_running.get(route_variables, False)
         ):
             logger.debug(

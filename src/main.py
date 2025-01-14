@@ -202,7 +202,7 @@ async def add_process_time_header(request: Request, call_next):
     start_time = time.time()
     response = await call_next(request)
     process_time = str(time.time() - start_time)
-    logger.debug(f"Process Time {process_time} {request.url}")
+    logger.info(f"Process Time {process_time} {request.url}")
     response.headers["X-Process-Time"] = process_time
 
     return response
