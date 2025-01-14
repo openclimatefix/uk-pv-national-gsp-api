@@ -101,12 +101,14 @@ def cache_response(func):
 
         # use case
         # A. First time we call this the route -> call the route (1.1)
-        # B. Second time we call the route, but its running at the moment. Wait for it to finish. (1.0)
+        # B. Second time we call the route, but its running at the moment.
+        #   Wait for it to finish. (1.0)
         # C. The cached result it old, and its not running, --> call the route (1.2)
         # D. The cached result is empty, and its running, --> (1.0)
         # E. The cached result is up to date, --> use the cache (1.4)
         # F. It is current being run, wait a bit, then try to use those results (1.0)
-        # G. If the cache results is None, lets wait a few seconds, then try to use the cache (1.3)
+        # G. If the cache results is None, lets wait a few seconds,
+        #   then try to use the cache (1.3)
 
         # 1.0
         if currently_running.get(route_variables, False):
