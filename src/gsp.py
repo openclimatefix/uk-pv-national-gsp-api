@@ -90,6 +90,8 @@ def get_all_available_forecasts(
 
     if isinstance(gsp_ids, str):
         gsp_ids = [int(gsp_id) for gsp_id in gsp_ids.split(",")]
+        if gsp_ids == "":
+            gsp_ids = None
 
     if is_fake():
         if gsp_ids is None:
