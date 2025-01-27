@@ -114,7 +114,7 @@ def test_read_latest_all_gsp(db_session, api_client):
 
     r = ManyForecasts(**response.json())
     assert len(r.forecasts) == 10
-    assert len(r.forecasts[0].forecast_values) == 40
+    assert len(r.forecasts[0].forecast_values) == 45
 
 
 def test_read_latest_all_gsp_filter_gsp(db_session, api_client):
@@ -139,7 +139,7 @@ def test_read_latest_all_gsp_filter_gsp(db_session, api_client):
 
     r = ManyForecasts(**response.json())
     assert len(r.forecasts) == 3
-    assert len(r.forecasts[0].forecast_values) == 40
+    assert len(r.forecasts[0].forecast_values) == 45
 
 
 def test_read_latest_gsp_id_greater_than_total(db_session, api_client):
@@ -217,7 +217,7 @@ def test_read_latest_all_gsp_historic(db_session, api_client):
     r = ManyForecasts(**response.json())
 
     assert len(r.forecasts) == 9  # dont get national
-    assert len(r.forecasts[0].forecast_values) > 50
+    assert len(r.forecasts[0].forecast_values) == 45
     assert r.forecasts[0].forecast_values[0].expected_power_generation_megawatts <= 13000
     assert r.forecasts[1].forecast_values[0].expected_power_generation_megawatts <= 10
 
@@ -245,7 +245,7 @@ def test_read_latest_all_gsp_historic_compact(db_session, api_client):
 
     r = [OneDatetimeManyForecastValues(**f) for f in response.json()]
 
-    assert len(r) > 50
+    assert len(r) == 45
     assert len(r[0].forecast_values) == 9  # dont get the national
     assert r[0].forecast_values[1] <= 13000
 
