@@ -1,8 +1,8 @@
 """Get GSP boundary data from eso """
 
 import os
-from typing import List, Optional, Union
 from datetime import datetime, timezone
+from typing import List, Optional, Union
 
 import structlog
 from dotenv import load_dotenv
