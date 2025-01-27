@@ -2,6 +2,7 @@
 
 import os
 from typing import List, Optional, Union
+from datetime import datetime, timezone
 
 import structlog
 from dotenv import load_dotenv
@@ -102,6 +103,12 @@ def get_all_available_forecasts(
     start_datetime_utc = format_datetime(start_datetime_utc)
     end_datetime_utc = format_datetime(end_datetime_utc)
     creation_limit_utc = format_datetime(creation_limit_utc)
+
+    # be default dont get any historic days
+    if start_datetime_utc is None:
+        start_datetime_utc = datetime.now(tz=timezone.utc).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
 
     forecasts = get_forecasts_from_database(
         session=session,
