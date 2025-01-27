@@ -107,7 +107,7 @@ def get_all_available_forecasts(
     # be default dont get any historic days
     if start_datetime_utc is None:
         start_datetime_utc = datetime.now(tz=timezone.utc).replace(
-            hour=0, minute=0, second=0, microsecond=0
+            minute=0, second=0, microsecond=0
         )
 
     forecasts = get_forecasts_from_database(
