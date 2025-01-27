@@ -20,7 +20,7 @@ Pull the docker image from
 docker pull openclimatefix/nowcasting_api:latest
 ```
 
-You will need to set the following environmental variables:
+You will need to set the following environment variables:
 - `AUTH0_DOMAIN` - The Auth0 domain which can be collected from the Applications/Applications tab. It should be something like
 'XXXXXXX.eu.auth0.com'
 - `AUTH0_API_AUDIENCE` - THE Auth0 api audience, this can be collected from the Applications/APIs tab. It should be something like
@@ -39,6 +39,10 @@ You will need to set the following environmental variables:
 - `LOGLEVEL` - The log level for the application.
 
 Note you will need a database set up at `DB_URL`. This should use the datamodel in [nowcasting_datamodel](https://github.com/openclimatefix/nowcasting_datamodel)
+
+There are several optional environment variables:
+- `N_CALLS_PER_HOUR` - API rate limit for most endpoints. Defaults to 3600 (1 per second).
+- `N_SLOW_CALLS_PER_HOUR` - API rate limit for slow endpoints. Defaults to 60 (1 per minute).
 
 ## Documentation
 
