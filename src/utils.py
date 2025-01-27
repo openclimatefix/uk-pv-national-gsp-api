@@ -17,8 +17,10 @@ logger = structlog.stdlib.get_logger()
 
 europe_london_tz = timezone("Europe/London")
 utc = timezone("UTC")
+
 limiter = Limiter(key_func=get_remote_address)
-N_CALLS_PER_HOUR = os.getenv("N_CALLS_PER_HOUR", 60)
+N_CALLS_PER_HOUR = os.getenv("N_CALLS_PER_HOUR", 3600)  # 1 call per second
+N_SLOW_CALLS_PER_HOUR = os.getenv("N_SLOW_CALLS_PER_HOUR", 60)  # 1 call per minute
 
 
 def floor_30_minutes_dt(dt):

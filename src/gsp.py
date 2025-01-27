@@ -28,7 +28,7 @@ from pydantic_models import (
     LocationWithGSPYields,
     OneDatetimeManyForecastValues,
 )
-from utils import N_CALLS_PER_HOUR, format_datetime, limiter
+from utils import N_CALLS_PER_HOUR, N_SLOW_CALLS_PER_HOUR, format_datetime, limiter
 
 GSP_TOTAL = 317
 
@@ -56,7 +56,7 @@ def is_fake():
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
-@limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
+@limiter.limit(f"{N_SLOW_CALLS_PER_HOUR}/hour")
 def get_all_available_forecasts(
     request: Request,
     historic: Optional[bool] = True,
@@ -91,6 +91,8 @@ def get_all_available_forecasts(
 
     if isinstance(gsp_ids, str):
         gsp_ids = [int(gsp_id) for gsp_id in gsp_ids.split(",")]
+        if gsp_ids == "":
+            gsp_ids = None
 
     if is_fake():
         if gsp_ids is None:
