@@ -139,7 +139,7 @@ def test_read_latest_all_gsp_filter_gsp(db_session, api_client):
 
     r = ManyForecasts(**response.json())
     assert len(r.forecasts) == 3
-    assert  16 <= len(r.forecasts[0].forecast_values) <= 17
+    assert 16 <= len(r.forecasts[0].forecast_values) <= 17
 
 
 def test_read_latest_gsp_id_greater_than_total(db_session, api_client):
