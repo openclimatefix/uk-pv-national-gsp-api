@@ -1,7 +1,7 @@
 # UK PV National and GSP API
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-16-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-17-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![tags badge](https://img.shields.io/github/v/tag/openclimatefix/uk-pv-national-gsp-api?include_prereleases&sort=semver&color=FFAC5F)](https://github.com/openclimatefix/uk-pv-national-gsp-api/tags)
@@ -184,6 +184,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/VikramsDataScience"><img src="https://avatars.githubusercontent.com/u/45002417?v=4?s=100" width="100px;" alt="Vikram Pande"/><br /><sub><b>Vikram Pande</b></sub></a><br /><a href="https://github.com/openclimatefix/uk-pv-national-gsp-api/commits?author=VikramsDataScience" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://rpep.dev"><img src="https://avatars.githubusercontent.com/u/8539474?v=4?s=100" width="100px;" alt="Dr Ryan Pepper"/><br /><sub><b>Dr Ryan Pepper</b></sub></a><br /><a href="https://github.com/openclimatefix/uk-pv-national-gsp-api/commits?author=rpep" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/pvprajwal"><img src="https://avatars.githubusercontent.com/u/74557086?v=4?s=100" width="100px;" alt="Parasa V Prajwal"/><br /><sub><b>Parasa V Prajwal</b></sub></a><br /><a href="https://github.com/openclimatefix/uk-pv-national-gsp-api/commits?author=pvprajwal" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
