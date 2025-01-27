@@ -139,6 +139,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "rpep",
+      "name": "Dr Ryan Pepper",
+      "avatar_url": "https://avatars.githubusercontent.com/u/8539474?v=4",
+      "profile": "http://rpep.dev",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
