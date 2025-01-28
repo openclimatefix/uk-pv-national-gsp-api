@@ -62,25 +62,33 @@ python3 -m venv ./venv
 source venv/bin/activate
 ```
 
-Install Requirements and Run
+### Running the API
 
-```bash
-pip install -r requirements.txt
-cd src && uvicorn main:app --reload
-```
-
-Warning:
-If you don't have a local database set up, you can leave the `DB_URL` string empty (default not set)
-and set `FAKE=True` and the API will return fake data. This is a work in progress,
-so some routes might be need to be updated
-
-### Docker
- 🛑 Currently non-functional, needs updating to migrate database to match datamodel
+#### Option 1: Docker
+ 🟢 __Preferred method__
 
 1. Make sure docker is installed on your system.
 2. Use `docker-compose up`
-   in the main directory to start up the application.
-3. You will now be able to access it on `http://localhost:80`
+   in the main directory with the optional `--build` flag to build the image the first time
+   to start up the application. This builds the image, sets up the database, seeds some fake data
+   and starts the API.
+3. You will now be able to access it on `http://localhost:8000`
+4. The API should restart automatically when you make changes to the code, but the fake
+   data currently is static. To seed new fake data, just manually restart the API.
+
+#### Option 2: Running the API with a local database
+
+To set up the API with a local database, you will need to:
+ - start your own local postgres instance on your machine
+ - set `FAKE=1` in the `.env` file
+ - set `DB_URL` to your local postgres instance in the `.env` file
+ - run the following commands to install required packages, create the tables in your local postgres instance, and populate them with fake data:
+
+```bash
+pip install -r requirements.txt
+cd src
+uvicorn main:app --reload
+```
 
 ### Running the test suite
 
