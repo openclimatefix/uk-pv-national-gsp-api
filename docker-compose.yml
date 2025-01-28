@@ -2,6 +2,7 @@ version: "3"
 
 services:
   postgres:
+    platform: linux/amd64
     image: postgres:14.5
     restart: always
     environment:
@@ -10,12 +11,12 @@ services:
     ports:
       - "5432:5432"
 
-  datamodel:
-    image: openclimatefix/nowcasting_datamodel
-    environment:
-      - DB_URL=postgresql://postgres:postgres@postgres:5432/postgres
-    depends_on:
-      - "postgres"
+  #  datamodel:
+  #    image: openclimatefix/nowcasting_datamodel
+  #    environment:
+  #      - DB_URL=postgresql://postgres:postgres@postgres:5432/postgres
+  #    depends_on:
+  #      - "postgres"
 
   api:
     build:
@@ -23,18 +24,19 @@ services:
       dockerfile: Dockerfile
     # image: openclimatefix/nowcasting_api:0.1.7
     container_name: nowcasting_api
-    command: bash -c "sleep 5
+    command: bash -c "sleep 2
       && python script/fake_data.py
-      && uvicorn src.main:app --host 0.0.0.0 --port 8000"
+      && uvicorn src.main:app --reload --host 0.0.0.0 --port 8000"
     ports:
       - 8000:8000
     environment:
       - DB_URL=postgresql://postgres:postgres@postgres:5432/postgres
-      - AUTH0_DOMAIN=nowcasting-dev.eu.auth0.com
-      - AUTH0_API_AUDIENCE=https://nowcasting-api-eu-auth0.com/
+    #      - AUTH0_DOMAIN=nowcasting-dev.eu.auth0.com
+    #      - AUTH0_API_AUDIENCE=https://nowcasting-api-eu-auth0.com/
+    #      - FAKE=1
     volumes:
       - ./src/:/app/src
       - ./script/:/app/script
     depends_on:
       - "postgres"
-      - "datamodel"
+#      - "datamodel"
