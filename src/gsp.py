@@ -106,7 +106,7 @@ def get_all_available_forecasts(
     end_datetime_utc = format_datetime(end_datetime_utc)
     creation_limit_utc = format_datetime(creation_limit_utc)
 
-    # be default dont get any historic days
+    # by default, don't get any data in the past
     if start_datetime_utc is None:
         start_datetime_utc = datetime.now(tz=timezone.utc).replace(
             minute=0, second=0, microsecond=0
