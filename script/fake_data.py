@@ -53,6 +53,7 @@ with connection.get_session() as session:
     make_fake_forecasts(
         gsp_ids=range(0, N_GSPS),
         session=session,
+        model_name="blend",
         t0_datetime_utc=now,
         add_latest=True,
         historic=True,
