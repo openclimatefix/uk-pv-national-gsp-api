@@ -1,6 +1,7 @@
 """Get GSP boundary data from eso """
 
 import os
+from datetime import datetime, timezone
 from typing import List, Optional, Union
 
 import structlog
@@ -104,6 +105,12 @@ def get_all_available_forecasts(
     start_datetime_utc = format_datetime(start_datetime_utc)
     end_datetime_utc = format_datetime(end_datetime_utc)
     creation_limit_utc = format_datetime(creation_limit_utc)
+
+    # by default, don't get any data in the past
+    if start_datetime_utc is None:
+        start_datetime_utc = datetime.now(tz=timezone.utc).replace(
+            minute=0, second=0, microsecond=0
+        )
 
     forecasts = get_forecasts_from_database(
         session=session,
