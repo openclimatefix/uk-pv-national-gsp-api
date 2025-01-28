@@ -291,7 +291,7 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
             session=session,
             gsp_id=gsp_id,
             start_datetime=start_datetime,
-            model_name="fake_model",
+            model_name="blend",
             end_datetime=end_datetime_utc,
         )
         logger.info(f"forecast_values: {forecast_values}")
