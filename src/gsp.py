@@ -28,7 +28,7 @@ from pydantic_models import (
     LocationWithGSPYields,
     OneDatetimeManyForecastValues,
 )
-from utils import N_CALLS_PER_HOUR, N_SLOW_CALLS_PER_HOUR, format_datetime, limiter
+from utils import N_CALLS_PER_HOUR, N_SLOW_CALLS_PER_HOUR, format_datetime, limiter, floor_30_minutes_dt
 
 GSP_TOTAL = 317
 
@@ -108,9 +108,7 @@ def get_all_available_forecasts(
 
     # by default, don't get any data in the past
     if start_datetime_utc is None:
-        start_datetime_utc = datetime.now(tz=timezone.utc).replace(
-            minute=0, second=0, microsecond=0
-        )
+        start_datetime_utc = floor_30_minutes_dt(datetime.now(tz=timezone.utc))
 
     forecasts = get_forecasts_from_database(
         session=session,
