@@ -45,8 +45,6 @@ from pydantic_models import (
 )
 from utils import filter_forecast_values, floor_30_minutes_dt, get_start_datetime
 
-logger = structlog.stdlib.get_logger()
-
 
 class BaseDBConnection(abc.ABC):
     """This is a base class for database connections with one static method get_connection().
@@ -294,7 +292,6 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
             model_name="blend",
             end_datetime=end_datetime_utc,
         )
-        logger.info(f"forecast_values: {forecast_values}")
 
     else:
         if creation_utc_limit is not None and creation_utc_limit < datetime.now(
