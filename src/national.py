@@ -101,7 +101,7 @@ def get_national_forecast(
     """
     logger.debug("Get national forecasts")
 
-    if is_fake:
+    if is_fake():
         fake_forecast = make_fake_forecast(
             gsp_id=0,
             model_name="blend",
