@@ -1,7 +1,7 @@
 """National API routes"""
 
 import os
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from typing import List, Optional, Union
 
 import pandas as pd
@@ -31,9 +31,9 @@ from pydantic_models import (
 from utils import (
     N_CALLS_PER_HOUR,
     filter_forecast_values,
+    floor_30_minutes_dt,
     format_datetime,
     format_plevels,
-    get_rounded_30_min_before_now,
     limiter,
 )
 
@@ -106,7 +106,7 @@ def get_national_forecast(
             gsp_id=0,
             model_name="blend",
             session=session,
-            t0_datetime_utc=get_rounded_30_min_before_now(),
+            t0_datetime_utc=floor_30_minutes_dt(datetime.now(tz=UTC)),
             add_latest=True,
         )
         # add the forecast to the session, as this single fake function doesn't by default
@@ -232,7 +232,7 @@ def get_national_pvlive(
         make_fake_gsp_yields(
             gsp_ids=[0],
             session=session,
-            t0_datetime_utc=get_rounded_30_min_before_now(),
+            t0_datetime_utc=floor_30_minutes_dt(datetime.now(tz=UTC)),
         )
 
     return get_truth_values_for_a_specific_gsp_from_database(
