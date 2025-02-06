@@ -43,13 +43,6 @@ def floor_30_minutes_dt(dt):
     return dt
 
 
-def get_rounded_30_min_before_now():
-    """
-    Get the rounded 30 minutes before now, e.g. 14:00, 14:30, 15:00, etc.
-    """
-    return floor_30_minutes_dt(datetime.now(tz=utc))
-
-
 def floor_6_hours_dt(dt: datetime):
     """
     Floor a datetime by 6 hours.
