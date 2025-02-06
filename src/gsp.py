@@ -1,6 +1,7 @@
 """Get GSP boundary data from eso """
 
 import os
+from datetime import UTC, datetime
 from typing import List, Optional, Union
 
 import structlog
@@ -27,7 +28,13 @@ from pydantic_models import (
     LocationWithGSPYields,
     OneDatetimeManyForecastValues,
 )
-from utils import N_CALLS_PER_HOUR, N_SLOW_CALLS_PER_HOUR, format_datetime, limiter
+from utils import (
+    N_CALLS_PER_HOUR,
+    N_SLOW_CALLS_PER_HOUR,
+    floor_30_minutes_dt,
+    format_datetime,
+    limiter,
+)
 
 GSP_TOTAL = 317
 
@@ -97,7 +104,11 @@ def get_all_available_forecasts(
         if gsp_ids is None:
             gsp_ids = [int(gsp_id) for gsp_id in range(1, GSP_TOTAL)]
 
-        make_fake_forecasts(gsp_ids=gsp_ids, session=session)
+        make_fake_forecasts(
+            gsp_ids=gsp_ids,
+            session=session,
+            t0_datetime_utc=floor_30_minutes_dt(datetime.now(tz=UTC)),
+        )
 
     logger.info(f"Get forecasts for all gsps. The option is {historic=} for user {user}")
 
@@ -206,7 +217,11 @@ def get_forecasts_for_a_specific_gsp(
     returns the latest forecast made 60 minutes before the target time)
     """
     if is_fake():
-        make_fake_forecast(gsp_id=gsp_id, session=session)
+        make_fake_forecast(
+            gsp_id=gsp_id,
+            session=session,
+            t0_datetime_utc=floor_30_minutes_dt(datetime.now(tz=UTC)),
+        )
 
     logger.info(f"Get forecasts for gsp id {gsp_id} forecast of forecast with only values.")
     logger.info(f"This is for user {user}")
@@ -281,7 +296,11 @@ def get_truths_for_all_gsps(
         if gsp_ids is None:
             gsp_ids = [int(gsp_id) for gsp_id in range(1, GSP_TOTAL)]
 
-        make_fake_gsp_yields(gsp_ids=gsp_ids, session=session)
+        make_fake_gsp_yields(
+            gsp_ids=gsp_ids,
+            session=session,
+            t0_datetime_utc=floor_30_minutes_dt(datetime.now(tz=UTC)),
+        )
 
     logger.info(f"Get PV Live estimates values for all gsp id and regime {regime} for user {user}")
 
@@ -365,7 +384,11 @@ def get_truths_for_a_specific_gsp(
     """
 
     if is_fake():
-        make_fake_forecast(gsp_id=gsp_id, session=session)
+        make_fake_forecast(
+            gsp_id=gsp_id,
+            session=session,
+            t0_datetime_utc=floor_30_minutes_dt(datetime.now(tz=UTC)),
+        )
 
     logger.info(
         f"Get PV Live estimates values for gsp id {gsp_id} " f"and regime {regime} for user {user}"
