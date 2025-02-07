@@ -91,7 +91,8 @@ def update_last_data(
         try:
             gsp = query.one()
         except NoResultFound:
-            raise HTTPException(status_code=404, detail="There are no gsp yields")
+            raise HTTPException(
+                status_code=404, detail="There are no gsp yields")
 
         modified_date = gsp.created_utc
 
@@ -101,6 +102,12 @@ def update_last_data(
 
         # get modified date, this will probably be in s3
         fs = fsspec.open(file).fs
+
+        # Check if the file exists before accessing it
+        if not fs.exists(file):
+            raise HTTPException(
+                status_code=404, detail=f"File '{file}' not found")
+
         modified_date = fs.modified(file)
 
     # get last value
