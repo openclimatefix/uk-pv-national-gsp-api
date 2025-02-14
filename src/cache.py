@@ -15,33 +15,6 @@ CACHE_TIME_SECONDS = 120
 cache_seconds = int(os.getenv("CACHE_TIME_SECONDS", CACHE_TIME_SECONDS))
 
 
-def save_to_database(func):
-    """
-    Decorator that save teh api call to the database
-
-    Example:
-    ```
-        app = FastAPI()
-
-        @app.get("/")
-        @save_to_database
-        async def example():
-            return {"message": "Hello World"}
-    ```
-
-    kwargs
-
-    """
-    @wraps(func)
-    def wrapper(*args, **kwargs):  # noqa
-
-        pass
-
-        return func(*args, **kwargs)
-
-    return wrapper
-
-
 def request_key_builder(
     func,
     namespace: str = "",

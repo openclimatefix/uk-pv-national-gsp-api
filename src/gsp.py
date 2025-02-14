@@ -146,7 +146,7 @@ def get_all_available_forecasts(
 )
 @cache(cache_seconds)
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
-def get_forecasts_for_a_specific_gsp_old_route(
+async def get_forecasts_for_a_specific_gsp_old_route(
     request: Request,
     gsp_id: int,
     session: Session = Depends(get_session),
@@ -158,13 +158,22 @@ def get_forecasts_for_a_specific_gsp_old_route(
     if is_fake():
         make_fake_forecast(gsp_id=gsp_id, session=session)
 
-    return get_forecasts_for_a_specific_gsp(
+    r = get_forecasts_for_a_specific_gsp(
         request=request,
         gsp_id=gsp_id,
         session=session,
         forecast_horizon_minutes=forecast_horizon_minutes,
         user=user,
     )
+
+    # This is a bit of hack
+    # really we should get rid of this route, but it might still be used by the front end
+    # This has been introduced when using cache from fastapi_cache
+    if isinstance(r, Forecast) or isinstance(r, List):
+        return r
+    else:
+        return await r
+
 
 
 @router.get(
