@@ -56,7 +56,6 @@ def is_fake():
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache(cache_seconds)
-@save_to_database
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_national_forecast(
     request: Request,
