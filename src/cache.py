@@ -4,7 +4,6 @@ import os
 from functools import wraps
 from fastapi import Request
 from fastapi.responses import Response
-from fastapi_cache.types import KeyBuilder
 
 import structlog
 
@@ -36,15 +35,7 @@ def save_to_database(func):
     @wraps(func)
     def wrapper(*args, **kwargs):  # noqa
 
-        # get the variables that go into the route
-        # we don't want to use the cache for different variables
-        route_variables = kwargs.copy()
-
-        # save route variables to db
-        session = route_variables.get("session", None)
-        user = route_variables.get("user", None)
-        request = route_variables.get("request", None)
-        save_api_call_to_db(session=session, user=user, request=request)
+        pass
 
         return func(*args, **kwargs)
 
@@ -59,6 +50,18 @@ def request_key_builder(
     *args,
     **kwargs,
 ):
+
+
+    # get the variables that go into the route
+    # we don't want to use the cache for different variables
+    route_variables = kwargs['kwargs']
+
+    # save route variables to db
+    session = route_variables.get("session", None)
+    user = route_variables.get("user", None)
+    if session is not None:
+        save_api_call_to_db(session=session, user=user, request=request)
+
     return ":".join([
         namespace,
         request.method.lower(),

@@ -16,7 +16,7 @@ from nowcasting_datamodel.read.read import get_latest_forecast_for_gsps
 from sqlalchemy.orm.session import Session
 
 from auth_utils import get_auth_implicit_scheme, get_user
-from cache import save_to_database, cache_seconds
+from cache import cache_seconds
 from database import (
     get_latest_forecast_values_for_a_specific_gsp_from_database,
     get_session,
@@ -189,7 +189,6 @@ def get_national_forecast(
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache(cache_seconds)
-@save_to_database
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_national_pvlive(
     request: Request,

@@ -12,7 +12,7 @@ from nowcasting_datamodel.models import GSPYield, Location
 from sqlalchemy.orm.session import Session
 
 from auth_utils import get_auth_implicit_scheme, get_user
-from cache import save_to_database, cache_seconds
+from cache import cache_seconds
 from database import get_gsp_system, get_session
 from utils import N_CALLS_PER_HOUR, limiter
 
@@ -33,7 +33,6 @@ NationalYield = GSPYield
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache(cache_seconds)
-@save_to_database
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_system_details(
     request: Request,

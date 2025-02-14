@@ -14,7 +14,7 @@ from nowcasting_datamodel.models import Forecast, ForecastValue, ManyForecasts
 from sqlalchemy.orm.session import Session
 
 from auth_utils import get_auth_implicit_scheme, get_user
-from cache import save_to_database, cache_seconds
+from cache import cache_seconds
 from database import (
     get_forecasts_from_database,
     get_latest_forecast_values_for_a_specific_gsp_from_database,
@@ -56,7 +56,6 @@ def is_fake():
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache(cache_seconds)
-@save_to_database
 @limiter.limit(f"{N_SLOW_CALLS_PER_HOUR}/hour")
 def get_all_available_forecasts(
     request: Request,
@@ -146,7 +145,6 @@ def get_all_available_forecasts(
     responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
 @cache(cache_seconds)
-@save_to_database
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_forecasts_for_a_specific_gsp_old_route(
     request: Request,
@@ -175,7 +173,6 @@ def get_forecasts_for_a_specific_gsp_old_route(
     dependencies=[Depends(get_auth_implicit_scheme())],
     responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
-@save_to_database
 @cache(cache_seconds)
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_forecasts_for_a_specific_gsp(
@@ -248,7 +245,6 @@ def get_forecasts_for_a_specific_gsp(
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache(cache_seconds)
-@save_to_database
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_truths_for_all_gsps(
     request: Request,
@@ -311,7 +307,6 @@ def get_truths_for_all_gsps(
     responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
 @cache(cache_seconds)
-@save_to_database
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_truths_for_a_specific_gsp_old_route(
     request: Request,
@@ -342,7 +337,6 @@ def get_truths_for_a_specific_gsp_old_route(
     responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
 @cache(cache_seconds)
-@save_to_database
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_truths_for_a_specific_gsp(
     request: Request,
