@@ -8,12 +8,13 @@ from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, Request, Security, status
 from fastapi.responses import Response
 from fastapi_auth0 import Auth0User
+from fastapi_cache.decorator import cache
 from nowcasting_datamodel.fake import make_fake_forecast, make_fake_forecasts, make_fake_gsp_yields
 from nowcasting_datamodel.models import Forecast, ForecastValue, ManyForecasts
 from sqlalchemy.orm.session import Session
 
 from auth_utils import get_auth_implicit_scheme, get_user
-from cache import cache_response
+from cache import save_to_database, cache_seconds
 from database import (
     get_forecasts_from_database,
     get_latest_forecast_values_for_a_specific_gsp_from_database,
@@ -54,7 +55,8 @@ def is_fake():
     response_model=Union[ManyForecasts, List[OneDatetimeManyForecastValues]],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
-@cache_response
+@cache(cache_seconds)
+@save_to_database
 @limiter.limit(f"{N_SLOW_CALLS_PER_HOUR}/hour")
 def get_all_available_forecasts(
     request: Request,
@@ -143,7 +145,8 @@ def get_all_available_forecasts(
     include_in_schema=False,
     responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
-@cache_response
+@cache(cache_seconds)
+@save_to_database
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_forecasts_for_a_specific_gsp_old_route(
     request: Request,
@@ -172,7 +175,8 @@ def get_forecasts_for_a_specific_gsp_old_route(
     dependencies=[Depends(get_auth_implicit_scheme())],
     responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
-@cache_response
+@save_to_database
+@cache(cache_seconds)
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_forecasts_for_a_specific_gsp(
     request: Request,
@@ -243,7 +247,8 @@ def get_forecasts_for_a_specific_gsp(
     response_model=Union[List[LocationWithGSPYields], List[GSPYieldGroupByDatetime]],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
-@cache_response
+@cache(cache_seconds)
+@save_to_database
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_truths_for_all_gsps(
     request: Request,
@@ -305,7 +310,8 @@ def get_truths_for_all_gsps(
     include_in_schema=False,
     responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
-@cache_response
+@cache(cache_seconds)
+@save_to_database
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_truths_for_a_specific_gsp_old_route(
     request: Request,
@@ -335,7 +341,8 @@ def get_truths_for_a_specific_gsp_old_route(
     dependencies=[Depends(get_auth_implicit_scheme())],
     responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
-@cache_response
+@cache(cache_seconds)
+@save_to_database
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_truths_for_a_specific_gsp(
     request: Request,

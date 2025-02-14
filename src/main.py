@@ -10,10 +10,13 @@ import structlog
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.inmemory import InMemoryBackend
 from fastapi.responses import FileResponse
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
+from cache import request_key_builder
 from gsp import router as gsp_router
 from national import router as national_router
 from redoc_theme import get_redoc_html_with_theme
@@ -175,7 +178,11 @@ Here a few use cases for of the Quartz Solar API routes.
     ```https://api.quartz.solar/v0/solar/GB/national/pvlive```
 
 """
+# set up cache to be in memory
+FastAPICache.init(InMemoryBackend(), key_builder=request_key_builder)
+
 app = FastAPI(docs_url="/swagger", redoc_url=None)
+
 
 # origins = os.getenv("ORIGINS",
 # "https://*.nowcasting.io,

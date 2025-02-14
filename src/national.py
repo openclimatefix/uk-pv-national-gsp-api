@@ -10,12 +10,13 @@ from elexonpy.api.generation_forecast_api import GenerationForecastApi
 from elexonpy.api_client import ApiClient
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Security
 from fastapi_auth0 import Auth0User
+from fastapi_cache.decorator import cache
 from nowcasting_datamodel.fake import make_fake_forecast, make_fake_gsp_yields
 from nowcasting_datamodel.read.read import get_latest_forecast_for_gsps
 from sqlalchemy.orm.session import Session
 
 from auth_utils import get_auth_implicit_scheme, get_user
-from cache import cache_response
+from cache import save_to_database, cache_seconds
 from database import (
     get_latest_forecast_values_for_a_specific_gsp_from_database,
     get_session,
@@ -54,7 +55,8 @@ def is_fake():
     response_model=Union[NationalForecast, List[NationalForecastValue]],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
-@cache_response
+@cache(cache_seconds)
+@save_to_database
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_national_forecast(
     request: Request,
@@ -186,7 +188,8 @@ def get_national_forecast(
     response_model=List[NationalYield],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
-@cache_response
+@cache(cache_seconds)
+@save_to_database
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_national_pvlive(
     request: Request,

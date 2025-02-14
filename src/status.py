@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 import fsspec
 import structlog
 from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi_cache.decorator import cache
 from nowcasting_datamodel.models import ForecastSQL, GSPYieldSQL, Status
 from nowcasting_datamodel.read.read import (
     get_latest_input_data_last_updated,
@@ -14,7 +15,7 @@ from nowcasting_datamodel.read.read import (
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm.session import Session
 
-from cache import cache_response
+from cache import save_to_database, cache_seconds
 from database import get_latest_status_from_database, get_session, save_api_call_to_db
 from utils import N_CALLS_PER_HOUR, limiter
 
@@ -26,7 +27,8 @@ forecast_error_hours = float(os.getenv("FORECAST_ERROR_HOURS", 2.0))
 
 
 @router.get("/status", response_model=Status)
-@cache_response
+@cache(cache_seconds)
+@save_to_database
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_status(request: Request, session: Session = Depends(get_session)) -> Status:
     """### Get status for the database and forecasts
