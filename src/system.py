@@ -1,4 +1,4 @@
-"""Get GSP boundary data from eso """
+"""Get GSP boundary data from eso"""
 
 import json
 from typing import List, Optional
