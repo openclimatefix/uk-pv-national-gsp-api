@@ -1,4 +1,4 @@
-""" Pytest fixitures for tests """
+"""Pytest fixitures for tests"""
 
 import os
 
