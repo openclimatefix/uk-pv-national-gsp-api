@@ -1,4 +1,4 @@
-""" Utils functions for test """
+"""Utils functions for test"""
 
 import os
 from datetime import datetime, timezone
