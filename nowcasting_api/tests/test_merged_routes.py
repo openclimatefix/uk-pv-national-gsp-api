@@ -7,8 +7,8 @@ from nowcasting_datamodel.fake import make_fake_forecast
 from nowcasting_datamodel.models import ForecastValue, ForecastValueLatestSQL
 from nowcasting_datamodel.read.read_models import get_model
 
-from database import get_session
-from main import app
+from nowcasting_api.database import get_session
+from nowcasting_api.main import app
 
 
 @freeze_time("2022-06-01")

@@ -2,8 +2,8 @@
 
 from freezegun import freeze_time
 
-from national import is_fake
-from pydantic_models import NationalForecastValue, NationalYield
+from nowcasting_api.national import is_fake
+from nowcasting_api.pydantic_models import NationalForecastValue, NationalYield
 
 
 def test_is_fake_national_all_available_forecasts(monkeypatch, api_client):

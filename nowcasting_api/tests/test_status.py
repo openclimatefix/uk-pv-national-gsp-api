@@ -18,8 +18,8 @@ from nowcasting_datamodel.models import (
     UserSQL,
 )
 
-from database import get_session
-from main import app
+from nowcasting_api.database import get_session
+from nowcasting_api.main import app
 
 client = TestClient(app)
 

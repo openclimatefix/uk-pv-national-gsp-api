@@ -4,8 +4,8 @@ from nowcasting_datamodel.fake import make_fake_forecasts
 from nowcasting_datamodel.models import Location
 from nowcasting_datamodel.read.read import get_location
 
-from database import get_session
-from main import app
+from nowcasting_api.database import get_session
+from nowcasting_api.main import app
 
 
 def test_get_gsp_systems(db_session, api_client):

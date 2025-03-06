@@ -5,7 +5,7 @@ import pandas as pd
 import pytest
 from elexonpy.api.generation_forecast_api import GenerationForecastApi
 
-from pydantic_models import BaseModel, SolarForecastResponse
+from nowcasting_api.pydantic_models import BaseModel, SolarForecastResponse
 
 API_URL = "/v0/solar/GB/national/elexon"
 

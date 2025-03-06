@@ -1,6 +1,6 @@
 from nowcasting_datamodel.models import ForecastValue, LocationWithGSPYields, ManyForecasts
 
-from gsp import GSP_TOTAL, is_fake
+from nowcasting_api.gsp import GSP_TOTAL, is_fake
 
 
 def test_is_fake_specific_gsp(monkeypatch, api_client, gsp_id=1):

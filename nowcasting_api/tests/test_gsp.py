@@ -17,9 +17,9 @@ from nowcasting_datamodel.read.read_models import get_model
 from nowcasting_datamodel.save.save import save_all_forecast_values_seven_days
 from nowcasting_datamodel.save.update import update_all_forecast_latest
 
-from database import get_session
-from main import app
-from pydantic_models import GSPYieldGroupByDatetime, OneDatetimeManyForecastValues
+from nowcasting_api.database import get_session
+from nowcasting_api.main import app
+from nowcasting_api.pydantic_models import GSPYieldGroupByDatetime, OneDatetimeManyForecastValues
 
 
 @freeze_time("2022-01-01")

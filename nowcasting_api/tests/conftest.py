@@ -8,9 +8,9 @@ from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.fake import make_fake_forecasts
 from nowcasting_datamodel.models.base import Base_PV
 
-from auth_utils import get_auth_implicit_scheme, get_user
-from database import get_session
-from main import app
+from nowcasting_api.auth_utils import get_auth_implicit_scheme, get_user
+from nowcasting_api.database import get_session
+from nowcasting_api.main import app
 
 
 @pytest.fixture
