@@ -1,18 +1,9 @@
 """Get GSP boundary data from eso """
 
 import os
-from datetime import UTC, datetime
 from typing import List, Optional, Union
 
 import structlog
-from dotenv import load_dotenv
-from fastapi import APIRouter, Depends, Request, Security, status
-from fastapi.responses import Response
-from fastapi_auth0 import Auth0User
-from nowcasting_datamodel.fake import make_fake_forecast, make_fake_forecasts, make_fake_gsp_yields
-from nowcasting_datamodel.models import Forecast, ForecastValue, ManyForecasts
-from sqlalchemy.orm.session import Session
-
 from auth_utils import get_auth_implicit_scheme, get_user
 from cache import cache_response
 from database import (
@@ -22,19 +13,19 @@ from database import (
     get_truth_values_for_a_specific_gsp_from_database,
     get_truth_values_for_all_gsps_from_database,
 )
+from dotenv import load_dotenv
+from fastapi import APIRouter, Depends, Request, Security, status
+from fastapi.responses import Response
+from fastapi_auth0 import Auth0User
+from nowcasting_datamodel.models import Forecast, ForecastValue, ManyForecasts
 from pydantic_models import (
     GSPYield,
     GSPYieldGroupByDatetime,
     LocationWithGSPYields,
     OneDatetimeManyForecastValues,
 )
-from utils import (
-    N_CALLS_PER_HOUR,
-    N_SLOW_CALLS_PER_HOUR,
-    floor_30_minutes_dt,
-    format_datetime,
-    limiter,
-)
+from sqlalchemy.orm.session import Session
+from utils import N_CALLS_PER_HOUR, format_datetime, limiter
 
 GSP_TOTAL = 317
 
@@ -48,11 +39,6 @@ router = APIRouter(
     tags=["GSP"],
 )
 NationalYield = GSPYield
-
-
-def is_fake():
-    """Start FAKE environment"""
-    return int(os.environ.get("FAKE", 0))
 
 
 # corresponds to route /v0/solar/GB/gsp/forecast/all/
@@ -100,16 +86,6 @@ def get_all_available_forecasts(
         if gsp_ids == "":
             gsp_ids = None
 
-    # if is_fake():
-    #     if gsp_ids is None:
-    #         gsp_ids = [int(gsp_id) for gsp_id in range(1, 10)]
-    #
-    #     fake_forecasts = make_fake_forecasts(
-    #         gsp_ids=gsp_ids,
-    #         session=session,
-    #         t0_datetime_utc=floor_30_minutes_dt(datetime.now(tz=UTC)),
-    #     )
-
     logger.info(f"Get forecasts for all gsps. The option is {historic=} for user {user}")
 
     start_datetime_utc = format_datetime(start_datetime_utc)
@@ -133,9 +109,9 @@ def get_all_available_forecasts(
     logger.info(f"Got forecasts for all gsps. The option is {historic=} for user {user}")
 
     if not compact:
-        logger.info(f"Normalizing forecasts")
+        logger.info("Normalizing forecasts")
         forecasts.normalize()
-        logger.info(f"Normalized forecasts")
+        logger.info("Normalized forecasts")
 
         logger.info(
             f"Got {len(forecasts.forecasts)} forecasts for all gsps. "
@@ -172,9 +148,6 @@ def get_forecasts_for_a_specific_gsp_old_route(
     user: Auth0User = Security(get_user()),
 ) -> Union[Forecast, List[ForecastValue]]:
     """Redirects old API route to new route /v0/solar/GB/gsp/{gsp_id}/forecast"""
-
-    # if is_fake():
-    #     make_fake_forecast(gsp_id=gsp_id, session=session)
 
     return get_forecasts_for_a_specific_gsp(
         request=request,
@@ -224,12 +197,6 @@ def get_forecasts_for_a_specific_gsp(
     - **creation_utc_limit**: optional, only return forecasts made before this datetime.
     returns the latest forecast made 60 minutes before the target time)
     """
-    # if is_fake():
-    #     make_fake_forecast(
-    #         gsp_id=gsp_id,
-    #         session=session,
-    #         t0_datetime_utc=floor_30_minutes_dt(datetime.now(tz=UTC)),
-    #     )
 
     logger.info(f"Get forecasts for gsp id {gsp_id} forecast of forecast with only values.")
     logger.info(f"This is for user {user}")
@@ -300,16 +267,6 @@ def get_truths_for_all_gsps(
     if isinstance(gsp_ids, str):
         gsp_ids = [int(gsp_id) for gsp_id in gsp_ids.split(",")]
 
-    # if is_fake():
-    #     if gsp_ids is None:
-    #         gsp_ids = [int(gsp_id) for gsp_id in range(1, GSP_TOTAL)]
-    #
-    #     make_fake_gsp_yields(
-    #         gsp_ids=gsp_ids,
-    #         session=session,
-    #         t0_datetime_utc=floor_30_minutes_dt(datetime.now(tz=UTC)),
-    #     )
-
     logger.info(f"Get PV Live estimates values for all gsp id and regime {regime} for user {user}")
 
     start_datetime_utc = format_datetime(start_datetime_utc)
@@ -342,9 +299,6 @@ def get_truths_for_a_specific_gsp_old_route(
     user: Auth0User = Security(get_user()),
 ) -> List[GSPYield]:
     """Redirects old API route to new route /v0/solar/GB/gsp/{gsp_id}/pvlive"""
-
-    # if is_fake():
-    #     make_fake_gsp_yields(gsp_ids=[gsp_id], session=session)
 
     return get_truths_for_a_specific_gsp(
         request=request,
@@ -390,13 +344,6 @@ def get_truths_for_a_specific_gsp(
     - **end_datetime_utc**: optional end datetime for the query.
     If not set, defaults to N_HISTORY_DAYS env var, which if not set defaults to yesterday.
     """
-
-    # if is_fake():
-    #     make_fake_forecast(
-    #         gsp_id=gsp_id,
-    #         session=session,
-    #         t0_datetime_utc=floor_30_minutes_dt(datetime.now(tz=UTC)),
-    #     )
 
     logger.info(
         f"Get PV Live estimates values for gsp id {gsp_id} " f"and regime {regime} for user {user}"
