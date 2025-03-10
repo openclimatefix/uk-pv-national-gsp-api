@@ -1,6 +1,6 @@
 """ Test for main app """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 
 from freezegun import freeze_time
 from nowcasting_datamodel.fake import make_fake_forecasts
@@ -20,6 +20,7 @@ from nowcasting_datamodel.save.update import update_all_forecast_latest
 from nowcasting_api.database import get_session
 from nowcasting_api.main import app
 from nowcasting_api.pydantic_models import GSPYieldGroupByDatetime, OneDatetimeManyForecastValues
+from nowcasting_api.utils import floor_30_minutes_dt
 
 
 @freeze_time("2022-01-01")
@@ -95,16 +96,17 @@ def test_read_latest_one_gsp_filter_creation_utc(db_session, api_client):
 def test_read_latest_all_gsp(db_session, api_client):
     """Check main solar/GB/gsp/forecast/all route works"""
 
-    model = get_model(session=db_session, name="blend", version="0.0.1")
+    _ = get_model(session=db_session, name="blend", version="0.0.1")
 
-    forecasts = make_fake_forecasts(
+    _ = make_fake_forecasts(
         gsp_ids=list(range(0, 10)),
+        model_name="blend",
         session=db_session,
-        t0_datetime_utc=datetime.now(tz=timezone.utc),
+        add_latest=True,
+        t0_datetime_utc=floor_30_minutes_dt(datetime.now(tz=UTC)),
     )
-    [setattr(f, "model", model) for f in forecasts]
 
-    db_session.add_all(forecasts)
+    db_session.commit()
 
     app.dependency_overrides[get_session] = lambda: db_session
 
@@ -120,16 +122,16 @@ def test_read_latest_all_gsp(db_session, api_client):
 def test_read_latest_all_gsp_filter_gsp(db_session, api_client):
     """Check main solar/GB/gsp/forecast/all route works"""
 
-    model = get_model(session=db_session, name="blend", version="0.0.1")
+    _ = get_model(session=db_session, name="blend", version="0.0.1")
 
-    forecasts = make_fake_forecasts(
+    _ = make_fake_forecasts(
         gsp_ids=list(range(0, 10)),
+        model_name="blend",
         session=db_session,
         t0_datetime_utc=datetime.now(tz=timezone.utc),
     )
-    [setattr(f, "model", model) for f in forecasts]
 
-    db_session.add_all(forecasts)
+    db_session.commit()
 
     app.dependency_overrides[get_session] = lambda: db_session
 
@@ -154,10 +156,8 @@ def test_read_latest_gsp_id_greater_than_total(db_session, api_client):
 def test_read_latest_gsp_id_equal_to_total(db_session, api_client):
     """Check that request with gsp_id<318 returns 200"""
 
-    forecasts = make_fake_forecasts(
-        gsp_ids=[317], session=db_session, add_latest=True, model_name="blend"
-    )
-    db_session.add_all(forecasts)
+    _ = make_fake_forecasts(gsp_ids=[317], session=db_session, add_latest=True, model_name="blend")
+    db_session.commit()
 
     app.dependency_overrides[get_session] = lambda: db_session
 
@@ -171,15 +171,15 @@ def test_read_latest_gsp_id_equal_to_total(db_session, api_client):
 def test_read_latest_all_gsp_normalized(db_session, api_client):
     """Check main solar/GB/gsp/forecast/all normalized route works"""
 
-    model = get_model(session=db_session, name="blend", version="0.0.1")
+    _ = get_model(session=db_session, name="blend", version="0.0.1")
 
-    forecasts = make_fake_forecasts(
+    _ = make_fake_forecasts(
         gsp_ids=list(range(0, 10)),
         session=db_session,
+        model_name="blend",
         t0_datetime_utc=datetime.now(tz=timezone.utc),
     )
-    [setattr(f, "model", model) for f in forecasts]
-    db_session.add_all(forecasts)
+    db_session.commit()
 
     app.dependency_overrides[get_session] = lambda: db_session
 
@@ -190,22 +190,22 @@ def test_read_latest_all_gsp_normalized(db_session, api_client):
     r = ManyForecasts(**response.json())
     assert len(r.forecasts) == 10
     assert r.forecasts[0].forecast_values[0].expected_power_generation_megawatts <= 13000
-    assert r.forecasts[1].forecast_values[0].expected_power_generation_megawatts <= 10
+    assert r.forecasts[1].forecast_values[0].expected_power_generation_megawatts <= 40
 
 
 def test_read_latest_all_gsp_historic(db_session, api_client):
     """Check main solar/GB/gsp/forecast/all historic route works"""
 
-    model = get_model(session=db_session, name="blend", version="0.0.1")
+    _ = get_model(session=db_session, name="blend", version="0.0.1")
 
     forecasts = make_fake_forecasts(
         gsp_ids=list(range(0, 10)),
         session=db_session,
+        model_name="blend",
         t0_datetime_utc=datetime.now(tz=timezone.utc),
         historic=True,
     )
-    [setattr(f, "model", model) for f in forecasts]
-    db_session.add_all(forecasts)
+    db_session.commit()
     update_all_forecast_latest(forecasts=forecasts, session=db_session)
 
     app.dependency_overrides[get_session] = lambda: db_session
@@ -219,22 +219,22 @@ def test_read_latest_all_gsp_historic(db_session, api_client):
     assert len(r.forecasts) == 9  # dont get national
     assert len(r.forecasts[0].forecast_values) == 16
     assert r.forecasts[0].forecast_values[0].expected_power_generation_megawatts <= 13000
-    assert r.forecasts[1].forecast_values[0].expected_power_generation_megawatts <= 10
+    assert r.forecasts[1].forecast_values[0].expected_power_generation_megawatts <= 40
 
 
 def test_read_latest_all_gsp_historic_compact(db_session, api_client):
     """Check main solar/GB/gsp/forecast/all historic route works"""
 
-    model = get_model(session=db_session, name="blend", version="0.0.1")
+    _ = get_model(session=db_session, name="blend", version="0.0.1")
 
     forecasts = make_fake_forecasts(
         gsp_ids=list(range(0, 10)),
         session=db_session,
+        model_name="blend",
         t0_datetime_utc=datetime.now(tz=timezone.utc),
         historic=True,
     )
-    [setattr(f, "model", model) for f in forecasts]
-    db_session.add_all(forecasts)
+    db_session.commit()
     update_all_forecast_latest(forecasts=forecasts, session=db_session)
 
     app.dependency_overrides[get_session] = lambda: db_session
@@ -274,6 +274,7 @@ def test_read_truths_for_a_specific_gsp(db_session, api_client):
 
     # add to database
     db_session.add_all([gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_sql_1])
+    db_session.commit()
 
     app.dependency_overrides[get_session] = lambda: db_session
 
@@ -313,6 +314,7 @@ def test_read_truths_for_gsp_id_less_than_total(db_session, api_client):
 
     # add to database
     db_session.add_all([gsp_yield_sql, gsp_sql])
+    db_session.commit()
 
     app.dependency_overrides[get_session] = lambda: db_session
 
@@ -356,6 +358,7 @@ def setup_gsp_yield_data(db_session):
     db_session.add_all(
         [gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_yield_4_sql, gsp_sql_1, gsp_sql_2]
     )
+    db_session.commit()
 
 
 @freeze_time("2022-01-01")

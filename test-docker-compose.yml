@@ -24,12 +24,12 @@ services:
       - DELETE_CACHE_TIME_SECONDS=0
       - CACHE_TIME_SECONDS=0
     command: >
-      bash -c "pytest --cov=./src
+      bash -c "pytest --cov=./nowcasting_api
       && coverage report -m
       && coverage xml
-      && cp .coverage ./src/tests/
-      && cp coverage.xml ./src/tests/"
+      && cp .coverage ./nowcasting_api/tests/
+      && cp coverage.xml ./nowcasting_api/tests/"
     depends_on:
       - postgres_db
     volumes:
-      - ./src/:/app/src
+      - ./nowcasting_api/:/app/nowcasting_api
