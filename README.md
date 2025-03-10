@@ -52,6 +52,9 @@ This is automatically generated from the code.
 ## Development
 
 This can be done it two different ways: With Python or with Docker.
+The Docker method is preferred, because:
+- a) this should be more replicable and less prone to odd behaviors;
+- b) it also sets up a CRON service that generates new data periodically, to resemble the "real" forecast service.
 
 ### Python
 
