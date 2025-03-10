@@ -1,6 +1,7 @@
 """Get GSP boundary data from eso """
 
 import os
+from datetime import datetime, timezone
 from typing import List, Optional, Union
 
 import structlog
@@ -25,7 +26,7 @@ from pydantic_models import (
     OneDatetimeManyForecastValues,
 )
 from sqlalchemy.orm.session import Session
-from utils import N_CALLS_PER_HOUR, format_datetime, limiter
+from utils import N_CALLS_PER_HOUR, floor_30_minutes_dt, format_datetime, limiter
 
 GSP_TOTAL = 317
 
