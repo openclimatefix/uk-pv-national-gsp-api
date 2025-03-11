@@ -71,27 +71,42 @@ source venv/bin/activate
  🟢 __Preferred method__
 
 1. Make sure docker is installed on your system.
-2. Use `docker-compose up`
+2. Use `docker compose up`
    in the main directory with the optional `--build` flag to build the image the first time
    to start up the application. This builds the image, sets up the database, seeds some fake data
    and starts the API.
 3. You will now be able to access it on `http://localhost:8000`
-4. The API should restart automatically when you make changes to the code, but the fake
-   data currently is static. To seed new fake data, just manually restart the API.
+4. The API should restart automatically when you make changes to the code, and the CRON job will
+   periodically seed new fake data, currently set to every 15 minutes.
 
-#### Option 2: Running the API with a local database
+#### Option 2: Running docker with a local version of [nowcasting_datamodel](https://github.com/openclimatefix/nowcasting_datamodel)
+1. Clone the [nowcasting_datamodel](https://github.com/openclimatefix/nowcasting_datamodel) repository
+2. Comment out the `nowcasting_datamodel` line in the `requirements.txt` file
+3. Run `docker compose up --file docker-compose-local-datamodel.yml` in the main directory, with the
+   optional `--build` flag to build the image the first time; this will start up the application and seed the
+   initial fake data in the database.
+4. You will now be able to access it on `http://localhost:8000`. Changes you make to the API code will be
+   automatically reflected in the running API, but changes to the datamodel will either require a change of any kind
+   in the API code that will reload the server, or a manual restart of the API.
+5. Data will reseed every 15 minutes.
+
+#### Option 3: Running the API with a local database (deprecated, but possible if unable to use Docker, may require some troubleshooting)
 
 To set up the API with a local database, you will need to:
  - start your own local postgres instance on your machine
- - set `FAKE=1` in the `.env` file
  - set `DB_URL` to your local postgres instance in the `.env` file
  - run the following commands to install required packages, create the tables in your local postgres instance, and populate them with fake data:
 
 ```bash
 pip install -r requirements.txt
+python script/fake_data.py
 cd src
 uvicorn main:app --reload
 ```
+When running locally:
+1. You will now be able to access it on `http://localhost:8000`
+2. The API should restart automatically when you make changes to the code, but the fake
+   data currently is static. To seed new fake data, just manually restart the API.
 
 ### Running the test suite
 
