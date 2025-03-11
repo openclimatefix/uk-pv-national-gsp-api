@@ -26,7 +26,13 @@ from pydantic_models import (
     OneDatetimeManyForecastValues,
 )
 from sqlalchemy.orm.session import Session
-from utils import N_CALLS_PER_HOUR, floor_30_minutes_dt, format_datetime, limiter
+from utils import (
+    N_CALLS_PER_HOUR,
+    N_SLOW_CALLS_PER_HOUR,
+    floor_30_minutes_dt,
+    format_datetime,
+    limiter,
+)
 
 GSP_TOTAL = 317
 
@@ -48,8 +54,8 @@ NationalYield = GSPYield
     response_model=Union[ManyForecasts, List[OneDatetimeManyForecastValues]],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
-# @cache_response
-# @limiter.limit(f"{N_SLOW_CALLS_PER_HOUR}/hour")
+@cache_response
+@limiter.limit(f"{N_SLOW_CALLS_PER_HOUR}/hour")
 def get_all_available_forecasts(
     request: Request,
     historic: Optional[bool] = True,
