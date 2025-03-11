@@ -9,18 +9,15 @@ need to fill the following tables
 3. a warning status of this is fake data
 """
 
-import sys
-
-sys.path.append("/app/nowcasting_api")
-
 import os
-from datetime import datetime, timezone, UTC
+import sys
+from datetime import UTC, datetime, timezone
 
 from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.fake import (
+    N_FAKE_FORECASTS,
     generate_fake_forecasts,
     make_fake_gsp_yields,
-    N_FAKE_FORECASTS,
 )
 from nowcasting_datamodel.models.forecast import (
     ForecastSQL,
@@ -33,6 +30,8 @@ from nowcasting_datamodel.save.save import save as save_forecasts
 from sqlalchemy import inspect
 
 from nowcasting_api.utils import floor_30_minutes_dt
+
+sys.path.append("/app/nowcasting_api")
 
 now = floor_30_minutes_dt(datetime.now(tz=timezone.utc))
 

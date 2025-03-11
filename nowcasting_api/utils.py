@@ -7,11 +7,10 @@ from typing import List, Optional, Union
 import numpy as np
 import structlog
 from nowcasting_datamodel.models import Forecast
+from pydantic_models import NationalForecastValue
 from pytz import timezone
 from slowapi import Limiter
 from slowapi.util import get_remote_address
-
-from pydantic_models import NationalForecastValue
 
 logger = structlog.stdlib.get_logger()
 
