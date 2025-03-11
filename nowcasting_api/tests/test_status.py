@@ -28,6 +28,7 @@ def test_read_latest_status(db_session):
     """Check main GB/pv/status route works"""
     status = Status(message="Good", status="ok").to_orm()
     db_session.add(status)
+    db_session.commit()
 
     app.dependency_overrides[get_session] = lambda: db_session
 
@@ -57,6 +58,7 @@ def test_check_last_forecast_run_correct(db_session):
     forecast_creation_time = datetime.now(tz=timezone.utc) - timedelta(minutes=5)
     forecast = ForecastSQL(forecast_creation_time=forecast_creation_time)
     db_session.add(forecast)
+    db_session.commit()
 
     app.dependency_overrides[get_session] = lambda: db_session
 
@@ -70,6 +72,7 @@ def test_check_last_forecast_error(db_session):
     forecast_creation_time = datetime.now(tz=timezone.utc) - timedelta(hours=3)
     forecast = ForecastSQL(forecast_creation_time=forecast_creation_time)
     db_session.add(forecast)
+    db_session.commit()
 
     app.dependency_overrides[get_session] = lambda: db_session
 
@@ -91,6 +94,7 @@ def test_check_last_forecast_gsp(db_session):
 
     # add to database
     db_session.add_all([gsp_yield_1_sql, gsp_sql_1])
+    db_session.commit()
 
     app.dependency_overrides[get_session] = lambda: db_session
 

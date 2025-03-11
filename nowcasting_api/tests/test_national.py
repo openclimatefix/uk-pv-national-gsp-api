@@ -246,6 +246,7 @@ def test_read_truth_national_gsp(db_session, api_client):
 
     # add to database
     db_session.add_all([gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_sql_1])
+    db_session.commit()
 
     app.dependency_overrides[get_session] = lambda: db_session
 
