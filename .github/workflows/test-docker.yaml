@@ -23,8 +23,8 @@ jobs:
       - name: Copy coverage
         run: |
           # copy file
-          mv ./src/tests/.coverage .
-          mv ./src/tests/coverage.xml .
+          mv ./nowcasting_api/tests/.coverage .
+          mv ./nowcasting_api/tests/coverage.xml .
 
       - name: "Upload coverage to Codecov"
         uses: codecov/codecov-action@v2

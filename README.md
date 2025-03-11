@@ -100,7 +100,7 @@ To set up the API with a local database, you will need to:
 ```bash
 pip install -r requirements.txt
 python script/fake_data.py
-cd src
+cd nowcasting_api
 uvicorn main:app --reload
 ```
 When running locally:
