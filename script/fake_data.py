@@ -31,7 +31,8 @@ from sqlalchemy import inspect
 
 from nowcasting_api.utils import floor_30_minutes_dt
 
-# Add nowcasting_api to path for imports if using Docker, comment out if running locally
+# Add nowcasting_api to path for imports if using Docker.
+# If running directly on local machine, this is not necessary, but runs without error.
 sys.path.append("/app/nowcasting_api")
 
 now = floor_30_minutes_dt(datetime.now(tz=timezone.utc))
