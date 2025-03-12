@@ -9,18 +9,10 @@ services:
     ports:
       - "5432:5432"
 
-  #  datamodel:
-  #    image: openclimatefix/nowcasting_datamodel
-  #    environment:
-  #      - DB_URL=postgresql://postgres:postgres@postgres:5432/postgres
-  #    depends_on:
-  #      - "postgres"
-
   api:
     build:
       context: .
       dockerfile: Dockerfile
-    # image: openclimatefix/nowcasting_api:0.1.7
     container_name: nowcasting_api
     command: bash -c "sleep 2
       && apt-get update
@@ -35,8 +27,6 @@ services:
       - "8000:8000"
     environment:
       - DB_URL=postgresql://postgres:postgres@postgres:5432/postgres
-    #      - AUTH0_DOMAIN=nowcasting-dev.eu.auth0.com
-    #      - AUTH0_API_AUDIENCE=https://nowcasting-api-eu-auth0.com/
     volumes:
       - ./nowcasting_api/:/app/nowcasting_api
       - ./script/:/app/script
@@ -48,7 +38,6 @@ services:
         mode: 0644
     depends_on:
       - "postgres"
-#      - "datamodel"
 
 configs:
   crontab:
