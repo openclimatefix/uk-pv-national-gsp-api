@@ -5,6 +5,8 @@ from datetime import datetime, timedelta, timezone
 
 import fsspec
 import structlog
+from cache import cache_response
+from database import get_latest_status_from_database, get_session, save_api_call_to_db
 from fastapi import APIRouter, Depends, HTTPException, Request
 from nowcasting_datamodel.models import ForecastSQL, GSPYieldSQL, Status
 from nowcasting_datamodel.read.read import (
@@ -13,9 +15,6 @@ from nowcasting_datamodel.read.read import (
 )
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm.session import Session
-
-from cache import cache_response
-from database import get_latest_status_from_database, get_session, save_api_call_to_db
 from utils import N_CALLS_PER_HOUR, limiter
 
 logger = structlog.stdlib.get_logger()
@@ -96,7 +95,6 @@ def update_last_data(
         modified_date = gsp.created_utc
 
     elif component in ["nwp", "satellite"]:
-
         assert file is not None
 
         # get modified date, this will probably be in s3

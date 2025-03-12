@@ -10,9 +10,9 @@ from nowcasting_datamodel.read.read_models import get_model
 from nowcasting_datamodel.save.save import save_all_forecast_values_seven_days
 from nowcasting_datamodel.save.update import update_all_forecast_latest
 
-from database import get_session
-from main import app
-from pydantic_models import NationalForecast, NationalForecastValue
+from nowcasting_api.database import get_session
+from nowcasting_api.main import app
+from nowcasting_api.pydantic_models import NationalForecast, NationalForecastValue
 
 
 def test_read_latest_national_values(db_session, api_client):
@@ -246,6 +246,7 @@ def test_read_truth_national_gsp(db_session, api_client):
 
     # add to database
     db_session.add_all([gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_sql_1])
+    db_session.commit()
 
     app.dependency_overrides[get_session] = lambda: db_session
 

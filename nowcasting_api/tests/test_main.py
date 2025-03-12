@@ -1,6 +1,6 @@
 """ Test for main app """
 
-from main import version
+from nowcasting_api.main import version
 
 
 def test_read_main(api_client):

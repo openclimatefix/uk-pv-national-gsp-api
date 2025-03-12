@@ -17,7 +17,9 @@ services:
     command: bash -c "sleep 2
       && apt-get update
       && apt-get install -y cron
+      && echo 'starting cron'
       && cron
+      && pip install file:/app/nowcasting_datamodel
       && sleep 2
       && python script/fake_data.py
       && uvicorn nowcasting_api.main:app --reload --host 0.0.0.0 --port 8000"
@@ -28,6 +30,7 @@ services:
     volumes:
       - ./nowcasting_api/:/app/nowcasting_api
       - ./script/:/app/script
+      - ../nowcasting_datamodel/:/app/nowcasting_datamodel
     working_dir: /app
     configs:
       - source: crontab

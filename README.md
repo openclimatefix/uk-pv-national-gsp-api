@@ -52,6 +52,9 @@ This is automatically generated from the code.
 ## Development
 
 This can be done it two different ways: With Python or with Docker.
+The Docker method is preferred, because:
+- a) this should be more replicable and less prone to odd behaviors;
+- b) it also sets up a CRON service that generates new data periodically, to resemble the "real" forecast service.
 
 ### Python
 
@@ -62,25 +65,48 @@ python3 -m venv ./venv
 source venv/bin/activate
 ```
 
-Install Requirements and Run
+### Running the API
+
+#### Option 1: Docker
+ 🟢 __Preferred method__
+
+1. Make sure docker is installed on your system.
+2. Use `docker compose up`
+   in the main directory with the optional `--build` flag to build the image the first time
+   to start up the application. This builds the image, sets up the database, seeds some fake data
+   and starts the API.
+3. You will now be able to access it on `http://localhost:8000`
+4. The API should restart automatically when you make changes to the code, and the CRON job will
+   periodically seed new fake data, currently set to every 15 minutes.
+
+#### Option 2: Running docker with a local version of [nowcasting_datamodel](https://github.com/openclimatefix/nowcasting_datamodel)
+1. Clone the [nowcasting_datamodel](https://github.com/openclimatefix/nowcasting_datamodel) repository
+2. Comment out the `nowcasting_datamodel` line in the `requirements.txt` file
+3. Run `docker compose up --file docker-compose-local-datamodel.yml` in the main directory, with the
+   optional `--build` flag to build the image the first time; this will start up the application and seed the
+   initial fake data in the database.
+4. You will now be able to access it on `http://localhost:8000`. Changes you make to the API code will be
+   automatically reflected in the running API, but changes to the datamodel will either require a change of any kind
+   in the API code that will reload the server, or a manual restart of the API.
+5. Data will reseed every 15 minutes.
+
+#### Option 3: Running the API with a local database (deprecated, but possible if unable to use Docker, may require some troubleshooting)
+
+To set up the API with a local database, you will need to:
+ - start your own local postgres instance on your machine
+ - set `DB_URL` to your local postgres instance in the `.env` file
+ - run the following commands to install required packages, create the tables in your local postgres instance, and populate them with fake data:
 
 ```bash
 pip install -r requirements.txt
-cd src && uvicorn main:app --reload
+python script/fake_data.py
+cd nowcasting_api
+uvicorn main:app --reload
 ```
-
-Warning:
-If you don't have a local database set up, you can leave the `DB_URL` string empty (default not set)
-and set `FAKE=True` and the API will return fake data. This is a work in progress,
-so some routes might be need to be updated
-
-### Docker
- 🛑 Currently non-functional, needs updating to migrate database to match datamodel
-
-1. Make sure docker is installed on your system.
-2. Use `docker-compose up`
-   in the main directory to start up the application.
-3. You will now be able to access it on `http://localhost:80`
+When running locally:
+1. You will now be able to access it on `http://localhost:8000`
+2. The API should restart automatically when you make changes to the code, but the fake
+   data currently is static. To seed new fake data, just manually restart the API.
 
 ### Running the test suite
 

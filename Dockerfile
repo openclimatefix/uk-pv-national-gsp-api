@@ -13,11 +13,11 @@ RUN pip install -r /app/requirements.txt
 WORKDIR /app
 
 # copy files over
-COPY ./src /app/src
+COPY nowcasting_api /app/nowcasting_api
 COPY ./script /app/script
 
 # pin coverage
 RUN pip install -U coverage
 
-# make sure 'src' is in python path - this is so imports work
-ENV PYTHONPATH=${PYTHONPATH}:/app/src
+# make sure 'nowcasting_api' is in python path - this is so imports work
+ENV PYTHONPATH=${PYTHONPATH}:/app/nowcasting_api

@@ -11,12 +11,11 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import FileResponse
-from slowapi import _rate_limit_exceeded_handler
-from slowapi.errors import RateLimitExceeded
-
 from gsp import router as gsp_router
 from national import router as national_router
 from redoc_theme import get_redoc_html_with_theme
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 from status import router as status_router
 from system import router as system_router
 from utils import limiter, traces_sampler

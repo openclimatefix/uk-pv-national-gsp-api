@@ -33,8 +33,6 @@ from nowcasting_datamodel.read.read import (
 from nowcasting_datamodel.read.read_gsp import get_gsp_yield, get_gsp_yield_by_location
 from nowcasting_datamodel.read.read_user import get_user as get_user_from_db
 from nowcasting_datamodel.save.update import N_GSP
-from sqlalchemy.orm.session import Session
-
 from pydantic_models import (
     GSPYield,
     GSPYieldGroupByDatetime,
@@ -43,6 +41,7 @@ from pydantic_models import (
     convert_forecasts_to_many_datetime_many_generation,
     convert_location_sql_to_many_datetime_many_generation,
 )
+from sqlalchemy.orm.session import Session
 from utils import filter_forecast_values, floor_30_minutes_dt, get_start_datetime
 
 

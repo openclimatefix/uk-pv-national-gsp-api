@@ -6,14 +6,6 @@ from typing import List, Optional, Union
 
 import pandas as pd
 import structlog
-from elexonpy.api.generation_forecast_api import GenerationForecastApi
-from elexonpy.api_client import ApiClient
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, Security
-from fastapi_auth0 import Auth0User
-from nowcasting_datamodel.fake import make_fake_forecast, make_fake_gsp_yields
-from nowcasting_datamodel.read.read import get_latest_forecast_for_gsps
-from sqlalchemy.orm.session import Session
-
 from auth_utils import get_auth_implicit_scheme, get_user
 from cache import cache_response
 from database import (
@@ -21,6 +13,11 @@ from database import (
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
 )
+from elexonpy.api.generation_forecast_api import GenerationForecastApi
+from elexonpy.api_client import ApiClient
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Security
+from fastapi_auth0 import Auth0User
+from nowcasting_datamodel.read.read import get_latest_forecast_for_gsps
 from pydantic_models import (
     NationalForecast,
     NationalForecastValue,
@@ -28,6 +25,7 @@ from pydantic_models import (
     SolarForecastResponse,
     SolarForecastValue,
 )
+from sqlalchemy.orm.session import Session
 from utils import N_CALLS_PER_HOUR, filter_forecast_values, format_datetime, format_plevels, limiter
 
 logger = structlog.stdlib.get_logger()
@@ -42,11 +40,6 @@ router = APIRouter(
 # Initialize Elexon API client
 api_client = ApiClient()
 elexon_forecast_api = GenerationForecastApi(api_client)
-
-
-def is_fake():
-    """Start FAKE environment"""
-    return int(os.environ.get("FAKE", 0))
 
 
 @router.get(
@@ -93,9 +86,6 @@ def get_national_forecast(
 
     """
     logger.debug("Get national forecasts")
-
-    if is_fake:
-        make_fake_forecast(gsp_id=0, session=session)
 
     start_datetime_utc = format_datetime(start_datetime_utc)
     end_datetime_utc = format_datetime(end_datetime_utc)
@@ -212,9 +202,6 @@ def get_national_pvlive(
 
     """
     logger.info(f"Get national PV Live estimates values " f"for regime {regime} for  {user}")
-
-    if is_fake():
-        make_fake_gsp_yields(gsp_ids=[0], session=session)
 
     return get_truth_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=0, regime=regime
