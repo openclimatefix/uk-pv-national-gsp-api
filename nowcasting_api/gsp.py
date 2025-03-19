@@ -99,8 +99,8 @@ def get_all_available_forecasts(
     end_datetime_utc = format_datetime(end_datetime_utc)
     creation_limit_utc = format_datetime(creation_limit_utc)
 
-    # by default, don't get any data in the past
-    if start_datetime_utc is None:
+    # by default, don't get any data in the past if more than one gsp
+    if start_datetime_utc is None and (gsp_ids is None or len(gsp_ids) > 1):
         start_datetime_utc = floor_30_minutes_dt(datetime.now(tz=timezone.utc))
 
     forecasts = get_forecasts_from_database(
