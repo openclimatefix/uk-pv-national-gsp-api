@@ -162,6 +162,34 @@ def get_national_forecast(
             format_plevels(national_forecast_value)
 
             national_forecast_values.append(national_forecast_value)
+
+    # Adjust values for solar eclipse 2025-03-28
+    eclipse_adjustments = {
+        "2025-03-29 10:30:00+00:00": 0.97,
+        "2025-03-29 11:00:00+00:00": 0.85,
+        "2025-03-29 11:30:00+00:00": 0.82,
+        "2025-03-29 12:00:00+00:00": 0.95,
+    }
+
+    # Reduce national forecast value by eclipse adjustment for matching datetimes
+    for forecast_value in national_forecast_values:
+        target_time = forecast_value.target_time
+        target_dt = pd.to_datetime(target_time)
+
+        for eclipse_time, reduction in eclipse_adjustments.items():
+            if target_dt == pd.to_datetime(eclipse_time):
+                forecast_value.expected_power_generation_megawatts *= reduction
+
+    if get_plevels:
+        for forecast_value in national_forecast_values:
+            target_time = forecast_value.target_time
+            target_dt = pd.to_datetime(target_time)
+
+            for eclipse_time, reduction in eclipse_adjustments.items():
+                if target_dt == pd.to_datetime(eclipse_time):
+                    forecast_value.plevels["plevel_10"] *= reduction
+                    forecast_value.plevels["plevel_90"] *= reduction
+
     if include_metadata:
         # return full forecast object
         forecast.forecast_values = national_forecast_values
