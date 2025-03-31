@@ -20,6 +20,8 @@ from status import router as status_router
 from system import router as system_router
 from utils import limiter, traces_sampler
 from pydantic_models import ModelName
+from redoc_theme import get_redoc_html_with_theme
+
 
 
 # flake8: noqa E501
