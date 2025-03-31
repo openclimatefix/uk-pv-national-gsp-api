@@ -21,6 +21,7 @@ from system import router as system_router
 from utils import limiter, traces_sampler
 from pydantic_models import ModelName
 
+
 # flake8: noqa E501
 
 structlog.configure(
