@@ -14,8 +14,10 @@ logger = logging.getLogger(__name__)
 
 adjust_limit = float(os.getenv("ADJUST_MW_LIMIT", 0.0))
 
+
 class ModelName(str, Enum):
     """Enum for model options."""
+
     blend = "blend"
     pvnet_v2 = "pvnet_v2"
     pvnet_da = "pvnet_da"
@@ -199,7 +201,9 @@ class NationalForecastValue(ForecastValue):
 class NationalForecast(Forecast):
     """One Forecast of generation at one timestamp."""
 
-    forecast_values: List[NationalForecastValue] = Field(..., description="List of forecast values.")
+    forecast_values: List[NationalForecastValue] = Field(
+        ..., description="List of forecast values."
+    )
 
 
 class SolarForecastValue(BaseModel):
