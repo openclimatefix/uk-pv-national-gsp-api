@@ -6,18 +6,16 @@ from datetime import datetime
 from typing import Dict, List, Optional
 from enum import Enum  
 
-
 from nowcasting_datamodel.models import Forecast, ForecastSQL, ForecastValue, Location, LocationSQL
 from nowcasting_datamodel.models.utils import EnhancedBaseModel
 from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
-
 adjust_limit = float(os.getenv("ADJUST_MW_LIMIT", 0.0))
 
-
-class ModelName(str, Enum):  # Define Enum for model options
+class ModelName(str, Enum):
+    """Enum for model options."""
     blend = "blend"
     pvnet_v2 = "pvnet_v2"
     pvnet_da = "pvnet_da"
@@ -32,20 +30,17 @@ class GSPYield(EnhancedBaseModel):
 
     @validator("solar_generation_kw")
     def result_check(cls, v):
-        """Round to 2 decimal places"""
+        """Round to 2 decimal places."""
         return round(v, 2)
 
 
 class LocationWithGSPYields(Location):
-    """Location object with GSPYields"""
+    """Location object with GSPYields."""
 
     gsp_yields: Optional[List[GSPYield]] = Field([], description="List of gsp yields")
 
     def from_location_sql(self):
-        """Change LocationWithGSPYieldsSQL to LocationWithGSPYields
-
-        LocationWithGSPYieldsSQL is defined in nowcasting_datamodel
-        """
+        """Change LocationWithGSPYieldsSQL to LocationWithGSPYields."""
 
         return LocationWithGSPYields(
             label=self.label,
@@ -65,40 +60,31 @@ class LocationWithGSPYields(Location):
 
 
 class GSPYieldGroupByDatetime(EnhancedBaseModel):
-    """gsp yields for one a singel datetime"""
+    """GSP yields for one single datetime."""
 
     datetime_utc: datetime = Field(..., description="The timestamp of the gsp yield")
     generation_kw_by_gsp_id: Dict[int, float] = Field(
         ...,
         description="List of generations by gsp_id. Key is gsp_id, value is generation_kw. "
-        "We keep this as a dictionary to keep the size of the file small ",
+        "We keep this as a dictionary to keep the size of the file small.",
     )
 
 
 class OneDatetimeManyForecastValues(EnhancedBaseModel):
-    """One datetime with many forecast values"""
+    """One datetime with many forecast values."""
 
     datetime_utc: datetime = Field(..., description="The timestamp of the gsp yield")
     forecast_values: Dict[int, float] = Field(
         ...,
         description="List of forecasts by gsp_id. Key is gsp_id, value is generation_kw. "
-        "We keep this as a dictionary to keep the size of the file small ",
+        "We keep this as a dictionary to keep the size of the file small.",
     )
 
 
 def convert_location_sql_to_many_datetime_many_generation(
     locations: List[LocationSQL],
 ) -> List[GSPYieldGroupByDatetime]:
-    """Change LocationSQL to list of OneDatetimeGSPGeneration
-
-    This converts a list of location objects to a list of OneDatetimeGSPGeneration objects.
-
-    N locations, which T gsp yields each,
-    is converted into
-    T OneDatetimeGSPGeneration objects with N gsp yields each.
-
-    This reducs the size of the object as the datetimes are not repeated for each gsp yield.
-    """
+    """Change LocationSQL to list of OneDatetimeGSPGeneration."""
 
     many_gsp_generation = {}
 
@@ -133,16 +119,7 @@ def convert_forecasts_to_many_datetime_many_generation(
     start_datetime_utc: Optional[datetime] = None,
     end_datetime_utc: Optional[datetime] = None,
 ) -> List[OneDatetimeManyForecastValues]:
-    """Change forecasts to list of OneDatetimeManyForecastValues
-
-    This converts a list of forecast objects to a list of OneDatetimeManyForecastValues objects.
-
-    N forecasts, which T forecast values each,
-    is converted into
-    T OneDatetimeManyForecastValues objects with N forecast values each.
-
-    This reduces the size of the object as the datetimes are not repeated for each forecast values.
-    """
+    """Change forecasts to list of OneDatetimeManyForecastValues."""
 
     many_forecast_values_by_datetime = {}
 
@@ -200,10 +177,10 @@ NationalYield = GSPYield
 
 
 class NationalForecastValue(ForecastValue):
-    """One Forecast of generation at one timestamp include properties"""
+    """One Forecast of generation at one timestamp include properties."""
 
     plevels: dict = Field(
-        None, description="Dictionary to hold properties of the forecast, like p_levels. "
+        None, description="Dictionary to hold properties of the forecast, like p_levels."
     )
 
     expected_power_generation_normalized: Optional[float] = Field(
@@ -215,18 +192,18 @@ class NationalForecastValue(ForecastValue):
 
     @validator("expected_power_generation_megawatts")
     def result_check(cls, v):
-        """Round to 2 decimal places"""
+        """Round to 2 decimal places."""
         return round(v, 2)
 
 
 class NationalForecast(Forecast):
-    """One Forecast of generation at one timestamp"""
+    """One Forecast of generation at one timestamp."""
 
-    forecast_values: List[NationalForecastValue] = Field(..., description="List of forecast values")
+    forecast_values: List[NationalForecastValue] = Field(..., description="List of forecast values.")
 
 
 class SolarForecastValue(BaseModel):
-    """Represents a single solar forecast entry"""
+    """Represents a single solar forecast entry."""
 
     timestamp: datetime = Field(..., description="Timestamp of the forecast")
     expected_power_generation_megawatts: Optional[float] = Field(
@@ -235,13 +212,13 @@ class SolarForecastValue(BaseModel):
 
     @validator("expected_power_generation_megawatts")
     def result_check(cls, v):
-        """Round to 2 decimal places"""
+        """Round to 2 decimal places."""
         if v is not None:
             return round(v, 2)
         return v
 
 
 class SolarForecastResponse(BaseModel):
-    """Wrapper for a list of solar forecast values"""
+    """Wrapper for a list of solar forecast values."""
 
-    data: List[SolarForecastValue] = Field(..., description="List of solar forecast values")
+    data: List[SolarForecastValue] = Field(..., description="List of solar forecast values.")

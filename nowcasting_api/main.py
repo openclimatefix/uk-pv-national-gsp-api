@@ -224,7 +224,10 @@ app.include_router(system_router, prefix=f"{v0_route_system}/gsp")
 @app.get("/v0/solar/GB/national/forecast", response_model=SolarForecastResponse)
 def get_national_forecast(model_name: ModelName = ModelName.blend):
     """### Get National Forecast
+
     Returns the national solar forecast based on the selected model.
+
+
     """
     # Logic to handle the model selection
     if model_name == ModelName.blend:
