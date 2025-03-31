@@ -19,7 +19,7 @@ from slowapi.errors import RateLimitExceeded
 from status import router as status_router
 from system import router as system_router
 from utils import limiter, traces_sampler
-from pydantic_models import ModelName  
+from pydantic_models import ModelName
 
 # flake8: noqa E501
 
@@ -181,7 +181,7 @@ app = FastAPI(docs_url="/swagger", redoc_url=None)
 # "https://*.nowcasting.io,
 # https://*-openclimatefix.vercel.app,https://*.quartz.solar")
 # .split(
-#     "," 
+#     ","
 # )
 origins = os.getenv("ORIGINS", "*").split(",")
 app.add_middleware(
@@ -231,15 +231,15 @@ def get_national_forecast(model_name: ModelName = ModelName.blend):
     """
     # Logic to handle the model selection
     if model_name == ModelName.blend:
-        forecast_data = "Blend model forecast data"  
-    elif model_name == ModelName.pvnet_v2:        
-        forecast_data = "PVNet V2 forecast data"  
-    elif model_name == ModelName.pvnet_da:       
-        forecast_data = "PVNet DA forecast data"  
-    elif model_name == ModelName.pvnet_ecwmf:        
-        forecast_data = "PVNet ECMWF forecast data" 
+        forecast_data = "Blend model forecast data"
+    elif model_name == ModelName.pvnet_v2:
+        forecast_data = "PVNet V2 forecast data"
+    elif model_name == ModelName.pvnet_da:
+        forecast_data = "PVNet DA forecast data"
+    elif model_name == ModelName.pvnet_ecwmf:
+        forecast_data = "PVNet ECMWF forecast data"
 
-    return forecast_data  
+    return forecast_data
 
 
 @app.get("/favicon.ico", include_in_schema=False)
