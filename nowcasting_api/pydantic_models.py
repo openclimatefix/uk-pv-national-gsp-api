@@ -4,6 +4,8 @@ import logging
 import os
 from datetime import datetime
 from typing import Dict, List, Optional
+from enum import Enum  
+
 
 from nowcasting_datamodel.models import Forecast, ForecastSQL, ForecastValue, Location, LocationSQL
 from nowcasting_datamodel.models.utils import EnhancedBaseModel
@@ -15,7 +17,14 @@ logger = logging.getLogger(__name__)
 adjust_limit = float(os.getenv("ADJUST_MW_LIMIT", 0.0))
 
 
-class GSPYield(EnhancedBaseModel):
+class ModelName(str, Enum):  # Define Enum for model options
+    blend = "blend"
+    pvnet_v2 = "pvnet_v2"
+    pvnet_da = "pvnet_da"
+    pvnet_ecwmf = "pvnet_ecwmf"
+
+class GSPYield(EnhancedBaseModel):  
+
     """GSP Yield data"""
 
     datetime_utc: datetime = Field(..., description="The timestamp of the gsp yield")

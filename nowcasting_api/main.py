@@ -19,6 +19,7 @@ from slowapi.errors import RateLimitExceeded
 from status import router as status_router
 from system import router as system_router
 from utils import limiter, traces_sampler
+from pydantic_models import ModelName  
 
 # flake8: noqa E501
 
@@ -180,7 +181,7 @@ app = FastAPI(docs_url="/swagger", redoc_url=None)
 # "https://*.nowcasting.io,
 # https://*-openclimatefix.vercel.app,https://*.quartz.solar")
 # .split(
-#     ","
+#     "," 
 # )
 origins = os.getenv("ORIGINS", "*").split(",")
 app.add_middleware(
@@ -220,23 +221,22 @@ app.include_router(system_router, prefix=f"{v0_route_system}/gsp")
 # app.include_router(pv_router, prefix=f"{v0_route}/pv")
 
 
-@app.get("/")
-def get_api_information():
-    """### Get basic Quartz Solar API information
-
-    Returns a json object with basic information about the Quartz Solar API.
-
+@app.get("/v0/solar/GB/national/forecast", response_model=SolarForecastResponse)
+def get_national_forecast(model_name: ModelName = ModelName.blend):
+    """### Get National Forecast
+    Returns the national solar forecast based on the selected model.
     """
+    # Logic to handle the model selection
+    if model_name == ModelName.blend:
+        forecast_data = "Blend model forecast data"  
+    elif model_name == ModelName.pvnet_v2:        
+        forecast_data = "PVNet V2 forecast data"  
+    elif model_name == ModelName.pvnet_da:       
+        forecast_data = "PVNet DA forecast data"  
+    elif model_name == ModelName.pvnet_ecwmf:        
+        forecast_data = "PVNet ECMWF forecast data" 
 
-    logger.info("Route / has be called")
-
-    return {
-        "title": "Quartz Solar API",
-        "version": version,
-        "description": description,
-        "documentation": "https://api.quartz.solar/docs",
-        "swagger ui": "https://api.quartz.solar/swagger",
-    }
+    return forecast_data  
 
 
 @app.get("/favicon.ico", include_in_schema=False)
