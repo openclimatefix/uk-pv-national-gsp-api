@@ -4,7 +4,7 @@ import logging
 import os
 from datetime import datetime
 from typing import Dict, List, Optional
-from enum import Enum  
+from enum import Enum
 
 from nowcasting_datamodel.models import Forecast, ForecastSQL, ForecastValue, Location, LocationSQL
 from nowcasting_datamodel.models.utils import EnhancedBaseModel
