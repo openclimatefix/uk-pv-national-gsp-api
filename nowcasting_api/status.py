@@ -1,4 +1,4 @@
-"""Get Status from database """
+"""Get Status from database"""
 
 import os
 from datetime import datetime, timedelta, timezone
