@@ -20,7 +20,7 @@ from status import router as status_router
 from system import router as system_router
 from utils import limiter, traces_sampler
 
-from pydantic_models import ModelName  
+from pydantic_models import ModelName
 
 
 # flake8: noqa E501

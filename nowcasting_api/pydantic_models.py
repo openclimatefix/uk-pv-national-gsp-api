@@ -3,7 +3,7 @@
 import logging
 import os
 from datetime import datetime
-from enum import Enum  
+from enum import Enum
 from typing import Dict, List, Optional
 
 
