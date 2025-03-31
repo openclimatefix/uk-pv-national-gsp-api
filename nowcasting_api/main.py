@@ -4,7 +4,6 @@ import logging
 import os
 import time
 from datetime import timedelta
-
 import sentry_sdk
 import structlog
 from fastapi import FastAPI, Request
@@ -20,7 +19,7 @@ from status import router as status_router
 from system import router as system_router
 from utils import limiter, traces_sampler
 
-from pydantic_models import ModelName  
+from pydantic_models import ModelName  # Internal import at the end
 
 
 # flake8: noqa E501

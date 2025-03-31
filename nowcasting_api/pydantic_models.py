@@ -3,10 +3,8 @@
 import logging
 import os
 from datetime import datetime
-from enum import Enum  
+from enum import Enum
 from typing import Dict, List, Optional
-
-
 from nowcasting_datamodel.models import Forecast, ForecastSQL, ForecastValue, Location, LocationSQL
 from nowcasting_datamodel.models.utils import EnhancedBaseModel
 from pydantic import BaseModel, Field, validator
