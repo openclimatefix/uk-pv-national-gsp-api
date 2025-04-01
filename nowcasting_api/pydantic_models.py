@@ -1,10 +1,11 @@
-""" pydantic models for API"""
+""" Pydantic models for API """
 
 import logging
 import os
 from datetime import datetime
 from enum import Enum
 from typing import Dict, List, Optional
+
 from nowcasting_datamodel.models import Forecast, ForecastSQL, ForecastValue, Location, LocationSQL
 from nowcasting_datamodel.models.utils import EnhancedBaseModel
 from pydantic import BaseModel, Field, validator
@@ -14,6 +15,7 @@ logger = logging.getLogger(__name__)
 adjust_limit = float(os.getenv("ADJUST_MW_LIMIT", 0.0))
 
 
+
 class ModelName(str, Enum):
     """Enum for model options."""
 
@@ -21,6 +23,7 @@ class ModelName(str, Enum):
     pvnet_v2 = "pvnet_v2"
     pvnet_da = "pvnet_da"
     pvnet_ecwmf = "pvnet_ecwmf"
+
 
 
 class GSPYield(EnhancedBaseModel):
