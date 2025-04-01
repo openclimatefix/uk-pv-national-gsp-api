@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 adjust_limit = float(os.getenv("ADJUST_MW_LIMIT", 0.0))
 
 
-
 class ModelName(str, Enum):
     """Enum for model options."""
 
@@ -23,7 +22,6 @@ class ModelName(str, Enum):
     pvnet_v2 = "pvnet_v2"
     pvnet_da = "pvnet_da"
     pvnet_ecwmf = "pvnet_ecwmf"
-
 
 
 class GSPYield(EnhancedBaseModel):
