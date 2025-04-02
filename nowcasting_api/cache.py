@@ -20,7 +20,7 @@ DELETE_CACHE_TIME_SECONDS = int(os.getenv("DELETE_CACHE_TIME_SECONDS", 240))
 def setup_cache():
     """
     Initialize the FastAPICache with an in-memory backend.
-    Call this function in your main.py after creating the FastAPI app.
+    Call this function in main.py after creating the FastAPI app.
     
     Example:
     ```
