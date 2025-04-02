@@ -43,8 +43,11 @@ api_client = ApiClient()
 elexon_forecast_api = GenerationForecastApi(api_client)
 
 
-# Define model name options as an Enum
 class ModelName(str, Enum):
+    """Available model options for national forecasts.
+    
+    Options include blend (default), pvnet_v2, pvnet_da, and pvnet_ecwmf.
+    """
     blend = "blend"
     pvnet_v2 = "pvnet_v2"
     pvnet_da = "pvnet_da"
