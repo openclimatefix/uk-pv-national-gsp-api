@@ -35,11 +35,13 @@ logger = structlog.stdlib.get_logger()
 adjust_limit = float(os.getenv("ADJUST_MW_LIMIT", 0.0))
 get_plevels = bool(os.getenv("GET_PLEVELS", True))
 
+
 class ModelName(str, Enum):
     blend = "blend"
     pvnet_v2 = "pvnet_v2"
     pvnet_da = "pvnet_da"
     pvnet_ecwmf = "pvnet_ecwmf"
+
 
 router = APIRouter(
     tags=["National"],
@@ -48,6 +50,7 @@ router = APIRouter(
 # Initialize Elexon API client
 api_client = ApiClient()
 elexon_forecast_api = GenerationForecastApi(api_client)
+
 
 @router.get(
     "/forecast",
@@ -121,9 +124,7 @@ def get_national_forecast(
             creation_utc_limit=creation_limit_utc,
         )
 
-    logger.debug(
-        f"Got national forecasts with {len(forecast_values)} forecast values."
-    )
+    logger.debug(f"Got national forecasts with {len(forecast_values)} forecast values.")
     forecast_values = [f.adjust(limit=adjust_limit) for f in forecast_values]
 
     if include_metadata:
