@@ -20,6 +20,7 @@ from status import router as status_router
 from system import router as system_router
 from utils import limiter, traces_sampler
 from cache import setup_cache
+
 # flake8: noqa E501
 
 structlog.configure(
@@ -175,9 +176,13 @@ Here a few use cases for of the Quartz Solar API routes.
 
 """
 app = FastAPI(docs_url="/swagger", redoc_url=None)
+
+
 @app.on_event("startup")
 async def startup():
     setup_cache()
+
+
 # origins = os.getenv("ORIGINS",
 # "https://*.nowcasting.io,
 # https://*-openclimatefix.vercel.app,https://*.quartz.solar")
