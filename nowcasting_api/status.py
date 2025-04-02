@@ -25,7 +25,7 @@ forecast_error_hours = float(os.getenv("FORECAST_ERROR_HOURS", 2.0))
 
 
 @router.get("/status", response_model=Status)
-@cache_response
+@cache_response()
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_status(request: Request, session: Session = Depends(get_session)) -> Status:
     """### Get status for the database and forecasts
