@@ -2,6 +2,7 @@
 
 import os
 from datetime import datetime, timedelta
+from enum import Enum
 from typing import List, Optional, Union
 
 import pandas as pd
@@ -42,6 +43,14 @@ api_client = ApiClient()
 elexon_forecast_api = GenerationForecastApi(api_client)
 
 
+# Define model name options as an Enum
+class ModelName(str, Enum):
+    blend = "blend"
+    pvnet_v2 = "pvnet_v2"
+    pvnet_da = "pvnet_da"
+    pvnet_ecwmf = "pvnet_ecwmf"
+
+
 @router.get(
     "/forecast",
     response_model=Union[NationalForecast, List[NationalForecastValue]],
@@ -58,6 +67,7 @@ def get_national_forecast(
     start_datetime_utc: Optional[str] = None,
     end_datetime_utc: Optional[str] = None,
     creation_limit_utc: Optional[str] = None,
+    model_name: ModelName = ModelName.blend,
 ) -> Union[NationalForecast, List[NationalForecastValue]]:
     """
 
@@ -80,6 +90,8 @@ def get_national_forecast(
     - **end_datetime_utc**: optional end datetime for the query.
     - **creation_limit_utc**: optional, only return forecasts made before this datetime.
     Note you can only go 7 days back at the moment
+    - **model_name**: optional, specify which model to use for the forecast.
+    Options: blend (default), pvnet_v2, pvnet_da, pvnet_ecwmf
 
     Returns:
         dict: The national forecast data.
@@ -91,7 +103,7 @@ def get_national_forecast(
     end_datetime_utc = format_datetime(end_datetime_utc)
     creation_limit_utc = format_datetime(creation_limit_utc)
 
-    logger.debug("Getting forecast.")
+    logger.debug(f"Getting forecast using model {model_name}")
     if include_metadata:
         if forecast_horizon_minutes is not None:
             raise HTTPException(
@@ -107,7 +119,7 @@ def get_national_forecast(
         forecast = get_latest_forecast_for_gsps(
             session=session,
             gsp_ids=[0],
-            model_name="blend",
+            model_name=model_name,
             historic=historic,
             preload_children=True,
             start_target_time=start_datetime_utc,
