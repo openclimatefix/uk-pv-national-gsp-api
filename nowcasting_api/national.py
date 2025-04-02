@@ -31,12 +31,15 @@ router = APIRouter(
     tags=["National"],
 )
 
+
 class ModelName(str, Enum):
     """Enumeration of available forecast models."""
+
     blend = "blend"
     pvnet_v2 = "pvnet_v2"
     pvnet_da = "pvnet_da"
     pvnet_ecwmf = "pvnet_ecwmf"
+
 
 @router.get(
     "/forecast",
