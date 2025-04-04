@@ -54,7 +54,7 @@ NationalYield = GSPYield
     response_model=Union[ManyForecasts, List[OneDatetimeManyForecastValues]],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
-@cache_response
+@cache_response()
 @limiter.limit(f"{N_SLOW_CALLS_PER_HOUR}/hour")
 def get_all_available_forecasts(
     request: Request,
@@ -145,7 +145,7 @@ def get_all_available_forecasts(
     include_in_schema=False,
     responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
-@cache_response
+@cache_response()
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_forecasts_for_a_specific_gsp_old_route(
     request: Request,
@@ -171,7 +171,7 @@ def get_forecasts_for_a_specific_gsp_old_route(
     dependencies=[Depends(get_auth_implicit_scheme())],
     responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
-@cache_response
+@cache_response()
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_forecasts_for_a_specific_gsp(
     request: Request,
@@ -240,7 +240,7 @@ def get_forecasts_for_a_specific_gsp(
     response_model=Union[List[LocationWithGSPYields], List[GSPYieldGroupByDatetime]],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
-@cache_response
+@cache_response()
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_truths_for_all_gsps(
     request: Request,
@@ -296,7 +296,7 @@ def get_truths_for_all_gsps(
     include_in_schema=False,
     responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
-@cache_response
+@cache_response()
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_truths_for_a_specific_gsp_old_route(
     request: Request,
@@ -323,7 +323,7 @@ def get_truths_for_a_specific_gsp_old_route(
     dependencies=[Depends(get_auth_implicit_scheme())],
     responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
-@cache_response
+@cache_response()
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_truths_for_a_specific_gsp(
     request: Request,

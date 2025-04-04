@@ -60,7 +60,7 @@ class ModelName(str, Enum):
     response_model=Union[NationalForecast, List[NationalForecastValue]],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
-@cache_response
+@cache_response()
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_national_forecast(
     request: Request,
@@ -193,7 +193,7 @@ def get_national_forecast(
     response_model=List[NationalYield],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
-@cache_response
+@cache_response()
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_national_pvlive(
     request: Request,
