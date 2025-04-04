@@ -1,10 +1,10 @@
-""" Caching utils for api using fastapi-cache"""
+"""Caching utils for api using fastapi-cache"""
 
 import os
-from typing import Callable, Optional, Any
+from typing import Any, Callable, Optional
 
 import structlog
-from fastapi import Request, Depends
+from fastapi import Request
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.inmemory import InMemoryBackend
 from fastapi_cache.decorator import cache
@@ -18,8 +18,8 @@ DELETE_CACHE_TIME_SECONDS = int(os.getenv("DELETE_CACHE_TIME_SECONDS", 240))
 
 
 def setup_cache():
-    """
-    Initialize the FastAPICache with an in-memory backend.
+    """Initialize the FastAPICache with an in-memory backend.
+
     Call this function in main.py after creating the FastAPI app.
 
     Example:
@@ -56,6 +56,7 @@ def save_api_call(
 ):
     """
     Save API call to database.
+
     This can be used as a dependency in FastAPI routes.
 
     :param request: The FastAPI request object

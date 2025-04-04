@@ -7,6 +7,7 @@ from datetime import timedelta
 
 import sentry_sdk
 import structlog
+from cache import setup_cache
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
@@ -19,7 +20,6 @@ from slowapi.errors import RateLimitExceeded
 from status import router as status_router
 from system import router as system_router
 from utils import limiter, traces_sampler
-from cache import setup_cache
 
 # flake8: noqa E501
 
@@ -180,6 +180,7 @@ app = FastAPI(docs_url="/swagger", redoc_url=None)
 
 @app.on_event("startup")
 async def startup():
+    """Initialize application cache on startup."""
     setup_cache()
 
 
