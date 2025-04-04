@@ -4,11 +4,11 @@ import os
 from typing import Any, Callable, Optional
 
 import structlog
+from database import save_api_call_to_db
 from fastapi import Request
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.inmemory import InMemoryBackend
 from fastapi_cache.decorator import cache
-from database import save_api_call_to_db
 
 logger = structlog.stdlib.get_logger()
 
