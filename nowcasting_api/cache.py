@@ -4,7 +4,7 @@ import os
 from typing import Any, Callable, Optional
 
 import structlog
-from database import save_api_call_to_db
+from nowcasting_api.database import save_api_call_to_db
 from fastapi import Request
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.inmemory import InMemoryBackend
@@ -35,21 +35,20 @@ def setup_cache():
     logger.info("FastAPI Cache initialized with InMemoryBackend")
 
 
-def generate_cache_key(func: Callable, request: Request, *args, **kwargs) -> str:
-    """
-    Generate a unique cache key based on the endpoint path and query parameters.
+def generate_cache_key(func: Callable, *args, **kwargs) -> str:
+    """Generate a unique cache key based on the endpoint path and query parameters.
 
     :param func: The route handler function
     :param request: The FastAPI request object
     :return: A string to be used as cache key
     """
     # Create key from path and sorted query params
-    path = request.url.path
-    query_params = sorted(request.query_params.items())
+    request: Request = kwargs.get("request")
+    path = request.url.path if request else "unknown"
+    query_params = sorted(request.query_params.items()) if request else []
     key = f"{path}:{query_params}"
     logger.debug(f"Generated cache key: {key}")
     return key
-
 
 def save_api_call(
     request: Request = None, user: Optional[Any] = None, session: Optional[Any] = None
