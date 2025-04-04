@@ -50,6 +50,7 @@ def generate_cache_key(func: Callable, *args, **kwargs) -> str:
     logger.debug(f"Generated cache key: {key}")
     return key
 
+
 def save_api_call(
     request: Request = None, user: Optional[Any] = None, session: Optional[Any] = None
 ):

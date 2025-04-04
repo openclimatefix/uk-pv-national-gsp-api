@@ -73,8 +73,9 @@ def api_client(db_session):
     We override the user and the database session
     """
     from nowcasting_api.cache import setup_cache
+
     setup_cache()
-    
+
     client = TestClient(app)
 
     app.dependency_overrides[get_auth_implicit_scheme] = lambda: None
