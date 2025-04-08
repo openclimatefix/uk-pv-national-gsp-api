@@ -20,4 +20,4 @@ pathy==0.10.3
 fsspec
 s3fs
 elexonpy
-fastapi-cache2
+fastapi-cache2==0.2.2
