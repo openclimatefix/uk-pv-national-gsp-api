@@ -43,16 +43,24 @@ api_client = ApiClient()
 elexon_forecast_api = GenerationForecastApi(api_client)
 
 
+model_names_external_to_internal = {
+    "blend": "blend",
+    "pvnet_intraday": "pvnet_v2",
+    "pvnet_day_ahead": "pvnet_day_ahead",
+    "pvnet_intraday_ecmwf_only": "pvnet_ecmwf",
+}
+
+
 class ModelName(str, Enum):
     """Available model options for national forecasts.
 
-    Options include blend (default), pvnet_v2, pvnet_da, and pvnet_ecwmf.
+    Options include blend (default), pvnet_intraday, pvnet_day_ahead, and pvnet_intraday_ecmwf_only.
     """
 
     blend = "blend"
-    pvnet_v2 = "pvnet_v2"
-    pvnet_da = "pvnet_da"
-    pvnet_ecwmf = "pvnet_ecwmf"
+    pvnet_intraday = "pvnet_intraday"
+    pvnet_day_ahead = "pvnet_day_ahead"
+    pvnet_intraday_ecmwf_only = "pvnet_intraday_ecmwf_only"
 
 
 @router.get(
@@ -95,7 +103,7 @@ def get_national_forecast(
     - **creation_limit_utc**: optional, only return forecasts made before this datetime.
     Note you can only go 7 days back at the moment
     - **model_name**: optional, specify which model to use for the forecast.
-    Options: blend (default), pvnet_v2, pvnet_da, pvnet_ecwmf
+    Options: blend (default), pvnet_intraday, pvnet_day_ahead, pvnet_intraday_ecmwf_only
 
     Returns:
         dict: The national forecast data.
@@ -106,6 +114,8 @@ def get_national_forecast(
     start_datetime_utc = format_datetime(start_datetime_utc)
     end_datetime_utc = format_datetime(end_datetime_utc)
     creation_limit_utc = format_datetime(creation_limit_utc)
+
+    model_name = model_names_external_to_internal.get(model_name)
 
     logger.debug(f"Getting forecast using model {model_name}")
     if include_metadata:
