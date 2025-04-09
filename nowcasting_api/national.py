@@ -46,13 +46,13 @@ elexon_forecast_api = GenerationForecastApi(api_client)
 class ModelName(str, Enum):
     """Available model options for national forecasts.
 
-    Options include blend (default), pvnet_v2, pvnet_da, and pvnet_ecwmf.
+    Options include blend (default), pvnet_intraday, pvnet_day_ahead, and pvnet_intraday_ecmwf.
     """
 
     blend = "blend"
-    pvnet_v2 = "pvnet_v2"
-    pvnet_da = "pvnet_da"
-    pvnet_ecwmf = "pvnet_ecwmf"
+    pvnet_intraday = "pvnet_v2"
+    pvnet_day_ahead = "pvnet_day_ahead"
+    pvnet_intraday_ecmwf = "pvnet_ecmwf"
 
 
 @router.get(
@@ -95,7 +95,7 @@ def get_national_forecast(
     - **creation_limit_utc**: optional, only return forecasts made before this datetime.
     Note you can only go 7 days back at the moment
     - **model_name**: optional, specify which model to use for the forecast.
-    Options: blend (default), pvnet_v2, pvnet_da, pvnet_ecwmf
+    Options: blend (default), pvnet_intraday, pvnet_day_ahead, pvnet_intraday_ecmwf
 
     Returns:
         dict: The national forecast data.
