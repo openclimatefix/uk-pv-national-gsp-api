@@ -46,13 +46,13 @@ elexon_forecast_api = GenerationForecastApi(api_client)
 class ModelName(str, Enum):
     """Available model options for national forecasts.
 
-    Options include blend (default), pvnet_intraday, pvnet_day_ahead, and pvnet_intraday_ecmwf.
+    Options include blend (default), pvnet_intraday, pvnet_day_ahead, and pvnet_intraday_ecmwf_only.
     """
 
     blend = "blend"
     pvnet_intraday = "pvnet_v2"
     pvnet_day_ahead = "pvnet_day_ahead"
-    pvnet_intraday_ecmwf = "pvnet_ecmwf"
+    pvnet_intraday_ecmwf_only = "pvnet_ecmwf"
 
 
 @router.get(
