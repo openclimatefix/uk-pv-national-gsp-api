@@ -43,6 +43,14 @@ api_client = ApiClient()
 elexon_forecast_api = GenerationForecastApi(api_client)
 
 
+model_names_external_to_internal = {
+    "blend": "blend",
+    "pvnet_intraday": "pvnet_v2",
+    "pvnet_day_ahead": "pvnet_day_ahead",
+    "pvnet_intraday_ecmwf_only": "pvnet_ecmwf",
+}
+
+
 class ModelName(str, Enum):
     """Available model options for national forecasts.
 
@@ -50,9 +58,9 @@ class ModelName(str, Enum):
     """
 
     blend = "blend"
-    pvnet_intraday = "pvnet_v2"
+    pvnet_intraday = "pvnet_intraday"
     pvnet_day_ahead = "pvnet_day_ahead"
-    pvnet_intraday_ecmwf_only = "pvnet_ecmwf"
+    pvnet_intraday_ecmwf_only = "pvnet_intraday_ecmwf_only"
 
 
 @router.get(
@@ -106,6 +114,8 @@ def get_national_forecast(
     start_datetime_utc = format_datetime(start_datetime_utc)
     end_datetime_utc = format_datetime(end_datetime_utc)
     creation_limit_utc = format_datetime(creation_limit_utc)
+
+    model_name = model_names_external_to_internal.get(model_name)
 
     logger.debug(f"Getting forecast using model {model_name}")
     if include_metadata:
