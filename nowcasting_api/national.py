@@ -103,7 +103,7 @@ def get_national_forecast(
     - **creation_limit_utc**: optional, only return forecasts made before this datetime.
     Note you can only go 7 days back at the moment
     - **model_name**: optional, specify which model to use for the forecast.
-    Options: blend (default), pvnet_intraday, pvnet_day_ahead, pvnet_intraday_ecmwf
+    Options: blend (default), pvnet_intraday, pvnet_day_ahead, pvnet_intraday_ecmwf_only
 
     Returns:
         dict: The national forecast data.
