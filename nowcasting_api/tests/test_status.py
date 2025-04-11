@@ -24,7 +24,7 @@ from nowcasting_api.main import app
 client = TestClient(app)
 
 
-def test_read_latest_status(db_session):
+async def test_read_latest_status(db_session):
     """Check main GB/pv/status route works"""
     status = Status(message="Good", status="ok").to_orm()
     db_session.add(status)
@@ -32,7 +32,7 @@ def test_read_latest_status(db_session):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = client.get("/v0/solar/GB/status")
+    response = await client.get("/v0/solar/GB/status")
     assert response.status_code == 200
 
     returned_status = Status(**response.json())

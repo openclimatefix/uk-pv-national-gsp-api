@@ -7,6 +7,7 @@ from datetime import timedelta
 
 import sentry_sdk
 import structlog
+from cache import setup_cache
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
@@ -175,6 +176,13 @@ Here a few use cases for of the Quartz Solar API routes.
 
 """
 app = FastAPI(docs_url="/swagger", redoc_url=None)
+
+
+@app.on_event("startup")
+async def startup():
+    """Initialize application cache on startup."""
+    setup_cache()
+
 
 # origins = os.getenv("ORIGINS",
 # "https://*.nowcasting.io,
