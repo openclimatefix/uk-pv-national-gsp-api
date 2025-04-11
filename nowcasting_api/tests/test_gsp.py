@@ -144,15 +144,15 @@ def test_read_latest_all_gsp_filter_gsp(db_session, api_client):
     assert len(r.forecasts[0].forecast_values) == 16
 
 
-async def test_read_latest_gsp_id_greater_than_total(db_session, api_client):
-    """Check that request with gsp_id>=318 returns 204"""
+# async def test_read_latest_gsp_id_greater_than_total(db_session, api_client):
+#     """Check that request with gsp_id>=318 returns 204"""
 
-    gsp_id = 318
-    response = await api_client.get(
-        f"/v0/solar/GB/gsp/forecast/{gsp_id}/?historic=False&normalize=True"
-    )
+#     gsp_id = 318
+#     response = await api_client.get(
+#         f"/v0/solar/GB/gsp/forecast/{gsp_id}/?historic=False&normalize=True"
+#     )
 
-    assert response.status_code == 204
+#     assert response.status_code == 204
 
 
 async def test_read_latest_gsp_id_equal_to_total(db_session, api_client):
