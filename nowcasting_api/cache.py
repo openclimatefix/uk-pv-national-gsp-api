@@ -38,7 +38,7 @@ def setup_cache():
 
 def generate_cache_key(func: Callable, *args, **kwargs) -> str:
     """Generate a unique cache key based on the endpoint path and query parameters.
-    
+
     :param func: The route handler function
     :param request: The FastAPI request object
     :return: A string to be used as cache key
@@ -49,17 +49,19 @@ def generate_cache_key(func: Callable, *args, **kwargs) -> str:
     query_params = sorted(request.query_params.items()) if request else []
     key = f"{path}:{query_params}"
     logger.debug(f"Generated cache key: {key}")
-    
+
     # Check if this key is locked (recently cleared)
     backend = FastAPICache.get_backend()
     lock_exists = backend.get(f"{key}:lock", namespace="api")
     if lock_exists:
         # If the key is locked, generate a unique key to prevent caching
         import time
+
         key = f"{key}:nocache:{time.time()}"
         logger.debug(f"Key is locked, using temporary key: {key}")
-    
+
     return key
+
 
 def save_api_call(
     request: Request = None, user: Optional[Any] = None, session: Optional[Any] = None
@@ -94,7 +96,7 @@ def clear_cache_key(key: str, expiration: int = DELETE_CACHE_TIME_SECONDS):
     """
     try:
         backend = FastAPICache.get_backend()
-        backend.clear(namespace="api", key=key)        
+        backend.clear(namespace="api", key=key)
         if expiration > 0:
             backend.set(f"{key}:lock", "_LOCKED_", expire=expiration, namespace="api")
             logger.info(f"Cleared cache key: {key} with lock for {expiration} seconds")
