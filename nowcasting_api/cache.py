@@ -67,9 +67,10 @@ def save_api_call(
     save_api_call_to_db(session=session, user=user, request=request)
     return request
 
+
 def clear_cache_key(key: str, expiration: int = DELETE_CACHE_TIME_SECONDS):
     """Clear a specific cache key from the FastAPI cache.
-    
+
     Example:
     ```
     @app.delete("/clear-cache/{item_id}")
@@ -78,7 +79,7 @@ def clear_cache_key(key: str, expiration: int = DELETE_CACHE_TIME_SECONDS):
         clear_cache_key(key)
         return {"message": f"Cache cleared for item {item_id}"}
     ```
-    
+
     :param key: The cache key to clear
     :param expiration: Time in seconds before the key can be cached again
     """
@@ -87,6 +88,7 @@ def clear_cache_key(key: str, expiration: int = DELETE_CACHE_TIME_SECONDS):
         logger.info(f"Cleared cache key: {key}")
     except Exception as e:
         logger.error(f"Failed to clear cache for key {key}: {e}")
+
 
 def cache_response(expiration: int = CACHE_TIME_SECONDS):
     """
