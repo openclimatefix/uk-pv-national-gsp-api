@@ -46,12 +46,12 @@ def generate_cache_key(func: Callable, *args, **kwargs) -> str:
     request: Request = kwargs.get("request")
     path = request.url.path if request else "unknown"
     query_params = sorted(request.query_params.items()) if request else []
-    key = f"{path}:{query_params}"
+    key = f"api:{path}:{query_params}"
     logger.debug(f"Generated cache key: {key}")
 
     # Check if this key is locked (recently cleared)
     backend = FastAPICache.get_backend()
-    lock_exists = backend.get(f"{key}:lock", namespace="api")
+    lock_exists = backend.get(f"{key}:lock")
     if lock_exists:
         # If the key is locked, generate a unique key to prevent caching
         import time
@@ -95,9 +95,9 @@ def clear_cache_key(key: str, expiration: int = DELETE_CACHE_TIME_SECONDS):
     """
     try:
         backend = FastAPICache.get_backend()
-        backend.clear(namespace="api", key=key)
+        backend.clear(key=key)
         if expiration > 0:
-            backend.set(f"{key}:lock", "_LOCKED_", expire=expiration, namespace="api")
+            backend.set(f"{key}:lock", "_LOCKED_", expire=expiration)
             logger.info(f"Cleared cache key: {key} with lock for {expiration} seconds")
         else:
             logger.info(f"Cleared cache key: {key}")
@@ -122,5 +122,5 @@ def cache_response(expiration: int = CACHE_TIME_SECONDS):
     """
 
     def decorator(func: Callable):
-        return cache(expire=expiration, namespace="api", key_builder=generate_cache_key)(func)
+        return cache(expire=expiration, key_builder=generate_cache_key)(func)
     return decorator
