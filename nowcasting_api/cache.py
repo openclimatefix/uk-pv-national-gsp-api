@@ -13,9 +13,8 @@ from nowcasting_api.database import save_api_call_to_db
 
 logger = structlog.stdlib.get_logger()
 
-# Configuration constants with environment variable fallbacks
+# Configuration constant with environment variable fallback
 CACHE_TIME_SECONDS = int(os.getenv("CACHE_TIME_SECONDS", 120))
-DELETE_CACHE_TIME_SECONDS = int(os.getenv("DELETE_CACHE_TIME_SECONDS", 240))
 
 
 def setup_cache():
@@ -92,7 +91,7 @@ def clear_cache_key(key: str, expiration: int = DELETE_CACHE_TIME_SECONDS):
     ```
 
     :param key: The cache key to clear
-    :param expiration: Time in seconds before the key can be cached again
+    :param expiration: Time in seconds before the key can be cached again (0 to disable locking)
     """
     try:
         backend = FastAPICache.get_backend()
@@ -104,6 +103,7 @@ def clear_cache_key(key: str, expiration: int = DELETE_CACHE_TIME_SECONDS):
             logger.info(f"Cleared cache key: {key}")
     except Exception as e:
         logger.error(f"Failed to clear cache for key {key}: {e}")
+
 
 def cache_response(expiration: int = CACHE_TIME_SECONDS):
     """
@@ -123,5 +123,4 @@ def cache_response(expiration: int = CACHE_TIME_SECONDS):
 
     def decorator(func: Callable):
         return cache(expire=expiration, namespace="api", key_builder=generate_cache_key)(func)
-
     return decorator
