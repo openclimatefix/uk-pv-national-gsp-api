@@ -123,4 +123,5 @@ def cache_response(expiration: int = CACHE_TIME_SECONDS):
 
     def decorator(func: Callable):
         return cache(expire=expiration, key_builder=generate_cache_key)(func)
+
     return decorator
