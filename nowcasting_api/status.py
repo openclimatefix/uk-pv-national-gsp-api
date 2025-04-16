@@ -8,7 +8,7 @@ import structlog
 from cache import cache_response
 from database import get_latest_status_from_database, get_session, save_api_call_to_db
 from fastapi import APIRouter, Depends, HTTPException, Request
-from nowcasting_datamodel.models import ForecastSQL, GSPYieldSQL, Status
+from nowcasting_datamodel.models import ForecastSQL, GSPYieldSQL, MLModelSQL, Status
 from nowcasting_datamodel.read.read import (
     get_latest_input_data_last_updated,
     update_latest_input_data_last_updated,
@@ -40,7 +40,7 @@ def get_status(request: Request, session: Session = Depends(get_session)) -> Sta
 
 @router.get("/check_last_forecast_run", include_in_schema=False)
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
-def check_last_forecast(request: Request, session: Session = Depends(get_session)) -> datetime:
+def check_last_forecast(request: Request, session: Session = Depends(get_session), model_name: str | None = None) -> datetime:
     """Check to that a forecast has run with in the last 2 hours"""
 
     save_api_call_to_db(session=session, request=request)
@@ -48,13 +48,21 @@ def check_last_forecast(request: Request, session: Session = Depends(get_session
     logger.debug("Check to see when the last forecast run was ")
 
     query = session.query(ForecastSQL)
+
+    if model_name is not None:
+        query = query.join(MLModelSQL)
+        query = query.filter(MLModelSQL.name == model_name)
+
     query = query.order_by(ForecastSQL.created_utc.desc())
     query = query.limit(1)
 
     try:
         forecast = query.one()
     except NoResultFound:
-        raise HTTPException(status_code=404, detail="There are no forecasts")
+        message = "There are no forecasts"
+        if model_name is not None:
+            message += f" for model {model_name}"
+        raise HTTPException(status_code=404, detail=message)
 
     if forecast.forecast_creation_time <= datetime.now(tz=timezone.utc) - timedelta(
         hours=forecast_error_hours
