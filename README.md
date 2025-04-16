@@ -166,7 +166,18 @@ docker-compose -f test-docker-compose.yml run api
 
 ## FAQ
 
-TODO
+### What is a N hour forecast?
+
+Some users want to know what the forecast was like N hours ago. We can do this by setting 
+`forecast_hoirzon_minutes` in the api.
+Becasue API provider forecast in the future and historic, it is useful to define this behaviour for N hour forecast.
+- future: A forecast that was made N hours ago for the future. 
+- E.g if its now 2025-01-01 12:00, the future will show a forecast made at 2025-01-01 08:00, from now to 2025-01-02 20:00 (a 36 hour forecast)
+- past: Forecast values that were made N hours before the target time. E.g. a target_time of 2025-01-01 11:00 will show a forecast value made at 2025-01-01 07:00. 
+
+
+![N hour foreacst](./nhourforecast.png)
+
 
 
 ## Contributing and community
