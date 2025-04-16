@@ -174,7 +174,7 @@ Because the API provider forecasts in the future and historic values, it is usef
 - future: A forecast that was made N hours ago for the future. 
 For example, if its now 2025-01-01 12:00, the future will show a forecast made at 2025-01-01 08:00, from now to 2025-01-02 20:00 (a 36 hour forecast)
 - past: Forecast values that were made N hours before the target time. 
-For example, a target_time of 2025-01-01 11:00 will show a forecast value made at 2025-01-01 07:00. 
+For example, a target_time of 2025-01-01 11:00 will show a forecast value made at 2025-01-01 07:00.
 
 
 ![N hour foreacst](./nhourforecast.png)
