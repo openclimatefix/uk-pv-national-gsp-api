@@ -40,7 +40,9 @@ def get_status(request: Request, session: Session = Depends(get_session)) -> Sta
 
 @router.get("/check_last_forecast_run", include_in_schema=False)
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
-def check_last_forecast(request: Request, session: Session = Depends(get_session), model_name: str | None = None) -> datetime:
+def check_last_forecast(
+    request: Request, session: Session = Depends(get_session), model_name: str | None = None
+) -> datetime:
     """Check to that a forecast has run with in the last 2 hours"""
 
     save_api_call_to_db(session=session, request=request)

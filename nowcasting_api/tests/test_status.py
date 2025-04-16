@@ -62,7 +62,6 @@ def test_check_last_forecast_run_no_forecast_model_name(db_session):
     assert response.status_code == 404
 
 
-
 @freeze_time("2023-01-02")
 def test_check_last_forecast_run_correct(db_session):
     """Check check_last_forecast_run works fine"""
@@ -75,6 +74,7 @@ def test_check_last_forecast_run_correct(db_session):
 
     response = client.get("/v0/solar/GB/check_last_forecast_run")
     assert response.status_code == 200
+
 
 @freeze_time("2023-01-02")
 def test_check_last_forecast_run_correct_model_name(db_session):
