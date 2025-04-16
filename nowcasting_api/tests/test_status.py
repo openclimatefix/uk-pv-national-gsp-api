@@ -78,7 +78,7 @@ def test_check_last_forecast_run_correct(db_session):
 
 @freeze_time("2023-01-02")
 def test_check_last_forecast_run_correct_model_name(db_session):
-    """Check check_last_forecast_run works fine"""
+    """Check check_last_forecast_run works fine with a model name"""
     forecast_creation_time = datetime.now(tz=timezone.utc) - timedelta(minutes=5)
     model = MLModelSQL(name="test")
     forecast = ForecastSQL(forecast_creation_time=forecast_creation_time)
@@ -94,7 +94,7 @@ def test_check_last_forecast_run_correct_model_name(db_session):
 
 @freeze_time("2023-01-02")
 def test_check_last_forecast_run_correct_wrong_model_name(db_session):
-    """Check check_last_forecast_run works fine"""
+    """Check check_last_forecast_run gives error due to wrong model name"""
     forecast_creation_time = datetime.now(tz=timezone.utc) - timedelta(minutes=5)
     model = MLModelSQL(name="test")
     forecast = ForecastSQL(forecast_creation_time=forecast_creation_time)
@@ -110,7 +110,7 @@ def test_check_last_forecast_run_correct_wrong_model_name(db_session):
 
 @freeze_time("2023-01-03")
 def test_check_last_forecast_error(db_session):
-    """Check check_last_forecast_run works fine"""
+    """Check check_last_forecast_run gives error"""
     forecast_creation_time = datetime.now(tz=timezone.utc) - timedelta(hours=3)
     forecast = ForecastSQL(forecast_creation_time=forecast_creation_time)
     db_session.add(forecast)
