@@ -14,6 +14,7 @@ from nowcasting_datamodel.models import (
     InputDataLastUpdatedSQL,
     Location,
     LocationSQL,
+    MLModelSQL,
     Status,
     UserSQL,
 )
@@ -52,6 +53,15 @@ def test_check_last_forecast_run_no_forecast(db_session):
     assert response.status_code == 404
 
 
+@freeze_time("2023-01-01")
+def test_check_last_forecast_run_no_forecast_model_name(db_session):
+    """Check main check_last_forecast_run fales where there are not forecasts"""
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = client.get("/v0/solar/GB/check_last_forecast_run?model_name=test")
+    assert response.status_code == 404
+
+
 @freeze_time("2023-01-02")
 def test_check_last_forecast_run_correct(db_session):
     """Check check_last_forecast_run works fine"""
@@ -66,9 +76,41 @@ def test_check_last_forecast_run_correct(db_session):
     assert response.status_code == 200
 
 
+@freeze_time("2023-01-02")
+def test_check_last_forecast_run_correct_model_name(db_session):
+    """Check check_last_forecast_run works fine with a model name"""
+    forecast_creation_time = datetime.now(tz=timezone.utc) - timedelta(minutes=5)
+    model = MLModelSQL(name="test")
+    forecast = ForecastSQL(forecast_creation_time=forecast_creation_time)
+    forecast.model = model
+    db_session.add(forecast)
+    db_session.commit()
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = client.get("/v0/solar/GB/check_last_forecast_run?model_name=test")
+    assert response.status_code == 200
+
+
+@freeze_time("2023-01-02")
+def test_check_last_forecast_run_correct_wrong_model_name(db_session):
+    """Check check_last_forecast_run gives error due to wrong model name"""
+    forecast_creation_time = datetime.now(tz=timezone.utc) - timedelta(minutes=5)
+    model = MLModelSQL(name="test")
+    forecast = ForecastSQL(forecast_creation_time=forecast_creation_time)
+    forecast.model = model
+    db_session.add(forecast)
+    db_session.commit()
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = client.get("/v0/solar/GB/check_last_forecast_run?model_name=test2")
+    assert response.status_code == 404
+
+
 @freeze_time("2023-01-03")
 def test_check_last_forecast_error(db_session):
-    """Check check_last_forecast_run works fine"""
+    """Check check_last_forecast_run gives error"""
     forecast_creation_time = datetime.now(tz=timezone.utc) - timedelta(hours=3)
     forecast = ForecastSQL(forecast_creation_time=forecast_creation_time)
     db_session.add(forecast)
