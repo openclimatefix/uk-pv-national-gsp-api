@@ -305,8 +305,9 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
             model = ForecastValueSevenDaysSQL
 
         if creation_utc_limit is None and forecast_horizon_minutes is not None:
-            creation_utc_limit \
-                = datetime.now(tz=timezone.utc) - timedelta(minutes=forecast_horizon_minutes)
+            creation_utc_limit = datetime.now(tz=timezone.utc) - timedelta(
+                minutes=forecast_horizon_minutes
+            )
 
         forecast_values = get_forecast_values(
             session=session,
