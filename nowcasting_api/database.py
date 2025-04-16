@@ -304,6 +304,7 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
         else:
             model = ForecastValueSevenDaysSQL
 
+        # to make sure future N hr forecasts show a forecast that was made N hours ago
         if creation_utc_limit is None and forecast_horizon_minutes is not None:
             creation_utc_limit \
                 = datetime.now(tz=timezone.utc) - timedelta(minutes=forecast_horizon_minutes)
