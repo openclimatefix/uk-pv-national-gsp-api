@@ -106,7 +106,8 @@ def get_national_forecast(
     - **model_name**: optional, specify which model to use for the forecast.
     Options: blend (default), pvnet_intraday, pvnet_day_ahead, pvnet_intraday_ecmwf_only
     - **trend_adjuster_on**: optional, default is True.
-    The forecast is adjusted depending on trends in the last week. This should remove systematic errors.
+    The forecast is adjusted depending on trends in the last week.
+    This should remove systematic errors.
     Warning if set to False, the forecast accuracy will likely decrease.
 
     Returns:
