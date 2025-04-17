@@ -29,8 +29,6 @@ You will need to set the following environment variables:
 - `ORIGINS` - Endpoints that are valid CORS origins. See [FastAPI documentation](https://fastapi.tiangolo.com/tutorial/cors/).
 - `N_HISTORY_DAYS` - Default is just to load data from today and yesterday,
     but we can set this to 5, if we want the api always to return 5 days of data
-- `FORECAST_ERROR_HOURS` - using route `/v0/system/GBstatus/check_last_forecast_run` we can check if a forecast has
-        been made in the last `FORECAST_ERROR_HOURS` hours
 - `ADJUST_MW_LIMIT` - the maximum the api is allowed to adjust the national forecast by
 - `FAKE` - This allows fake data to be used, rather than connecting to a database
 - `QUERY_WAIT_SECONDS` - The number of seconds to wait for an on going query
