@@ -167,9 +167,7 @@ def get_national_forecast(
             creation_utc_limit=creation_limit_utc,
         )
 
-    logger.debug(
-        f"Got national forecasts with {len(forecast_values)} forecast values. "
-    )
+    logger.debug(f"Got national forecasts with {len(forecast_values)} forecast values. ")
 
     if trend_adjuster_on:
         logger.debug(f"Now adjusting by at most {adjust_limit} MW")
