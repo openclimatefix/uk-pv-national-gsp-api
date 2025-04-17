@@ -80,6 +80,7 @@ def get_national_forecast(
     end_datetime_utc: Optional[str] = None,
     creation_limit_utc: Optional[str] = None,
     model_name: ModelName = ModelName.blend,
+    trend_adjuster_on: Optional[bool] = True,
 ) -> Union[NationalForecast, List[NationalForecastValue]]:
     """
 
@@ -104,6 +105,10 @@ def get_national_forecast(
     Note you can only go 7 days back at the moment
     - **model_name**: optional, specify which model to use for the forecast.
     Options: blend (default), pvnet_intraday, pvnet_day_ahead, pvnet_intraday_ecmwf_only
+    - **trend_adjuster_on**: optional, default is True.
+    The forecast is adjusted depending on trends in the last week.
+    This should remove systematic errors.
+    Warning if set to False, the forecast accuracy will likely decrease.
 
     Returns:
         dict: The national forecast data.
@@ -164,12 +169,12 @@ def get_national_forecast(
             creation_utc_limit=creation_limit_utc,
         )
 
-    logger.debug(
-        f"Got national forecasts with {len(forecast_values)} forecast values. "
-        f"Now adjusting by at most {adjust_limit} MW"
-    )
+    logger.debug(f"Got national forecasts with {len(forecast_values)} forecast values. ")
 
-    forecast_values = [f.adjust(limit=adjust_limit) for f in forecast_values]
+    if trend_adjuster_on:
+        logger.debug(f"Now adjusting by at most {adjust_limit} MW")
+
+        forecast_values = [f.adjust(limit=adjust_limit) for f in forecast_values]
 
     if not get_plevels:
         logger.debug("Not getting plevels")
