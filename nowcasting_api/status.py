@@ -1,7 +1,6 @@
 """Get Status from database """
 
-import os
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 
 import fsspec
 import structlog
