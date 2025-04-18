@@ -2,6 +2,7 @@
 
 import os
 from datetime import datetime, timedelta
+from enum import Enum
 from typing import List, Optional, Union
 
 import pandas as pd
@@ -42,6 +43,26 @@ api_client = ApiClient()
 elexon_forecast_api = GenerationForecastApi(api_client)
 
 
+model_names_external_to_internal = {
+    "blend": "blend",
+    "pvnet_intraday": "pvnet_v2",
+    "pvnet_day_ahead": "pvnet_day_ahead",
+    "pvnet_intraday_ecmwf_only": "pvnet_ecmwf",
+}
+
+
+class ModelName(str, Enum):
+    """Available model options for national forecasts.
+
+    Options include blend (default), pvnet_intraday, pvnet_day_ahead, and pvnet_intraday_ecmwf_only.
+    """
+
+    blend = "blend"
+    pvnet_intraday = "pvnet_intraday"
+    pvnet_day_ahead = "pvnet_day_ahead"
+    pvnet_intraday_ecmwf_only = "pvnet_intraday_ecmwf_only"
+
+
 @router.get(
     "/forecast",
     response_model=Union[NationalForecast, List[NationalForecastValue]],
@@ -58,6 +79,7 @@ def get_national_forecast(
     start_datetime_utc: Optional[str] = None,
     end_datetime_utc: Optional[str] = None,
     creation_limit_utc: Optional[str] = None,
+    model_name: ModelName = ModelName.blend,
 ) -> Union[NationalForecast, List[NationalForecastValue]]:
     """
 
@@ -80,6 +102,8 @@ def get_national_forecast(
     - **end_datetime_utc**: optional end datetime for the query.
     - **creation_limit_utc**: optional, only return forecasts made before this datetime.
     Note you can only go 7 days back at the moment
+    - **model_name**: optional, specify which model to use for the forecast.
+    Options: blend (default), pvnet_intraday, pvnet_day_ahead, pvnet_intraday_ecmwf_only
 
     Returns:
         dict: The national forecast data.
@@ -91,7 +115,9 @@ def get_national_forecast(
     end_datetime_utc = format_datetime(end_datetime_utc)
     creation_limit_utc = format_datetime(creation_limit_utc)
 
-    logger.debug("Getting forecast.")
+    model_name = model_names_external_to_internal.get(model_name)
+
+    logger.debug(f"Getting forecast using model {model_name}")
     if include_metadata:
         if forecast_horizon_minutes is not None:
             raise HTTPException(
@@ -107,7 +133,7 @@ def get_national_forecast(
         forecast = get_latest_forecast_for_gsps(
             session=session,
             gsp_ids=[0],
-            model_name="blend",
+            model_name=model_name,
             historic=historic,
             preload_children=True,
             start_target_time=start_datetime_utc,
@@ -162,33 +188,6 @@ def get_national_forecast(
             format_plevels(national_forecast_value)
 
             national_forecast_values.append(national_forecast_value)
-
-    # Adjust values for solar eclipse 2025-03-28
-    eclipse_adjustments = {
-        "2025-03-29 10:30:00+00:00": 0.97,
-        "2025-03-29 11:00:00+00:00": 0.85,
-        "2025-03-29 11:30:00+00:00": 0.82,
-        "2025-03-29 12:00:00+00:00": 0.95,
-    }
-
-    # Reduce national forecast value by eclipse adjustment for matching datetimes
-    for forecast_value in national_forecast_values:
-        target_time = forecast_value.target_time
-        target_dt = pd.to_datetime(target_time)
-
-        for eclipse_time, reduction in eclipse_adjustments.items():
-            if target_dt == pd.to_datetime(eclipse_time):
-                forecast_value.expected_power_generation_megawatts *= reduction
-
-    if get_plevels:
-        for forecast_value in national_forecast_values:
-            target_time = forecast_value.target_time
-            target_dt = pd.to_datetime(target_time)
-
-            for eclipse_time, reduction in eclipse_adjustments.items():
-                if target_dt == pd.to_datetime(eclipse_time):
-                    forecast_value.plevels["plevel_10"] *= reduction
-                    forecast_value.plevels["plevel_90"] *= reduction
 
     if include_metadata:
         # return full forecast object

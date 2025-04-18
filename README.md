@@ -1,7 +1,7 @@
 # UK PV National and GSP API
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-19-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-20-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![tags badge](https://img.shields.io/github/v/tag/openclimatefix/uk-pv-national-gsp-api?include_prereleases&sort=semver&color=FFAC5F)](https://github.com/openclimatefix/uk-pv-national-gsp-api/tags)
@@ -166,7 +166,19 @@ docker-compose -f test-docker-compose.yml run api
 
 ## FAQ
 
-TODO
+### What is a N hour forecast?
+
+Some users want to know what the forecast was like N hours ago. We can do this by setting
+`forecast_hoirzon_minutes` in the API.
+Because the API provider forecasts in the future and historic values, it is useful to define this behaviour for N hour forecast.
+- future: A forecast that was made N hours ago for the future.
+For example, if its now 2025-01-01 12:00, the future will show a forecast made at 2025-01-01 08:00, from now to 2025-01-02 20:00 (a 36 hour forecast)
+- past: Forecast values that were made N hours before the target time.
+For example, a target_time of 2025-01-01 11:00 will show a forecast value made at 2025-01-01 07:00.
+
+
+![N hour foreacst](./nhourforecast.png)
+
 
 
 ## Contributing and community
@@ -213,6 +225,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/pvprajwal"><img src="https://avatars.githubusercontent.com/u/74557086?v=4?s=100" width="100px;" alt="Parasa V Prajwal"/><br /><sub><b>Parasa V Prajwal</b></sub></a><br /><a href="https://github.com/openclimatefix/uk-pv-national-gsp-api/commits?author=pvprajwal" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/mahmoud-40"><img src="https://avatars.githubusercontent.com/u/116794637?v=4?s=100" width="100px;" alt="Mahmoud Abdulmawlaa"/><br /><sub><b>Mahmoud Abdulmawlaa</b></sub></a><br /><a href="https://github.com/openclimatefix/uk-pv-national-gsp-api/commits?author=mahmoud-40" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/abdalahsalah"><img src="https://avatars.githubusercontent.com/u/139065821?v=4?s=100" width="100px;" alt="Abdallah salah"/><br /><sub><b>Abdallah salah</b></sub></a><br /><a href="https://github.com/openclimatefix/uk-pv-national-gsp-api/commits?author=abdalahsalah" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Dakshbir"><img src="https://avatars.githubusercontent.com/u/144359831?v=4?s=100" width="100px;" alt="Dakshbir"/><br /><sub><b>Dakshbir</b></sub></a><br /><a href="https://github.com/openclimatefix/uk-pv-national-gsp-api/commits?author=Dakshbir" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
