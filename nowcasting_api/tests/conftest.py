@@ -17,8 +17,9 @@ from nowcasting_api.auth_utils import get_auth_implicit_scheme, get_user
 from nowcasting_api.database import get_session
 from nowcasting_api.main import app
 
+
 @pytest.fixture
-def forecasts(db_session): 
+def forecasts(db_session):
     """Pytest fixture of 338 fake forecasts"""
     # create
     f = make_fake_forecasts(gsp_ids=list(range(0, 10)), session=db_session)
@@ -88,6 +89,7 @@ def api_client(db_session):
 
     return client
 
+
 @pytest_asyncio.fixture
 async def async_client(db_session):
     """Get async API test client for async tests
@@ -106,7 +108,7 @@ async def async_client(db_session):
 
     # Using ASGITransport to route requests directly to the FastAPI app
     transport = httpx.ASGITransport(app=app)
-    
+
     # Create AsyncClient with the transport
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         yield client

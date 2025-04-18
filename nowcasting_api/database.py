@@ -376,6 +376,7 @@ async def get_truth_values_for_a_specific_gsp_from_database(
     :param end_datetime: optional end datetime for the query.
     :return: list of gsp yields
     """
+
     def _sync_query():
         stmt = (
             select(GSPYieldSQL)
@@ -389,7 +390,7 @@ async def get_truth_values_for_a_specific_gsp_from_database(
 
         result = session.execute(stmt.order_by(GSPYieldSQL.datetime_utc))
         return result.scalars().all()
-    
+
     rows: List[GSPYieldSQL] = await run_in_threadpool(_sync_query)
     return [GSPYield.from_orm(r) for r in rows]
 
