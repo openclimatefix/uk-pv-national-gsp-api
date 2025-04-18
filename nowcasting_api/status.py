@@ -2,7 +2,6 @@
 
 import os
 from datetime import datetime, timedelta, timezone
-
 import fsspec
 import structlog
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -19,7 +18,7 @@ from nowcasting_api.utils import N_CALLS_PER_HOUR, limiter
 from nowcasting_datamodel.models import ForecastSQL, GSPYieldSQL, Status
 from nowcasting_datamodel.read.read import (
     get_latest_input_data_last_updated,
-    update_latest_input_data_last_updated,
+    update_latest_input_gdata_last_updated,
 )
 
 logger = structlog.stdlib.get_logger()
