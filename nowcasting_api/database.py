@@ -11,21 +11,31 @@ from fastapi.exceptions import HTTPException
 from fastapi.concurrency import run_in_threadpool
 from fastapi.exceptions import HTTPException
 from nowcasting_datamodel.connection import DatabaseConnection
-from nowcasting_datamodel.models import (APIRequestSQL, Forecast,
-                                         ForecastValue, ForecastValueLatestSQL,
-                                         ForecastValueSevenDaysSQL,
-                                         ForecastValueSQL, GSPYieldSQL,
-                                         Location, LocationSQL, ManyForecasts,
-                                         Status)
-from nowcasting_datamodel.read.read import (get_all_gsp_ids_latest_forecast,
-                                            get_all_locations,
-                                            get_forecast_values,
-                                            get_forecast_values_latest,
-                                            get_latest_forecast,
-                                            get_latest_national_forecast,
-                                            get_latest_status, get_location,
-                                            national_gb_label)
-from nowcasting_datamodel.read.read_gsp import get_gsp_yield_by_location
+from nowcasting_datamodel.models import (
+    APIRequestSQL,
+    Forecast,
+    ForecastValue,
+    ForecastValueLatestSQL,
+    ForecastValueSevenDaysSQL,
+    ForecastValueSQL,
+    GSPYieldSQL,
+    Location,
+    LocationSQL,
+    ManyForecasts,
+    Status,
+)
+from nowcasting_datamodel.read.read import (
+    get_all_gsp_ids_latest_forecast,
+    get_all_locations,
+    get_forecast_values,
+    get_forecast_values_latest,
+    get_latest_forecast,
+    get_latest_national_forecast,
+    get_latest_status,
+    get_location,
+    national_gb_label,
+)
+from nowcasting_datamodel.read.read_gsp import get_gsp_yield, get_gsp_yield_by_location
 from nowcasting_datamodel.read.read_user import get_user as get_user_from_db
 from nowcasting_datamodel.save.update import N_GSP
 from sqlalchemy import select
@@ -33,12 +43,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.session import Session
 
 from nowcasting_api.pydantic_models import (
-    GSPYield, GSPYieldGroupByDatetime, LocationWithGSPYields,
+    GSPYield,
+    GSPYieldGroupByDatetime,
+    LocationWithGSPYields,
     OneDatetimeManyForecastValues,
     convert_forecasts_to_many_datetime_many_generation,
-    convert_location_sql_to_many_datetime_many_generation)
-from nowcasting_api.utils import (filter_forecast_values, floor_30_minutes_dt,
-                                  get_start_datetime)
+    convert_location_sql_to_many_datetime_many_generation,
+)
+from nowcasting_api.utils import filter_forecast_values, floor_30_minutes_dt, get_start_datetime
 
 
 class BaseDBConnection(abc.ABC):

@@ -77,7 +77,6 @@ def api_client(db_session):
     return client
 
 
-
 @pytest_asyncio.fixture
 async def async_client(db_session):
     """Get async API test client for async tests
