@@ -8,10 +8,17 @@ import fsspec
 import pytest
 from fastapi.testclient import TestClient
 from freezegun import freeze_time
-from nowcasting_datamodel.models import (APIRequestSQL, ForecastSQL, GSPYield,
-                                         InputDataLastUpdatedSQL, Location,
-                                         LocationSQL, MLModelSQL, Status,
-                                         UserSQL)
+from nowcasting_datamodel.models import (
+    APIRequestSQL,
+    ForecastSQL,
+    GSPYield,
+    InputDataLastUpdatedSQL,
+    Location,
+    LocationSQL,
+    MLModelSQL,
+    Status,
+    UserSQL,
+)
 
 from nowcasting_api.database import get_session
 from nowcasting_api.main import app

@@ -6,16 +6,20 @@ from datetime import datetime, timedelta, timezone
 import fsspec
 import structlog
 from fastapi import APIRouter, Depends, HTTPException, Request
-from nowcasting_datamodel.models import (ForecastSQL, GSPYieldSQL, MLModelSQL,
-                                         Status)
+from nowcasting_datamodel.models import ForecastSQL, GSPYieldSQL, MLModelSQL, Status
 from nowcasting_datamodel.read.read import (
-    get_latest_input_data_last_updated, update_latest_input_data_last_updated)
+    get_latest_input_data_last_updated,
+    update_latest_input_data_last_updated,
+)
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm.session import Session
 
 from nowcasting_api.cache import cache_response
-from nowcasting_api.database import (get_latest_status_from_database,
-                                     get_session, save_api_call_to_db)
+from nowcasting_api.database import (
+    get_latest_status_from_database,
+    get_session,
+    save_api_call_to_db,
+)
 from nowcasting_api.utils import N_CALLS_PER_HOUR, limiter
 
 logger = structlog.stdlib.get_logger()
