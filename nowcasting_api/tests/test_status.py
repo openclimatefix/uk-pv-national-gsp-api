@@ -5,6 +5,7 @@ import tempfile
 from datetime import datetime, timedelta, timezone
 
 import fsspec
+import pytest
 from fastapi.testclient import TestClient
 from freezegun import freeze_time
 from nowcasting_datamodel.models import (
@@ -25,7 +26,8 @@ from nowcasting_api.main import app
 client = TestClient(app)
 
 
-def test_read_latest_status(db_session):
+@pytest.mark.asyncio
+async def test_read_latest_status(db_session):
     """Check main GB/pv/status route works"""
     status = Status(message="Good", status="ok").to_orm()
     db_session.add(status)
