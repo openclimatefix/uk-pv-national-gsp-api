@@ -2,7 +2,7 @@
 
 import asyncio
 import os
-from typing import  AsyncGenerator, Generator
+from typing import AsyncGenerator, Generator
 import httpx
 
 import pytest
@@ -97,7 +97,7 @@ async def async_client(db_session):
     We override the user and the database session
     """
     import httpx
-    
+
     from nowcasting_api.cache import setup_cache
 
     setup_cache()

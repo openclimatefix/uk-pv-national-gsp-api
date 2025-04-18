@@ -20,7 +20,11 @@ from nowcasting_datamodel.read.read import (
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm.session import Session
 from nowcasting_api.cache import cache_response
-from nowcasting_api.database import get_latest_status_from_database, get_session, save_api_call_to_db
+from nowcasting_api.database import (
+    get_latest_status_from_database,
+    get_session,
+    save_api_call_to_db,
+)
 from nowcasting_api.utils import N_CALLS_PER_HOUR, limiter
 
 logger = structlog.stdlib.get_logger()
