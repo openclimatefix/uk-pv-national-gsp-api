@@ -27,7 +27,13 @@ from nowcasting_api.pydantic_models import (
     SolarForecastValue,
 )
 from sqlalchemy.orm.session import Session
-from nowcasting_api.utils import N_CALLS_PER_HOUR, filter_forecast_values, format_datetime, format_plevels, limiter
+from nowcasting_api.utils import (
+    N_CALLS_PER_HOUR,
+    filter_forecast_values,
+    format_datetime,
+    format_plevels,
+    limiter,
+)
 
 logger = structlog.stdlib.get_logger()
 

@@ -80,7 +80,7 @@ def save_api_call(
 
 def clear_cache_key(key: str, expiration: int = 0):
     """Clear a cache key in FastAPI and prevent re-caching for a specified period.
-    
+
     :param key: The cache key to clear
     :param expiration: Time in seconds before the key can be cached again (0 to disable locking)
     """
@@ -114,4 +114,5 @@ def cache_response(expiration: int = CACHE_TIME_SECONDS):
 
     def decorator(func: Callable):
         return cache(expire=expiration, key_builder=generate_cache_key)(func)
+
     return decorator
