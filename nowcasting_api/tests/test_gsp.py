@@ -157,7 +157,9 @@ async def test_read_latest_gsp_id_greater_than_total(db_session, async_client):
     """Check that request with gsp_id>=318 returns 204"""
 
     gsp_id = 318
-    response = await async_client.get(f"/v0/solar/GB/gsp/forecast/{gsp_id}/?historic=False&normalize=True")
+    response = await async_client.get(
+        f"/v0/solar/GB/gsp/forecast/{gsp_id}/?historic=False&normalize=True"
+    )
 
     assert response.status_code == 204
 
@@ -262,6 +264,7 @@ def test_read_latest_all_gsp_historic_compact(db_session, api_client):
     assert len(r[0].forecast_values) == 9  # dont get the national
     assert r[0].forecast_values[1] <= 13000
 
+
 @pytest.mark.asyncio
 async def test_read_truths_for_a_specific_gsp(db_session, async_client):
     """Check main solar/GB/gsp/pvlive route works"""
@@ -287,10 +290,12 @@ async def test_read_truths_for_a_specific_gsp(db_session, async_client):
     # add to database
     db_session.add_all([gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_sql_1])
     db_session.commit()
-    
+
     # Add debug logging to check if the data is in the database
     print(f"Added GSP yields and locations to database")
-    yields_in_db = db_session.query(GSPYieldSQL).filter(GSPYieldSQL.location_id == gsp_sql_1.id).all()
+    yields_in_db = (
+        db_session.query(GSPYieldSQL).filter(GSPYieldSQL.location_id == gsp_sql_1.id).all()
+    )
     print(f"Found {len(yields_in_db)} GSP yields in database for location {gsp_sql_1.id}")
 
     app.dependency_overrides[get_session] = lambda: db_session
@@ -317,6 +322,7 @@ async def test_read_pvlive_for_gsp_id_over_total(db_session, async_client):
     response = await async_client.get(f"/v0/solar/GB/gsp/{gsp_id}/pvlive")
 
     assert response.status_code == 204
+
 
 @pytest.mark.asyncio
 async def test_read_truths_for_gsp_id_less_than_total(db_session, async_client):
