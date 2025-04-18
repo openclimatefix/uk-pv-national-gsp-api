@@ -2,12 +2,14 @@
 
 from datetime import UTC, datetime, timezone
 
+import pytest
 from freezegun import freeze_time
 from nowcasting_datamodel.fake import make_fake_forecasts
 from nowcasting_datamodel.models import (
     ForecastValue,
     ForecastValueSevenDaysSQL,
     GSPYield,
+    GSPYieldSQL,
     Location,
     LocationSQL,
     LocationWithGSPYields,
@@ -144,16 +146,19 @@ def test_read_latest_all_gsp_filter_gsp(db_session, api_client):
     assert len(r.forecasts[0].forecast_values) == 16
 
 
-def test_read_latest_gsp_id_greater_than_total(db_session, api_client):
+# Convert async tests to use async_client
+@pytest.mark.asyncio
+async def test_read_latest_gsp_id_greater_than_total(db_session, async_client):
     """Check that request with gsp_id>=318 returns 204"""
 
     gsp_id = 318
-    response = api_client.get(f"/v0/solar/GB/gsp/forecast/{gsp_id}/?historic=False&normalize=True")
+    response = await async_client.get(f"/v0/solar/GB/gsp/forecast/{gsp_id}/?historic=False&normalize=True")
 
     assert response.status_code == 204
 
 
-def test_read_latest_gsp_id_equal_to_total(db_session, api_client):
+@pytest.mark.asyncio
+async def test_read_latest_gsp_id_equal_to_total(db_session, async_client):
     """Check that request with gsp_id<318 returns 200"""
 
     _ = make_fake_forecasts(gsp_ids=[317], session=db_session, add_latest=True, model_name="blend")
@@ -161,7 +166,7 @@ def test_read_latest_gsp_id_equal_to_total(db_session, api_client):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = api_client.get("/v0/solar/GB/gsp/forecast/317")
+    response = await async_client.get("/v0/solar/GB/gsp/forecast/317")
 
     assert response.status_code == 200
 
@@ -249,9 +254,8 @@ def test_read_latest_all_gsp_historic_compact(db_session, api_client):
     assert len(r[0].forecast_values) == 9  # dont get the national
     assert r[0].forecast_values[1] <= 13000
 
-
-@freeze_time("2022-01-01")
-def test_read_truths_for_a_specific_gsp(db_session, api_client):
+@pytest.mark.asyncio
+async def test_read_truths_for_a_specific_gsp(db_session, async_client):
     """Check main solar/GB/gsp/pvlive route works"""
 
     gsp_yield_1 = GSPYield(datetime_utc=datetime(2022, 1, 2), solar_generation_kw=1)
@@ -275,10 +279,15 @@ def test_read_truths_for_a_specific_gsp(db_session, api_client):
     # add to database
     db_session.add_all([gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_sql_1])
     db_session.commit()
+    
+    # Add debug logging to check if the data is in the database
+    print(f"Added GSP yields and locations to database")
+    yields_in_db = db_session.query(GSPYieldSQL).filter(GSPYieldSQL.location_id == gsp_sql_1.id).all()
+    print(f"Found {len(yields_in_db)} GSP yields in database for location {gsp_sql_1.id}")
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = api_client.get("/v0/solar/GB/gsp/pvlive/122")
+    response = await async_client.get("/v0/solar/GB/gsp/pvlive/122")
 
     assert response.status_code == 200
 
@@ -288,17 +297,17 @@ def test_read_truths_for_a_specific_gsp(db_session, api_client):
     _ = [GSPYield(**gsp_yield) for gsp_yield in r_json]
 
 
-def test_read_pvlive_for_gsp_id_over_total(db_session, api_client):
+@pytest.mark.asyncio
+async def test_read_pvlive_for_gsp_id_over_total(db_session, async_client):
     """Check solar/GB/gsp/pvlive returns 204 when gsp_id over total"""
 
     gsp_id = 318
-    response = api_client.get(f"/v0/solar/GB/gsp/pvlive/{gsp_id}")
+    response = await async_client.get(f"/v0/solar/GB/gsp/{gsp_id}/pvlive")
 
     assert response.status_code == 204
 
-
-@freeze_time("2022-01-01")
-def test_read_truths_for_gsp_id_less_than_total(db_session, api_client):
+@pytest.mark.asyncio
+async def test_read_truths_for_gsp_id_less_than_total(db_session, async_client):
     """Check solar/GB/gsp/pvlive returns 200 when gsp_id under total"""
 
     gsp_yield = GSPYield(datetime_utc=datetime(2022, 1, 2), solar_generation_kw=1)
@@ -309,16 +318,14 @@ def test_read_truths_for_gsp_id_less_than_total(db_session, api_client):
         gsp_id=gsp_id, label="GSP_317", status_interval_minutes=1
     ).to_orm()
 
-    # add pv system to yield object
     gsp_yield_sql.location = gsp_sql
 
-    # add to database
     db_session.add_all([gsp_yield_sql, gsp_sql])
     db_session.commit()
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = api_client.get(f"/v0/solar/GB/gsp/pvlive/{gsp_id}")
+    response = await async_client.get(f"/v0/solar/GB/gsp/pvlive/{gsp_id}")
 
     assert response.status_code == 200
 

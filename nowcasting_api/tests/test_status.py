@@ -20,11 +20,12 @@ from nowcasting_datamodel.models import (
 
 from nowcasting_api.database import get_session
 from nowcasting_api.main import app
+import pytest
 
 client = TestClient(app)
 
-
-def test_read_latest_status(db_session):
+@pytest.mark.asyncio
+async def test_read_latest_status(db_session):
     """Check main GB/pv/status route works"""
     status = Status(message="Good", status="ok").to_orm()
     db_session.add(status)
