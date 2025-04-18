@@ -16,7 +16,7 @@ from nowcasting_api.main import app
 
 
 @pytest.fixture
-def forecasts(db_session): 
+def forecasts(db_session):
     """Pytest fixture of 338 fake forecasts"""
     f = make_fake_forecasts(gsp_ids=list(range(0, 10)), session=db_session)
     db_session.add_all(f)
@@ -69,6 +69,7 @@ def api_client(db_session):
     app.dependency_overrides[get_session] = lambda: db_session
 
     return client
+
 
 
 @pytest_asyncio.fixture

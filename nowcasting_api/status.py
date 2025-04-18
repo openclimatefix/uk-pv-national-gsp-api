@@ -36,8 +36,8 @@ async def get_status(request: Request, session: Session = Depends(get_session)) 
 
     """
     logger.debug("Get status")
-    save_api_call_to_db(session=session, request=request)  
-    return  get_latest_status_from_database(session=session)
+    save_api_call_to_db(session=session, request=request)
+    return get_latest_status_from_database(session=session)
 
 
 @router.get("/check_last_forecast_run", include_in_schema=False)
