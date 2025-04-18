@@ -1,10 +1,12 @@
 """ Pytest fixitures for tests """
 
-import os
 import asyncio
-from typing import Generator, AsyncGenerator
+import os
+from typing import  AsyncGenerator, Generator
+import httpx
 
 import pytest
+import pytest_asyncio
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
 from nowcasting_datamodel.connection import DatabaseConnection
@@ -14,8 +16,6 @@ from nowcasting_datamodel.models.base import Base_PV
 from nowcasting_api.auth_utils import get_auth_implicit_scheme, get_user
 from nowcasting_api.database import get_session
 from nowcasting_api.main import app
-import pytest_asyncio
-import httpx
 
 @pytest.fixture
 def forecasts(db_session): 
@@ -95,6 +95,7 @@ async def async_client(db_session):
     We override the user and the database session
     """
     import httpx
+    
     from nowcasting_api.cache import setup_cache
 
     setup_cache()

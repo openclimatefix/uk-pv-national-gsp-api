@@ -26,7 +26,6 @@ from pydantic_models import (
     OneDatetimeManyForecastValues,
 )
 from sqlalchemy.orm.session import Session
-from sqlalchemy.ext.asyncio import AsyncSession
 from utils import (
     N_CALLS_PER_HOUR,
     N_SLOW_CALLS_PER_HOUR,
