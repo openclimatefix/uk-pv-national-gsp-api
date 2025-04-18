@@ -11,8 +11,8 @@ from elexonpy.api.generation_forecast_api import GenerationForecastApi
 from elexonpy.api_client import ApiClient
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Security
 from fastapi_auth0 import Auth0User
-from nowcasting_datamodel.read.read import get_latest_forecast_for_gsps
 from sqlalchemy.orm.session import Session
+
 from nowcasting_api.auth_utils import get_auth_implicit_scheme, get_user
 from nowcasting_api.cache import cache_response
 from nowcasting_api.database import (
@@ -20,7 +20,6 @@ from nowcasting_api.database import (
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
 )
-
 from nowcasting_api.pydantic_models import (
     NationalForecast,
     NationalForecastValue,
@@ -28,7 +27,6 @@ from nowcasting_api.pydantic_models import (
     SolarForecastResponse,
     SolarForecastValue,
 )
-from sqlalchemy.orm.session import Session
 from nowcasting_api.utils import (
     N_CALLS_PER_HOUR,
     filter_forecast_values,
@@ -36,6 +34,7 @@ from nowcasting_api.utils import (
     format_plevels,
     limiter,
 )
+from nowcasting_datamodel.read.read import get_latest_forecast_for_gsps
 
 logger = structlog.stdlib.get_logger()
 

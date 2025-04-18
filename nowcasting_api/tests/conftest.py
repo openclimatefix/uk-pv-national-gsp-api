@@ -3,12 +3,13 @@
 import asyncio
 import os
 from typing import AsyncGenerator, Generator
-import httpx
 
+import httpx
 import pytest
 import pytest_asyncio
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
+
 from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.fake import make_fake_forecasts
 from nowcasting_datamodel.models.base import Base_PV
