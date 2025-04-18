@@ -8,6 +8,19 @@ from typing import List, Optional, Union
 import structlog
 from fastapi.concurrency import run_in_threadpool
 from fastapi.exceptions import HTTPException
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm.session import Session
+
+from nowcasting_api.pydantic_models import (
+    GSPYield,
+    GSPYieldGroupByDatetime,
+    LocationWithGSPYields,
+    OneDatetimeManyForecastValues,
+    convert_forecasts_to_many_datetime_many_generation,
+    convert_location_sql_to_many_datetime_many_generation,
+)
+from nowcasting_api.utils import filter_forecast_values, floor_30_minutes_dt, get_start_datetime
 from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.models import (
     APIRequestSQL,
@@ -36,18 +49,6 @@ from nowcasting_datamodel.read.read import (
 from nowcasting_datamodel.read.read_gsp import get_gsp_yield, get_gsp_yield_by_location
 from nowcasting_datamodel.read.read_user import get_user as get_user_from_db
 from nowcasting_datamodel.save.update import N_GSP
-from sqlalchemy.orm.session import Session
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from nowcasting_api.pydantic_models import (
-    GSPYield,
-    GSPYieldGroupByDatetime,
-    LocationWithGSPYields,
-    OneDatetimeManyForecastValues,
-    convert_forecasts_to_many_datetime_many_generation,
-    convert_location_sql_to_many_datetime_many_generation,
-)
-from nowcasting_api.utils import filter_forecast_values, floor_30_minutes_dt, get_start_datetime
 
 
 class BaseDBConnection(abc.ABC):
