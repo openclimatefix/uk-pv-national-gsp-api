@@ -7,7 +7,7 @@ from typing import List, Optional, Union
 import numpy as np
 import structlog
 from nowcasting_datamodel.models import Forecast
-from pydantic_models import NationalForecastValue
+from nowcasting_api.pydantic_models import NationalForecastValue
 from pytz import timezone
 from slowapi import Limiter
 from slowapi.util import get_remote_address
