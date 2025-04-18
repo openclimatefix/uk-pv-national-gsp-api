@@ -7,6 +7,7 @@ from typing import List, Optional, Union
 
 import structlog
 from fastapi.exceptions import HTTPException
+from fastapi.concurrency import run_in_threadpool
 from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.models import (
     APIRequestSQL,
@@ -18,6 +19,8 @@ from nowcasting_datamodel.models import (
     Location,
     ManyForecasts,
     Status,
+    GSPYieldSQL,
+    LocationSQL,
 )
 from nowcasting_datamodel.read.read import (
     get_all_gsp_ids_latest_forecast,
@@ -33,7 +36,7 @@ from nowcasting_datamodel.read.read import (
 from nowcasting_datamodel.read.read_gsp import get_gsp_yield, get_gsp_yield_by_location
 from nowcasting_datamodel.read.read_user import get_user as get_user_from_db
 from nowcasting_datamodel.save.update import N_GSP
-from pydantic_models import (
+from nowcasting_api.pydantic_models import (
     GSPYield,
     GSPYieldGroupByDatetime,
     LocationWithGSPYields,
@@ -42,7 +45,9 @@ from pydantic_models import (
     convert_location_sql_to_many_datetime_many_generation,
 )
 from sqlalchemy.orm.session import Session
-from utils import filter_forecast_values, floor_30_minutes_dt, get_start_datetime
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from nowcasting_api.utils import filter_forecast_values, floor_30_minutes_dt, get_start_datetime
 
 
 class BaseDBConnection(abc.ABC):
@@ -353,8 +358,8 @@ def get_latest_national_forecast_from_database(session: Session) -> Forecast:
     return Forecast.from_orm(forecast)
 
 
-def get_truth_values_for_a_specific_gsp_from_database(
-    session: Session,
+async def get_truth_values_for_a_specific_gsp_from_database(
+    session: AsyncSession,
     gsp_id: int,
     regime: Optional[str] = "in-day",
     start_datetime: Optional[datetime] = None,
@@ -371,16 +376,22 @@ def get_truth_values_for_a_specific_gsp_from_database(
     :param end_datetime: optional end datetime for the query.
     :return: list of gsp yields
     """
+    def _sync_query():
+        stmt = (
+            select(GSPYieldSQL)
+            .join(LocationSQL, GSPYieldSQL.location_id == LocationSQL.id)
+            .where(LocationSQL.gsp_id == gsp_id)
+        )
+        if start_datetime is not None:
+            stmt = stmt.where(GSPYieldSQL.datetime_utc >= start_datetime)
+        if end_datetime is not None:
+            stmt = stmt.where(GSPYieldSQL.datetime_utc <= end_datetime)
 
-    start_datetime = get_start_datetime(start_datetime=start_datetime)
-
-    return get_gsp_yield(
-        session=session,
-        gsp_ids=[gsp_id],
-        start_datetime_utc=start_datetime,
-        end_datetime_utc=end_datetime,
-        regime=regime,
-    )
+        result = session.execute(stmt.order_by(GSPYieldSQL.datetime_utc))
+        return result.scalars().all()
+    
+    rows: List[GSPYieldSQL] = await run_in_threadpool(_sync_query)
+    return [GSPYield.from_orm(r) for r in rows]
 
 
 def get_truth_values_for_all_gsps_from_database(
