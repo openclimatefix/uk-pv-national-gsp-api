@@ -284,7 +284,7 @@ async def test_read_truths_for_a_specific_gsp(db_session, async_client):
     db_session.commit()
 
     # Add debug logging to check if the data is in the database
-    print(f"Added GSP yields and locations to database")
+    print("Added GSP yields and locations to database")
     yields_in_db = (
         db_session.query(GSPYieldSQL).filter(GSPYieldSQL.location_id == gsp_sql_1.id).all()
     )
