@@ -35,7 +35,7 @@ from nowcasting_datamodel.read.read import (
     get_location,
     national_gb_label,
 )
-from nowcasting_datamodel.read.read_gsp import get_gsp_yield, get_gsp_yield_by_location
+from nowcasting_datamodel.read.read_gsp import get_gsp_yield_by_location
 from nowcasting_datamodel.read.read_user import get_user as get_user_from_db
 from nowcasting_datamodel.save.update import N_GSP
 from sqlalchemy import select
