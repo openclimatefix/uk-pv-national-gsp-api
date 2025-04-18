@@ -1,9 +1,17 @@
 """Caching utils for api using fastapi-cache."""
+"""Caching utils for api using fastapi-cache."""
 
 import os
 from typing import Any, Callable, Optional
+from typing import Any, Callable, Optional
 
 import structlog
+from fastapi import Request
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.inmemory import InMemoryBackend
+from fastapi_cache.decorator import cache
+
+from nowcasting_api.database import save_api_call_to_db
 from fastapi import Request
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.inmemory import InMemoryBackend
@@ -35,7 +43,7 @@ def setup_cache():
     logger.info("FastAPI Cache initialized with InMemoryBackend")
 
 
-async def generate_cache_key(func: Callable, *args, **kwargs) -> str:
+def generate_cache_key(func: Callable, *args, **kwargs) -> str:
     """Generate a unique cache key based on the endpoint path and query parameters.
 
     :param func: The route handler function
@@ -51,7 +59,7 @@ async def generate_cache_key(func: Callable, *args, **kwargs) -> str:
 
     # Check if this key is locked (recently cleared)
     backend = FastAPICache.get_backend()
-    lock_exists = await backend.get(f"{key}:lock")
+    lock_exists = backend.get(f"{key}:lock")
     if lock_exists:
         # If the key is locked, generate a unique key to prevent caching
         import time
@@ -80,7 +88,7 @@ def save_api_call(
 
 def clear_cache_key(key: str, expiration: int = 0):
     """Clear a cache key in FastAPI and prevent re-caching for a specified period.
-
+    
     :param key: The cache key to clear
     :param expiration: Time in seconds before the key can be cached again (0 to disable locking)
     """
@@ -99,9 +107,14 @@ def clear_cache_key(key: str, expiration: int = 0):
 def cache_response(expiration: int = CACHE_TIME_SECONDS):
     """
     Decorator that caches the response of a FastAPI function.
+    Decorator that caches the response of a FastAPI function.
 
     Example:
     ```
+    @app.get("/")
+    @cached_response()
+    async def example(request: Request = Depends(save_api_call)):
+        return {"message": "Hello World"}
     @app.get("/")
     @cached_response()
     async def example(request: Request = Depends(save_api_call)):
@@ -114,5 +127,4 @@ def cache_response(expiration: int = CACHE_TIME_SECONDS):
 
     def decorator(func: Callable):
         return cache(expire=expiration, key_builder=generate_cache_key)(func)
-
     return decorator

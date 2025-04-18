@@ -1,11 +1,13 @@
 """ Pytest fixtures for tests """
 
 import os
+import asyncio
+from typing import Generator, AsyncGenerator
 
 import pytest
 import pytest_asyncio
 from fastapi.testclient import TestClient
-from httpx import ASGITransport, AsyncClient
+from httpx import AsyncClient
 from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.fake import make_fake_forecasts
 from nowcasting_datamodel.models.base import Base_PV
@@ -13,10 +15,11 @@ from nowcasting_datamodel.models.base import Base_PV
 from nowcasting_api.auth_utils import get_auth_implicit_scheme, get_user
 from nowcasting_api.database import get_session
 from nowcasting_api.main import app
-
+import pytest_asyncio
+import httpx
 
 @pytest.fixture
-def forecasts(db_session):
+def forecasts(db_session): 
     """Pytest fixture of 338 fake forecasts"""
     f = make_fake_forecasts(gsp_ids=list(range(0, 10)), session=db_session)
     db_session.add_all(f)
@@ -62,6 +65,10 @@ def api_client(db_session):
 
     setup_cache()
 
+    from nowcasting_api.cache import setup_cache
+
+    setup_cache()
+
     client = TestClient(app)
 
     app.dependency_overrides[get_auth_implicit_scheme] = lambda: None
@@ -70,13 +77,13 @@ def api_client(db_session):
 
     return client
 
-
 @pytest_asyncio.fixture
 async def async_client(db_session):
     """Get async API test client for async tests
 
     We override the user and the database session
     """
+    import httpx
     from nowcasting_api.cache import setup_cache
 
     setup_cache()
@@ -85,7 +92,9 @@ async def async_client(db_session):
     app.dependency_overrides[get_user] = lambda: None
     app.dependency_overrides[get_session] = lambda: db_session
 
-    transport = ASGITransport(app=app)
-
+    # Using ASGITransport to route requests directly to the FastAPI app
+    transport = httpx.ASGITransport(app=app)
+    
+    # Create AsyncClient with the transport
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         yield client

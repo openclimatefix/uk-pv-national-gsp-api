@@ -7,13 +7,6 @@ from typing import List, Optional, Union
 
 import pandas as pd
 import structlog
-from elexonpy.api.generation_forecast_api import GenerationForecastApi
-from elexonpy.api_client import ApiClient
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, Security
-from fastapi_auth0 import Auth0User
-from nowcasting_datamodel.read.read import get_latest_forecast_for_gsps
-from sqlalchemy.orm.session import Session
-
 from nowcasting_api.auth_utils import get_auth_implicit_scheme, get_user
 from nowcasting_api.cache import cache_response
 from nowcasting_api.database import (
@@ -21,6 +14,11 @@ from nowcasting_api.database import (
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
 )
+from elexonpy.api.generation_forecast_api import GenerationForecastApi
+from elexonpy.api_client import ApiClient
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Security
+from fastapi_auth0 import Auth0User
+from nowcasting_datamodel.read.read import get_latest_forecast_for_gsps
 from nowcasting_api.pydantic_models import (
     NationalForecast,
     NationalForecastValue,
@@ -28,13 +26,8 @@ from nowcasting_api.pydantic_models import (
     SolarForecastResponse,
     SolarForecastValue,
 )
-from nowcasting_api.utils import (
-    N_CALLS_PER_HOUR,
-    filter_forecast_values,
-    format_datetime,
-    format_plevels,
-    limiter,
-)
+from sqlalchemy.orm.session import Session
+from nowcasting_api.utils import N_CALLS_PER_HOUR, filter_forecast_values, format_datetime, format_plevels, limiter
 
 logger = structlog.stdlib.get_logger()
 
@@ -75,6 +68,7 @@ class ModelName(str, Enum):
     response_model=Union[NationalForecast, List[NationalForecastValue]],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
+@cache_response()
 @cache_response()
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_national_forecast(
@@ -211,7 +205,9 @@ def get_national_forecast(
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response()
+@cache_response()
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
+async def get_national_pvlive(
 async def get_national_pvlive(
     request: Request,
     regime: Optional[str] = None,
@@ -237,6 +233,7 @@ async def get_national_pvlive(
     """
     logger.info(f"Get national PV Live estimates values " f"for regime {regime} for  {user}")
 
+    return await get_truth_values_for_a_specific_gsp_from_database(
     return await get_truth_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=0, regime=regime
     )

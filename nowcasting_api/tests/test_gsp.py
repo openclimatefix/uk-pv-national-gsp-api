@@ -3,12 +3,14 @@
 from datetime import UTC, datetime, timezone
 
 import pytest
+import pytest
 from freezegun import freeze_time
 from nowcasting_datamodel.fake import make_fake_forecasts
 from nowcasting_datamodel.models import (
     ForecastValue,
     ForecastValueSevenDaysSQL,
     GSPYield,
+    GSPYieldSQL,
     GSPYieldSQL,
     Location,
     LocationSQL,
@@ -149,16 +151,19 @@ def test_read_latest_all_gsp_filter_gsp(db_session, api_client):
 # Convert async tests to use async_client
 @pytest.mark.asyncio
 async def test_read_latest_gsp_id_greater_than_total(db_session, async_client):
+# Convert async tests to use async_client
+@pytest.mark.asyncio
+async def test_read_latest_gsp_id_greater_than_total(db_session, async_client):
     """Check that request with gsp_id>=318 returns 204"""
 
     gsp_id = 318
-    response = await async_client.get(
-        f"/v0/solar/GB/gsp/forecast/{gsp_id}/?historic=False&normalize=True"
-    )
+    response = await async_client.get(f"/v0/solar/GB/gsp/forecast/{gsp_id}/?historic=False&normalize=True")
 
     assert response.status_code == 204
 
 
+@pytest.mark.asyncio
+async def test_read_latest_gsp_id_equal_to_total(db_session, async_client):
 @pytest.mark.asyncio
 async def test_read_latest_gsp_id_equal_to_total(db_session, async_client):
     """Check that request with gsp_id<318 returns 200"""
@@ -168,6 +173,7 @@ async def test_read_latest_gsp_id_equal_to_total(db_session, async_client):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
+    response = await async_client.get("/v0/solar/GB/gsp/forecast/317")
     response = await async_client.get("/v0/solar/GB/gsp/forecast/317")
 
     assert response.status_code == 200
@@ -256,7 +262,6 @@ def test_read_latest_all_gsp_historic_compact(db_session, api_client):
     assert len(r[0].forecast_values) == 9  # dont get the national
     assert r[0].forecast_values[1] <= 13000
 
-
 @pytest.mark.asyncio
 async def test_read_truths_for_a_specific_gsp(db_session, async_client):
     """Check main solar/GB/gsp/pvlive route works"""
@@ -282,16 +287,15 @@ async def test_read_truths_for_a_specific_gsp(db_session, async_client):
     # add to database
     db_session.add_all([gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_sql_1])
     db_session.commit()
-
+    
     # Add debug logging to check if the data is in the database
-    print("Added GSP yields and locations to database")
-    yields_in_db = (
-        db_session.query(GSPYieldSQL).filter(GSPYieldSQL.location_id == gsp_sql_1.id).all()
-    )
+    print(f"Added GSP yields and locations to database")
+    yields_in_db = db_session.query(GSPYieldSQL).filter(GSPYieldSQL.location_id == gsp_sql_1.id).all()
     print(f"Found {len(yields_in_db)} GSP yields in database for location {gsp_sql_1.id}")
 
     app.dependency_overrides[get_session] = lambda: db_session
 
+    response = await async_client.get("/v0/solar/GB/gsp/pvlive/122")
     response = await async_client.get("/v0/solar/GB/gsp/pvlive/122")
 
     assert response.status_code == 200
@@ -304,13 +308,15 @@ async def test_read_truths_for_a_specific_gsp(db_session, async_client):
 
 @pytest.mark.asyncio
 async def test_read_pvlive_for_gsp_id_over_total(db_session, async_client):
+@pytest.mark.asyncio
+async def test_read_pvlive_for_gsp_id_over_total(db_session, async_client):
     """Check solar/GB/gsp/pvlive returns 204 when gsp_id over total"""
 
     gsp_id = 318
     response = await async_client.get(f"/v0/solar/GB/gsp/{gsp_id}/pvlive")
+    response = await async_client.get(f"/v0/solar/GB/gsp/{gsp_id}/pvlive")
 
     assert response.status_code == 204
-
 
 @pytest.mark.asyncio
 async def test_read_truths_for_gsp_id_less_than_total(db_session, async_client):
@@ -331,6 +337,7 @@ async def test_read_truths_for_gsp_id_less_than_total(db_session, async_client):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
+    response = await async_client.get(f"/v0/solar/GB/gsp/pvlive/{gsp_id}")
     response = await async_client.get(f"/v0/solar/GB/gsp/pvlive/{gsp_id}")
 
     assert response.status_code == 200
