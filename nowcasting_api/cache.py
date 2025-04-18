@@ -103,7 +103,6 @@ def clear_cache_key(key: str, expiration: int = DELETE_CACHE_TIME_SECONDS):
     except Exception as e:
         logger.error(f"Failed to clear cache for key {key}: {e}")
 
-
 def cache_response(expiration: int = CACHE_TIME_SECONDS):
     """
     Decorator that caches the response of a FastAPI function.
