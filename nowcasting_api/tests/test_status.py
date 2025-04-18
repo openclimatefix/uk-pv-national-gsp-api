@@ -24,6 +24,7 @@ import pytest
 
 client = TestClient(app)
 
+
 @pytest.mark.asyncio
 async def test_read_latest_status(db_session):
     """Check main GB/pv/status route works"""

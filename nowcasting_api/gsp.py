@@ -46,6 +46,7 @@ router = APIRouter(
 )
 NationalYield = GSPYield
 
+
 # corresponds to route /v0/solar/GB/gsp/forecast/all/
 @router.get(
     "/forecast/all/",
@@ -114,14 +115,12 @@ def get_all_available_forecasts(
     if not compact:
         forecasts.normalize()
         # adjust gsp_id 0
-        idx = [
-            i for i, fc in enumerate(forecasts.forecasts)
-            if fc.location.gsp_id == 0
-        ]
+        idx = [i for i, fc in enumerate(forecasts.forecasts) if fc.location.gsp_id == 0]
         if idx:
             forecasts.forecasts[idx[0]] = forecasts.forecasts[idx[0]].adjust(limit=adjust_limit)
 
     return forecasts
+
 
 # Old forecast route (backwards compatibility)
 @router.get(
@@ -155,6 +154,7 @@ async def get_forecasts_for_a_specific_gsp_old_route(
         forecast_horizon_minutes=forecast_horizon_minutes,
         user=user,
     )
+
 
 @router.get(
     "/{gsp_id}/forecast",
@@ -216,6 +216,7 @@ def get_forecasts_for_a_specific_gsp(
         ]
 
     return forecast_values_for_specific_gsp
+
 
 # corresponds to API route /v0/solar/GB/gsp/pvlive/all
 @router.get(
