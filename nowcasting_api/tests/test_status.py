@@ -5,7 +5,6 @@ import tempfile
 from datetime import datetime, timedelta, timezone
 
 import fsspec
-import pytest
 from fastapi.testclient import TestClient
 from freezegun import freeze_time
 from nowcasting_datamodel.models import (
