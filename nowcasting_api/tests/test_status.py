@@ -26,8 +26,7 @@ from nowcasting_api.main import app
 client = TestClient(app)
 
 
-@pytest.mark.asyncio
-async def test_read_latest_status(db_session):
+def test_read_latest_status(db_session):
     """Check main GB/pv/status route works"""
     status = Status(message="Good", status="ok").to_orm()
     db_session.add(status)
