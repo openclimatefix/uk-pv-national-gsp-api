@@ -20,7 +20,7 @@ from nowcasting_datamodel.save.update import update_all_forecast_latest
 from nowcasting_api.database import get_session
 from nowcasting_api.main import app
 from nowcasting_api.pydantic_models import GSPYieldGroupByDatetime, OneDatetimeManyForecastValues
-from nowcasting_api.utils import floor_30_minutes_dt
+from nowcasting_api.utils import N_SLOW_CALLS_PER_MINUTE, floor_30_minutes_dt
 
 
 @freeze_time("2022-01-01")
@@ -421,3 +421,30 @@ def test_read_truths_for_all_gsp_compact(db_session, api_client):
     assert len(datetimes_with_gsp_yields[0].generation_kw_by_gsp_id) == 1
     assert len(datetimes_with_gsp_yields[1].generation_kw_by_gsp_id) == 2
     assert len(datetimes_with_gsp_yields[2].generation_kw_by_gsp_id) == 1
+
+
+def test_slow_rate_limit_exceeded(db_session, api_client):
+    """Check a 429 is thrown if the slow rate limit is exceeded"""
+
+    _ = get_model(session=db_session, name="blend", version="0.0.1")
+
+    _ = make_fake_forecasts(
+        gsp_ids=list(range(0, 10)),
+        model_name="blend",
+        session=db_session,
+        add_latest=True,
+        t0_datetime_utc=floor_30_minutes_dt(datetime.now(tz=UTC)),
+    )
+
+    db_session.commit()
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    # Call gsp/forecast/all/ more times than the rate limit
+    responses = [
+        api_client.get("/v0/solar/GB/gsp/forecast/all/?historic=False")
+        for _ in range(int(N_SLOW_CALLS_PER_MINUTE) + 1)
+    ]
+
+    # Check for at least 1 429 - there could be more as this route is called in earlier tests
+    assert any(r.status_code == 429 for r in responses)
