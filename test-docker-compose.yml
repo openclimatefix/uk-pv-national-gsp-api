@@ -23,6 +23,7 @@ services:
       - LOG_LEVEL=DEBUG
       - DELETE_CACHE_TIME_SECONDS=0
       - CACHE_TIME_SECONDS=0
+      - N_SLOW_CALLS_PER_MINUTE=20
     command: >
       bash -c "pytest --cov=./nowcasting_api
       && coverage report -m
