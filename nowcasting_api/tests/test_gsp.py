@@ -424,7 +424,7 @@ def test_read_truths_for_all_gsp_compact(db_session, api_client):
 
 
 def test_slow_rate_limit_exceeded(db_session, api_client):
-    """ Check a 429 is thrown if the slow rate limit is exceeded """
+    """Check a 429 is thrown if the slow rate limit is exceeded"""
 
     _ = get_model(session=db_session, name="blend", version="0.0.1")
 
