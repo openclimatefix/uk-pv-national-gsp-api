@@ -5,8 +5,6 @@ from datetime import datetime, timedelta, timezone
 
 import fsspec
 import structlog
-from cache import cache_response
-from database import get_latest_status_from_database, get_session, save_api_call_to_db
 from fastapi import APIRouter, Depends, HTTPException, Request
 from nowcasting_datamodel.models import ForecastSQL, GSPYieldSQL, MLModelSQL, Status
 from nowcasting_datamodel.read.read import (
@@ -15,7 +13,14 @@ from nowcasting_datamodel.read.read import (
 )
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm.session import Session
-from utils import N_CALLS_PER_HOUR, limiter
+
+from nowcasting_api.cache import cache_response
+from nowcasting_api.database import (
+    get_latest_status_from_database,
+    get_session,
+    save_api_call_to_db,
+)
+from nowcasting_api.utils import N_CALLS_PER_HOUR, limiter
 
 logger = structlog.stdlib.get_logger()
 
@@ -25,7 +30,7 @@ forecast_error_hours = float(os.getenv("FORECAST_ERROR_HOURS", 2.0))
 
 
 @router.get("/status", response_model=Status)
-@cache_response
+@cache_response()
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_status(request: Request, session: Session = Depends(get_session)) -> Status:
     """### Get status for the database and forecasts
@@ -35,6 +40,7 @@ def get_status(request: Request, session: Session = Depends(get_session)) -> Sta
 
     """
     logger.debug("Get status")
+    save_api_call_to_db(session=session, request=request)
     return get_latest_status_from_database(session=session)
 
 
