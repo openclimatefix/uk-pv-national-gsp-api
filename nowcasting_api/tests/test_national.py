@@ -104,7 +104,6 @@ def test_read_latest_national_values_start_and_end_filters(db_session, api_clien
         national_forecast_values = [NationalForecastValue(**f) for f in response.json()]
         assert len(national_forecast_values) == 9
 
-
 @freeze_time("2024-01-01")
 def test_get_national_forecast(db_session, api_client):
     """Check main solar/GB/national/forecast route works"""
