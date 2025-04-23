@@ -20,7 +20,7 @@ from nowcasting_datamodel.save.update import update_all_forecast_latest
 from nowcasting_api.database import get_session
 from nowcasting_api.main import app
 from nowcasting_api.pydantic_models import GSPYieldGroupByDatetime, OneDatetimeManyForecastValues
-from nowcasting_api.utils import floor_30_minutes_dt, N_SLOW_CALLS_PER_MINUTE
+from nowcasting_api.utils import N_SLOW_CALLS_PER_MINUTE, floor_30_minutes_dt
 
 
 @freeze_time("2022-01-01")
