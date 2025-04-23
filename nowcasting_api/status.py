@@ -1,7 +1,6 @@
 """Get Status from database """
 
-import os
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 
 import fsspec
 import structlog
@@ -20,8 +19,6 @@ from utils import N_CALLS_PER_HOUR, limiter
 logger = structlog.stdlib.get_logger()
 
 router = APIRouter()
-
-forecast_error_hours = float(os.getenv("FORECAST_ERROR_HOURS", 2.0))
 
 
 @router.get("/status", response_model=Status)
@@ -65,15 +62,6 @@ def check_last_forecast(
         if model_name is not None:
             message += f" for model {model_name}"
         raise HTTPException(status_code=404, detail=message)
-
-    if forecast.forecast_creation_time <= datetime.now(tz=timezone.utc) - timedelta(
-        hours=forecast_error_hours
-    ):
-        raise HTTPException(
-            status_code=404,
-            detail=f"The last forecast is more than {forecast_error_hours} hours ago. "
-            f"It was made at {forecast.forecast_creation_time}",
-        )
 
     logger.debug(f"Last forecast time was {forecast.forecast_creation_time}")
     return forecast.forecast_creation_time
