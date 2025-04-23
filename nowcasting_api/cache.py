@@ -35,7 +35,7 @@ def setup_cache():
     logger.info("FastAPI Cache initialized with InMemoryBackend")
 
 
-def generate_cache_key(func: Callable, *args, **kwargs) -> str:
+async def generate_cache_key(func: Callable, *args, **kwargs) -> str:
     """Generate a unique cache key based on the endpoint path and query parameters.
 
     :param func: The route handler function
@@ -51,7 +51,7 @@ def generate_cache_key(func: Callable, *args, **kwargs) -> str:
 
     # Check if this key is locked (recently cleared)
     backend = FastAPICache.get_backend()
-    lock_exists = backend.get(f"{key}:lock")
+    lock_exists = await backend.get(f"{key}:lock")
     if lock_exists:
         # If the key is locked, generate a unique key to prevent caching
         import time
