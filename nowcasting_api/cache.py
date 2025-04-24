@@ -53,12 +53,12 @@ async def generate_cache_key(func: Callable, *args, **kwargs) -> str:
     # Create key from path and sorted query params
     request: Request = kwargs.get("request")
     path = request.url.path if request else "unknown"
-    #filtering out user-related query params
+    # filtering out user-related query params
     query_params = []
     if request:
         for key, value in request.query_params.items():
             # Skip any user-related parameters
-            if 'user' not in key.lower():
+            if "user" not in key.lower():
                 query_params.append((key, value))
         query_params.sort()  # Sort the query parameters for consistent key generation
     key = f"api:{path}:{query_params}"

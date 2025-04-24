@@ -94,7 +94,7 @@ class BaseDBConnection(abc.ABC):
     def get_connection() -> Union["DatabaseConnection", "DummyDBConnection"]:
         """
         Get the appropriate database connection based on environment configuration.
-        
+
         Returns
         -------
         Union[DatabaseConnection, DummyDBConnection]
@@ -129,7 +129,7 @@ class DummyDBConnection(BaseDBConnection):
     def get_session(self) -> None:
         """
         Return None for now, but should mock the session if needed in the future.
-        
+
         Returns
         -------
         None
@@ -140,7 +140,7 @@ class DummyDBConnection(BaseDBConnection):
 def get_db_connection() -> BaseDBConnection:
     """
     Return either the datamodel connection or a dummy connection.
-    
+
     Returns
     -------
     BaseDBConnection
@@ -156,7 +156,7 @@ db_conn = get_db_connection()
 def get_session() -> Session:
     """
     Get database session as a FastAPI dependency.
-    
+
     Yields
     ------
     Session
@@ -170,12 +170,12 @@ def get_session() -> Session:
 def get_latest_status_from_database(session: Session) -> Status:
     """
     Get latest status from database.
-    
+
     Parameters
     ----------
     session : Session
         SQLAlchemy session
-        
+
     Returns
     -------
     Status
@@ -197,7 +197,7 @@ def get_forecasts_from_database(
 ) -> Union[ManyForecasts, List[OneDatetimeManyForecastValues]]:
     """
     Get forecasts from database for all GSPs.
-    
+
     Parameters
     ----------
     session : Session
@@ -214,12 +214,12 @@ def get_forecasts_from_database(
         List of GSP IDs to filter by, by default None
     creation_utc_limit : datetime, optional
         Limit forecasts by creation date, by default None
-        
+
     Returns
     -------
     Union[ManyForecasts, List[OneDatetimeManyForecastValues]]
         Forecasts in requested format
-        
+
     Raises
     ------
     HTTPException
@@ -301,7 +301,7 @@ def get_forecasts_for_a_specific_gsp_from_database(
 ) -> Forecast:
     """
     Get forecasts for one GSP from database.
-    
+
     Parameters
     ----------
     session : Session
@@ -310,7 +310,7 @@ def get_forecasts_for_a_specific_gsp_from_database(
         GSP ID to get forecasts for
     historic : bool, optional
         Whether to get historic forecasts, by default False
-        
+
     Returns
     -------
     Forecast
@@ -351,7 +351,7 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
     gsp_id : int
         GSP ID, 0 is national
     forecast_horizon_minutes : int, optional
-        Forecast horizon in minutes (e.g., 35 minutes means get the latest forecast 
+        Forecast horizon in minutes (e.g., 35 minutes means get the latest forecast
         made 35 minutes before the target time)
     start_datetime_utc : datetime, optional
         Start datetime for the query, by default None
@@ -359,7 +359,7 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
         End datetime for the query, by default None
     creation_utc_limit : datetime, optional
         Limit forecasts by creation date, by default None
-        
+
     Returns
     -------
     List[ForecastValue]
@@ -423,12 +423,12 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
 def get_latest_national_forecast_from_database(session: Session) -> Forecast:
     """
     Get the national level forecast from the database.
-    
+
     Parameters
     ----------
     session : Session
         SQLAlchemy session
-        
+
     Returns
     -------
     Forecast
@@ -464,12 +464,13 @@ async def get_truth_values_for_a_specific_gsp_from_database(
         defaults to N_HISTORY_DAYS env var (usually yesterday)
     end_datetime : datetime, optional
         End datetime for the query, by default None
-        
+
     Returns
     -------
     List[GSPYield]
         List of GSP yields
     """
+
     def _sync_query() -> List[GSPYieldSQL]:
         stmt = (
             select(GSPYieldSQL)
@@ -514,7 +515,7 @@ def get_truth_values_for_all_gsps_from_database(
         If True, return a list of GSPYieldGroupByDatetime objects, by default False
     gsp_ids : List[int], optional
         Optional list of GSP IDs to load, by default None
-        
+
     Returns
     -------
     Union[List[LocationWithGSPYields], List[GSPYieldGroupByDatetime]]
@@ -550,7 +551,7 @@ def get_gsp_system(session: Session, gsp_id: Optional[int] = None) -> List[Locat
         SQLAlchemy session
     gsp_id : int, optional
         GSP ID. If None, get all systems, by default None
-        
+
     Returns
     -------
     List[Location]
@@ -597,7 +598,7 @@ def save_api_call_to_db(request: Request, session: Session, user: Optional[User]
 
     # Get user from db
     db_user = get_user_from_db(session=session, email=email)
-    
+
     # Create and save API request
     logger.info(f"Saving api call ({url=}) to database for user {email}")
     api_request = APIRequestSQL(url=url, user=db_user)
