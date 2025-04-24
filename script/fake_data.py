@@ -14,13 +14,17 @@ import sys
 from datetime import UTC, datetime, timezone
 
 from nowcasting_datamodel.connection import DatabaseConnection
-from nowcasting_datamodel.fake import (N_FAKE_FORECASTS,
-                                       generate_fake_forecasts,
-                                       make_fake_gsp_yields)
-from nowcasting_datamodel.models.forecast import (ForecastSQL,
-                                                  ForecastValueLatestSQL,
-                                                  ForecastValueSevenDaysSQL,
-                                                  ForecastValueSQL)
+from nowcasting_datamodel.fake import (
+    N_FAKE_FORECASTS,
+    generate_fake_forecasts,
+    make_fake_gsp_yields,
+)
+from nowcasting_datamodel.models.forecast import (
+    ForecastSQL,
+    ForecastValueLatestSQL,
+    ForecastValueSevenDaysSQL,
+    ForecastValueSQL,
+)
 from nowcasting_datamodel.models.models import StatusSQL
 from nowcasting_datamodel.save.save import save as save_forecasts
 from sqlalchemy import inspect
