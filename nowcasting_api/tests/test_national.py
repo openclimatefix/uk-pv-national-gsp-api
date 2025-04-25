@@ -12,7 +12,8 @@ from nowcasting_datamodel.save.update import update_all_forecast_latest
 
 from nowcasting_api.database import get_session
 from nowcasting_api.main import app
-from nowcasting_api.pydantic_models import NationalForecast, NationalForecastValue
+from nowcasting_api.pydantic_models import (NationalForecast,
+                                            NationalForecastValue)
 
 
 def test_read_latest_national_values(db_session, api_client):
