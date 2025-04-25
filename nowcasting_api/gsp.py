@@ -1,5 +1,6 @@
 """Get GSP boundary data from eso """
-
+import asyncio
+from sqlalchemy.ext.asyncio import AsyncSession
 import os
 from datetime import datetime, timezone
 from typing import List, Optional, Union
@@ -15,6 +16,7 @@ from database import (
     get_truth_values_for_all_gsps_from_database,
 )
 from dotenv import load_dotenv
+from fastapi.concurrency import run_in_threadpool
 from fastapi import APIRouter, Depends, Request, Security, status
 from fastapi.responses import Response
 from fastapi_auth0 import Auth0User

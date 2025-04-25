@@ -1,10 +1,11 @@
 """National API routes"""
-
+import asyncio
+from sqlalchemy.ext.asyncio import AsyncSession
 import os
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import List, Optional, Union
-
+from fastapi.concurrency import run_in_threadpool
 import pandas as pd
 import structlog
 from auth_utils import get_auth_implicit_scheme, get_user
@@ -236,7 +237,9 @@ def get_national_pvlive(
     logger.info(f"Get national PV Live estimates values " f"for regime {regime} for  {user}")
 
     return get_truth_values_for_a_specific_gsp_from_database(
-        session=session, gsp_id=0, regime=regime
+        session=session,
+        gsp_id=0,
+        regime=regime
     )
 
 
