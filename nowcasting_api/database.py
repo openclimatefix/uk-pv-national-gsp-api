@@ -6,7 +6,6 @@ from datetime import datetime, timedelta, timezone
 from typing import List, Optional, Union
 
 import structlog
-from fastapi.concurrency import run_in_threadpool
 from fastapi.exceptions import HTTPException
 from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.models import (
@@ -16,12 +15,9 @@ from nowcasting_datamodel.models import (
     ForecastValueLatestSQL,
     ForecastValueSevenDaysSQL,
     ForecastValueSQL,
-    GSPYieldSQL,
     Location,
-    LocationSQL,
     ManyForecasts,
     Status,
-    User,
 )
 from nowcasting_datamodel.read.read import (
     get_all_gsp_ids_latest_forecast,
@@ -34,7 +30,7 @@ from nowcasting_datamodel.read.read import (
     get_location,
     national_gb_label,
 )
-from nowcasting_datamodel.read.read_gsp import get_gsp_yield_by_location
+from nowcasting_datamodel.read.read_gsp import get_gsp_yield, get_gsp_yield_by_location
 from nowcasting_datamodel.read.read_user import get_user as get_user_from_db
 from nowcasting_datamodel.save.update import N_GSP
 from pydantic_models import (
@@ -45,10 +41,67 @@ from pydantic_models import (
     convert_forecasts_to_many_datetime_many_generation,
     convert_location_sql_to_many_datetime_many_generation,
 )
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.session import Session
 from utils import filter_forecast_values, floor_30_minutes_dt, get_start_datetime
+
+
+class BaseDBConnection(abc.ABC):
+    """This is a base class for database connections with one static method get_connection().
+
+    Methods
+    -------
+    get_connection : static method
+        It gets the database connection. If a valid Postgresql database URL is set in
+        the "DB_URL" environment variable, get_connection returns an instance
+        of DatabaseConnection(). If not, it returns an instance of the DummyDBConnection.
+    """
+
+    @staticmethod
+    def get_connection():
+        """
+        Get the database connection.
+        """
+        db_url = os.getenv("DB_URL")
+        if db_url and db_url.find("postgresql") != -1:
+            return DatabaseConnection(url=db_url, echo=False)
+        else:
+            return DummyDBConnection()
+
+
+class DummyDBConnection(BaseDBConnection):
+    """The DummyDBConnection serves as a placeholder database connection
+
+    This might be useful when a valid Postgresql
+    database connection is not available. in testing or development environments.
+    Feel free to improve on this implementation and submit a pull request!
+    A better example can be found in the [india-api](
+    https://github.com/openclimatefix/india-api/blob/f4e3b776194290d78e1c9702b792cbb88edf4b90/src/india_api/cmd/main.py#L12
+    ) repository.
+
+    It inherits from the BaseDBConnection class and implements the methods accordingly.
+
+    Methods
+    ----------
+    get_session:
+        Returns None for now, but should mock the session if possible,
+        if we keep the current DB/datamodel implementation.
+    """
+
+    def __init__(self):
+        """Initializes the DummyDBConnection"""
+        pass
+
+    def get_session(self):
+        """Returns None for now, but mock the session if we keep the current implementation."""
+        return None
+
+
+def get_db_connection() -> BaseDBConnection:
+    """Return either the datamodel connection or a dummy connection"""
+    return BaseDBConnection.get_connection()
+
+
+db_conn = get_db_connection()
 
 logger = structlog.stdlib.get_logger()
 
@@ -300,8 +353,8 @@ def get_latest_national_forecast_from_database(session: Session) -> Forecast:
     return Forecast.from_orm(forecast)
 
 
-async def get_truth_values_for_a_specific_gsp_from_database(
-    session: AsyncSession,
+def get_truth_values_for_a_specific_gsp_from_database(
+    session: Session,
     gsp_id: int,
     regime: Optional[str] = "in-day",
     start_datetime: Optional[datetime] = None,
@@ -319,22 +372,15 @@ async def get_truth_values_for_a_specific_gsp_from_database(
     :return: list of gsp yields
     """
 
-    def _sync_query():
-        stmt = (
-            select(GSPYieldSQL)
-            .join(LocationSQL, GSPYieldSQL.location_id == LocationSQL.id)
-            .where(LocationSQL.gsp_id == gsp_id)
-        )
-        if start_datetime is not None:
-            stmt = stmt.where(GSPYieldSQL.datetime_utc >= start_datetime)
-        if end_datetime is not None:
-            stmt = stmt.where(GSPYieldSQL.datetime_utc <= end_datetime)
+    start_datetime = get_start_datetime(start_datetime=start_datetime)
 
-        result = session.execute(stmt.order_by(GSPYieldSQL.datetime_utc))
-        return result.scalars().all()
-
-    rows: List[GSPYieldSQL] = await run_in_threadpool(_sync_query)
-    return [GSPYield.from_orm(r) for r in rows]
+    return get_gsp_yield(
+        session=session,
+        gsp_ids=[gsp_id],
+        start_datetime_utc=start_datetime,
+        end_datetime_utc=end_datetime,
+        regime=regime,
+    )
 
 
 def get_truth_values_for_all_gsps_from_database(
