@@ -50,6 +50,8 @@ from sqlalchemy.orm.session import Session
 from utils import filter_forecast_values, floor_30_minutes_dt, get_start_datetime
 
 logger = structlog.stdlib.get_logger()
+
+
 class BaseDBConnection(abc.ABC):
     """A base class for database connections with a static method to get a connection.
 
