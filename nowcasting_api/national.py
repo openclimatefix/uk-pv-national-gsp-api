@@ -1,4 +1,5 @@
 """National API routes"""
+
 import asyncio
 import os
 from datetime import datetime, timedelta
@@ -10,21 +11,26 @@ import structlog
 from auth_utils import get_auth_implicit_scheme, get_user
 from cache import cache_response
 from database import (
-    get_latest_forecast_values_for_a_specific_gsp_from_database, get_session,
-    get_truth_values_for_a_specific_gsp_from_database)
+    get_latest_forecast_values_for_a_specific_gsp_from_database,
+    get_session,
+    get_truth_values_for_a_specific_gsp_from_database,
+)
 from elexonpy.api.generation_forecast_api import GenerationForecastApi
 from elexonpy.api_client import ApiClient
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Security
 from fastapi.concurrency import run_in_threadpool
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.read.read import get_latest_forecast_for_gsps
-from pydantic_models import (NationalForecast, NationalForecastValue,
-                             NationalYield, SolarForecastResponse,
-                             SolarForecastValue)
+from pydantic_models import (
+    NationalForecast,
+    NationalForecastValue,
+    NationalYield,
+    SolarForecastResponse,
+    SolarForecastValue,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.session import Session
-from utils import (N_CALLS_PER_HOUR, filter_forecast_values, format_datetime,
-                   format_plevels, limiter)
+from utils import N_CALLS_PER_HOUR, filter_forecast_values, format_datetime, format_plevels, limiter
 
 logger = structlog.stdlib.get_logger()
 
@@ -233,9 +239,7 @@ def get_national_pvlive(
     logger.info(f"Get national PV Live estimates values " f"for regime {regime} for  {user}")
 
     return get_truth_values_for_a_specific_gsp_from_database(
-        session=session,
-        gsp_id=0,
-        regime=regime
+        session=session, gsp_id=0, regime=regime
     )
 
 
