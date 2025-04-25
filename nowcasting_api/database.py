@@ -37,46 +37,6 @@ from utils import (filter_forecast_values, floor_30_minutes_dt,
                    get_start_datetime)
 
 logger = structlog.stdlib.get_logger()
-
-# Blend model weights for different forecast horizons
-# merged from: cnn, pvnet_v2, National_xg
-FORECAST_BLEND_WEIGHTS = [
-    {
-        # cnn
-        "end_horizon_hour": 1,
-        "end_weight": [1, 0, 0],
-    },
-    {
-        # cnn to pvnet_v2
-        "start_horizon_hour": 1,
-        "end_horizon_hour": 2,
-        "start_weight": [1, 0, 0],
-        "end_weight": [0, 0, 1],
-    },
-    {
-        # pvnet_v2
-        "start_horizon_hour": 2,
-        "end_horizon_hour": 7,
-        "start_weight": [0, 0, 1],
-        "end_weight": [0, 0, 1],
-    },
-    {
-        # pvnet_v2 to National_xg
-        "start_horizon_hour": 7,
-        "end_horizon_hour": 8,
-        "start_weight": [0, 0, 1],
-        "end_weight": [0, 1, 0],
-    },
-    {
-        # National_xg
-        "start_horizon_hour": 8,
-        "end_horizon_hour": 9,
-        "start_weight": [0, 1, 0],
-        "end_weight": [0, 1, 0],
-    },
-]
-
-
 class BaseDBConnection(abc.ABC):
     """A base class for database connections with a static method to get a connection.
 
