@@ -1,5 +1,4 @@
 """National API routes"""
-import asyncio
 import os
 from datetime import datetime, timedelta
 from enum import Enum
@@ -15,13 +14,11 @@ from database import (
 from elexonpy.api.generation_forecast_api import GenerationForecastApi
 from elexonpy.api_client import ApiClient
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Security
-from fastapi.concurrency import run_in_threadpool
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.read.read import get_latest_forecast_for_gsps
 from pydantic_models import (NationalForecast, NationalForecastValue,
                              NationalYield, SolarForecastResponse,
                              SolarForecastValue)
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.session import Session
 from utils import (N_CALLS_PER_HOUR, filter_forecast_values, format_datetime,
                    format_plevels, limiter)

@@ -3,10 +3,9 @@
 import abc
 import os
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional, Type, Union, cast
+from typing import List, Optional, Type, Union, cast
 
 import structlog
-from fastapi.concurrency import run_in_threadpool
 from fastapi.exceptions import HTTPException
 from fastapi.requests import Request
 from nowcasting_datamodel.connection import DatabaseConnection
@@ -33,7 +32,6 @@ from pydantic_models import (
     convert_forecasts_to_many_datetime_many_generation,
     convert_location_sql_to_many_datetime_many_generation)
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.session import Session
 from utils import (filter_forecast_values, floor_30_minutes_dt,
                    get_start_datetime)
