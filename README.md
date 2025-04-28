@@ -1,7 +1,7 @@
 # UK PV National and GSP API
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-21-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-22-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![tags badge](https://img.shields.io/github/v/tag/openclimatefix/uk-pv-national-gsp-api?include_prereleases&sort=semver&color=FFAC5F)](https://github.com/openclimatefix/uk-pv-national-gsp-api/tags)
@@ -225,6 +225,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/abdalahsalah"><img src="https://avatars.githubusercontent.com/u/139065821?v=4?s=100" width="100px;" alt="Abdallah salah"/><br /><sub><b>Abdallah salah</b></sub></a><br /><a href="https://github.com/openclimatefix/uk-pv-national-gsp-api/commits?author=abdalahsalah" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Dakshbir"><img src="https://avatars.githubusercontent.com/u/144359831?v=4?s=100" width="100px;" alt="Dakshbir"/><br /><sub><b>Dakshbir</b></sub></a><br /><a href="https://github.com/openclimatefix/uk-pv-national-gsp-api/commits?author=Dakshbir" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/michael-gendy"><img src="https://avatars.githubusercontent.com/u/64384201?v=4?s=100" width="100px;" alt="michael-gendy"/><br /><sub><b>michael-gendy</b></sub></a><br /><a href="https://github.com/openclimatefix/uk-pv-national-gsp-api/commits?author=michael-gendy" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/yuvraajnarula"><img src="https://avatars.githubusercontent.com/u/49155095?v=4?s=100" width="100px;" alt="Yuvraaj Narula"/><br /><sub><b>Yuvraaj Narula</b></sub></a><br /><a href="https://github.com/openclimatefix/uk-pv-national-gsp-api/commits?author=yuvraajnarula" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
