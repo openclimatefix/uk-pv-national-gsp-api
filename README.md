@@ -40,7 +40,7 @@ Note you will need a database set up at `DB_URL`. This should use the datamodel 
 
 There are several optional environment variables:
 - `N_CALLS_PER_HOUR` - API rate limit for most endpoints. Defaults to 3600 (1 per second).
-- `N_SLOW_CALLS_PER_MINUTE` - API rate limit for slow endpoints. Defaults to 1 (1 per minute).
+- `N_SLOW_CALLS_PER_HOUR` - API rate limit for slow endpoints. Defaults to 60 (1 per minute).
 
 ## Documentation
 
