@@ -148,7 +148,7 @@ def test_read_latest_gsp_id_greater_than_total(db_session, api_client):
     """Check that request with gsp_id>=318 returns 204"""
 
     gsp_id = 318
-    response = api_client.get(f"/v0/solar/GB/gsp/forecast/{gsp_id}/?historic=False&normalize=True")
+    response = api_client.get(f"/v0/solar/GB/gsp/{gsp_id}/forecast/?historic=False&normalize=True")
 
     assert response.status_code == 204
 
@@ -161,7 +161,7 @@ def test_read_latest_gsp_id_equal_to_total(db_session, api_client):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = api_client.get("/v0/solar/GB/gsp/forecast/317")
+    response = api_client.get("/v0/solar/GB/gsp/317/forecast")
 
     assert response.status_code == 200
 
@@ -252,7 +252,7 @@ def test_read_latest_all_gsp_historic_compact(db_session, api_client):
 
 @freeze_time("2022-01-01")
 def test_read_truths_for_a_specific_gsp(db_session, api_client):
-    """Check main solar/GB/gsp/pvlive route works"""
+    """Check main solar/GB/gsp/{gsp_id}/pvlive route works"""
 
     gsp_yield_1 = GSPYield(datetime_utc=datetime(2022, 1, 2), solar_generation_kw=1)
     gsp_yield_1_sql = gsp_yield_1.to_orm()
@@ -278,7 +278,7 @@ def test_read_truths_for_a_specific_gsp(db_session, api_client):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = api_client.get("/v0/solar/GB/gsp/pvlive/122")
+    response = api_client.get("/v0/solar/GB/gsp/122/pvlive")
 
     assert response.status_code == 200
 
@@ -288,11 +288,145 @@ def test_read_truths_for_a_specific_gsp(db_session, api_client):
     _ = [GSPYield(**gsp_yield) for gsp_yield in r_json]
 
 
+@freeze_time("2022-01-02 12:10:00")
+def test_read_truths_for_specific_gsp_with_start_datetime(db_session, api_client):
+    """Check main solar/GB/gsp/{gsp_id}/pvlive route works with start_datetime_utc"""
+
+    gsp_yield_1 = GSPYield(datetime_utc=datetime(2022, 1, 1, 6), solar_generation_kw=1)
+    gsp_yield_1_sql = gsp_yield_1.to_orm()
+
+    gsp_yield_2 = GSPYield(datetime_utc=datetime(2022, 1, 1, 12), solar_generation_kw=2)
+    gsp_yield_2_sql = gsp_yield_2.to_orm()
+
+    gsp_yield_3 = GSPYield(datetime_utc=datetime(2022, 1, 2, 0), solar_generation_kw=0)
+    gsp_yield_3_sql = gsp_yield_3.to_orm()
+
+    gsp_yield_4 = GSPYield(
+        datetime_utc=datetime(2022, 1, 1, 12), solar_generation_kw=4, regime="day-after"
+    )
+    gsp_yield_4_sql = gsp_yield_4.to_orm()
+
+    gsp_sql_1: LocationSQL = Location(
+        gsp_id=122, label="GSP_122", status_interval_minutes=5
+    ).to_orm()
+
+    # add pv system to yield object
+    gsp_yield_1_sql.location = gsp_sql_1
+    gsp_yield_2_sql.location = gsp_sql_1
+    gsp_yield_3_sql.location = gsp_sql_1
+    gsp_yield_4_sql.location = gsp_sql_1
+
+    # add to database
+    db_session.add_all(
+        [gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_yield_4_sql, gsp_sql_1]
+    )
+    db_session.commit()
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = api_client.get("/v0/solar/GB/gsp/122/pvlive?start_datetime_utc=2022-01-01T12:00:00Z")
+
+    assert response.status_code == 200
+
+    r_json = response.json()
+
+    # Should exclude the first yield (before the start_datetime_utc) and last yield (day-after)
+    assert len(r_json) == 2
+
+    _ = [GSPYield(**gsp_yield) for gsp_yield in r_json]
+
+
+@freeze_time("2022-01-02 12:10:00")
+def test_read_truths_for_specific_gsp_with_regime_day_after(db_session, api_client):
+    """Check main solar/GB/gsp/{gsp_id}/pvlive route works with start_datetime_utc"""
+
+    gsp_yield_1 = GSPYield(datetime_utc=datetime(2022, 1, 1, 6), solar_generation_kw=1)
+    gsp_yield_1_sql = gsp_yield_1.to_orm()
+
+    gsp_yield_2 = GSPYield(
+        datetime_utc=datetime(2022, 1, 1, 12), solar_generation_kw=2, regime="day-after"
+    )
+    gsp_yield_2_sql = gsp_yield_2.to_orm()
+
+    gsp_yield_3 = GSPYield(
+        datetime_utc=datetime(2022, 1, 2, 0), solar_generation_kw=0, regime="day-after"
+    )
+    gsp_yield_3_sql = gsp_yield_3.to_orm()
+
+    gsp_sql_1: LocationSQL = Location(
+        gsp_id=122, label="GSP_122", status_interval_minutes=5
+    ).to_orm()
+
+    # add pv system to yield object
+    gsp_yield_1_sql.location = gsp_sql_1
+    gsp_yield_2_sql.location = gsp_sql_1
+    gsp_yield_3_sql.location = gsp_sql_1
+
+    # add to database
+    db_session.add_all([gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_sql_1])
+    db_session.commit()
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = api_client.get("/v0/solar/GB/gsp/122/pvlive?regime=day-after")
+
+    assert response.status_code == 200
+
+    r_json = response.json()
+
+    # Should exclude the first yield as it has a regime of "in-day" by default
+    assert len(r_json) == 2
+
+    _ = [GSPYield(**gsp_yield) for gsp_yield in r_json]
+
+
+@freeze_time("2022-01-02 12:10:00")
+def test_read_truths_for_specific_gsp_with_regime_in_day_explicitly(db_session, api_client):
+    """Check main solar/GB/gsp/{gsp_id}/pvlive route works with start_datetime_utc"""
+
+    gsp_yield_1 = GSPYield(datetime_utc=datetime(2022, 1, 1, 6), solar_generation_kw=1)
+    gsp_yield_1_sql = gsp_yield_1.to_orm()
+
+    gsp_yield_2 = GSPYield(datetime_utc=datetime(2022, 1, 1, 12), solar_generation_kw=2)
+    gsp_yield_2_sql = gsp_yield_2.to_orm()
+
+    gsp_yield_3 = GSPYield(
+        datetime_utc=datetime(2022, 1, 2, 0), solar_generation_kw=0, regime="day-after"
+    )
+    gsp_yield_3_sql = gsp_yield_3.to_orm()
+
+    gsp_sql_1: LocationSQL = Location(
+        gsp_id=122, label="GSP_122", status_interval_minutes=5
+    ).to_orm()
+
+    # add pv system to yield object
+    gsp_yield_1_sql.location = gsp_sql_1
+    gsp_yield_2_sql.location = gsp_sql_1
+    gsp_yield_3_sql.location = gsp_sql_1
+
+    # add to database
+    db_session.add_all([gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_sql_1])
+    db_session.commit()
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = api_client.get("/v0/solar/GB/gsp/122/pvlive?regime=in-day")
+
+    assert response.status_code == 200
+
+    r_json = response.json()
+
+    # Should exclude the last yield as it has a regime of "day-after"
+    assert len(r_json) == 2
+
+    _ = [GSPYield(**gsp_yield) for gsp_yield in r_json]
+
+
 def test_read_pvlive_for_gsp_id_over_total(db_session, api_client):
     """Check solar/GB/gsp/pvlive returns 204 when gsp_id over total"""
 
     gsp_id = 318
-    response = api_client.get(f"/v0/solar/GB/gsp/pvlive/{gsp_id}")
+    response = api_client.get(f"/v0/solar/GB/gsp/{gsp_id}/pvlive")
 
     assert response.status_code == 204
 
@@ -318,7 +452,7 @@ def test_read_truths_for_gsp_id_less_than_total(db_session, api_client):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = api_client.get(f"/v0/solar/GB/gsp/pvlive/{gsp_id}")
+    response = api_client.get(f"/v0/solar/GB/gsp/{gsp_id}/pvlive")
 
     assert response.status_code == 200
 
