@@ -141,10 +141,6 @@ def test_read_latest_all_gsp_filter_gsp(db_session, api_client):
     assert len(r.forecasts[0].forecast_values) == 16
 
 
-# Convert async tests to use async_client
-@pytest.mark.asyncio
-async def test_read_latest_gsp_id_greater_than_total(db_session, async_client):
-# Convert async tests to use async_client
 @pytest.mark.asyncio
 async def test_read_latest_gsp_id_greater_than_total(db_session, async_client):
     """Check that request with gsp_id>=318 returns 204"""
@@ -159,8 +155,6 @@ async def test_read_latest_gsp_id_greater_than_total(db_session, async_client):
 
 @pytest.mark.asyncio
 async def test_read_latest_gsp_id_equal_to_total(db_session, async_client):
-@pytest.mark.asyncio
-async def test_read_latest_gsp_id_equal_to_total(db_session, async_client):
     """Check that request with gsp_id<318 returns 200"""
 
     _ = make_fake_forecasts(gsp_ids=[317], session=db_session, add_latest=True, model_name="blend")
@@ -168,7 +162,6 @@ async def test_read_latest_gsp_id_equal_to_total(db_session, async_client):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = await async_client.get("/v0/solar/GB/gsp/forecast/317")
     response = await async_client.get("/v0/solar/GB/gsp/forecast/317")
 
     assert response.status_code == 200
@@ -294,7 +287,6 @@ async def test_read_truths_for_a_specific_gsp(db_session, async_client):
     app.dependency_overrides[get_session] = lambda: db_session
 
     response = await async_client.get("/v0/solar/GB/gsp/pvlive/122")
-    response = await async_client.get("/v0/solar/GB/gsp/pvlive/122")
 
     assert response.status_code == 200
 
@@ -306,12 +298,9 @@ async def test_read_truths_for_a_specific_gsp(db_session, async_client):
 
 @pytest.mark.asyncio
 async def test_read_pvlive_for_gsp_id_over_total(db_session, async_client):
-@pytest.mark.asyncio
-async def test_read_pvlive_for_gsp_id_over_total(db_session, async_client):
     """Check solar/GB/gsp/pvlive returns 204 when gsp_id over total"""
 
     gsp_id = 318
-    response = await async_client.get(f"/v0/solar/GB/gsp/{gsp_id}/pvlive")
     response = await async_client.get(f"/v0/solar/GB/gsp/{gsp_id}/pvlive")
 
     assert response.status_code == 204
@@ -336,7 +325,6 @@ async def test_read_truths_for_gsp_id_less_than_total(db_session, async_client):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = await async_client.get(f"/v0/solar/GB/gsp/pvlive/{gsp_id}")
     response = await async_client.get(f"/v0/solar/GB/gsp/pvlive/{gsp_id}")
 
     assert response.status_code == 200

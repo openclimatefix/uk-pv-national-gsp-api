@@ -67,7 +67,6 @@ class ModelName(str, Enum):
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response()
-@cache_response()
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_national_forecast(
     request: Request,
@@ -208,9 +207,7 @@ def get_national_forecast(
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response()
-@cache_response()
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
-async def get_national_pvlive(
 async def get_national_pvlive(
     request: Request,
     regime: Optional[str] = None,
@@ -236,7 +233,6 @@ async def get_national_pvlive(
     """
     logger.info(f"Get national PV Live estimates values " f"for regime {regime} for  {user}")
 
-    return await get_truth_values_for_a_specific_gsp_from_database(
     return await get_truth_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=0, regime=regime
     )
