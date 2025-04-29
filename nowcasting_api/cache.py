@@ -1,6 +1,4 @@
-"""Caching utils for api using fastapi-cache."""
-
-"""Caching utils for api using fastapi-cache."""
+"""Caching utils for API using fastapi-cache."""
 
 import os
 from typing import Any, Callable, Optional
@@ -107,14 +105,9 @@ def clear_cache_key(key: str, expiration: int = 0):
 def cache_response(expiration: int = CACHE_TIME_SECONDS):
     """
     Decorator that caches the response of a FastAPI function.
-    Decorator that caches the response of a FastAPI function.
 
     Example:
     ```
-    @app.get("/")
-    @cached_response()
-    async def example(request: Request = Depends(save_api_call)):
-        return {"message": "Hello World"}
     @app.get("/")
     @cached_response()
     async def example(request: Request = Depends(save_api_call)):
