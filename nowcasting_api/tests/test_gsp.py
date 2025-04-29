@@ -290,6 +290,12 @@ def test_read_truths_for_a_specific_gsp(db_session, api_client):
     _ = [GSPYield(**gsp_yield) for gsp_yield in r_json]
 
 
+# N.B. These e2e tests won't test every edge case, but they will test the main functionality,
+# and that the API is returning the expected data.
+# More thorough integration tests can be found in the datamodel:
+# https://github.com/openclimatefix/nowcasting_datamodel/blob/main/tests/read/test_read_gsp.py
+
+
 @freeze_time("2022-01-02 12:10:00")
 def test_read_truths_for_specific_gsp_with_start_datetime(db_session, api_client):
     """Check main solar/GB/gsp/{gsp_id}/pvlive route works with start_datetime_utc"""
@@ -308,19 +314,19 @@ def test_read_truths_for_specific_gsp_with_start_datetime(db_session, api_client
     )
     gsp_yield_4_sql = gsp_yield_4.to_orm()
 
-    gsp_sql_1: LocationSQL = Location(
+    location_sql_1: LocationSQL = Location(
         gsp_id=122, label="GSP_122", status_interval_minutes=5
     ).to_orm()
 
     # add pv system to yield object
-    gsp_yield_1_sql.location = gsp_sql_1
-    gsp_yield_2_sql.location = gsp_sql_1
-    gsp_yield_3_sql.location = gsp_sql_1
-    gsp_yield_4_sql.location = gsp_sql_1
+    gsp_yield_1_sql.location = location_sql_1
+    gsp_yield_2_sql.location = location_sql_1
+    gsp_yield_3_sql.location = location_sql_1
+    gsp_yield_4_sql.location = location_sql_1
 
     # add to database
     db_session.add_all(
-        [gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_yield_4_sql, gsp_sql_1]
+        [gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_yield_4_sql, location_sql_1]
     )
     db_session.commit()
 
@@ -357,17 +363,17 @@ def test_read_truths_for_specific_gsp_with_regime_day_after(db_session, api_clie
     )
     gsp_yield_3_sql = gsp_yield_3.to_orm()
 
-    gsp_sql_1: LocationSQL = Location(
+    location_sql_1: LocationSQL = Location(
         gsp_id=122, label="GSP_122", status_interval_minutes=5
     ).to_orm()
 
     # add pv system to yield object
-    gsp_yield_1_sql.location = gsp_sql_1
-    gsp_yield_2_sql.location = gsp_sql_1
-    gsp_yield_3_sql.location = gsp_sql_1
+    gsp_yield_1_sql.location = location_sql_1
+    gsp_yield_2_sql.location = location_sql_1
+    gsp_yield_3_sql.location = location_sql_1
 
     # add to database
-    db_session.add_all([gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_sql_1])
+    db_session.add_all([gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, location_sql_1])
     db_session.commit()
 
     app.dependency_overrides[get_session] = lambda: db_session
@@ -401,17 +407,17 @@ def test_read_truths_for_specific_gsp_with_regime_in_day_explicitly(db_session, 
     )
     gsp_yield_3_sql = gsp_yield_3.to_orm()
 
-    gsp_sql_1: LocationSQL = Location(
+    location_sql_1: LocationSQL = Location(
         gsp_id=122, label="GSP_122", status_interval_minutes=5
     ).to_orm()
 
     # add pv system to yield object
-    gsp_yield_1_sql.location = gsp_sql_1
-    gsp_yield_2_sql.location = gsp_sql_1
-    gsp_yield_3_sql.location = gsp_sql_1
+    gsp_yield_1_sql.location = location_sql_1
+    gsp_yield_2_sql.location = location_sql_1
+    gsp_yield_3_sql.location = location_sql_1
 
     # add to database
-    db_session.add_all([gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_sql_1])
+    db_session.add_all([gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, location_sql_1])
     db_session.commit()
 
     app.dependency_overrides[get_session] = lambda: db_session
@@ -483,22 +489,29 @@ def setup_gsp_yield_data(db_session):
     gsp_yield_4 = GSPYield(datetime_utc=datetime(2022, 1, 1, 12), solar_generation_kw=3)
     gsp_yield_4_sql = gsp_yield_4.to_orm()
 
-    gsp_sql_1: LocationSQL = Location(
+    location_sql_1: LocationSQL = Location(
         gsp_id=122, label="GSP_122", status_interval_minutes=5
     ).to_orm()
-    gsp_sql_2: LocationSQL = Location(
+    location_sql_2: LocationSQL = Location(
         gsp_id=123, label="GSP_123", status_interval_minutes=10
     ).to_orm()
 
     # add pv system to yield object
-    gsp_yield_1_sql.location = gsp_sql_1
-    gsp_yield_2_sql.location = gsp_sql_1
-    gsp_yield_3_sql.location = gsp_sql_2
-    gsp_yield_4_sql.location = gsp_sql_1
+    gsp_yield_1_sql.location = location_sql_1
+    gsp_yield_2_sql.location = location_sql_1
+    gsp_yield_3_sql.location = location_sql_2
+    gsp_yield_4_sql.location = location_sql_1
 
     # add to database
     db_session.add_all(
-        [gsp_yield_1_sql, gsp_yield_2_sql, gsp_yield_3_sql, gsp_yield_4_sql, gsp_sql_1, gsp_sql_2]
+        [
+            gsp_yield_1_sql,
+            gsp_yield_2_sql,
+            gsp_yield_3_sql,
+            gsp_yield_4_sql,
+            location_sql_1,
+            location_sql_2,
+        ]
     )
     db_session.commit()
 
