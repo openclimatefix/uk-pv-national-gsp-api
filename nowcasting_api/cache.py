@@ -1,4 +1,5 @@
 """Caching utils for api using fastapi-cache."""
+
 """Caching utils for api using fastapi-cache."""
 
 import os
