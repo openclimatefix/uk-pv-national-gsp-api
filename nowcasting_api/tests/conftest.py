@@ -2,6 +2,7 @@
 
 import os
 
+import httpx
 import pytest
 import pytest_asyncio
 from fastapi.testclient import TestClient
@@ -13,8 +14,6 @@ from nowcasting_datamodel.models.base import Base_PV
 from nowcasting_api.auth_utils import get_auth_implicit_scheme, get_user
 from nowcasting_api.database import get_session
 from nowcasting_api.main import app
-import pytest_asyncio
-import httpx
 
 
 @pytest.fixture

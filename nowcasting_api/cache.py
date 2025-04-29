@@ -3,15 +3,8 @@
 
 import os
 from typing import Any, Callable, Optional
-from typing import Any, Callable, Optional
 
 import structlog
-from fastapi import Request
-from fastapi_cache import FastAPICache
-from fastapi_cache.backends.inmemory import InMemoryBackend
-from fastapi_cache.decorator import cache
-
-from nowcasting_api.database import save_api_call_to_db
 from fastapi import Request
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.inmemory import InMemoryBackend

@@ -1,5 +1,4 @@
 """Get GSP boundary data from ESO"""
-"""Get GSP boundary data from ESO"""
 
 import os
 from datetime import datetime, timezone
@@ -10,30 +9,20 @@ from auth_utils import get_auth_implicit_scheme, get_user
 from cache import cache_response
 from database import (
     get_forecasts_from_database,
-    get_latest_forecast_values_for_a_specific_gsp_from_database,
-    get_session,
+    get_latest_forecast_values_for_a_specific_gsp_from_database, get_session,
     get_truth_values_for_a_specific_gsp_from_database,
-    get_truth_values_for_all_gsps_from_database,
-)
+    get_truth_values_for_all_gsps_from_database)
 from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, Request, Security, status
 from fastapi.responses import Response
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.models import Forecast, ForecastValue, ManyForecasts
-from pydantic_models import (
-    GSPYield,
-    GSPYieldGroupByDatetime,
-    LocationWithGSPYields,
-    OneDatetimeManyForecastValues,
-)
+from pydantic_models import (GSPYield, GSPYieldGroupByDatetime,
+                             LocationWithGSPYields,
+                             OneDatetimeManyForecastValues)
 from sqlalchemy.orm.session import Session
-from utils import (
-    N_CALLS_PER_HOUR,
-    N_SLOW_CALLS_PER_MINUTE,
-    floor_30_minutes_dt,
-    format_datetime,
-    limiter,
-)
+from utils import (N_CALLS_PER_HOUR, N_SLOW_CALLS_PER_MINUTE,
+                   floor_30_minutes_dt, format_datetime, limiter)
 
 GSP_TOTAL = 317
 
@@ -83,10 +72,8 @@ def get_all_available_forecasts(
     #### Parameters
     - **historic**: boolean that defaults to `true`, returning yesterday's and
       today's forecasts for all GSPs
-      today's forecasts for all GSPs
     - **start_datetime_utc**: optional start datetime for the query. e.g '2023-08-12 10:00:00+00:00'
     - **end_datetime_utc**: optional end datetime for the query. e.g '2023-08-12 14:00:00+00:00'
-    - **creation_limit_utc**: optional, only return forecasts made before this datetime.
     - **creation_limit_utc**: optional, only return forecasts made before this datetime.
     """
     if isinstance(gsp_ids, str):
@@ -140,16 +127,7 @@ def get_all_available_forecasts(
     responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
 @cache_response()
-@router.get(
-    "/forecast/{gsp_id}/",
-    response_model=Union[Forecast, List[ForecastValue]],
-    dependencies=[Depends(get_auth_implicit_scheme())],
-    include_in_schema=False,
-    responses={status.HTTP_204_NO_CONTENT: {"model": None}},
-)
-@cache_response()
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
-async def get_forecasts_for_a_specific_gsp_old_route(
 async def get_forecasts_for_a_specific_gsp_old_route(
     request: Request,
     gsp_id: int,
@@ -158,7 +136,6 @@ async def get_forecasts_for_a_specific_gsp_old_route(
     user: Auth0User = Security(get_user()),
 ) -> Union[Forecast, List[ForecastValue]]:
     """Redirects old API route to new route /v0/solar/GB/gsp/{gsp_id}/forecast"""
-    return await get_forecasts_for_a_specific_gsp(
     return await get_forecasts_for_a_specific_gsp(
         request=request,
         gsp_id=gsp_id,
@@ -175,9 +152,8 @@ async def get_forecasts_for_a_specific_gsp_old_route(
     responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
 @cache_response()
-@cache_response()
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
-def get_forecasts_for_a_specific_gsp(
+async def get_forecasts_for_a_specific_gsp(
     request: Request,
     gsp_id: int,
     session: Session = Depends(get_session),
@@ -238,7 +214,6 @@ def get_forecasts_for_a_specific_gsp(
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response()
-@cache_response()
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_truths_for_all_gsps(
     request: Request,
@@ -252,7 +227,6 @@ def get_truths_for_all_gsps(
 ) -> Union[List[LocationWithGSPYields], List[GSPYieldGroupByDatetime]]:
     """### Get PV_Live values for all GSPs for yesterday and today
 
-    The return object is a series of real‑time PV generation estimates or
     The return object is a series of real‑time PV generation estimates or
     truth values from __PV_Live__ for all GSPs.
 
@@ -293,9 +267,7 @@ def get_truths_for_all_gsps(
     responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
 @cache_response()
-@cache_response()
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
-async def get_truths_for_a_specific_gsp_old_route(
 async def get_truths_for_a_specific_gsp_old_route(
     request: Request,
     gsp_id: int,
@@ -304,8 +276,6 @@ async def get_truths_for_a_specific_gsp_old_route(
     user: Auth0User = Security(get_user()),
 ) -> List[GSPYield]:
     """Redirects old API route to new route /v0/solar/GB/gsp/{gsp_id}/pvlive"""
-
-    return await get_truths_for_a_specific_gsp(
     return await get_truths_for_a_specific_gsp(
         request=request,
         gsp_id=gsp_id,
@@ -323,9 +293,7 @@ async def get_truths_for_a_specific_gsp_old_route(
     responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
 @cache_response()
-@cache_response()
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
-async def get_truths_for_a_specific_gsp(
 async def get_truths_for_a_specific_gsp(
     request: Request,
     gsp_id: int,
@@ -363,7 +331,6 @@ async def get_truths_for_a_specific_gsp(
     if gsp_id > GSP_TOTAL:
         return Response(None, status.HTTP_204_NO_CONTENT)
 
-    raw_yields = await get_truth_values_for_a_specific_gsp_from_database(
     raw_yields = await get_truth_values_for_a_specific_gsp_from_database(
         session=session,
         gsp_id=gsp_id,

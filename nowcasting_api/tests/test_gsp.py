@@ -3,26 +3,20 @@
 from datetime import UTC, datetime, timezone
 
 import pytest
-import pytest
 from freezegun import freeze_time
 from nowcasting_datamodel.fake import make_fake_forecasts
-from nowcasting_datamodel.models import (
-    ForecastValue,
-    ForecastValueSevenDaysSQL,
-    GSPYield,
-    GSPYieldSQL,
-    Location,
-    LocationSQL,
-    LocationWithGSPYields,
-    ManyForecasts,
-)
+from nowcasting_datamodel.models import (ForecastValue,
+                                         ForecastValueSevenDaysSQL, GSPYield,
+                                         GSPYieldSQL, Location, LocationSQL,
+                                         LocationWithGSPYields, ManyForecasts)
 from nowcasting_datamodel.read.read_models import get_model
 from nowcasting_datamodel.save.save import save_all_forecast_values_seven_days
 from nowcasting_datamodel.save.update import update_all_forecast_latest
 
 from nowcasting_api.database import get_session
 from nowcasting_api.main import app
-from nowcasting_api.pydantic_models import GSPYieldGroupByDatetime, OneDatetimeManyForecastValues
+from nowcasting_api.pydantic_models import (GSPYieldGroupByDatetime,
+                                            OneDatetimeManyForecastValues)
 from nowcasting_api.utils import N_SLOW_CALLS_PER_MINUTE, floor_30_minutes_dt
 
 
