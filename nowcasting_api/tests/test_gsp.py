@@ -284,6 +284,8 @@ def test_read_truths_for_a_specific_gsp(db_session, api_client):
 
     r_json = response.json()
     assert len(r_json) == 3
+    # Also check the returned date format
+    assert r_json[0]["datetimeUtc"] == "2022-01-02T00:00:00Z"
 
     _ = [GSPYield(**gsp_yield) for gsp_yield in r_json]
 
@@ -332,6 +334,8 @@ def test_read_truths_for_specific_gsp_with_start_datetime(db_session, api_client
 
     # Should exclude the first yield (before the start_datetime_utc) and last yield (day-after)
     assert len(r_json) == 2
+    # Also check the returned date format
+    assert r_json[0]["datetimeUtc"] == "2022-01-02T00:00:00Z"
 
     _ = [GSPYield(**gsp_yield) for gsp_yield in r_json]
 
@@ -376,6 +380,8 @@ def test_read_truths_for_specific_gsp_with_regime_day_after(db_session, api_clie
 
     # Should exclude the first yield as it has a regime of "in-day" by default
     assert len(r_json) == 2
+    # Also check the returned date format
+    assert r_json[0]["datetimeUtc"] == "2022-01-02T00:00:00Z"
 
     _ = [GSPYield(**gsp_yield) for gsp_yield in r_json]
 
@@ -418,6 +424,8 @@ def test_read_truths_for_specific_gsp_with_regime_in_day_explicitly(db_session, 
 
     # Should exclude the last yield as it has a regime of "day-after"
     assert len(r_json) == 2
+    # Also check the returned date format
+    assert r_json[0]["datetimeUtc"] == "2022-01-01T12:00:00Z"
 
     _ = [GSPYield(**gsp_yield) for gsp_yield in r_json]
 
