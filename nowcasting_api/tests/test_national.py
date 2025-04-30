@@ -282,7 +282,7 @@ def test_read_latest_national_values_model_name(db_session, api_client):
     assert len(national_forecast_values) > 0
 
     # get a model that doesnt exist
-    response = api_client.get("/v0/solar/GB/national/forecast?model_name=not_blend")
+    response = api_client.get("/v0/solar/GB/national/forecast?model_name=pvnet_intraday")
     assert response.status_code == 200
     national_forecast_values = [NationalForecastValue(**f) for f in response.json()]
     assert len(national_forecast_values) == 0
@@ -294,7 +294,7 @@ def test_read_latest_national_values_model_name(db_session, api_client):
     assert len(national_forecas.forecast_values) > 0
 
     # with include_metadata and model_name
-    response = api_client.get("/v0/solar/GB/national/forecast?include_metadata=true&model_name=not_blend")
+    response = api_client.get("/v0/solar/GB/national/forecast?include_metadata=true&model_name=pvnet_intraday")
     assert response.status_code == 200
     national_forecas = NationalForecast(response.json())
     assert len(national_forecas.forecast_values) == 0
