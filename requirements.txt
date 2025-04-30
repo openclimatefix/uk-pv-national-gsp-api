@@ -21,12 +21,4 @@ fsspec
 s3fs
 elexonpy
 fastapi-cache2==0.2.2
-<<<<<<< HEAD
-<<<<<<< HEAD
 pytest-asyncio==0.26.0
-=======
-pytest-asyncio==0.26.0
->>>>>>> eb948a2 (asynchronus support)
-=======
-pytest-asyncio==0.26.0
->>>>>>> ca3dfd3 ([pre-commit.ci] auto fixes from pre-commit.com hooks)

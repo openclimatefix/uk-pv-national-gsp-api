@@ -4,9 +4,12 @@ import abc
 import os
 from datetime import datetime, timedelta, timezone
 from typing import List, Optional, Union
-
+from sqlalchemy.ext.asyncio import AsyncSession
 import structlog
 from fastapi.exceptions import HTTPException
+from fastapi.concurrency import run_in_threadpool
+from sqlalchemy import select
+from nowcasting_datamodel.models import GSPYieldSQL, LocationSQL
 from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.models import (
     APIRequestSQL,
@@ -353,8 +356,8 @@ def get_latest_national_forecast_from_database(session: Session) -> Forecast:
     return Forecast.from_orm(forecast)
 
 
-def get_truth_values_for_a_specific_gsp_from_database(
-    session: Session,
+async def get_truth_values_for_a_specific_gsp_from_database(
+    session: AsyncSession,
     gsp_id: int,
     regime: Optional[str] = "in-day",
     start_datetime: Optional[datetime] = None,
@@ -371,16 +374,23 @@ def get_truth_values_for_a_specific_gsp_from_database(
     :param end_datetime: optional end datetime for the query.
     :return: list of gsp yields
     """
+    def _sync_query():
+        stmt = (
+            select(GSPYieldSQL)
+            .join(LocationSQL, GSPYieldSQL.location_id == LocationSQL.id)
+            .where(LocationSQL.gsp_id == gsp_id)
+        )
+        if start_datetime is not None:
+            stmt = stmt.where(GSPYieldSQL.datetime_utc >= start_datetime)
+        if end_datetime is not None:
+            stmt = stmt.where(GSPYieldSQL.datetime_utc <= end_datetime)
 
-    start_datetime = get_start_datetime(start_datetime=start_datetime)
-
-    return get_gsp_yield(
-        session=session,
-        gsp_ids=[gsp_id],
-        start_datetime_utc=start_datetime,
-        end_datetime_utc=end_datetime,
-        regime=regime,
-    )
+        result = session.execute(stmt.order_by(GSPYieldSQL.datetime_utc))
+        return result.scalars().all()
+    
+    rows = await run_in_threadpool(_sync_query)
+    # Return the SQL objects directly, conversion will happen in the route handler
+    return rows
 
 
 def get_truth_values_for_all_gsps_from_database(
