@@ -258,7 +258,7 @@ def test_read_truth_national_gsp(db_session, api_client):
     _ = [GSPYield(**gsp_yield) for gsp_yield in r_json]
 
 
-@freeze_time("2025-04-01")
+@freeze_time("2025-04-01 12:00")
 def test_read_latest_national_values_model_name(db_session, api_client):
     """Check main solar/GB/national/forecast route with different model_names"""
 
@@ -291,12 +291,12 @@ def test_read_latest_national_values_model_name(db_session, api_client):
     national_forecast_values_2 = [NationalForecastValue(**f) for f in response.json()]
     assert len(national_forecast_values_2) > 0
     national_forecast_values_2_sum = sum(
-        [n.expected_power_generation_megawatts for n in national_forecast_values_1]
+        [n.expected_power_generation_megawatts for n in national_forecast_values_2]
     )
     assert national_forecast_values_1_sum != national_forecast_values_2_sum
 
 
-@freeze_time("2025-04-01")
+@freeze_time("2025-04-01 12:00")
 def test_read_latest_national_values_model_name_include_metadata(db_session, api_client):
     """Check main solar/GB/national/forecast route with different model_names"""
 
@@ -329,7 +329,7 @@ def test_read_latest_national_values_model_name_include_metadata(db_session, api
     )
     assert response.status_code == 200
     national_forecast_2 = NationalForecast(**response.json())
-    assert len(national_forecast_2.forecast_values) == 0
+    assert len(national_forecast_2.forecast_values) > 0
     national_forecast_2_sum = sum(
         [n.expected_power_generation_megawatts for n in national_forecast_2.forecast_values]
     )
