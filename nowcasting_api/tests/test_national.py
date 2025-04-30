@@ -333,6 +333,5 @@ def test_read_latest_national_values_model_name_include_metadata(db_session, api
     national_forecast_2_sum = sum(
         [n.expected_power_generation_megawatts for n in national_forecast_2.forecast_values]
     )
-    
-    assert national_forecast_1_sum != national_forecast_2_sum
 
+    assert national_forecast_1_sum != national_forecast_2_sum
