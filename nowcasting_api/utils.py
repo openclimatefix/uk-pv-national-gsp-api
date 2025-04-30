@@ -19,7 +19,7 @@ utc = timezone("UTC")
 
 limiter = Limiter(key_func=get_remote_address)
 N_CALLS_PER_HOUR = os.getenv("N_CALLS_PER_HOUR", 3600)  # 1 call per second
-N_SLOW_CALLS_PER_HOUR = os.getenv("N_SLOW_CALLS_PER_HOUR", 60)  # 1 call per minute
+N_SLOW_CALLS_PER_MINUTE = os.getenv("N_SLOW_CALLS_PER_MINUTE", 1)  # 1 call per minute
 
 
 def floor_30_minutes_dt(dt):

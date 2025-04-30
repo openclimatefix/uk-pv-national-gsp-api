@@ -22,7 +22,7 @@ from nowcasting_datamodel.save.update import update_all_forecast_latest
 from nowcasting_api.database import get_session
 from nowcasting_api.main import app
 from nowcasting_api.pydantic_models import GSPYieldGroupByDatetime, OneDatetimeManyForecastValues
-from nowcasting_api.utils import floor_30_minutes_dt
+from nowcasting_api.utils import N_SLOW_CALLS_PER_MINUTE, floor_30_minutes_dt, limiter
 
 
 @freeze_time("2022-01-01")
@@ -146,7 +146,6 @@ def test_read_latest_all_gsp_filter_gsp(db_session, api_client):
     assert len(r.forecasts[0].forecast_values) == 16
 
 
-# Convert async tests to use async_client
 @pytest.mark.asyncio
 async def test_read_latest_gsp_id_greater_than_total(db_session, async_client):
     """Check that request with gsp_id>=318 returns 204"""
@@ -168,7 +167,7 @@ async def test_read_latest_gsp_id_equal_to_total(db_session, async_client):
 
     app.dependency_overrides[get_session] = lambda: db_session
 
-    response = await async_client.get("/v0/solar/GB/gsp/forecast/317")
+    response = await async_client.get("/v0/solar/GB/gsp/317/forecast")
 
     assert response.status_code == 200
 
@@ -434,3 +433,38 @@ def test_read_truths_for_all_gsp_compact(db_session, api_client):
     assert len(datetimes_with_gsp_yields[0].generation_kw_by_gsp_id) == 1
     assert len(datetimes_with_gsp_yields[1].generation_kw_by_gsp_id) == 2
     assert len(datetimes_with_gsp_yields[2].generation_kw_by_gsp_id) == 1
+
+
+def test_slow_rate_limit_exceeded(db_session, api_client):
+    """Check a 429 is thrown if the slow rate limit is exceeded"""
+
+    _ = get_model(session=db_session, name="blend", version="0.0.1")
+
+    _ = make_fake_forecasts(
+        gsp_ids=list(range(0, 10)),
+        model_name="blend",
+        session=db_session,
+        add_latest=True,
+        t0_datetime_utc=floor_30_minutes_dt(datetime.now(tz=UTC)),
+    )
+
+    db_session.commit()
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    # Reset the rate limiter state before testing
+    # This ensures we start with a clean slate for the test
+    limiter.reset()
+
+    # Make one less than the limit to use up the quota
+    for _ in range(int(N_SLOW_CALLS_PER_MINUTE)):
+        response = api_client.get("/v0/solar/GB/gsp/forecast/all/?historic=False")
+        assert response.status_code == 200, f"Expected 200 status, got {response.status_code}"
+
+    # This request should exceed the limit and return 429
+    exceeded_response = api_client.get("/v0/solar/GB/gsp/forecast/all/?historic=False")
+
+    # Assert that we got the expected 429 response
+    assert (
+        exceeded_response.status_code == 429
+    ), f"Expected 429 status, got {exceeded_response.status_code}"

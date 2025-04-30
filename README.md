@@ -1,7 +1,7 @@
 # UK PV National and GSP API
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-20-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-21-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![tags badge](https://img.shields.io/github/v/tag/openclimatefix/uk-pv-national-gsp-api?include_prereleases&sort=semver&color=FFAC5F)](https://github.com/openclimatefix/uk-pv-national-gsp-api/tags)
@@ -29,8 +29,6 @@ You will need to set the following environment variables:
 - `ORIGINS` - Endpoints that are valid CORS origins. See [FastAPI documentation](https://fastapi.tiangolo.com/tutorial/cors/).
 - `N_HISTORY_DAYS` - Default is just to load data from today and yesterday,
     but we can set this to 5, if we want the api always to return 5 days of data
-- `FORECAST_ERROR_HOURS` - using route `/v0/system/GBstatus/check_last_forecast_run` we can check if a forecast has
-        been made in the last `FORECAST_ERROR_HOURS` hours
 - `ADJUST_MW_LIMIT` - the maximum the api is allowed to adjust the national forecast by
 - `FAKE` - This allows fake data to be used, rather than connecting to a database
 - `QUERY_WAIT_SECONDS` - The number of seconds to wait for an on going query
@@ -42,7 +40,7 @@ Note you will need a database set up at `DB_URL`. This should use the datamodel 
 
 There are several optional environment variables:
 - `N_CALLS_PER_HOUR` - API rate limit for most endpoints. Defaults to 3600 (1 per second).
-- `N_SLOW_CALLS_PER_HOUR` - API rate limit for slow endpoints. Defaults to 60 (1 per minute).
+- `N_SLOW_CALLS_PER_MINUTE` - API rate limit for slow endpoints. Defaults to 1 (1 per minute).
 
 ## Documentation
 
@@ -226,6 +224,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/mahmoud-40"><img src="https://avatars.githubusercontent.com/u/116794637?v=4?s=100" width="100px;" alt="Mahmoud Abdulmawlaa"/><br /><sub><b>Mahmoud Abdulmawlaa</b></sub></a><br /><a href="https://github.com/openclimatefix/uk-pv-national-gsp-api/commits?author=mahmoud-40" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/abdalahsalah"><img src="https://avatars.githubusercontent.com/u/139065821?v=4?s=100" width="100px;" alt="Abdallah salah"/><br /><sub><b>Abdallah salah</b></sub></a><br /><a href="https://github.com/openclimatefix/uk-pv-national-gsp-api/commits?author=abdalahsalah" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Dakshbir"><img src="https://avatars.githubusercontent.com/u/144359831?v=4?s=100" width="100px;" alt="Dakshbir"/><br /><sub><b>Dakshbir</b></sub></a><br /><a href="https://github.com/openclimatefix/uk-pv-national-gsp-api/commits?author=Dakshbir" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/michael-gendy"><img src="https://avatars.githubusercontent.com/u/64384201?v=4?s=100" width="100px;" alt="michael-gendy"/><br /><sub><b>michael-gendy</b></sub></a><br /><a href="https://github.com/openclimatefix/uk-pv-national-gsp-api/commits?author=michael-gendy" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

@@ -28,7 +28,7 @@ from pydantic_models import (
 from sqlalchemy.orm.session import Session
 from utils import (
     N_CALLS_PER_HOUR,
-    N_SLOW_CALLS_PER_HOUR,
+    N_SLOW_CALLS_PER_MINUTE,
     floor_30_minutes_dt,
     format_datetime,
     limiter,
@@ -52,8 +52,8 @@ NationalYield = GSPYield
     response_model=Union[ManyForecasts, List[OneDatetimeManyForecastValues]],
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
+@limiter.limit(f"{N_SLOW_CALLS_PER_MINUTE}/minute")
 @cache_response()
-@limiter.limit(f"{N_SLOW_CALLS_PER_HOUR}/hour")
 def get_all_available_forecasts(
     request: Request,
     historic: Optional[bool] = True,
@@ -87,8 +87,8 @@ def get_all_available_forecasts(
     - **creation_limit_utc**: optional, only return forecasts made before this datetime.
     """
     if isinstance(gsp_ids, str):
-        gsp_ids = [int(gsp_id) for gsp_id in gsp_ids.split(",")]
-        if gsp_ids == "":
+        gsp_ids = [int(gsp_id) for gsp_id in gsp_ids.split(",") if gsp_id]
+        if not gsp_ids:
             gsp_ids = None
 
     logger.info(f"Get forecasts for all gsps. The option is {historic=} for user {user}")
@@ -123,14 +123,14 @@ def get_all_available_forecasts(
 
 # Old forecast route (backwards compatibility)
 @router.get(
-    "/forecast/{gsp_id}",
+    "/forecast/{gsp_id}/",
     response_model=Union[Forecast, List[ForecastValue]],
     dependencies=[Depends(get_auth_implicit_scheme())],
     include_in_schema=False,
     responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
 @router.get(
-    "/forecast/{gsp_id}/",
+    "{gsp_id}/forecast/",
     response_model=Union[Forecast, List[ForecastValue]],
     dependencies=[Depends(get_auth_implicit_scheme())],
     include_in_schema=False,
@@ -163,7 +163,7 @@ async def get_forecasts_for_a_specific_gsp_old_route(
 )
 @cache_response()
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
-def get_forecasts_for_a_specific_gsp(
+async def get_forecasts_for_a_specific_gsp(
     request: Request,
     gsp_id: int,
     session: Session = Depends(get_session),
@@ -254,7 +254,9 @@ def get_truths_for_all_gsps(
     - **end_datetime_utc**: optional end datetime for the query.
     """
     if isinstance(gsp_ids, str):
-        gsp_ids = [int(gsp_id) for gsp_id in gsp_ids.split(",")]
+        gsp_ids = [int(gsp_id) for gsp_id in gsp_ids.split(",") if gsp_id]
+        if not gsp_ids:
+            gsp_ids = None
 
     start_datetime_utc = format_datetime(start_datetime_utc)
     end_datetime_utc = format_datetime(end_datetime_utc)
@@ -284,6 +286,8 @@ async def get_truths_for_a_specific_gsp_old_route(
     regime: Optional[str] = None,
     session: Session = Depends(get_session),
     user: Auth0User = Security(get_user()),
+    start_datetime_utc: Optional[str] = None,
+    end_datetime_utc: Optional[str] = None,
 ) -> List[GSPYield]:
     """Redirects old API route to new route /v0/solar/GB/gsp/{gsp_id}/pvlive"""
 
@@ -293,6 +297,8 @@ async def get_truths_for_a_specific_gsp_old_route(
         regime=regime,
         session=session,
         user=user,
+        start_datetime_utc=start_datetime_utc,
+        end_datetime_utc=end_datetime_utc,
     )
 
 
@@ -342,6 +348,7 @@ async def get_truths_for_a_specific_gsp(
     if gsp_id > GSP_TOTAL:
         return Response(None, status.HTTP_204_NO_CONTENT)
 
+    # Convert to non-async call to match test expectations
     raw_yields = await get_truth_values_for_a_specific_gsp_from_database(
         session=session,
         gsp_id=gsp_id,

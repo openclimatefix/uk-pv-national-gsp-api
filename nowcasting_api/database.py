@@ -36,11 +36,7 @@ from nowcasting_datamodel.read.read import (
 from nowcasting_datamodel.read.read_gsp import get_gsp_yield_by_location
 from nowcasting_datamodel.read.read_user import get_user as get_user_from_db
 from nowcasting_datamodel.save.update import N_GSP
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm.session import Session
-
-from nowcasting_api.pydantic_models import (
+from pydantic_models import (
     GSPYield,
     GSPYieldGroupByDatetime,
     LocationWithGSPYields,
@@ -48,7 +44,10 @@ from nowcasting_api.pydantic_models import (
     convert_forecasts_to_many_datetime_many_generation,
     convert_location_sql_to_many_datetime_many_generation,
 )
-from nowcasting_api.utils import filter_forecast_values, floor_30_minutes_dt, get_start_datetime
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm.session import Session
+from utils import filter_forecast_values, floor_30_minutes_dt, get_start_datetime
 
 
 class BaseDBConnection(abc.ABC):
@@ -392,8 +391,9 @@ async def get_truth_values_for_a_specific_gsp_from_database(
         result = session.execute(stmt.order_by(GSPYieldSQL.datetime_utc))
         return result.scalars().all()
 
-    rows: List[GSPYieldSQL] = await run_in_threadpool(_sync_query)
-    return [GSPYield.from_orm(r) for r in rows]
+    rows = await run_in_threadpool(_sync_query)
+    # Return the SQL objects directly, conversion will happen in the route handler
+    return rows
 
 
 def get_truth_values_for_all_gsps_from_database(

@@ -2,10 +2,11 @@
 
 import os
 
+import httpx
 import pytest
 import pytest_asyncio
 from fastapi.testclient import TestClient
-from httpx import ASGITransport, AsyncClient
+from httpx import AsyncClient
 from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.fake import make_fake_forecasts
 from nowcasting_datamodel.models.base import Base_PV
@@ -62,6 +63,10 @@ def api_client(db_session):
 
     setup_cache()
 
+    from nowcasting_api.cache import setup_cache
+
+    setup_cache()
+
     client = TestClient(app)
 
     app.dependency_overrides[get_auth_implicit_scheme] = lambda: None
@@ -85,7 +90,9 @@ async def async_client(db_session):
     app.dependency_overrides[get_user] = lambda: None
     app.dependency_overrides[get_session] = lambda: db_session
 
-    transport = ASGITransport(app=app)
+    # Using ASGITransport to route requests directly to the FastAPI app
+    transport = httpx.ASGITransport(app=app)
 
+    # Create AsyncClient with the transport
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         yield client
