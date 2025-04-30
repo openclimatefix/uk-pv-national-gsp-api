@@ -285,7 +285,7 @@ def test_read_latest_national_values_model_name(db_session, api_client):
         [n.expected_power_generation_megawatts for n in national_forecast_values_1]
     )
 
-    # get a model that doesnt exist
+    # get a model using pvnet_intraday
     response = api_client.get("/v0/solar/GB/national/forecast?model_name=pvnet_intraday")
     assert response.status_code == 200
     national_forecast_values_2 = [NationalForecastValue(**f) for f in response.json()]
@@ -294,6 +294,25 @@ def test_read_latest_national_values_model_name(db_session, api_client):
         [n.expected_power_generation_megawatts for n in national_forecast_values_1]
     )
     assert national_forecast_values_1_sum != national_forecast_values_2_sum
+
+
+@freeze_time("2025-04-01")
+def test_read_latest_national_values_model_name_include_metadata(db_session, api_client):
+    """Check main solar/GB/national/forecast route with different model_names"""
+
+    model = get_model(db_session, name="blend", version="0.0.1")
+    model_pvnet_intraday = get_model(db_session, name="pvnet_v2", version="0.0.1")
+
+    for m in [model, model_pvnet_intraday]:
+        forecast = make_fake_national_forecast(
+            session=db_session, t0_datetime_utc=datetime.now(tz=timezone.utc)
+        )
+        forecast.model = m
+
+        db_session.add(forecast)
+        update_all_forecast_latest(forecasts=[forecast], session=db_session)
+
+    app.dependency_overrides[get_session] = lambda: db_session
 
     # with include_metadata
     response = api_client.get("/v0/solar/GB/national/forecast?include_metadata=true")
@@ -316,3 +335,4 @@ def test_read_latest_national_values_model_name(db_session, api_client):
     )
     
     assert national_forecast_1_sum != national_forecast_2_sum
+
