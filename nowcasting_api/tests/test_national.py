@@ -298,4 +298,3 @@ def test_read_latest_national_values_model_name(db_session, api_client):
     assert response.status_code == 200
     national_forecas = NationalForecast(response.json())
     assert len(national_forecas.forecast_values) == 0
-
