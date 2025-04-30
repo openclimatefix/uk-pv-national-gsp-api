@@ -260,7 +260,7 @@ def test_read_truth_national_gsp(db_session, api_client):
 
 @freeze_time("2025-04-01 12:00")
 def test_read_latest_national_values_model_name(db_session, api_client):
-    """Check main solar/GB/national/forecast route with different model_names"""
+    """Check main national/forecast route with different model_names"""
 
     model = get_model(db_session, name="blend", version="0.0.1")
     model_pvnet_intraday = get_model(db_session, name="pvnet_v2", version="0.0.1")
@@ -298,7 +298,7 @@ def test_read_latest_national_values_model_name(db_session, api_client):
 
 @freeze_time("2025-04-01 12:00")
 def test_read_latest_national_values_model_name_include_metadata(db_session, api_client):
-    """Check main solar/GB/national/forecast route with different model_names"""
+    """Check national/forecast route with different model_names and include_metadata=true"""
 
     model = get_model(db_session, name="blend", version="0.0.1")
     model_pvnet_intraday = get_model(db_session, name="pvnet_v2", version="0.0.1")
