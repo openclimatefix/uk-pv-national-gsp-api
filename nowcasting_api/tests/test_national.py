@@ -290,11 +290,11 @@ def test_read_latest_national_values_model_name(db_session, api_client):
     # with include_metadata
     response = api_client.get("/v0/solar/GB/national/forecast?include_metadata=true")
     assert response.status_code == 200
-    national_forecas = NationalForecast(response.json())
+    national_forecas = NationalForecast(**response.json())
     assert len(national_forecas.forecast_values) > 0
 
     # with include_metadata and model_name
     response = api_client.get("/v0/solar/GB/national/forecast?include_metadata=true&model_name=pvnet_intraday")
     assert response.status_code == 200
-    national_forecas = NationalForecast(response.json())
+    national_forecas = NationalForecast(**response.json())
     assert len(national_forecas.forecast_values) == 0
