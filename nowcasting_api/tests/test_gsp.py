@@ -451,14 +451,16 @@ def test_slow_rate_limit_exceeded(db_session, api_client):
     # Reset the rate limiter state before testing
     # This ensures we start with a clean slate for the test
     limiter.reset()
-    
+
     # Make one less than the limit to use up the quota
     for _ in range(int(N_SLOW_CALLS_PER_MINUTE)):
         response = api_client.get("/v0/solar/GB/gsp/forecast/all/?historic=False")
         assert response.status_code == 200, f"Expected 200 status, got {response.status_code}"
-    
+
     # This request should exceed the limit and return 429
     exceeded_response = api_client.get("/v0/solar/GB/gsp/forecast/all/?historic=False")
-    
+
     # Assert that we got the expected 429 response
-    assert exceeded_response.status_code == 429, f"Expected 429 status, got {exceeded_response.status_code}"
+    assert (
+        exceeded_response.status_code == 429
+    ), f"Expected 429 status, got {exceeded_response.status_code}"
