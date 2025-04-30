@@ -167,6 +167,7 @@ def get_national_forecast(
             start_datetime_utc=start_datetime_utc,
             end_datetime_utc=end_datetime_utc,
             creation_utc_limit=creation_limit_utc,
+            model_name=model_name
         )
 
     logger.debug(f"Got national forecasts with {len(forecast_values)} forecast values. ")

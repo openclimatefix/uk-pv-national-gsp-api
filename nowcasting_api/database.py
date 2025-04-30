@@ -271,6 +271,7 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
     start_datetime_utc: Optional[datetime] = None,
     end_datetime_utc: Optional[datetime] = None,
     creation_utc_limit: Optional[datetime] = None,
+    model_name: Optional[str] = "blend",
 ) -> List[ForecastValue]:
     """Get the forecast values for yesterday and today for one gsp
 
@@ -278,6 +279,7 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
     :param gsp_id: gsp id, 0 is national
     :param forecast_horizon_minutes: Optional forecast horizon in minutes. I.e 35 minutes, means
         get the latest forecast made 35 minutes before the target time.
+    :param model_name: Option to filter on model name
     :return: list of latest forecat values
     """
 
@@ -288,7 +290,7 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
             session=session,
             gsp_id=gsp_id,
             start_datetime=start_datetime,
-            model_name="blend",
+            model_name=model_name,
             end_datetime=end_datetime_utc,
         )
 
@@ -316,7 +318,7 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
             start_datetime=start_datetime,
             end_datetime=end_datetime_utc,
             forecast_horizon_minutes=forecast_horizon_minutes,
-            model_name="blend",
+            model_name=model_name,
             model=model,
             only_return_latest=True,
             created_utc_limit=creation_utc_limit,
