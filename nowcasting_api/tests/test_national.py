@@ -286,8 +286,10 @@ def test_read_latest_national_values_model_name(db_session, api_client):
     assert response.status_code == 200
     national_forecast_values_2 = [NationalForecastValue(**f) for f in response.json()]
     assert len(national_forecast_values_2) > 0
-    assert national_forecast_values_1[0].expected_power_generation_megawatts \
-           != national_forecast_values_2[0].expected_power_generation_megawatts
+    assert (
+        national_forecast_values_1[0].expected_power_generation_megawatts
+        != national_forecast_values_2[0].expected_power_generation_megawatts
+    )
 
     # with include_metadata
     response = api_client.get("/v0/solar/GB/national/forecast?include_metadata=true")
@@ -302,5 +304,7 @@ def test_read_latest_national_values_model_name(db_session, api_client):
     assert response.status_code == 200
     national_forecast_2 = NationalForecast(**response.json())
     assert len(national_forecast_2.forecast_values) == 0
-    assert national_forecast_1.forecast_values[0].expected_power_generation_megawatts != \
-              national_forecast_2.forecast_values[0].expected_power_generation_megawatts
+    assert (
+        national_forecast_1.forecast_values[0].expected_power_generation_megawatts
+        != national_forecast_2.forecast_values[0].expected_power_generation_megawatts
+    )
