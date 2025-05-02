@@ -13,9 +13,10 @@ Notes:
       does not account for.
 """
 
-import requests
 from datetime import datetime, timedelta
+
 import pandas as pd
+import requests
 from tqdm import tqdm
 
 
