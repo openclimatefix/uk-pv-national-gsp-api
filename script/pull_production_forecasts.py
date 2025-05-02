@@ -19,7 +19,6 @@ import pandas as pd
 import requests
 from tqdm import tqdm
 
-
 start_time = datetime(2024, 6, 1, 3)
 end_time = start_time + timedelta(days=7)  # Example pull a week of data
 output_file_path = "./quartz_production_backtest.csv"
