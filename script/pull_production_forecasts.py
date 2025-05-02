@@ -5,7 +5,7 @@ The API requires authentication via a Bearer token and returns forecast data for
 The forecast data includes predicted solar generation values at half hourly intervals.
 
 Example:
-    - Set access token in the fuciton (where it says INSERT ACCESS TOKEN HERE 
+    - Set access token in the fuciton (where it says INSERT ACCESS TOKEN HERE
     - Set the start_time to when to pull the forecast from.
     - Adjust the days parameter where the end_time is created (example is a week)
 
@@ -20,24 +20,24 @@ from tqdm import tqdm
 
 
 start_time = datetime(2024, 6, 1, 3)
-end_time = start_time + timedelta(days=7) # Example pull a week of data
+end_time = start_time + timedelta(days=7)  # Example pull a week of data
 output_file_path = "./quartz_production_backtest.csv"
 
 
 def get_solar_forecast(start_datetime):
     """
     Get solar forecast for GB from Quartz API for a specific start time and creation limit
-    
+
     Args:
         start_datetime (str): Start datetime in format "YYYY-MM-DD"
-        
+
     Returns:
         pandas.DataFrame: Forecast data
     """
     # Convert string to datetime object
     start_dt = datetime.strptime(start_datetime, "%Y-%m-%dT%H%M")
     end_dt = start_dt + timedelta(days=2)
-    
+
     # Convert back to string format for API
     end_datetime = end_dt.strftime("%Y-%m-%dT%H%M")
     creation_limit = start_datetime
@@ -49,16 +49,13 @@ def get_solar_forecast(start_datetime):
         "start_datetime_utc": start_datetime,
         "end_datetime_utc": end_datetime,
         "creation_limit_utc": creation_limit,
-        "model_name": "blend"
+        "model_name": "blend",
     }
 
     access_token = "INSERT ACCESS TOKEN HERE"
 
     # Request headers
-    headers = {
-        "accept": "application/json",
-        "Authorization": f"Bearer {access_token}"
-    }
+    headers = {"accept": "application/json", "Authorization": f"Bearer {access_token}"}
 
     response = requests.get(url, params=params, headers=headers)
 
@@ -70,14 +67,15 @@ def get_solar_forecast(start_datetime):
     df = pd.DataFrame(forecast_data)
 
     # extract plevels into separate columns and drop the plevels dictionary column
-    df['plevel_10'] = df['plevels'].apply(lambda x: x['plevel_10'])
-    df['plevel_90'] = df['plevels'].apply(lambda x: x['plevel_90'])
-    df = df.drop('plevels', axis=1)
+    df["plevel_10"] = df["plevels"].apply(lambda x: x["plevel_10"])
+    df["plevel_90"] = df["plevels"].apply(lambda x: x["plevel_90"])
+    df = df.drop("plevels", axis=1)
 
-    df['targetTime'] = pd.to_datetime(df['targetTime'])
-    df['creation_time_utc'] = pd.to_datetime(start_datetime, utc=True)
-    
+    df["targetTime"] = pd.to_datetime(df["targetTime"])
+    df["creation_time_utc"] = pd.to_datetime(start_datetime, utc=True)
+
     return df
+
 
 timestamps = []
 current_time = start_time
