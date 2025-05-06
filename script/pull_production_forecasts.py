@@ -1,6 +1,6 @@
 """This scripts fetches solar generation forecasts for Great Britain using the Quartz API.
 
-The API requires authentication via a Bearer token and returns forecast data for a specified time 
+The API requires authentication via a Bearer token and returns forecast data for a specified time
 period. The forecast data includes predicted solar generation values at half hourly intervals.
 
 Example:
