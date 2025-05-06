@@ -19,8 +19,8 @@ import pandas as pd
 import requests
 from tqdm import tqdm
 
-start_time = datetime(2024, 6, 1, 3)
-end_time = start_time + timedelta(days=7)  # Example pull a week of data
+start_time = pd.to_datetime("2024-06-01")
+end_time = start_time + timedelta(days=1)  # Example pull a week of data
 output_file_path = "./quartz_production_backtest.csv"
 
 
@@ -29,17 +29,17 @@ def get_solar_forecast(start_datetime):
     Get solar forecast for GB from Quartz API for a specific start time and creation limit
 
     Args:
-        start_datetime (str): Start datetime in format "YYYY-MM-DD"
+        start_datetime: Start datetime
 
     Returns:
-        pandas.DataFrame: Forecast data
+        pandas.DataFrame: Forecast data with columns:
+            - targetTime
+            - expectedPowerGenerationMegawatts
+            - plevel_10
+            - plevel_90
+            - creation_time_utc
     """
-    # Convert string to datetime object
-    start_dt = datetime.strptime(start_datetime, "%Y-%m-%dT%H%M")
-    end_dt = start_dt + timedelta(days=2)
-
-    # Convert back to string format for API
-    end_datetime = end_dt.strftime("%Y-%m-%dT%H%M")
+    end_datetime = start_datetime + timedelta(days=2)
     creation_limit = start_datetime
 
     # API endpoint and parameters
@@ -87,12 +87,11 @@ while current_time < end_time:
 # get forecasts for each timestamp
 all_forecasts = []
 for ts in tqdm(timestamps, desc="Retrieving forecasts"):
-    start_datetime = ts.strftime("%Y-%m-%dT%H%M")
     try:
-        forecast_df = get_solar_forecast(start_datetime)
+        forecast_df = get_solar_forecast(ts)
         all_forecasts.append(forecast_df)
     except Exception as e:
-        print(f"Failed to get forecast for {start_datetime}: {str(e)}")
+        print(f"Failed to get forecast for {ts}: {str(e)}")
 
 # combine all forecasts
 if all_forecasts:
