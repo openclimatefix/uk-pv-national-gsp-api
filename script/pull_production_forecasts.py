@@ -13,7 +13,7 @@ Notes:
       does not account for.
 """
 
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import pandas as pd
 import requests
