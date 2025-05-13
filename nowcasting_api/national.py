@@ -147,6 +147,11 @@ def get_national_forecast(
         )
         forecast = forecast[0]
 
+        # if initialization_datetime_utc is not set, set it to the same as forecast_creation_time
+        # This can be removed later when the forecast starts writing initialization_datetime_utc
+        if forecast.initialization_datetime_utc is None:
+            forecast.initialization_datetime_utc = forecast.forecast_creation_time
+
         if historic:
             forecast = NationalForecast.from_orm_latest(forecast)
         else:

@@ -135,6 +135,29 @@ def test_get_national_forecast(db_session, api_client):
     )
 
 
+@freeze_time("2024-01-01")
+def test_get_national_forecast_no_init(db_session, api_client):
+    """Check main solar/GB/national/forecast route works"""
+
+    model = get_model(db_session, name="blend", version="0.0.1")
+
+    forecast = make_fake_national_forecast(
+        session=db_session, t0_datetime_utc=datetime.now(tz=timezone.utc)
+    )
+    forecast.model = model
+    forecast.initialization_datetime_utc = None
+
+    assert forecast.forecast_values[0].properties is not None
+
+    db_session.add(forecast)
+    update_all_forecast_latest(forecasts=[forecast], session=db_session)
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = api_client.get("/v0/solar/GB/national/forecast?include_metadata=true")
+    assert response.status_code == 200
+
+
 def test_read_latest_national_values_start_and_end_filters_inculde_metadata(db_session, api_client):
     """Check main solar/GB/national/forecast route works"""
 
