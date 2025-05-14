@@ -215,3 +215,34 @@ def filter_forecast_values(
             forecasts_filtered.append(forecast)
         forecasts = forecasts_filtered
     return forecasts
+
+def remove_duplicate_values(forecasts: List[Forecast]) -> List[Forecast]:
+    """
+    Remove duplicate values from the forecast values of target time
+
+    We assume that the first target time is the one we keep
+    Note: This could be done in the database query, too, but currently this quiet hard as
+    we get this values from a join, and use forecast.forecast_values
+
+    :param forecasts: list of forecasts
+    :return: list of forecasts with duplicate values removed
+    """
+    forecasts_filtered = []
+    for forecast in forecasts:
+
+        # create a dict of distinct times:forecast_values
+        # note we reverse the order so that the top value is keep
+        distinct_times_dict = {fv.target_time: fv for fv in forecast.forecast_values[::-1]}
+        # change back to a list
+        forecast_values = [v for k, v in distinct_times_dict.items()]
+
+        # sort by target time
+        forecast_values = sorted(forecast_values, key=lambda x: x.target_time)
+
+        forecast.forecast_values = forecast_values
+
+        forecasts_filtered.append(forecast)
+
+    return forecasts_filtered
+
+

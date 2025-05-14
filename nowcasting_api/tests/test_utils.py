@@ -6,10 +6,18 @@ from datetime import datetime, timezone
 from freezegun import freeze_time
 
 from nowcasting_api.pydantic_models import NationalForecastValue
+from nowcasting_datamodel.models.forecast import (
+    Forecast,
+    Location,
+    MLModel,
+    ForecastValue,
+    InputDataLastUpdated,
+)
 from nowcasting_api.utils import (
     floor_30_minutes_dt,
     format_plevels,
     get_start_datetime,
+    remove_duplicate_values,
     traces_sampler,
 )
 
@@ -119,3 +127,44 @@ def test_format_plevels():
 
     format_plevels(national_forecast_value=fv)
     fv.plevels = {"10": 0.8, "90": 1.2}
+
+
+def test_remove_duplicate_values():
+
+    dt1 = datetime(2021, 1, 1, tzinfo=timezone.utc)
+    dt2 = datetime(2021, 1, 1, 0, 0, 30, tzinfo=timezone.utc)
+
+    fv1 = ForecastValue(
+        expected_power_generation_megawatts=1.0,
+        target_time=dt1,
+    )
+    fv2 = ForecastValue(
+        expected_power_generation_megawatts=2.0,
+        target_time=dt1,
+    )
+    fv3 = ForecastValue(
+        expected_power_generation_megawatts=3.0,
+        target_time=dt2,
+    )
+    location = Location(label="test")
+    model = MLModel(name="test_model", version="1.0")
+    input_data_last_updated = InputDataLastUpdated(gsp=dt1, nwp=dt1, satellite=dt1, pv=dt1)
+
+    f = Forecast(
+        location=location,
+        forecast_values=[fv1, fv2, fv3],
+        model=model,
+        forecast_creation_time=dt1,
+        input_data_last_updated=input_data_last_updated,
+        initialization_datetime_utc=dt1,
+    )
+
+    # let's make sure fv2 is removed
+    f_remove = remove_duplicate_values([f])
+
+    assert len(f_remove) == 1
+    assert len(f_remove[0].forecast_values) == 2
+    assert f_remove[0].forecast_values[0].target_time == dt1
+    assert f_remove[0].forecast_values[0].expected_power_generation_megawatts == 1
+    assert f_remove[0].forecast_values[1].target_time == dt2
+    assert f_remove[0].forecast_values[1].expected_power_generation_megawatts == 3.0
