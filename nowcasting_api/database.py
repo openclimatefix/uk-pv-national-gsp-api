@@ -225,6 +225,13 @@ def get_forecasts_from_database(
         )
 
     else:
+
+        # if initialization_datetime_utc is not set, set it to the same as forecast_creation_time
+        # This can be removed later when the forecast starts writing initialization_datetime_utc
+        for forecast in forecasts:
+            if forecast.initialization_datetime_utc is None:
+                forecast.initialization_datetime_utc = forecast.forecast_creation_time
+
         # change to pydantic objects
         if historic:
             forecasts = [Forecast.from_orm_latest(forecast) for forecast in forecasts]
