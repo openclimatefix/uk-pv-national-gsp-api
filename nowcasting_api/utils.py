@@ -230,18 +230,21 @@ def remove_duplicate_values(forecasts: List[Forecast]) -> List[Forecast]:
     forecasts_filtered = []
     for forecast in forecasts:
 
-        # create a dict of distinct times:forecast_values
-        # note we reverse the order so that the top value is keep
-        distinct_times_dict = {fv.target_time: fv for fv in forecast.forecast_values[::-1]}
-        # change back to a list
-        forecast_values = [v for k, v in distinct_times_dict.items()]
+        # check to see if there are any duplicates
+        if len(forecast.forecast_values) == len(set([fv.target_time for fv in forecast.forecast_values])):
+            forecasts_filtered.append(forecast)
+        else:
+            # create a dict of {target_times:forecast_values}
+            # note we reverse the order so that the top value is keep
+            distinct_times_dict = {fv.target_time: fv for fv in forecast.forecast_values[::-1]}
+            # change back to a list
+            forecast_values = [v for k, v in distinct_times_dict.items()]
 
-        # sort by target time
-        forecast_values = sorted(forecast_values, key=lambda x: x.target_time)
+            # sort by target time, because we reverse the target times earlier
+            forecast_values = sorted(forecast_values, key=lambda x: x.target_time)
 
-        forecast.forecast_values = forecast_values
-
-        forecasts_filtered.append(forecast)
+            forecast.forecast_values = forecast_values
+            forecasts_filtered.append(forecast)
 
     return forecasts_filtered
 
