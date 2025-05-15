@@ -4,7 +4,7 @@ uvicorn[standard]
 pydantic
 numpy
 requests
-nowcasting_datamodel==1.6.2
+nowcasting_datamodel==1.6.5
 sqlalchemy
 psycopg2-binary
 geopandas
