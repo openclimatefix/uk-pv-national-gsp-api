@@ -216,6 +216,7 @@ def filter_forecast_values(
         forecasts = forecasts_filtered
     return forecasts
 
+
 def remove_duplicate_values(forecasts: List[Forecast]) -> List[Forecast]:
     """
     Remove duplicate values from the forecast values of target time
@@ -231,7 +232,9 @@ def remove_duplicate_values(forecasts: List[Forecast]) -> List[Forecast]:
     for forecast in forecasts:
 
         # check to see if there are any duplicates
-        if len(forecast.forecast_values) == len(set([fv.target_time for fv in forecast.forecast_values])):
+        if len(forecast.forecast_values) == len(
+            set([fv.target_time for fv in forecast.forecast_values])
+        ):
             forecasts_filtered.append(forecast)
         else:
             # create a dict of {target_times:forecast_values}
@@ -247,5 +250,3 @@ def remove_duplicate_values(forecasts: List[Forecast]) -> List[Forecast]:
             forecasts_filtered.append(forecast)
 
     return forecasts_filtered
-
-
