@@ -4,15 +4,15 @@ import os
 from datetime import datetime, timezone
 
 from freezegun import freeze_time
-
-from nowcasting_api.pydantic_models import NationalForecastValue
 from nowcasting_datamodel.models.forecast import (
     Forecast,
-    Location,
-    MLModel,
     ForecastValue,
     InputDataLastUpdated,
+    Location,
+    MLModel,
 )
+
+from nowcasting_api.pydantic_models import NationalForecastValue
 from nowcasting_api.utils import (
     floor_30_minutes_dt,
     format_plevels,
