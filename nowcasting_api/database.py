@@ -42,7 +42,12 @@ from pydantic_models import (
     convert_location_sql_to_many_datetime_many_generation,
 )
 from sqlalchemy.orm.session import Session
-from utils import filter_forecast_values, floor_30_minutes_dt, get_start_datetime
+from utils import (
+    filter_forecast_values,
+    floor_30_minutes_dt,
+    get_start_datetime,
+    remove_duplicate_values,
+)
 
 
 class BaseDBConnection(abc.ABC):
@@ -243,6 +248,8 @@ def get_forecasts_from_database(
             forecasts=forecasts,
             start_datetime_utc=start_datetime_utc,
         )
+
+        forecasts = remove_duplicate_values(forecasts=forecasts)
 
         # return as many forecasts
         return ManyForecasts(forecasts=forecasts)
