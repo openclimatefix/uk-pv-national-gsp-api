@@ -13,7 +13,7 @@ def get_forecast_values_all_compact(
     end_datetime_utc: datetime | None = None,
     gsp_ids=None,
 ) -> [OneDatetimeManyForecastValues]:
-    """"
+    """ "
     Get forecast values from the database.
 
     This function
