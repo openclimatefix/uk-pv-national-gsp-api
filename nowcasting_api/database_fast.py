@@ -1,10 +1,9 @@
-from nowcasting_datamodel.models import ForecastValueLatestSQL, MLModelSQL
+from datetime import datetime
 
+from nowcasting_datamodel.models import ForecastValueLatestSQL, MLModelSQL
 from sqlalchemy.orm.session import Session
 
 from pydantic_models import OneDatetimeManyForecastValues
-
-from datetime import datetime
 
 
 def get_forecast_values_all_compact(
@@ -40,14 +39,17 @@ def get_forecast_values_all_compact(
 
     # join with model table
     query = query.filter(ForecastValueLatestSQL.model_id.in_(model_ids))
-    # query = query.filter(ForecastValueLatestSQL.forecast_id.in_(forecast_ids))
 
     if start_datetime_utc is not None:
         query = query.filter(ForecastValueLatestSQL.target_time >= start_datetime_utc)
     if end_datetime_utc is not None:
         query = query.filter(ForecastValueLatestSQL.target_time <= end_datetime_utc)
+
     if gsp_ids is not None:
         query = query.filter(ForecastValueLatestSQL.gsp_id.in_(gsp_ids))
+    else:
+        # dont get gps id 0
+        query = query.filter(ForecastValueLatestSQL.gsp_id != 0)
 
     # order by target time and created utc desc
     query = query.order_by(
@@ -56,7 +58,6 @@ def get_forecast_values_all_compact(
         ForecastValueLatestSQL.created_utc.desc(),
     )
 
-    print(f"Getting forecast_value")
     forecast_values = query.all()
 
     # convert to OneDatetimeManyForecastValues

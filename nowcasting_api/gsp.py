@@ -7,7 +7,6 @@ from typing import List, Optional, Union
 import structlog
 from auth_utils import get_auth_implicit_scheme, get_user
 from cache import cache_response
-from database_fast import get_forecast_values_all_compact
 from database import (
     get_forecasts_from_database,
     get_latest_forecast_values_for_a_specific_gsp_from_database,
@@ -15,6 +14,7 @@ from database import (
     get_truth_values_for_a_specific_gsp_from_database,
     get_truth_values_for_all_gsps_from_database,
 )
+from database_fast import get_forecast_values_all_compact
 from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, Request, Security, status
 from fastapi.responses import Response
