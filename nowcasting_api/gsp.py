@@ -7,6 +7,7 @@ from typing import List, Optional, Union
 import structlog
 from auth_utils import get_auth_implicit_scheme, get_user
 from cache import cache_response
+from database_fast import get_forecast_values_all_compact
 from database import (
     get_forecasts_from_database,
     get_latest_forecast_values_for_a_specific_gsp_from_database,
@@ -102,6 +103,15 @@ def get_all_available_forecasts(
     # by default, don't get any data in the past if more than one gsp
     if start_datetime_utc is None and (gsp_ids is None or len(gsp_ids) > 1):
         start_datetime_utc = floor_30_minutes_dt(datetime.now(tz=timezone.utc))
+
+    if compact & (creation_limit_utc is None):
+        # Lets start by spending up compact=true and no creation limit.
+        # There are other speed ups, we could of course do, but this is a good start.
+        return get_forecast_values_all_compact(
+            session=session,
+            start_datetime_utc=start_datetime_utc,
+            end_datetime_utc=end_datetime_utc,
+            gsp_ids=gsp_ids)
 
     forecasts = get_forecasts_from_database(
         session=session,
