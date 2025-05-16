@@ -17,7 +17,7 @@ def get_forecast_values_all_compact(
 
     We get all the latest forecast values for the blend model.
     We convert the sqlalchemy objects to OneDatetimeManyForecastValues
-    Particular focus has been put on only get the data we need from the database. 
+    Particular focus has been put on only get the data we need from the database.
 
     This function
     1. get model ids
