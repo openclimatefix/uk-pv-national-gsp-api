@@ -1,9 +1,9 @@
+""" Get data from database - optimized"""
 from datetime import datetime
 
 from nowcasting_datamodel.models import ForecastValueLatestSQL, MLModelSQL
-from sqlalchemy.orm.session import Session
-
 from pydantic_models import OneDatetimeManyForecastValues
+from sqlalchemy.orm.session import Session
 
 
 def get_forecast_values_all_compact(
@@ -22,12 +22,11 @@ def get_forecast_values_all_compact(
     3. converts to a dict of {datetime: {gsp_id: forecast_value}}
     4. converts to a list of OneDatetimeManyForecastValues objects
     """
-
-    #
+    # 1. get model ids
     model_ids = session.query(MLModelSQL.id).filter(MLModelSQL.name == "blend").all()
     model_ids = [model_id[0] for model_id in model_ids]
 
-    # get forecast values from database
+    # 2. get forecast values from database
     query = session.query(
         ForecastValueLatestSQL.target_time,
         ForecastValueLatestSQL.expected_power_generation_megawatts,
@@ -60,7 +59,7 @@ def get_forecast_values_all_compact(
 
     forecast_values = query.all()
 
-    # convert to OneDatetimeManyForecastValues
+    # 3. convert to OneDatetimeManyForecastValues
     many_forecast_values_by_datetime = {}
 
     # loop over locations and gsp yields to create a dictionary of gsp generation by datetime
@@ -77,7 +76,7 @@ def get_forecast_values_all_compact(
         else:
             many_forecast_values_by_datetime[datetime_utc][gsp_id] = power_kw
 
-    # convert dictionary to list of OneDatetimeManyForecastValues objects
+    # 4. convert dictionary to list of OneDatetimeManyForecastValues objects
     many_forecast_values = []
     for datetime_utc, forecast_values in many_forecast_values_by_datetime.items():
         many_forecast_values.append(
