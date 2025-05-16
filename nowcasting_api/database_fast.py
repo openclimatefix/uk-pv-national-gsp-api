@@ -1,4 +1,5 @@
 """ Get data from database - optimized"""
+
 from datetime import datetime
 
 from nowcasting_datamodel.models import ForecastValueLatestSQL, MLModelSQL
