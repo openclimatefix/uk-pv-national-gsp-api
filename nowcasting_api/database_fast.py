@@ -274,7 +274,6 @@ def get_forecasts_and_forecast_values(
 
         power_mw = round(power_mw, 2)
 
-        # if the datetime object is not in the dictionary, add it
         if gsp_id in forecast_objects:
             installed_capacity_mw = forecast_objects[gsp_id].location.installed_capacity_mw
 
