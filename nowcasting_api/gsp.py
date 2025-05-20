@@ -14,7 +14,7 @@ from database import (
     get_truth_values_for_a_specific_gsp_from_database,
     get_truth_values_for_all_gsps_from_database,
 )
-from database_fast import get_forecast_values_all_compact, get_forecasts
+from database_fast import get_forecast_values_all_compact, get_forecasts_and_forecast_values
 from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, Request, Security, status
 from fastapi.responses import Response
@@ -115,7 +115,7 @@ def get_all_available_forecasts(
                 gsp_ids=gsp_ids,
             )
 
-        return get_forecasts(
+        return get_forecasts_and_forecast_values(
             session=session,
             start_datetime_utc=start_datetime_utc,
             end_datetime_utc=end_datetime_utc,

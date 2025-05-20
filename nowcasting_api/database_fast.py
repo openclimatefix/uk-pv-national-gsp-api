@@ -127,7 +127,7 @@ def filter_start_and_end_datetime(
     return query
 
 
-def get_forecasts(
+def get_forecasts_and_forecast_values(
     session: Session,
     start_datetime_utc: datetime | None = None,
     end_datetime_utc: datetime | None = None,
@@ -161,12 +161,16 @@ def get_forecasts(
     model_ids = [model_id[0] for model_id in model_ids]
 
     # 2. get forecast values from database
-    query = session.query(
+    columns = [
         ForecastValueLatestSQL.target_time,
         ForecastValueLatestSQL.expected_power_generation_megawatts,
         ForecastValueLatestSQL.gsp_id,
-        ForecastValueLatestSQL.adjust_mw,
-    )
+    ]
+
+    if gsp_ids is not None and 0 in gsp_ids:
+        columns.append(ForecastValueLatestSQL.adjust_mw)
+
+    query = session.query(*columns)
 
     # distinct on target_time
     query = query.distinct(ForecastValueLatestSQL.gsp_id, ForecastValueLatestSQL.target_time)
@@ -288,7 +292,7 @@ def get_forecasts(
             )
 
             if gsp_id == 0:
-                fv.adjust_mw = forecast_value[4]
+                fv._adjust_mw = forecast_value[3]
                 fv = fv.adjust(limit=adjust_limit)
 
             forecast_objects[gsp_id].forecast_values.append(fv)
