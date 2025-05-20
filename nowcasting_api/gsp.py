@@ -14,7 +14,7 @@ from database import (
     get_truth_values_for_a_specific_gsp_from_database,
     get_truth_values_for_all_gsps_from_database,
 )
-from database_fast import get_forecast_values_all_compact
+from database.v2_foreacst import get_forecast_values_all_compact
 from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, Request, Security, status
 from fastapi.responses import Response

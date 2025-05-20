@@ -14,6 +14,7 @@ from database import (
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
 )
+from database.v2_foreacst import get_national_forecast_values
 from elexonpy.api.generation_forecast_api import GenerationForecastApi
 from elexonpy.api_client import ApiClient
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Security
@@ -165,6 +166,18 @@ def get_national_forecast(
         forecast_values = forecasts[0].forecast_values
 
     else:
+
+        return get_national_forecast_values(session=session,
+            forecast_horizon_minutes=forecast_horizon_minutes,
+            start_datetime_utc=start_datetime_utc,
+            end_datetime_utc=end_datetime_utc,
+            creation_utc_limit=creation_limit_utc,
+            model_name=model_name,
+                                            trend_adjuster_on=trend_adjuster_on,
+                                            get_plevels=get_plevels)
+
+        import time
+        t= time.time()
         forecast_values = get_latest_forecast_values_for_a_specific_gsp_from_database(
             session=session,
             gsp_id=0,
@@ -174,8 +187,9 @@ def get_national_forecast(
             creation_utc_limit=creation_limit_utc,
             model_name=model_name,
         )
+        print("get_latest_forecast_values_for_a_specific_gsp_from_database", time.time() - t, "seconds")
 
-    logger.debug(f"Got national forecasts with {len(forecast_values)} forecast values. ")
+    logger.info(f"Got national forecasts with {len(forecast_values)} forecast values.")
 
     if trend_adjuster_on:
         logger.debug(f"Now adjusting by at most {adjust_limit} MW")
@@ -190,7 +204,7 @@ def get_national_forecast(
         # change to NationalForecastValue
         national_forecast_values = []
         for f in forecast_values:
-            # change to NationalForecastValue
+            # change k,to NationalForecastValue
             plevels = f._properties
             national_forecast_value = NationalForecastValue(**f.__dict__)
             national_forecast_value.plevels = plevels
