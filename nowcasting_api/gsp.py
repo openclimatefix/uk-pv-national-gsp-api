@@ -115,10 +115,12 @@ def get_all_available_forecasts(
                 gsp_ids=gsp_ids,
             )
 
-        return get_forecasts(session=session,
+        return get_forecasts(
+            session=session,
             start_datetime_utc=start_datetime_utc,
             end_datetime_utc=end_datetime_utc,
-            gsp_ids=gsp_ids)
+            gsp_ids=gsp_ids,
+        )
 
     forecasts = get_forecasts_from_database(
         session=session,
