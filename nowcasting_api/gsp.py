@@ -14,7 +14,7 @@ from database import (
     get_truth_values_for_a_specific_gsp_from_database,
     get_truth_values_for_all_gsps_from_database,
 )
-from database_fast import get_forecast_values_all_compact
+from database_fast import get_forecast_values_all_compact, get_forecasts
 from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, Request, Security, status
 from fastapi.responses import Response
@@ -104,15 +104,21 @@ def get_all_available_forecasts(
     if start_datetime_utc is None and (gsp_ids is None or len(gsp_ids) > 1):
         start_datetime_utc = floor_30_minutes_dt(datetime.now(tz=timezone.utc))
 
-    if compact & (creation_limit_utc is None):
-        # Lets start by spending up compact=true and no creation limit.
-        # There are other speed ups, we could of course do, but this is a good start.
-        return get_forecast_values_all_compact(
-            session=session,
+    # Lets start by spending up no creation limit.
+    # There are other speed ups, we could of course do, but this is a good start.
+    if creation_limit_utc is None:
+        if compact :
+            return get_forecast_values_all_compact(
+                session=session,
+                start_datetime_utc=start_datetime_utc,
+                end_datetime_utc=end_datetime_utc,
+                gsp_ids=gsp_ids,
+            )
+
+        return get_forecasts(session=session,
             start_datetime_utc=start_datetime_utc,
             end_datetime_utc=end_datetime_utc,
-            gsp_ids=gsp_ids,
-        )
+            gsp_ids=gsp_ids)
 
     forecasts = get_forecasts_from_database(
         session=session,
