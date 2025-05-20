@@ -19,7 +19,6 @@ from nowcasting_datamodel.models import (
 from pydantic_models import OneDatetimeManyForecastValues
 from sqlalchemy.orm.session import Session
 
-
 adjust_limit = float(os.getenv("ADJUST_MW_LIMIT", 0.0))
 
 
