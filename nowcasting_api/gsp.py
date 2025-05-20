@@ -107,7 +107,7 @@ def get_all_available_forecasts(
     # Lets start by spending up no creation limit.
     # There are other speed ups, we could of course do, but this is a good start.
     if creation_limit_utc is None and historic:
-        if compact :
+        if compact:
             return get_forecast_values_all_compact(
                 session=session,
                 start_datetime_utc=start_datetime_utc,
