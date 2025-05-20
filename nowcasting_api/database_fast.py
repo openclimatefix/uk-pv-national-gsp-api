@@ -4,20 +4,21 @@ import os
 from datetime import datetime
 
 from nowcasting_datamodel.models import (
-    ForecastValue,
-    ForecastValueLatestSQL,
     Forecast,
     ForecastSQL,
+    ForecastValue,
+    ForecastValueLatestSQL,
     ManyForecasts,
-    MLModel,
-    MLModelSQL,
     Location,
     LocationSQL,
     InputDataLastUpdatedSQL,
     InputDataLastUpdated,
+    MLModel,
+    MLModelSQL,
 )
-from pydantic_models import OneDatetimeManyForecastValues
 from sqlalchemy.orm.session import Session
+
+from pydantic_models import OneDatetimeManyForecastValues
 
 adjust_limit = float(os.getenv("ADJUST_MW_LIMIT", 0.0))
 
