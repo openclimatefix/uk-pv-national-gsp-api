@@ -18,6 +18,7 @@ from nowcasting_datamodel.models import (
 )
 from pydantic_models import OneDatetimeManyForecastValues
 from sqlalchemy.orm.session import Session
+from sqlalchemy.orm import Query
 
 adjust_limit = float(os.getenv("ADJUST_MW_LIMIT", 0.0))
 
@@ -58,16 +59,11 @@ def get_forecast_values_all_compact(
     # join with model table
     query = query.filter(ForecastValueLatestSQL.model_id.in_(model_ids))
 
-    if start_datetime_utc is not None:
-        query = query.filter(ForecastValueLatestSQL.target_time >= start_datetime_utc)
-    if end_datetime_utc is not None:
-        query = query.filter(ForecastValueLatestSQL.target_time <= end_datetime_utc)
-
-    if gsp_ids is not None:
-        query = query.filter(ForecastValueLatestSQL.gsp_id.in_(gsp_ids))
-    else:
-        # dont get gps id 0
-        query = query.filter(ForecastValueLatestSQL.gsp_id != 0)
+    # filters
+    query = filter_start_and_end_datetime(
+        query=query, start_datetime_utc=start_datetime_utc, end_datetime_utc=end_datetime_utc
+    )
+    query = filter_gsp_id(query=query, gsp_ids=gsp_ids)
 
     # order by target time and created utc desc
     query = query.order_by(
@@ -105,6 +101,30 @@ def get_forecast_values_all_compact(
         )
 
     return many_forecast_values
+
+
+def filter_gsp_id(query: Query, gsp_ids: list | None, model=ForecastValueLatestSQL):
+    """Filter by gsp id."""
+    if gsp_ids is not None:
+        query = query.filter(model.gsp_id.in_(gsp_ids))
+    else:
+        # dont get gps id 0
+        query = query.filter(model.gsp_id != 0)
+    return query
+
+
+def filter_start_and_end_datetime(
+    query: Query,
+    end_datetime_utc: datetime | None,
+    start_datetime_utc: datetime | None,
+    model=ForecastValueLatestSQL,
+):
+    """Filter by start and end datetime."""
+    if start_datetime_utc is not None:
+        query = query.filter(model.target_time >= start_datetime_utc)
+    if end_datetime_utc is not None:
+        query = query.filter(model.target_time <= end_datetime_utc)
+    return query
 
 
 def get_forecasts(
@@ -154,16 +174,11 @@ def get_forecasts(
     # join with model table
     query = query.filter(ForecastValueLatestSQL.model_id.in_(model_ids))
 
-    if start_datetime_utc is not None:
-        query = query.filter(ForecastValueLatestSQL.target_time >= start_datetime_utc)
-    if end_datetime_utc is not None:
-        query = query.filter(ForecastValueLatestSQL.target_time <= end_datetime_utc)
-
-    if gsp_ids is not None:
-        query = query.filter(ForecastValueLatestSQL.gsp_id.in_(gsp_ids))
-    else:
-        # dont get gps id 0
-        query = query.filter(ForecastValueLatestSQL.gsp_id != 0)
+    # filters
+    query = filter_start_and_end_datetime(
+        query=query, start_datetime_utc=start_datetime_utc, end_datetime_utc=end_datetime_utc
+    )
+    query = filter_gsp_id(query=query, gsp_ids=gsp_ids)
 
     # order by target time and created utc desc
     query = query.order_by(
@@ -200,13 +215,8 @@ def get_forecasts(
     query = query.join(MLModelSQL)
     query = query.join(InputDataLastUpdatedSQL)
 
-    if gsp_ids is not None:
-        query = query.filter(LocationSQL.gsp_id.in_(gsp_ids))
-    else:
-        # dont get gps id 0
-        query = query.filter(LocationSQL.gsp_id != 0)
-
-    # filter by model
+    # filters
+    query = filter_gsp_id(gsp_ids=gsp_ids, query=query, model=LocationSQL)
     query = query.filter(ForecastSQL.model_id.in_(model_ids))
 
     # order by gsp_id
