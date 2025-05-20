@@ -125,7 +125,8 @@ def get_forecasts(
         We tried to only get the relevant data as needed, as this is normally a larger query
     3. get the forecasts we need
     4. Convert to Forecast objects
-    5. add forecast values to forecast objects. We normalize the power, and do the adjuster for gsp_id=0
+    5. add forecast values to forecast objects. We normalize the power,
+        and do the adjuster for gsp_id=0
     6. convert to ManyForecasts
 
     :param session: database session
@@ -192,7 +193,7 @@ def get_forecasts(
     )
 
     # only get historic forecasts
-    query = query.filter(ForecastSQL.historic == True)
+    query = query.filter(ForecastSQL.historic == True)  # noqa E712
 
     # join with location tables
     query = query.join(LocationSQL)
@@ -256,9 +257,6 @@ def get_forecasts(
         datetime_utc = forecast_value[0]
         power_mw = forecast_value[1]
         gsp_id = forecast_value[2]
-
-        if gsp_id == 0:
-            adjust_mw = forecast_value[3]
 
         power_mw = round(power_mw, 2)
 
