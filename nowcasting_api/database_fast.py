@@ -201,6 +201,9 @@ def get_forecasts(
 
     if gsp_ids is not None:
         query = query.filter(LocationSQL.gsp_id.in_(gsp_ids))
+    else:
+        # dont get gps id 0
+        query = query.filter(LocationSQL.gsp_id != 0)
 
     # filter by model
     query = query.filter(ForecastSQL.model_id.in_(model_ids))
