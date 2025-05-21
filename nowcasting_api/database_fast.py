@@ -1,4 +1,4 @@
-""" Get data from database - optimized"""
+"""Get data from database - optimized"""
 
 import os
 from datetime import datetime
@@ -28,8 +28,8 @@ def get_forecast_values_all_compact(
     session: Session,
     start_datetime_utc: datetime | None = None,
     end_datetime_utc: datetime | None = None,
-    gsp_ids=None,
-) -> [OneDatetimeManyForecastValues]:
+    gsp_ids: list[str] | None = None,
+) -> list[OneDatetimeManyForecastValues]:
     """Get forecast values from the database.
 
     We get all the latest forecast values for the blend model.
@@ -65,6 +65,7 @@ def get_forecast_values_all_compact(
         query=query, start_datetime_utc=start_datetime_utc, end_datetime_utc=end_datetime_utc
     )
     query = filter_gsp_id(query=query, gsp_ids=gsp_ids)
+
 
     # order by target time and created utc desc
     query = query.order_by(
