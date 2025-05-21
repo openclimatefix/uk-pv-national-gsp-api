@@ -14,7 +14,7 @@ from database import (
     get_truth_values_for_a_specific_gsp_from_database,
     get_truth_values_for_all_gsps_from_database,
 )
-from database_fast import get_forecast_values_all_compact, get_forecasts_and_forecast_values
+from database.forecast import get_forecast_values_all_compact, get_forecasts_and_forecast_values
 from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, Request, Security, status
 from fastapi.responses import Response
@@ -298,7 +298,11 @@ def get_truths_for_all_gsps(
     start_datetime_utc = format_datetime(start_datetime_utc)
     end_datetime_utc = format_datetime(end_datetime_utc)
 
-    return get_truth_values_for_all_gsps_from_database(
+
+    from database.pvlive import get_gsp_yield_values
+
+    # return get_truth_values_for_all_gsps_from_database(
+    return get_gsp_yield_values(
         session=session,
         regime=regime,
         start_datetime_utc=start_datetime_utc,
