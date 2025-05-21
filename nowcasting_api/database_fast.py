@@ -50,7 +50,7 @@ def get_forecast_values_all_compact(
     # 2. get forecast values from database
     query = session.query(
         ForecastValueLatestSQL.target_time,
-        ForecastValueLatestSQL.expected_power_generation_megawatts.cast(NUMERIC(10,2)),
+        ForecastValueLatestSQL.expected_power_generation_megawatts.cast(NUMERIC(10, 2)),
         ForecastValueLatestSQL.gsp_id,
     )
 
@@ -162,7 +162,7 @@ def get_forecasts_and_forecast_values(
     # 2. get forecast values from database
     columns = [
         ForecastValueLatestSQL.target_time,
-        ForecastValueLatestSQL.expected_power_generation_megawatts.cast(NUMERIC(10,2)),
+        ForecastValueLatestSQL.expected_power_generation_megawatts.cast(NUMERIC(10, 2)),
         ForecastValueLatestSQL.gsp_id,
     ]
 
