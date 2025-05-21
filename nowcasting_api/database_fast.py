@@ -17,6 +17,7 @@ from nowcasting_datamodel.models import (
     MLModelSQL,
 )
 from pydantic_models import OneDatetimeManyForecastValues
+from sqlalchemy import NUMERIC
 from sqlalchemy.orm import Query
 from sqlalchemy.orm.session import Session
 
@@ -49,7 +50,7 @@ def get_forecast_values_all_compact(
     # 2. get forecast values from database
     query = session.query(
         ForecastValueLatestSQL.target_time,
-        ForecastValueLatestSQL.expected_power_generation_megawatts,
+        ForecastValueLatestSQL.expected_power_generation_megawatts.cast(NUMERIC(10,2)),
         ForecastValueLatestSQL.gsp_id,
     )
 
@@ -82,8 +83,6 @@ def get_forecast_values_all_compact(
         datetime_utc = forecast_value[0]
         power_kw = forecast_value[1]
         gsp_id = forecast_value[2]
-
-        power_kw = round(power_kw, 2)
 
         # if the datetime object is not in the dictionary, add it
         if datetime_utc not in many_forecast_values_by_datetime:
@@ -163,7 +162,7 @@ def get_forecasts_and_forecast_values(
     # 2. get forecast values from database
     columns = [
         ForecastValueLatestSQL.target_time,
-        ForecastValueLatestSQL.expected_power_generation_megawatts,
+        ForecastValueLatestSQL.expected_power_generation_megawatts.cast(NUMERIC(10,2)),
         ForecastValueLatestSQL.gsp_id,
     ]
 
@@ -272,14 +271,12 @@ def get_forecasts_and_forecast_values(
         power_mw = forecast_value[1]
         gsp_id = forecast_value[2]
 
-        power_mw = round(power_mw, 2)
-
         if gsp_id in forecast_objects:
             installed_capacity_mw = forecast_objects[gsp_id].location.installed_capacity_mw
 
             if installed_capacity_mw > 0:
                 normalized_power = round(
-                    power_mw / forecast_objects[gsp_id].location.installed_capacity_mw, 2
+                    float(power_mw) / forecast_objects[gsp_id].location.installed_capacity_mw, 2
                 )
             else:
                 normalized_power = power_mw
