@@ -202,6 +202,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "jchanke",
+      "name": "Joseph Chan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/17882756?v=4",
+      "profile": "https://github.com/jchanke",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
