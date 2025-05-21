@@ -38,9 +38,7 @@ def get_forecast_values_all_compact(
     )
 
     # distinct on target_time
-    query = query.distinct(
-        ForecastValueLatestSQL.gsp_id, ForecastValueLatestSQL.target_time
-    )
+    query = query.distinct(ForecastValueLatestSQL.gsp_id, ForecastValueLatestSQL.target_time)
 
     # join with model table
     query = query.filter(ForecastValueLatestSQL.model_id.in_(model_ids))
