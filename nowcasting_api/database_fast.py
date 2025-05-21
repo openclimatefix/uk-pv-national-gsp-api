@@ -66,7 +66,6 @@ def get_forecast_values_all_compact(
     )
     query = filter_gsp_id(query=query, gsp_ids=gsp_ids)
 
-
     # order by target time and created utc desc
     query = query.order_by(
         ForecastValueLatestSQL.gsp_id,
