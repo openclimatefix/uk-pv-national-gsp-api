@@ -222,6 +222,35 @@ def test_read_latest_all_gsp_historic(db_session, api_client):
     assert r.forecasts[1].forecast_values[0].expected_power_generation_megawatts <= 40
 
 
+def test_read_latest_all_gsp_historic_filter_gsp_ids(db_session, api_client):
+    """Check main solar/GB/gsp/forecast/all historic route works"""
+
+    _ = get_model(session=db_session, name="blend", version="0.0.1")
+
+    forecasts = make_fake_forecasts(
+        gsp_ids=list(range(0, 10)),
+        session=db_session,
+        model_name="blend",
+        t0_datetime_utc=datetime.now(tz=timezone.utc),
+        historic=True,
+    )
+    db_session.commit()
+    update_all_forecast_latest(forecasts=forecasts, session=db_session)
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = api_client.get("/v0/solar/GB/gsp/forecast/all/?historic=True&gsp_ids=0,1")
+
+    assert response.status_code == 200
+
+    r = ManyForecasts(**response.json())
+
+    assert len(r.forecasts) == 2
+    assert len(r.forecasts[0].forecast_values) == 16
+    assert r.forecasts[0].forecast_values[0].expected_power_generation_megawatts <= 13000
+    assert r.forecasts[1].forecast_values[0].expected_power_generation_megawatts <= 40
+
+
 def test_read_latest_all_gsp_historic_compact(db_session, api_client):
     """Check main solar/GB/gsp/forecast/all historic route works"""
 
