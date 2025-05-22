@@ -1,7 +1,6 @@
 """Get PVLive data from the database."""
 
 from datetime import datetime
-
 from nowcasting_datamodel.models.gsp import GSPYieldSQL, GSPYield, LocationSQL, Location
 from sqlalchemy import NUMERIC
 from sqlalchemy.orm import Session

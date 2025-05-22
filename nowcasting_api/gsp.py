@@ -1,16 +1,16 @@
 """Get GSP boundary data from eso """
 
 import os
-from datetime import datetime, timezone
-from typing import List, Optional, Union
-
 import structlog
+
+from datetime import datetime, timezone
 from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, Request, Security, status
 from fastapi.responses import Response
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.models import Forecast, ForecastValue, ManyForecasts
 from sqlalchemy.orm.session import Session
+from typing import List, Optional, Union
 
 from auth_utils import get_auth_implicit_scheme, get_user
 from cache import cache_response
