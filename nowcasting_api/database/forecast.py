@@ -130,7 +130,7 @@ def get_forecasts_and_forecast_values(
     session: Session,
     start_datetime_utc: datetime | None = None,
     end_datetime_utc: datetime | None = None,
-    gsp_ids=None,
+    gsp_ids: list[str] | None = None,
 ) -> ManyForecasts:
     """Get forecast from the database.
 
