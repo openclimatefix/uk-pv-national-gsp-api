@@ -1,10 +1,10 @@
+"""Get PVLive data from the database."""
 from datetime import datetime
 
 from pydantic_models import GSPYieldGroupByDatetime, LocationWithGSPYields
 from sqlalchemy.orm import Session
 from sqlalchemy import NUMERIC
 
-from nowcasting_datamodel import N_GSP
 from nowcasting_datamodel.models.gsp import GSPYieldSQL, GSPYield, LocationSQL, Location
 
 from utils import get_start_datetime

@@ -7,12 +7,12 @@ from typing import List, Optional, Union
 import structlog
 from auth_utils import get_auth_implicit_scheme, get_user
 from cache import cache_response
+from database.pvlive import get_gsp_yield_values
 from database import (
     get_forecasts_from_database,
     get_latest_forecast_values_for_a_specific_gsp_from_database,
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
-    get_truth_values_for_all_gsps_from_database,
 )
 from database.forecast import get_forecast_values_all_compact, get_forecasts_and_forecast_values
 from dotenv import load_dotenv
@@ -298,10 +298,6 @@ def get_truths_for_all_gsps(
     start_datetime_utc = format_datetime(start_datetime_utc)
     end_datetime_utc = format_datetime(end_datetime_utc)
 
-
-    from database.pvlive import get_gsp_yield_values
-
-    # return get_truth_values_for_all_gsps_from_database(
     return get_gsp_yield_values(
         session=session,
         regime=regime,

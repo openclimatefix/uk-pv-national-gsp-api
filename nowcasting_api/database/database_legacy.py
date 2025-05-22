@@ -30,16 +30,12 @@ from nowcasting_datamodel.read.read import (
     get_location,
     national_gb_label,
 )
-from nowcasting_datamodel.read.read_gsp import get_gsp_yield, get_gsp_yield_by_location
+from nowcasting_datamodel.read.read_gsp import get_gsp_yield
 from nowcasting_datamodel.read.read_user import get_user as get_user_from_db
-from nowcasting_datamodel.save.update import N_GSP
 from pydantic_models import (
     GSPYield,
-    GSPYieldGroupByDatetime,
-    LocationWithGSPYields,
     OneDatetimeManyForecastValues,
     convert_forecasts_to_many_datetime_many_generation,
-    convert_location_sql_to_many_datetime_many_generation,
 )
 from sqlalchemy.orm.session import Session
 from utils import (
@@ -397,46 +393,6 @@ def get_truth_values_for_a_specific_gsp_from_database(
         end_datetime_utc=end_datetime,
         regime=regime,
     )
-
-
-def get_truth_values_for_all_gsps_from_database(
-    session: Session,
-    regime: Optional[str] = "in-day",
-    start_datetime_utc: Optional[datetime] = None,
-    end_datetime_utc: Optional[datetime] = None,
-    compact: Optional[bool] = False,
-    gsp_ids: Optional[List[int]] = None,
-) -> Union[List[LocationWithGSPYields], List[GSPYieldGroupByDatetime]]:
-    """Get the truth value for all gsps for yesterday and today
-
-    :param session: sql session
-    :param regime: option for "in-day" or "day-after"
-    :param start_datetime_utc: optional start datetime for the query.
-     If not set, after now, or set to over three days ago
-     defaults to N_HISTORY_DAYS env var, which defaults to yesterday.
-    :param end_datetime_utc: optional end datetime for the query.
-    :param compact: if True, return a list of GSPYieldGroupByDatetime objects
-    :param gsp_ids: optional list of gsp ids to load
-    :return: list of gsp yields
-    """
-
-    start_datetime = get_start_datetime(start_datetime=start_datetime_utc)
-
-    if gsp_ids is None:
-        gsp_ids = list(range(1, N_GSP + 1))
-
-    locations = get_gsp_yield_by_location(
-        session=session,
-        gsp_ids=gsp_ids,
-        start_datetime_utc=start_datetime,
-        end_datetime_utc=end_datetime_utc,
-        regime=regime,
-    )
-
-    if compact:
-        return convert_location_sql_to_many_datetime_many_generation(locations)
-    else:
-        return [LocationWithGSPYields.from_orm(location) for location in locations]
 
 
 def get_gsp_system(session: Session, gsp_id: Optional[int] = None) -> List[Location]:
