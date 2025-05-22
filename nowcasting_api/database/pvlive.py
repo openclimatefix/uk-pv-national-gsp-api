@@ -1,4 +1,5 @@
 """Get PVLive data from the database."""
+
 from datetime import datetime
 
 from pydantic_models import GSPYieldGroupByDatetime, LocationWithGSPYields
