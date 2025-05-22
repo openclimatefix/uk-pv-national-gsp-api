@@ -5,9 +5,15 @@ from datetime import datetime, timezone
 from typing import List, Optional, Union
 
 import structlog
+from dotenv import load_dotenv
+from fastapi import APIRouter, Depends, Request, Security, status
+from fastapi.responses import Response
+from fastapi_auth0 import Auth0User
+from nowcasting_datamodel.models import Forecast, ForecastValue, ManyForecasts
+from sqlalchemy.orm.session import Session
+
 from auth_utils import get_auth_implicit_scheme, get_user
 from cache import cache_response
-from database.pvlive import get_gsp_yield_values
 from database import (
     get_forecasts_from_database,
     get_latest_forecast_values_for_a_specific_gsp_from_database,
@@ -15,18 +21,13 @@ from database import (
     get_truth_values_for_a_specific_gsp_from_database,
 )
 from database.forecast import get_forecast_values_all_compact, get_forecasts_and_forecast_values
-from dotenv import load_dotenv
-from fastapi import APIRouter, Depends, Request, Security, status
-from fastapi.responses import Response
-from fastapi_auth0 import Auth0User
-from nowcasting_datamodel.models import Forecast, ForecastValue, ManyForecasts
+from database.pvlive import get_gsp_yield_values
 from pydantic_models import (
     GSPYield,
     GSPYieldGroupByDatetime,
     LocationWithGSPYields,
     OneDatetimeManyForecastValues,
 )
-from sqlalchemy.orm.session import Session
 from utils import (
     N_CALLS_PER_HOUR,
     N_SLOW_CALLS_PER_HOUR,

@@ -2,12 +2,11 @@
 
 from datetime import datetime
 
-from pydantic_models import GSPYieldGroupByDatetime, LocationWithGSPYields
-from sqlalchemy.orm import Session
-from sqlalchemy import NUMERIC
-
 from nowcasting_datamodel.models.gsp import GSPYieldSQL, GSPYield, LocationSQL, Location
+from sqlalchemy import NUMERIC
+from sqlalchemy.orm import Session
 
+from pydantic_models import GSPYieldGroupByDatetime, LocationWithGSPYields
 from utils import get_start_datetime
 
 

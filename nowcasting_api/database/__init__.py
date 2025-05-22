@@ -1,1 +1,2 @@
-from .database_legacy import *
+""" Database functions"""
+from .database_legacy import * # noqa
