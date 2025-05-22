@@ -5,13 +5,8 @@ from datetime import datetime, timezone
 from typing import List, Optional, Union
 
 import structlog
-
 from auth_utils import get_auth_implicit_scheme, get_user
 from cache import cache_response
-from dotenv import load_dotenv
-from fastapi import APIRouter, Depends, Request, Security, status
-from fastapi.responses import Response
-from fastapi_auth0 import Auth0User
 from database import (
     get_forecasts_from_database,
     get_latest_forecast_values_for_a_specific_gsp_from_database,
@@ -20,6 +15,10 @@ from database import (
 )
 from database.forecast import get_forecast_values_all_compact, get_forecasts_and_forecast_values
 from database.pvlive import get_gsp_yield_values
+from dotenv import load_dotenv
+from fastapi import APIRouter, Depends, Request, Security, status
+from fastapi.responses import Response
+from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.models import Forecast, ForecastValue, ManyForecasts
 from pydantic_models import (
     GSPYield,

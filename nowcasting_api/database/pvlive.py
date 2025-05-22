@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from nowcasting_datamodel.models.gsp import GSPYieldSQL, GSPYield, LocationSQL, Location
+from nowcasting_datamodel.models.gsp import GSPYield, GSPYieldSQL, Location, LocationSQL
 from pydantic_models import GSPYieldGroupByDatetime, LocationWithGSPYields
 from sqlalchemy import NUMERIC
 from sqlalchemy.orm import Session
