@@ -298,7 +298,6 @@ def get_truths_for_all_gsps(
     start_datetime_utc = format_datetime(start_datetime_utc)
     end_datetime_utc = format_datetime(end_datetime_utc)
 
-
     from database.pvlive import get_gsp_yield_values
 
     # return get_truth_values_for_all_gsps_from_database(
