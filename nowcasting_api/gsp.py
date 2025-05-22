@@ -1,19 +1,17 @@
 """Get GSP boundary data from eso """
 
 import os
+from datetime import datetime, timezone
+from typing import List, Optional, Union
+
 import structlog
 
-from datetime import datetime, timezone
+from auth_utils import get_auth_implicit_scheme, get_user
+from cache import cache_response
 from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, Request, Security, status
 from fastapi.responses import Response
 from fastapi_auth0 import Auth0User
-from nowcasting_datamodel.models import Forecast, ForecastValue, ManyForecasts
-from sqlalchemy.orm.session import Session
-from typing import List, Optional, Union
-
-from auth_utils import get_auth_implicit_scheme, get_user
-from cache import cache_response
 from database import (
     get_forecasts_from_database,
     get_latest_forecast_values_for_a_specific_gsp_from_database,
@@ -22,12 +20,14 @@ from database import (
 )
 from database.forecast import get_forecast_values_all_compact, get_forecasts_and_forecast_values
 from database.pvlive import get_gsp_yield_values
+from nowcasting_datamodel.models import Forecast, ForecastValue, ManyForecasts
 from pydantic_models import (
     GSPYield,
     GSPYieldGroupByDatetime,
     LocationWithGSPYields,
     OneDatetimeManyForecastValues,
 )
+from sqlalchemy.orm.session import Session
 from utils import (
     N_CALLS_PER_HOUR,
     N_SLOW_CALLS_PER_HOUR,
