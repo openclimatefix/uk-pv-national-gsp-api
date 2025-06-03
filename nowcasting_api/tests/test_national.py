@@ -136,6 +136,41 @@ def test_get_national_forecast(db_session, api_client):
 
 
 @freeze_time("2024-01-01")
+def test_get_national_forecast_duplicate_values(db_session, api_client):
+    """Check main solar/GB/national/forecast route works with duplicate values"""
+
+    model1 = get_model(db_session, name="blend", version="0.0.1")
+    model2 = get_model(db_session, name="blend", version="0.0.2")
+
+    forecast1 = make_fake_national_forecast(
+        session=db_session, t0_datetime_utc=datetime.now(tz=timezone.utc)
+    )
+    forecast1.model = model1
+    forecast2 = make_fake_national_forecast(
+        session=db_session, t0_datetime_utc=datetime.now(tz=timezone.utc)
+    )
+    forecast2.model = model2
+
+    db_session.add(forecast1)
+    db_session.add(forecast2)
+    update_all_forecast_latest(forecasts=[forecast1, forecast2], session=db_session)
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = api_client.get("/v0/solar/GB/national/forecast?include_metadata=true")
+    assert response.status_code == 200
+
+    national_forecast = NationalForecast(**response.json())
+    assert len(national_forecast.forecast_values) == (24 * 2 + 8) * 2
+    assert national_forecast.forecast_values[0].plevels is not None
+    # index 24 is the middle of the day
+    assert (
+        national_forecast.forecast_values[24].plevels["plevel_10"]
+        != national_forecast.forecast_values[0].expected_power_generation_megawatts * 0.9
+    )
+
+
+@freeze_time("2024-01-01")
 def test_get_national_forecast_no_init(db_session, api_client):
     """Check main solar/GB/national/forecast route works"""
 

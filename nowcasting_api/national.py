@@ -27,7 +27,14 @@ from pydantic_models import (
     SolarForecastValue,
 )
 from sqlalchemy.orm.session import Session
-from utils import N_CALLS_PER_HOUR, filter_forecast_values, format_datetime, format_plevels, limiter
+from utils import (
+    N_CALLS_PER_HOUR,
+    filter_forecast_values,
+    format_datetime,
+    format_plevels,
+    limiter,
+    remove_duplicate_values,
+)
 
 logger = structlog.stdlib.get_logger()
 
@@ -162,6 +169,10 @@ def get_national_forecast(
             start_datetime_utc=start_datetime_utc,
             end_datetime_utc=end_datetime_utc,
         )
+
+        # remove duplicates
+        forecasts = remove_duplicate_values(forecasts)
+
         forecast_values = forecasts[0].forecast_values
 
     else:
