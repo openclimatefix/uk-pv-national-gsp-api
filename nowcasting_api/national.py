@@ -159,7 +159,6 @@ def get_national_forecast(
         if forecast.initialization_datetime_utc is None:
             forecast.initialization_datetime_utc = forecast.forecast_creation_time
 
-
         if historic:
             # make sure forecast.forecast_value_latest are order by target_time and created_utc desc
             # this means we get a list of target times descending, and for each target time
