@@ -163,11 +163,9 @@ def test_get_national_forecast_duplicate_values(db_session, api_client):
     national_forecast = NationalForecast(**response.json())
     assert len(national_forecast.forecast_values) == (24 * 2 + 8) * 2
     assert national_forecast.forecast_values[0].plevels is not None
-    # index 24 is the middle of the day
-    assert (
-        national_forecast.forecast_values[24].plevels["plevel_10"]
-        != national_forecast.forecast_values[0].expected_power_generation_megawatts * 0.9
-    )
+    assert national_forecast.forecast_values[24].expected_power_generation_megawatts \
+           == forecast2.forecast_values[24].expected_power_generation_megawatts
+
 
 
 @freeze_time("2024-01-01")
