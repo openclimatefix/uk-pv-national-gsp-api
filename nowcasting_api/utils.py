@@ -224,6 +224,7 @@ def remove_duplicate_values(forecasts: List[Forecast]) -> List[Forecast]:
     We assume that the first target time is the one we keep
     Note: This could be done in the database query, too, but currently this quiet hard as
     we get this values from a join, and use forecast.forecast_values
+    or forecast.forecast_value_latest
 
     :param forecasts: list of forecasts
     :return: list of forecasts with duplicate values removed
@@ -237,9 +238,16 @@ def remove_duplicate_values(forecasts: List[Forecast]) -> List[Forecast]:
         ):
             forecasts_filtered.append(forecast)
         else:
+
+            # order forecast_values by created_time desc,
+            # so that the latest created_utcs are first
+            forecast_values = sorted(
+                forecast.forecast_values, key=lambda x: x.created_utc, reverse=True
+            )
+
             # create a dict of {target_times:forecast_values}
             # note we reverse the order so that the top value is keep
-            distinct_times_dict = {fv.target_time: fv for fv in forecast.forecast_values[::-1]}
+            distinct_times_dict = {fv.target_time: fv for fv in forecast_values[::-1]}
             # change back to a list
             forecast_values = [v for k, v in distinct_times_dict.items()]
 
