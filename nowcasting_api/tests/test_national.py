@@ -141,9 +141,7 @@ def test_get_national_forecast_duplicate_values(db_session, api_client):
 
     t0 = floor_30_minutes_dt(datetime.now())
     model1 = get_model(db_session, name="blend", version="0.0.1")
-    forecast1 = make_fake_national_forecast(
-        session=db_session, t0_datetime_utc=t0
-    )
+    forecast1 = make_fake_national_forecast(session=db_session, t0_datetime_utc=t0)
     forecast1.model = model1
 
     db_session.add(forecast1)
@@ -175,6 +173,7 @@ def test_get_national_forecast_duplicate_values(db_session, api_client):
         assert national_forecast.forecast_values[idx].target_time == forecast2.forecast_values[idx-1].target_time
         assert national_forecast.forecast_values[idx].expected_power_generation_megawatts \
                == round(forecast2.forecast_values[idx-1].expected_power_generation_megawatts,2)
+
 
 @freeze_time("2024-01-01")
 def test_get_national_forecast_no_init(db_session, api_client):
