@@ -165,10 +165,12 @@ def test_get_national_forecast_duplicate_values(db_session, api_client):
     assert response.status_code == 200
 
     national_forecast = NationalForecast(**response.json())
+    # 2 days + 8 hours + 1 due to forecast 2 being 30 mins later
     assert len(national_forecast.forecast_values) == (24 * 2 + 8) * 2 + 1
     assert national_forecast.forecast_values[0].plevels is not None
 
     # let's make sure we get at least one value in the day
+    # we use idx-1 for forecast 2 due to it being 30 minutes later than the first forecast
     for idx  in [6,12,18,24]:
         assert national_forecast.forecast_values[idx].target_time == forecast2.forecast_values[idx-1].target_time
         assert national_forecast.forecast_values[idx].expected_power_generation_megawatts \
