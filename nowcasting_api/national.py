@@ -160,6 +160,19 @@ def get_national_forecast(
             forecast.initialization_datetime_utc = forecast.forecast_creation_time
 
         if historic:
+            # make sure forecast.forecast_value_latest are order by target_time and created_utc desc
+            # this means we get a list of target times descending, and for each target time
+            # the most recent created_utc value is at the top
+            forecast.forecast_values_latest = sorted(
+                forecast.forecast_values_latest,
+                key=lambda x: x.created_utc,
+                reverse=True,
+            )
+            forecast.forecast_values_latest = sorted(
+                forecast.forecast_values_latest,
+                key=lambda x: x.target_time,
+            )
+
             forecast = NationalForecast.from_orm_latest(forecast)
         else:
             forecast = NationalForecast.from_orm(forecast)
