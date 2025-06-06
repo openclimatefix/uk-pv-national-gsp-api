@@ -174,8 +174,6 @@ def test_get_national_forecast_duplicate_values(db_session, api_client):
         assert national_forecast.forecast_values[idx].expected_power_generation_megawatts \
                == round(forecast2.forecast_values[idx-1].expected_power_generation_megawatts,2)
 
-
-
 @freeze_time("2024-01-01")
 def test_get_national_forecast_no_init(db_session, api_client):
     """Check main solar/GB/national/forecast route works"""
