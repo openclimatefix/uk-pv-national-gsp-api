@@ -21,8 +21,6 @@ from sqlalchemy import NUMERIC
 from sqlalchemy.orm import Query
 from sqlalchemy.orm.session import Session
 
-from nowcasting_api.utils import get_start_datetime
-
 adjust_limit = float(os.getenv("ADJUST_MW_LIMIT", 0.0))
 
 
@@ -61,9 +59,6 @@ def get_forecast_values_all_compact(
 
     # join with model table
     query = query.filter(ForecastValueLatestSQL.model_id.in_(model_ids))
-
-    # make sure start time is set, and is not before the max history length
-    start_datetime_utc = get_start_datetime(start_datetime=start_datetime_utc)
 
     # filters
     query = filter_start_and_end_datetime(

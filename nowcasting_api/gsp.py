@@ -32,6 +32,7 @@ from utils import (
     N_SLOW_CALLS_PER_HOUR,
     floor_30_minutes_dt,
     format_datetime,
+    get_start_datetime,
     limiter,
 )
 
@@ -104,10 +105,13 @@ def get_all_available_forecasts(
     if start_datetime_utc is None and (gsp_ids is None or len(gsp_ids) > 1):
         start_datetime_utc = floor_30_minutes_dt(datetime.now(tz=timezone.utc))
 
-    # Lets start by spending up no creation limit.
-    # There are other speed ups, we could of course do, but this is a good start.
+    # Let's start by speeding up no creation limit.
+    # There are other speed-ups, we could of course do, but this is a good start.
     if creation_limit_utc is None and historic:
         if compact:
+            # make sure start time is set, and is not before the max history length
+            start_datetime_utc = get_start_datetime(start_datetime=start_datetime_utc)
+
             return get_forecast_values_all_compact(
                 session=session,
                 start_datetime_utc=start_datetime_utc,
