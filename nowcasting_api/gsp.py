@@ -104,14 +104,14 @@ def get_all_available_forecasts(
     # by default, don't get any data in the past if more than one gsp
     if start_datetime_utc is None and (gsp_ids is None or len(gsp_ids) > 1):
         start_datetime_utc = floor_30_minutes_dt(datetime.now(tz=timezone.utc))
+    else:
+        # make sure start time is set, and is not before the max history length
+        start_datetime_utc = get_start_datetime(start_datetime=start_datetime_utc)
 
     # Let's start by speeding up no creation limit.
     # There are other speed-ups, we could of course do, but this is a good start.
     if creation_limit_utc is None and historic:
         if compact:
-            # make sure start time is set, and is not before the max history length
-            start_datetime_utc = get_start_datetime(start_datetime=start_datetime_utc)
-
             return get_forecast_values_all_compact(
                 session=session,
                 start_datetime_utc=start_datetime_utc,
