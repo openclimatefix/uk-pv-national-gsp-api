@@ -10,7 +10,6 @@ import structlog
 from auth_utils import get_auth_implicit_scheme, get_user
 from cache import cache_response
 from database import (
-    get_latest_forecast_values_for_a_specific_gsp_from_database,
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
 )
@@ -200,18 +199,6 @@ def get_national_forecast(
             trend_adjuster_on=trend_adjuster_on,
             get_plevels=get_plevels)
 
-        import time
-        t= time.time()
-        forecast_values = get_latest_forecast_values_for_a_specific_gsp_from_database(
-            session=session,
-            gsp_id=0,
-            forecast_horizon_minutes=forecast_horizon_minutes,
-            start_datetime_utc=start_datetime_utc,
-            end_datetime_utc=end_datetime_utc,
-            creation_utc_limit=creation_limit_utc,
-            model_name=model_name,
-        )
-        print("get_latest_forecast_values_for_a_specific_gsp_from_database", time.time() - t, "seconds")
 
     logger.info(f"Got national forecasts with {len(forecast_values)} forecast values.")
 
