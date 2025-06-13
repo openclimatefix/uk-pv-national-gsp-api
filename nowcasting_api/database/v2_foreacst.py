@@ -58,34 +58,24 @@ def get_national_forecast_values(session,
 
 
 
-    if forecast_horizon_minutes is not None:
-        model = ForecastValueSevenDaysSQL
+    # if forecast_horizon_minutes or creation_utc_limit is not None,
+    # then we are not going to load from the lastest values
+    # Therefore we have to look at ForecastValueSevenDaysSQL or ForecastValue
+    if (forecast_horizon_minutes is not None) or (creation_utc_limit is not None):
+
+        if creation_utc_limit is not None and creation_utc_limit < datetime.now(
+                tz=timezone.utc
+        ) - timedelta(days=7):
+            model = ForecastValueSQL
+        elif start_datetime_utc is not None and start_datetime_utc < datetime.now(
+                tz=timezone.utc
+        ) - timedelta(days=7):
+            model = ForecastValueSQL
+        else:
+            model = ForecastValueSevenDaysSQL
 
         start_datetime_utc = get_start_datetime(start_datetime=start_datetime_utc, days=365)
         import time
-        # 1. get model ids
-        # import time
-        # t = time.time()
-        # model_ids = session.query(MLModelSQL.id).filter(MLModelSQL.name == model_name).all()
-        # model_ids = [model_id[0] for model_id in model_ids]
-        # print("model_ids", time.time() - t, "seconds")
-
-        # get forecast_ids
-        # query = session.query(ForecastSQL.id)
-        # query = query.filter(ForecastSQL.historic == False)
-        # query = query.join(LocationSQL)
-        # query = query.join(MLModelSQL)
-        # # query = query.filter(ForecastSQL.model_id.in_(model_ids))
-        # query = query.filter(LocationSQL.gsp_id == 0)
-        # query = query.filter(MLModelSQL.name == model_name)
-        # query = query.filter(ForecastSQL.created_utc >= start_datetime_utc - timedelta(days=2))
-        #
-        #
-        # t =time.time()
-        # forecast_ids = query.all()
-        # forecast_ids = [forecast_id[0] for forecast_id in forecast_ids]
-        # print("forecast_ids", time.time() - t, "seconds", len(forecast_ids))
-
 
         logger.debug(f"Got forecast ids")
 
@@ -100,18 +90,22 @@ def get_national_forecast_values(session,
         if trend_adjuster_on:
             pass
 
-
-
+        # create the creation utc upper bound
         if creation_utc_limit is None:
-            creation_utc_limit = datetime.now(tz=timezone.utc) - timedelta(
+            creation_utc_limit = datetime.now(tz=timezone.utc)
+        if forecast_horizon_minutes is not None:
+            creation_utc_limit -= timedelta(
                 minutes=forecast_horizon_minutes
             )
 
-        creation_utc_lower_bound = start_datetime_utc - timedelta(
+        # create the creation utc lower bound
+        creation_utc_lower_bound = start_datetime_utc - timedelta(days=2)
+        if forecast_horizon_minutes is not None:
+            creation_utc_lower_bound -= timedelta(
                 minutes=forecast_horizon_minutes
-            ) - timedelta(days=2)
+            )
 
-
+        # start query
         query = session.query(*values)
 
         query = query.join(ForecastSQL)
@@ -130,14 +124,14 @@ def get_national_forecast_values(session,
         # filter for forecast_horizon_minutes
         if forecast_horizon_minutes is not None:
             query = query.filter(
-                model.target_time - model.created_utc
-                >= text(f"interval '{forecast_horizon_minutes} minute'")
+                model.horizon_minutes >= forecast_horizon_minutes
             )
 
-            query = query.filter(
-                model.created_utc - datetime.now(tz=timezone.utc)
-                <= text(f"interval '{forecast_horizon_minutes} minute'")
-            )
+            # TODO do we need this?
+            # query = query.filter(
+            #     model.created_utc - datetime.now(tz=timezone.utc)
+            #     <= text(f"interval '{forecast_horizon_minutes} minute'")
+            # )
 
         if end_datetime_utc is not None:
             query = query.filter(ForecastValueSevenDaysSQL.target_time <= end_datetime_utc)

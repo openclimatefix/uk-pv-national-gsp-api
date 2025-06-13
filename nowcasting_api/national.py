@@ -190,15 +190,15 @@ def get_national_forecast(
         forecast_values = forecasts[0].forecast_values
 
     else:
-        if creation_limit_utc is None:
-            return get_national_forecast_values(session=session,
-                forecast_horizon_minutes=forecast_horizon_minutes,
-                start_datetime_utc=start_datetime_utc,
-                end_datetime_utc=end_datetime_utc,
-                creation_utc_limit=creation_limit_utc,
-                model_name=model_name,
-                trend_adjuster_on=trend_adjuster_on,
-                get_plevels=get_plevels)
+        # if creation_limit_utc is None:
+        return get_national_forecast_values(session=session,
+            forecast_horizon_minutes=forecast_horizon_minutes,
+            start_datetime_utc=start_datetime_utc,
+            end_datetime_utc=end_datetime_utc,
+            creation_utc_limit=creation_limit_utc,
+            model_name=model_name,
+            trend_adjuster_on=trend_adjuster_on,
+            get_plevels=get_plevels)
 
         import time
         t= time.time()
