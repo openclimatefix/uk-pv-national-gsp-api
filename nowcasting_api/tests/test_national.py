@@ -1,6 +1,6 @@
 """ Test for main app """
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import numpy as np
 from freezegun import freeze_time
@@ -13,6 +13,7 @@ from nowcasting_datamodel.save.update import update_all_forecast_latest
 from nowcasting_api.database import get_session
 from nowcasting_api.main import app
 from nowcasting_api.pydantic_models import NationalForecast, NationalForecastValue
+from nowcasting_api.utils import floor_30_minutes_dt
 
 
 def test_read_latest_national_values(db_session, api_client):
@@ -133,6 +134,49 @@ def test_get_national_forecast(db_session, api_client):
         national_forecast.forecast_values[24].plevels["plevel_10"]
         != national_forecast.forecast_values[0].expected_power_generation_megawatts * 0.9
     )
+
+
+def test_get_national_forecast_duplicate_values(db_session, api_client):
+    """Check main solar/GB/national/forecast route works with duplicate values"""
+
+    t0 = floor_30_minutes_dt(datetime.now())
+    model1 = get_model(db_session, name="blend", version="0.0.1")
+    forecast1 = make_fake_national_forecast(session=db_session, t0_datetime_utc=t0)
+    forecast1.model = model1
+
+    db_session.add(forecast1)
+    update_all_forecast_latest(forecasts=[forecast1], session=db_session)
+
+    # add second model values
+    model2 = get_model(db_session, name="blend", version="0.0.2")
+    forecast2 = make_fake_national_forecast(
+        session=db_session, t0_datetime_utc=t0 + timedelta(minutes=30)
+    )
+    forecast2.model = model2
+
+    db_session.add(forecast2)
+    update_all_forecast_latest(forecasts=[forecast2], session=db_session)
+
+    app.dependency_overrides[get_session] = lambda: db_session
+
+    response = api_client.get("/v0/solar/GB/national/forecast?include_metadata=true")
+    assert response.status_code == 200
+
+    national_forecast = NationalForecast(**response.json())
+    # 2 days + 8 hours + 1 due to forecast 2 being 30 mins later
+    assert len(national_forecast.forecast_values) == (24 * 2 + 8) * 2 + 1
+    assert national_forecast.forecast_values[0].plevels is not None
+
+    # let's make sure we get at least one value in the day
+    # we use idx-1 for forecast 2 due to it being 30 minutes later than the first forecast
+    for idx in [6, 12, 18, 24]:
+        assert (
+            national_forecast.forecast_values[idx].target_time
+            == forecast2.forecast_values[idx - 1].target_time
+        )
+        assert national_forecast.forecast_values[idx].expected_power_generation_megawatts == round(
+            forecast2.forecast_values[idx - 1].expected_power_generation_megawatts, 2
+        )
 
 
 @freeze_time("2024-01-01")

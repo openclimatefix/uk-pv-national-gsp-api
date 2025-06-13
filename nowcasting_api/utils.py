@@ -224,6 +224,7 @@ def remove_duplicate_values(forecasts: List[Forecast]) -> List[Forecast]:
     We assume that the first target time is the one we keep
     Note: This could be done in the database query, too, but currently this quiet hard as
     we get this values from a join, and use forecast.forecast_values
+    or forecast.forecast_value_latest
 
     :param forecasts: list of forecasts
     :return: list of forecasts with duplicate values removed
