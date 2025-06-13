@@ -1,23 +1,8 @@
 """ Get data from database - optimized"""
 
-from datetime import datetime, timedelta, timezone
-
-from nowcasting_datamodel.models import ForecastSQL, ForecastValueLatestSQL, ForecastValueSQL, ForecastValueSevenDaysSQL, LocationSQL, MLModelSQL
-from pydantic_models import NationalForecastValue, OneDatetimeManyForecastValues
-from sqlalchemy.orm.session import Session
-from sqlalchemy import text
-from sqlalchemy import select
-from utils import (
-    N_CALLS_PER_HOUR,
-    filter_forecast_values,
-    format_datetime,
-    format_plevels,
-    limiter,
-    remove_duplicate_values,
-)
-
 import os
 from datetime import datetime
+from datetime import timedelta, timezone
 
 from nowcasting_datamodel.models import (
     Forecast,
@@ -32,15 +17,18 @@ from nowcasting_datamodel.models import (
     MLModel,
     MLModelSQL,
 )
-from pydantic_models import OneDatetimeManyForecastValues
+from nowcasting_datamodel.models import ForecastValueSQL, ForecastValueSevenDaysSQL
 from sqlalchemy import NUMERIC
 from sqlalchemy.orm import Query
 from sqlalchemy.orm.session import Session
 
+from pydantic_models import NationalForecastValue
+from pydantic_models import OneDatetimeManyForecastValues
+
 adjust_limit = float(os.getenv("ADJUST_MW_LIMIT", 0.0))
 
 from utils import (
-    get_start_datetime,
+    get_start_datetime, format_plevels
 )
 import structlog
 
@@ -75,7 +63,6 @@ def get_national_forecast_values(session,
             model = ForecastValueSevenDaysSQL
 
         start_datetime_utc = get_start_datetime(start_datetime=start_datetime_utc, days=365)
-        import time
 
         logger.debug(f"Got forecast ids")
 
@@ -83,12 +70,6 @@ def get_national_forecast_values(session,
                   model.expected_power_generation_megawatts,
                   model.properties,
                   model.adjust_mw]
-
-        if get_plevels:
-            pass
-
-        if trend_adjuster_on:
-            pass
 
         # create the creation utc upper bound
         if creation_utc_limit is None:
@@ -142,28 +123,25 @@ def get_national_forecast_values(session,
 
         query = query.order_by(ForecastValueSevenDaysSQL.target_time,
                                ForecastValueSevenDaysSQL.created_utc.desc())
-        # query = query.limit(200)
 
-        t = time.time()
         forecast_values = query.all()
-        print("forecast_values", time.time()-t, "seconds", len(forecast_values))
 
-        # import pandas as pd
-        # forecast_values = pd.read_sql_query(
-        #     query, session.bind, index_col="target_time", parse_dates=["target_time"]
-        # )
-        # print("forecast_values", time.time() - t, "seconds")
-
-        t = time.time()
         national_forecast_values = [
             NationalForecastValue(
                 target_time=forecast_value[0],
                 expected_power_generation_megawatts=forecast_value[1],
-                plevels={},
+                plevels=forecast_value[2],
+                _adjust_mw=forecast_value[3],
             )
             for forecast_value in forecast_values
         ]
-        print("format", time.time() - t, "seconds", len(forecast_values))
+
+        for national_forecast_value in national_forecast_values:
+            format_plevels(national_forecast_value)
+
+        if trend_adjuster_on:
+            logger.debug(f"Now adjusting by at most {adjust_limit} MW")
+            national_forecast_values = [f.adjust(limit=adjust_limit) for f in national_forecast_values]
 
         return national_forecast_values
     else:
@@ -171,18 +149,24 @@ def get_national_forecast_values(session,
         forecast_values = get_forecast_values(session=session,
                                               start_datetime_utc=start_datetime_utc,
                                               end_datetime_utc=end_datetime_utc,
-                                              gsp_ids=[0])
+                                              gsp_ids=[0],
+                                              get_adjust_mw_and_properties=True)
 
         national_forecast_values = [
             NationalForecastValue(
                 target_time=forecast_value[0],
                 expected_power_generation_megawatts=forecast_value[1],
-                plevels={},
+                _adjust_mw=forecast_value[3],
+                plevels=forecast_value[4],
             )
             for forecast_value in forecast_values]
 
         for national_forecast_value in national_forecast_values:
             format_plevels(national_forecast_value)
+
+        if trend_adjuster_on:
+            logger.debug(f"Now adjusting by at most {adjust_limit} MW")
+            national_forecast_values = [f.adjust(limit=adjust_limit) for f in national_forecast_values]
 
         return national_forecast_values
 
@@ -191,6 +175,7 @@ def get_forecast_values(
     start_datetime_utc: datetime | None = None,
     end_datetime_utc: datetime | None = None,
     gsp_ids: list[int] | None = None,
+    get_adjust_mw_and_properties: bool = False,
 ) -> list[()]:
     """Get forecast values from the database.
 
@@ -210,11 +195,14 @@ def get_forecast_values(
     model_ids = [model_id[0] for model_id in model_ids]
 
     # 2. get forecast values from database
-    query = session.query(
-        ForecastValueLatestSQL.target_time,
+    columns = [ForecastValueLatestSQL.target_time,
         ForecastValueLatestSQL.expected_power_generation_megawatts.cast(NUMERIC(10, 2)),
-        ForecastValueLatestSQL.gsp_id,
-    )
+        ForecastValueLatestSQL.gsp_id]
+    if get_adjust_mw_and_properties:
+        columns.append(ForecastValueLatestSQL.adjust_mw)
+        columns.append(ForecastValueLatestSQL.properties)
+
+    query = session.query(*columns)
 
     # distinct on target_time
     query = query.distinct(ForecastValueLatestSQL.gsp_id, ForecastValueLatestSQL.target_time)

@@ -190,7 +190,7 @@ def get_national_forecast(
         forecast_values = forecasts[0].forecast_values
 
     else:
-        # if creation_limit_utc is None:
+
         return get_national_forecast_values(session=session,
             forecast_horizon_minutes=forecast_horizon_minutes,
             start_datetime_utc=start_datetime_utc,
