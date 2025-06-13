@@ -28,7 +28,14 @@ from pydantic_models import (
     SolarForecastValue,
 )
 from sqlalchemy.orm.session import Session
-from utils import N_CALLS_PER_HOUR, filter_forecast_values, format_datetime, format_plevels, limiter
+from utils import (
+    N_CALLS_PER_HOUR,
+    filter_forecast_values,
+    format_datetime,
+    format_plevels,
+    limiter,
+    remove_duplicate_values,
+)
 
 logger = structlog.stdlib.get_logger()
 
@@ -154,6 +161,19 @@ def get_national_forecast(
             forecast.initialization_datetime_utc = forecast.forecast_creation_time
 
         if historic:
+            # make sure forecast.forecast_value_latest are order by target_time and created_utc desc
+            # this means we get a list of target times descending, and for each target time
+            # the most recent created_utc value is at the top
+            forecast.forecast_values_latest = sorted(
+                forecast.forecast_values_latest,
+                key=lambda x: x.created_utc,
+                reverse=True,
+            )
+            forecast.forecast_values_latest = sorted(
+                forecast.forecast_values_latest,
+                key=lambda x: x.target_time,
+            )
+
             forecast = NationalForecast.from_orm_latest(forecast)
         else:
             forecast = NationalForecast.from_orm(forecast)
@@ -163,18 +183,22 @@ def get_national_forecast(
             start_datetime_utc=start_datetime_utc,
             end_datetime_utc=end_datetime_utc,
         )
+
+        # remove duplicates
+        forecasts = remove_duplicate_values(forecasts)
+
         forecast_values = forecasts[0].forecast_values
 
     else:
-
-        return get_national_forecast_values(session=session,
-            forecast_horizon_minutes=forecast_horizon_minutes,
-            start_datetime_utc=start_datetime_utc,
-            end_datetime_utc=end_datetime_utc,
-            creation_utc_limit=creation_limit_utc,
-            model_name=model_name,
-                                            trend_adjuster_on=trend_adjuster_on,
-                                            get_plevels=get_plevels)
+        if creation_limit_utc is None:
+            return get_national_forecast_values(session=session,
+                forecast_horizon_minutes=forecast_horizon_minutes,
+                start_datetime_utc=start_datetime_utc,
+                end_datetime_utc=end_datetime_utc,
+                creation_utc_limit=creation_limit_utc,
+                model_name=model_name,
+                trend_adjuster_on=trend_adjuster_on,
+                get_plevels=get_plevels)
 
         import time
         t= time.time()

@@ -83,7 +83,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/41056982?v=4",
       "profile": "https://github.com/braddf",
       "contributions": [
-        "code"
+        "code",
+        "review"
       ]
     },
     {
@@ -199,6 +200,15 @@
       "name": "Yuvraaj Narula",
       "avatar_url": "https://avatars.githubusercontent.com/u/49155095?v=4",
       "profile": "https://github.com/yuvraajnarula",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "jchanke",
+      "name": "Joseph Chan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/17882756?v=4",
+      "profile": "https://github.com/jchanke",
       "contributions": [
         "code"
       ]
