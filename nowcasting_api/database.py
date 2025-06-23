@@ -1,4 +1,4 @@
-""" Functions to read from the database and format """
+"""Functions to read from the database and format"""
 
 import abc
 import os
