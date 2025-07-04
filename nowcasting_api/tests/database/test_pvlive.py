@@ -3,19 +3,14 @@
 Other tests are covered in test_gsp.py amd test_national.py
 """
 
-import pytest
 from datetime import datetime, timezone
 
-from nowcasting_datamodel.models import (
-    GSPYield,
-    Location,
-    LocationSQL,
-)
-from pydantic_models import GSPYieldGroupByDatetime, LocationWithGSPYields
+import pytest
+from freezegun import freeze_time
+from nowcasting_datamodel.models import GSPYield, Location, LocationSQL
 
 from nowcasting_api.database.pvlive import get_gsp_yield_values
-
-from freezegun import freeze_time
+from pydantic_models import GSPYieldGroupByDatetime, LocationWithGSPYields
 
 
 @pytest.fixture
