@@ -10,7 +10,7 @@ from freezegun import freeze_time
 from nowcasting_datamodel.models import GSPYield, Location, LocationSQL
 
 from nowcasting_api.database.pvlive import get_gsp_yield_values
-from pydantic_models import GSPYieldGroupByDatetime, LocationWithGSPYields
+from nowcasting_api.pydantic_models import GSPYieldGroupByDatetime, LocationWithGSPYields
 
 
 @pytest.fixture
