@@ -1,6 +1,6 @@
 """Get PVLive data from the database."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 from nowcasting_datamodel.models.gsp import GSPYield, GSPYieldSQL, Location, LocationSQL
 from pydantic_models import GSPYieldGroupByDatetime, LocationWithGSPYields
@@ -156,7 +156,7 @@ def convert_to_gsp_yields_grouped_by_datetimes(gsp_yields) -> list[GSPYieldGroup
     # process results into GSPYieldGroupByDatetime
     gsp_yields_grouped_by_datetime = {}
     for gsp_yield in gsp_yields:
-        datetime_utc = gsp_yield[0]
+        datetime_utc = gsp_yield[0].replace(tzinfo=timezone.utc)
         solar_generation_kw = gsp_yield[1]
         gsp_id = gsp_yield[2]
 
