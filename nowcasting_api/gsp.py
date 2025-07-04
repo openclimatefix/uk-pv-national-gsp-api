@@ -13,7 +13,7 @@ from database import (
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
 )
-from database.forecast import get_forecast_values_all_compact, get_forecasts_and_forecast_values
+from database.forecast_all import get_forecast_values_all_compact, get_forecasts_and_forecast_values
 from database.pvlive import get_gsp_yield_values
 from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, Request, Security, status
