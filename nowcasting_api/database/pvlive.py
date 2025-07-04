@@ -89,7 +89,7 @@ def get_gsp_yield_values(
             query = query.where(LocationSQL.gsp_id != 0)
         query = query.order_by(LocationSQL.gsp_id)
         locations = query.all()
-        locations = [location.to_orm() for location in locations]
+        locations = [Location.from_orm(location) for location in locations]
 
         locations_with_gsp_yields = convert_to_locations_with_gsp_yields(
             gsp_yields, locations, regime
