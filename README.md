@@ -134,16 +134,11 @@ docker-compose -f test-docker-compose.yml run api
 #### GSP
 ```mermaid
   graph TD;
-      G1(gsp/forecast/all);
-      G1--> N3[ManyForecasts];
 
       G3(gsp/gsp_id/forecast) -->Q4;
       Q4{forecast horizon <br> minutes not None}
       Q4-->|yes| G7[ForecastValueSevenDays];
       Q4-->|no| G6[ForecastValueLatest];
-
-      GP1(gsp/pvlive/all)-->GP2;
-      GP2[LocationWithGSPYields];
 
       GP3(gsp/gsp_id/pvlive)-->GP4;
       GP4[GSPYield];

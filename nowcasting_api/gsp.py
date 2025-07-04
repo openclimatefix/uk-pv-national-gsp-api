@@ -54,6 +54,7 @@ NationalYield = GSPYield
 @router.get(
     "/forecast/all/",
     response_model=Union[ManyForecasts, List[OneDatetimeManyForecastValues]],
+    include_in_schema=False,
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
@@ -261,6 +262,7 @@ def get_forecasts_for_a_specific_gsp(
 @router.get(
     "/pvlive/all",
     response_model=Union[List[LocationWithGSPYields], List[GSPYieldGroupByDatetime]],
+    include_in_schema=False,
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
