@@ -70,9 +70,18 @@ def test_get_gsp_yield_value_compact(db_session, gsp_yields):
     gsp_yields: [GSPYieldGroupByDatetime] = get_gsp_yield_values(session=db_session, compact=True)
 
     assert len(gsp_yields) == 3
-    assert gsp_yields[0].datetime_utc.isoformat() == datetime(2022, 1, 1, tzinfo=timezone.utc).isoformat()
+    assert (
+        gsp_yields[0].datetime_utc.isoformat()
+        == datetime(2022, 1, 1, tzinfo=timezone.utc).isoformat()
+    )
     assert gsp_yields[0].generation_kw_by_gsp_id[122] == 2
-    assert gsp_yields[1].datetime_utc.isoformat() == datetime(2022, 1, 1, 12, tzinfo=timezone.utc).isoformat()
+    assert (
+        gsp_yields[1].datetime_utc.isoformat()
+        == datetime(2022, 1, 1, 12, tzinfo=timezone.utc).isoformat()
+    )
     assert gsp_yields[1].generation_kw_by_gsp_id[122] == 3
-    assert gsp_yields[2].datetime_utc.isoformat() == datetime(2022, 1, 2, tzinfo=timezone.utc).isoformat()
+    assert (
+        gsp_yields[2].datetime_utc.isoformat()
+        == datetime(2022, 1, 2, tzinfo=timezone.utc).isoformat()
+    )
     assert gsp_yields[2].generation_kw_by_gsp_id[122] == 1
