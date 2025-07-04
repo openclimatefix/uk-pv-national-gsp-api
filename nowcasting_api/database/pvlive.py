@@ -73,29 +73,11 @@ def get_gsp_yield_values(
 
     gsp_yields = query.all()
 
+    # format the results
     if compact:
-        # process results into GSPYieldGroupByDatetime
-        gsp_yields_grouped_by_datetime = {}
-        for gsp_yield in gsp_yields:
-            datetime_utc = gsp_yield[0]
-            solar_generation_kw = gsp_yield[1]
-            gsp_id = gsp_yield[2]
-
-            # if the datetime object is not in the dictionary, add it
-            if datetime_utc not in gsp_yields_grouped_by_datetime:
-                gsp_yields_grouped_by_datetime[datetime_utc] = {gsp_id: solar_generation_kw}
-            else:
-                gsp_yields_grouped_by_datetime[datetime_utc][gsp_id] = solar_generation_kw
-
-        # convert dictionary to list of OneDatetimeGSPGeneration objects
-        gsp_yields_grouped_by_datetime_pydantic = []
-        for datetime_utc, gsp_yields in gsp_yields_grouped_by_datetime.items():
-            gsp_yields_grouped_by_datetime_pydantic.append(
-                GSPYieldGroupByDatetime(
-                    datetime_utc=datetime_utc, generation_kw_by_gsp_id=gsp_yields
-                )
-            )
-
+        gsp_yields_grouped_by_datetime_pydantic = convert_to_gsp_yields_grouped_by_datetimes(
+            gsp_yields
+        )
         return gsp_yields_grouped_by_datetime_pydantic
 
     else:
@@ -107,44 +89,86 @@ def get_gsp_yield_values(
             query = query.where(LocationSQL.gsp_id != 0)
         query = query.order_by(LocationSQL.gsp_id)
         locations = query.all()
+        locations = [location.to_orm() for location in locations]
 
-        # create a mapping from gsp_id to location
-        gsp_id_to_location = {
-            location.gsp_id: Location.from_orm(location) for location in locations
-        }
-
-        gsp_yields_grouped_by_gsp_id = {}
-        for gsp_yield in gsp_yields:
-            datetime_utc = gsp_yield[0]
-            solar_generation_kw = gsp_yield[1]
-            gsp_id = gsp_yield[2]
-
-            gsp_yield = GSPYield(
-                datetime_utc=datetime_utc,
-                solar_generation_kw=solar_generation_kw,
-                regime=regime,
-            )
-
-            # if the gsp_id object is not in the dictionary, add it
-            if gsp_id not in gsp_yields_grouped_by_gsp_id:
-                gsp_yields_grouped_by_gsp_id[gsp_id] = [gsp_yield]
-            else:
-                gsp_yields_grouped_by_gsp_id[gsp_id].append(gsp_yield)
-
-        # convert dictionary to list of LocationWithGSPYields objects
-        locations_with_gsp_yields = []
-        for gsp_id, gsp_yields in gsp_yields_grouped_by_gsp_id.items():
-            location = gsp_id_to_location[gsp_id]
-            locations_with_gsp_yields.append(
-                LocationWithGSPYields(
-                    gsp_id=gsp_id,
-                    gsp_yields=gsp_yields,
-                    label=location.label,
-                    gsp_name=location.gsp_name,
-                    gsp_group=location.gsp_group,
-                    region_name=location.region_name,
-                    installed_capacity_mw=location.installed_capacity_mw,
-                )
-            )
+        locations_with_gsp_yields = convert_to_locations_with_gsp_yields(
+            gsp_yields, locations, regime
+        )
 
         return locations_with_gsp_yields
+
+
+def convert_to_locations_with_gsp_yields(
+    gsp_yields, locations, regime
+) -> list[LocationWithGSPYields]:
+    """Convert gsp_yields and locations to a list of LocationWithGSPYields objects.
+
+    :param gsp_yields: list of [datetime_utc, solar_generation_kw, gps_id]
+    :param locations: list of Location objects
+    :param regime: regime string, e.g. "in-day" or "day-after"
+
+    :return list of LocationWithGSPYields objects
+    """
+    # create a mapping from gsp_id to location
+    gsp_id_to_location = {location.gsp_id: location for location in locations}
+    gsp_yields_grouped_by_gsp_id = {}
+    for gsp_yield in gsp_yields:
+        datetime_utc = gsp_yield[0]
+        solar_generation_kw = gsp_yield[1]
+        gsp_id = gsp_yield[2]
+
+        gsp_yield = GSPYield(
+            datetime_utc=datetime_utc,
+            solar_generation_kw=solar_generation_kw,
+            regime=regime,
+        )
+
+        # if the gsp_id object is not in the dictionary, add it
+        if gsp_id not in gsp_yields_grouped_by_gsp_id:
+            gsp_yields_grouped_by_gsp_id[gsp_id] = [gsp_yield]
+        else:
+            gsp_yields_grouped_by_gsp_id[gsp_id].append(gsp_yield)
+    # convert dictionary to list of LocationWithGSPYields objects
+    locations_with_gsp_yields = []
+    for gsp_id, gsp_yields in gsp_yields_grouped_by_gsp_id.items():
+        location = gsp_id_to_location[gsp_id]
+        locations_with_gsp_yields.append(
+            LocationWithGSPYields(
+                gsp_id=gsp_id,
+                gsp_yields=gsp_yields,
+                label=location.label,
+                gsp_name=location.gsp_name,
+                gsp_group=location.gsp_group,
+                region_name=location.region_name,
+                installed_capacity_mw=location.installed_capacity_mw,
+            )
+        )
+    return locations_with_gsp_yields
+
+
+def convert_to_gsp_yields_grouped_by_datetimes(gsp_yields) -> list[GSPYieldGroupByDatetime]:
+    """Convert gsp_yields to a list of GSPYieldGroupByDatetime objects.
+
+    :param gsp_yields: list of [datetime_utc, solar_generation_kw, gps_id]
+    :return list of LocationWithGSPYields objects
+    """
+
+    # process results into GSPYieldGroupByDatetime
+    gsp_yields_grouped_by_datetime = {}
+    for gsp_yield in gsp_yields:
+        datetime_utc = gsp_yield[0]
+        solar_generation_kw = gsp_yield[1]
+        gsp_id = gsp_yield[2]
+
+        # if the datetime object is not in the dictionary, add it
+        if datetime_utc not in gsp_yields_grouped_by_datetime:
+            gsp_yields_grouped_by_datetime[datetime_utc] = {gsp_id: solar_generation_kw}
+        else:
+            gsp_yields_grouped_by_datetime[datetime_utc][gsp_id] = solar_generation_kw
+    # convert dictionary to list of OneDatetimeGSPGeneration objects
+    gsp_yields_grouped_by_datetime_pydantic = []
+    for datetime_utc, gsp_yields in gsp_yields_grouped_by_datetime.items():
+        gsp_yields_grouped_by_datetime_pydantic.append(
+            GSPYieldGroupByDatetime(datetime_utc=datetime_utc, generation_kw_by_gsp_id=gsp_yields)
+        )
+    return gsp_yields_grouped_by_datetime_pydantic
