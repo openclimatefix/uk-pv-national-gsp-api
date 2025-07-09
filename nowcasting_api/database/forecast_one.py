@@ -23,16 +23,20 @@ from sqlalchemy import NUMERIC
 from sqlalchemy.orm import Query
 from sqlalchemy.orm.session import Session
 
+from nowcasting_api.utils import format_plevels
+
 adjust_limit = float(os.getenv("ADJUST_MW_LIMIT", 0.0))
 
 
-def get_national_forecast_values(session: Session,
-                                       start_datetime_utc: datetime | None = None,
-                                       end_datetime_utc: datetime | None = None,
-                                       creation_limit_utc: str | None = None,
-                                       forecast_horizon_minutes: int | None = None,
-                                       trend_adjuster_on: bool | None = True,
-                                       model_name: str = "blend") -> list[ForecastValue]:
+def get_national_forecast_values(
+    session: Session,
+    start_datetime_utc: datetime | None = None,
+    end_datetime_utc: datetime | None = None,
+    creation_limit_utc: str | None = None,
+    forecast_horizon_minutes: int | None = None,
+    trend_adjuster_on: bool | None = True,
+    model_name: str = "blend",
+) -> list[ForecastValue]:
     raw_fv = get_raw_forecast_values_for_one_gsp_id(
         session=session,
         start_datetime_utc=start_datetime_utc,
@@ -40,51 +44,22 @@ def get_national_forecast_values(session: Session,
         creation_limit_utc=creation_limit_utc,
         gsp_id=0,
         forecast_horizon_minutes=forecast_horizon_minutes,
-        trend_adjuster_on=trend_adjuster_on,
-        model_name=model_name
+        model_name=model_name,
     )
 
     fvs = []
-    for target_time, expected_power_generation_megawatts in raw_fv:
-        fv = NationalForecastValue(target_time=target_time,
-                           expected_power_generation_megawatts=expected_power_generation_megawatts)
-        # TODO add probablistic
-
-        # TODO add normalized values
-
-        # TODO add adjuster
+    for target_time, expected_power_generation_megawatts, plevels in raw_fv:
+        fv = NationalForecastValue(
+            target_time=target_time,
+            expected_power_generation_megawatts=expected_power_generation_megawatts,
+            plevels=plevels,
+        )
+        format_plevels(fv)
+        if trend_adjuster_on:
+            fv = fv.adjust(limit=adjust_limit)
         fvs.append(fv)
 
     return fvs
-
-def get_forecast_values_for_one_gsp_id(session: Session,
-    start_datetime_utc: datetime | None = None,
-    end_datetime_utc: datetime | None = None,
-    creation_limit_utc: str | None = None,
-    gsp_id: int | None = None,
-    forecast_horizon_minutes: int | None = None,
-    trend_adjuster_on: bool | None = True,
-    model_name: str = "blend") -> list[ForecastValue]:
-
-    raw_fv = get_raw_forecast_values_for_one_gsp_id(
-        session=session,
-        start_datetime_utc=start_datetime_utc,
-        end_datetime_utc=end_datetime_utc,
-        creation_limit_utc=creation_limit_utc,
-        gsp_id=gsp_id,
-        forecast_horizon_minutes=forecast_horizon_minutes,
-        trend_adjuster_on=trend_adjuster_on,
-        model_name=model_name
-    )
-
-    fvs = []
-    for target_time, expected_power_generation_megawatts in raw_fv:
-        fv = ForecastValue(target_time=target_time,
-                      expected_power_generation_megawatts=expected_power_generation_megawatts)
-        fvs.append(fv)
-
-    return fvs
-
 
 
 def get_raw_forecast_values_for_one_gsp_id(
@@ -94,7 +69,6 @@ def get_raw_forecast_values_for_one_gsp_id(
     creation_limit_utc: str | None = None,
     gsp_id: int | None = None,
     forecast_horizon_minutes: int | None = None,
-    trend_adjuster_on: bool | None = True,
     model_name: str = "blend",
 ) -> []:
     """Get forecast values from the database for one gsp_id.
@@ -113,6 +87,7 @@ def get_raw_forecast_values_for_one_gsp_id(
     Returns a [] forecast values objects, each object is
      - target_time
      - expected_power_generation_megawatts
+     - properties (if any)
     """
 
     # 1. Choose which model table to use
@@ -127,7 +102,6 @@ def get_raw_forecast_values_for_one_gsp_id(
     else:
         fv_model = ForecastValueSevenDaysSQL
 
-
     # 1. get model ids
     model_ids = session.query(MLModelSQL.id).filter(MLModelSQL.name == model_name).all()
     model_ids = [model_id[0] for model_id in model_ids]
@@ -136,6 +110,7 @@ def get_raw_forecast_values_for_one_gsp_id(
     query = session.query(
         fv_model.target_time,
         fv_model.expected_power_generation_megawatts.cast(NUMERIC(10, 2)),
+        fv_model.properties,
     )
 
     # distinct on target_time
@@ -150,26 +125,29 @@ def get_raw_forecast_values_for_one_gsp_id(
 
     # filters
     query = filter_start_and_end_datetime(
-        query=query, start_datetime_utc=start_datetime_utc, end_datetime_utc=end_datetime_utc
+        query=query,
+        start_datetime_utc=start_datetime_utc,
+        end_datetime_utc=end_datetime_utc,
+        model=fv_model
     )
-    # if latest
     if fv_model == ForecastValueLatestSQL:
         query = query.filter(fv_model.gsp_id == gsp_id)
     else:
-        # filter by gsp_id
         query = query.join(LocationSQL)
         query = query.filter(LocationSQL.gsp_id == gsp_id)
 
+    if creation_limit_utc is not None:
+        query = query.filter(fv_model.created_utc <= creation_limit_utc)
+
     # order by target time and created utc desc
     query = query.order_by(
-        ForecastValueLatestSQL.target_time,
-        ForecastValueLatestSQL.created_utc.desc(),
+        fv_model.target_time,
+        fv_model.created_utc.desc(),
     )
 
     forecast_values = query.all()
 
     return forecast_values
-
 
 
 def filter_start_and_end_datetime(

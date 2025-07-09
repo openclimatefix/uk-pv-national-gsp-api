@@ -26,6 +26,7 @@ from pydantic_models import (
     SolarForecastResponse,
     SolarForecastValue,
 )
+from nowcasting_api.database.forecast_one import get_national_forecast_values
 from sqlalchemy.orm.session import Session
 from utils import (
     N_CALLS_PER_HOUR,
@@ -189,13 +190,15 @@ def get_national_forecast(
         forecast_values = forecasts[0].forecast_values
 
     else:
-        forecast_values = get_latest_forecast_values_for_a_specific_gsp_from_database(
+        forecast_values = get_national_forecast_values(
+        # forecast_values = get_latest_forecast_values_for_a_specific_gsp_from_database(
             session=session,
-            gsp_id=0,
+            # gsp_id=0,
             forecast_horizon_minutes=forecast_horizon_minutes,
             start_datetime_utc=start_datetime_utc,
             end_datetime_utc=end_datetime_utc,
-            creation_utc_limit=creation_limit_utc,
+            # creation_limit_utc=creation_limit_utc,
+            # creation_utc_limit= creation_limit_utc,
             model_name=model_name,
         )
 
