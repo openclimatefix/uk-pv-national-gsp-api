@@ -180,7 +180,7 @@ def get_forecasts_for_a_specific_gsp_old_route(
 ) -> Union[Forecast, List[ForecastValue]]:
     """Redirects old API route to new route /v0/solar/GB/gsp/{gsp_id}/forecast"""
 
-    return get_forecasts_for_a_specific_gsp(
+    return get_forecasts_data_for_a_specific_gsp(
         request=request,
         gsp_id=gsp_id,
         session=session,
@@ -226,6 +226,50 @@ def get_forecasts_for_a_specific_gsp(
     - **start_datetime_utc**: optional start datetime for the query.
     - **end_datetime_utc**: optional end datetime for the query.
     - **creation_utc_limit**: optional, only return forecasts made before this datetime.
+    returns the latest forecast made 60 minutes before the target time)
+    """
+
+    return get_forecasts_data_for_a_specific_gsp(
+        request=request,
+        gsp_id=gsp_id,
+        session=session,
+        forecast_horizon_minutes=forecast_horizon_minutes,
+        user=user,
+        start_datetime_utc=start_datetime_utc,
+        end_datetime_utc=end_datetime_utc,
+        creation_limit_utc=creation_limit_utc,
+    )
+
+
+def get_forecasts_data_for_a_specific_gsp(
+    request: Request,
+    gsp_id: int,
+    session: Session = Depends(get_session),
+    forecast_horizon_minutes: Optional[int] = None,
+    user: Auth0User = Security(get_user()),
+    start_datetime_utc: Optional[str] = None,
+    end_datetime_utc: Optional[str] = None,
+    creation_limit_utc: Optional[str] = None,
+) -> Union[Forecast, List[ForecastValue]]:
+    """Get recent forecast values for a specific GSP
+
+    This function returns the most recent forecast for each _target_time_ for a
+    specific GSP.
+
+    The "forecast_horizon_minutes" parameter allows
+    a user to query for a forecast that is made this number, or horizon, of
+    minutes before the "target_time".
+
+    For example, if the target time is 10am today, the forecast made at 2am
+    today is the 8-hour forecast for 10am, and the forecast made at 6am for
+    10am today is the 4-hour forecast for 10am.
+
+    Parameters:
+    - gsp_id: *gsp_id* of the desired forecast
+    - forecast_horizon_minutes: optional forecast horizon in minutes (ex. 60
+    - start_datetime_utc: optional start datetime for the query.
+    - end_datetime_utc: optional end datetime for the query.
+    - creation_utc_limit: optional, only return forecasts made before this datetime.
     returns the latest forecast made 60 minutes before the target time)
     """
 
