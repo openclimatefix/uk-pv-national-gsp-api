@@ -265,11 +265,14 @@ def get_forecasts_data_for_a_specific_gsp(
     10am today is the 4-hour forecast for 10am.
 
     Parameters:
-    - gsp_id: *gsp_id* of the desired forecast
-    - forecast_horizon_minutes: optional forecast horizon in minutes (ex. 60
-    - start_datetime_utc: optional start datetime for the query.
-    - end_datetime_utc: optional end datetime for the query.
-    - creation_utc_limit: optional, only return forecasts made before this datetime.
+        :param: request: the request object
+        :param: session: the database session
+        :param: gsp_id: *gsp_id* of the desired forecast
+        :param: forecast_horizon_minutes: optional forecast horizon in minutes (ex. 60)
+        :param: user: the user making the request
+        :param: start_datetime_utc: optional start datetime for the query.
+        :param: end_datetime_utc: optional end datetime for the query.
+        :param: creation_utc_limit: optional, only return forecasts made before this datetime.
     returns the latest forecast made 60 minutes before the target time)
     """
 
