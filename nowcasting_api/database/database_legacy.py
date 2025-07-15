@@ -384,7 +384,7 @@ def get_truth_values_for_a_specific_gsp_from_database(
     :return: list of gsp yields
     """
 
-    start_datetime = get_start_datetime(start_datetime=start_datetime)
+    start_datetime = get_start_datetime(start_datetime=start_datetime, days=365)
 
     return get_gsp_yield(
         session=session,
