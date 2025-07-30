@@ -421,10 +421,13 @@ def get_truths_for_a_specific_gsp(
     - **start_datetime_utc**: optional start datetime for the query.
     - **end_datetime_utc**: optional end datetime for the query.
     If not set, defaults to N_HISTORY_DAYS env var, which if not set defaults to yesterday.
+
+    Only 3 days of history is available. If you want to get more PVLive data,
+    please use the [PVLive API](https://www.solar.sheffield.ac.uk/api/)
     """
 
     logger.info(
-        f"Get PV Live estimates values for gsp id {gsp_id} " f"and regime {regime} for user {user}"
+        f"Get PV Live estimates values for gsp id {gsp_id} and regime {regime} for user {user}"
     )
 
     start_datetime_utc = format_datetime(start_datetime_utc)
