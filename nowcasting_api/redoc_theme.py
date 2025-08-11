@@ -1,4 +1,4 @@
-""" Redoc theme functions """
+"""Redoc theme functions"""
 
 from starlette.responses import HTMLResponse
 
