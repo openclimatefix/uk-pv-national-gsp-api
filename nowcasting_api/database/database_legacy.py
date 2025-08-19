@@ -178,7 +178,7 @@ def get_forecasts_from_database(
                 "compare to a forecast made a particular time.",
             )
 
-        start_datetime = get_start_datetime(start_datetime=start_datetime_utc)
+        start_datetime = validate_start_datetime(start_datetime_utc)
 
         forecasts = get_all_gsp_ids_latest_forecast(
             session=session,
@@ -293,7 +293,7 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
     :return: list of latest forecat values
     """
 
-    start_datetime = get_start_datetime(start_datetime=start_datetime_utc, days=365)
+    start_datetime = validate_start_datetime(start_datetime_utc, days=365)
 
     if (forecast_horizon_minutes is None) and (creation_utc_limit is None):
         forecast_values = get_forecast_values_latest(
@@ -384,7 +384,7 @@ def get_truth_values_for_a_specific_gsp_from_database(
     :return: list of gsp yields
     """
 
-    start_datetime = get_start_datetime(start_datetime=start_datetime)
+    start_datetime = validate_start_datetime(start_datetime)
 
     return get_gsp_yield(
         session=session,
