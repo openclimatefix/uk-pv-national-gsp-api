@@ -81,7 +81,6 @@ def format_datetime(datetime_str: str = None):
         return datetime_output
 
 
-
 # --- Refactored start_datetime logic ---
 def _parse_n_history_days(n_history_days: Optional[Union[str, int]]) -> tuple[int, bool]:
     """Return (int days, is_yesterday) from n_history_days input."""
@@ -91,12 +90,14 @@ def _parse_n_history_days(n_history_days: Optional[Union[str, int]]) -> tuple[in
         return 1, True
     return int(n_history_days), False
 
+
 def _get_yesterday_midnight_utc() -> datetime:
     """Return yesterday at midnight Europe/London, in UTC."""
     dt = datetime.now(tz=europe_london_tz).date() - timedelta(days=1)
     dt = datetime.combine(dt, datetime.min.time())
     dt = europe_london_tz.localize(dt)
     return dt.astimezone(utc)
+
 
 def get_start_datetime(
     n_history_days: Optional[Union[str, int]] = None,
@@ -114,6 +115,7 @@ def get_start_datetime(
     dt = datetime.now(tz=europe_london_tz) - timedelta(days=n_days)
     dt = floor_6_hours_dt(dt)
     return dt.astimezone(utc)
+
 
 def validate_start_datetime(
     start_datetime: Optional[datetime],
