@@ -28,8 +28,6 @@ from pydantic_models import (
 )
 from sqlalchemy.orm.session import Session
 from utils import (
-    N_CALLS_PER_HOUR,
-    N_SLOW_CALLS_PER_HOUR,
     floor_30_minutes_dt,
     format_datetime,
     get_start_datetime,
