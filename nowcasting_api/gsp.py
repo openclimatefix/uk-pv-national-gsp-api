@@ -9,22 +9,25 @@ from auth_utils import get_auth_implicit_scheme, get_user
 from cache import cache_response
 from database import (
     get_forecasts_from_database,
-    get_latest_forecast_values_for_a_specific_gsp_from_database, get_session,
-    get_truth_values_for_a_specific_gsp_from_database)
-from database.forecast import (get_forecast_values_all_compact,
-                               get_forecasts_and_forecast_values)
+    get_latest_forecast_values_for_a_specific_gsp_from_database,
+    get_session,
+    get_truth_values_for_a_specific_gsp_from_database,
+)
+from database.forecast import get_forecast_values_all_compact, get_forecasts_and_forecast_values
 from database.pvlive import get_gsp_yield_values
 from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, Request, Security, status
 from fastapi.responses import Response
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.models import Forecast, ForecastValue, ManyForecasts
-from pydantic_models import (GSPYield, GSPYieldGroupByDatetime,
-                             LocationWithGSPYields,
-                             OneDatetimeManyForecastValues)
+from pydantic_models import (
+    GSPYield,
+    GSPYieldGroupByDatetime,
+    LocationWithGSPYields,
+    OneDatetimeManyForecastValues,
+)
 from sqlalchemy.orm.session import Session
-from utils import (floor_30_minutes_dt, format_datetime, get_start_datetime,
-                   limiter)
+from utils import floor_30_minutes_dt, format_datetime, get_start_datetime, limiter
 
 GSP_TOTAL = 317
 

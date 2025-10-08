@@ -4,14 +4,22 @@ import os
 from datetime import datetime, timezone
 
 from freezegun import freeze_time
-from nowcasting_datamodel.models.forecast import (Forecast, ForecastValue,
-                                                  InputDataLastUpdated,
-                                                  Location, MLModel)
+from nowcasting_datamodel.models.forecast import (
+    Forecast,
+    ForecastValue,
+    InputDataLastUpdated,
+    Location,
+    MLModel,
+)
 
 from nowcasting_api.pydantic_models import NationalForecastValue
-from nowcasting_api.utils import (floor_30_minutes_dt, format_plevels,
-                                  get_start_datetime, remove_duplicate_values,
-                                  traces_sampler)
+from nowcasting_api.utils import (
+    floor_30_minutes_dt,
+    format_plevels,
+    get_start_datetime,
+    remove_duplicate_values,
+    traces_sampler,
+)
 
 LOWER_LIMIT_MINUTE = 0
 UPPER_LIMIT_MINUTE = 60
