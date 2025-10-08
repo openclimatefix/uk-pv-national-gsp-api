@@ -4,10 +4,8 @@ from freezegun import freeze_time
 from nowcasting_datamodel.read.read import national_gb_label
 
 from nowcasting_api.database import (
-    get_forecasts_for_a_specific_gsp_from_database,
-    get_gsp_system,
-    get_session,
-)
+    get_forecasts_for_a_specific_gsp_from_database, get_gsp_system,
+    get_session)
 
 
 def test_get_session():

@@ -3,19 +3,12 @@
 import os
 from datetime import datetime
 
-from nowcasting_datamodel.models import (
-    Forecast,
-    ForecastSQL,
-    ForecastValue,
-    ForecastValueLatestSQL,
-    InputDataLastUpdated,
-    InputDataLastUpdatedSQL,
-    Location,
-    LocationSQL,
-    ManyForecasts,
-    MLModel,
-    MLModelSQL,
-)
+from nowcasting_datamodel.models import (Forecast, ForecastSQL, ForecastValue,
+                                         ForecastValueLatestSQL,
+                                         InputDataLastUpdated,
+                                         InputDataLastUpdatedSQL, Location,
+                                         LocationSQL, ManyForecasts, MLModel,
+                                         MLModelSQL)
 from pydantic_models import OneDatetimeManyForecastValues
 from sqlalchemy import NUMERIC
 from sqlalchemy.orm import Query
