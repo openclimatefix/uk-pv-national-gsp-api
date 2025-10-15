@@ -56,7 +56,6 @@ model_names_external_to_internal = {
     "pvnet_day_ahead": "pvnet_day_ahead",
     "pvnet_intraday_ecmwf_only": "pvnet_ecmwf",
     "pvnet_intraday_met_office_only": "pvnet-ukv-only",
-    "pvnet_intraday_sat_only": "pvnet-sat-only",
 }
 
 
@@ -68,7 +67,6 @@ class ModelName(str, Enum):
     pvnet_day_ahead = "pvnet_day_ahead"
     pvnet_intraday_ecmwf_only = ("pvnet_intraday_ecmwf_only",)
     pvnet_intraday_met_office_only = ("pvnet_intraday_met_office_only",)
-    pvnet_intraday_sat_only = ("pvnet_intraday_sat_only",)
 
 
 @router.get(
