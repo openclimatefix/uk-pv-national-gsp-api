@@ -70,8 +70,8 @@ class ModelName(str, Enum):
     blend = "blend"
     pvnet_intraday = "pvnet_intraday"
     pvnet_day_ahead = "pvnet_day_ahead"
-    pvnet_intraday_ecmwf_only = ("pvnet_intraday_ecmwf_only",)
-    pvnet_intraday_met_office_only = ("pvnet_intraday_met_office_only",)
+    pvnet_intraday_ecmwf_only = "pvnet_intraday_ecmwf_only"
+    pvnet_intraday_met_office_only = "pvnet_intraday_met_office_only"
     if is_development:
         pvnet_intraday_sat_only = "pvnet_intraday_sat_only"
 
