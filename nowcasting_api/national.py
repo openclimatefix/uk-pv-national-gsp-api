@@ -40,7 +40,7 @@ logger = structlog.stdlib.get_logger()
 
 adjust_limit = float(os.getenv("ADJUST_MW_LIMIT", 0.0))
 get_plevels = bool(os.getenv("GET_PLEVELS", True))
-is_development = os.getenv("ENVIRONMENT", "production") != "production"
+is_production = os.getenv("ENVIRONMENT", "production").lower() == "production"
 
 router = APIRouter(
     tags=["National"],
@@ -60,7 +60,7 @@ model_names_external_to_internal = {
     "pvnet_intraday_sat_only": "pvnet-sat-only",
 }
 
-if is_development:
+if not is_production:
     model_names_external_to_internal["pvnet_intraday_sat_only"] = "pvnet-sat-only"
 
 
@@ -72,7 +72,7 @@ class ModelName(str, Enum):
     pvnet_day_ahead = "pvnet_day_ahead"
     pvnet_intraday_ecmwf_only = "pvnet_intraday_ecmwf_only"
     pvnet_intraday_met_office_only = "pvnet_intraday_met_office_only"
-    if is_development:
+    if not is_production:
         pvnet_intraday_sat_only = "pvnet_intraday_sat_only"
 
 
