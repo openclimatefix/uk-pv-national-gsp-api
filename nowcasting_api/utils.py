@@ -122,21 +122,29 @@ def get_start_datetime(
         return start_datetime
 
 
-def limit_end_datetime_for_intraday(end_datetime_utc: Optional[datetime] = None):
+def limit_end_datetime_by_permissions(
+    permissions: List[str], end_datetime_utc: Optional[datetime] = None
+):
     """
     Limit end datetime so that intraday users can receive forecast values max. 8 hours ahead of now.
 
     Check if end_datetime_utc is set; if set, check it's not more than 8 hours from now,
     and if not set, set it to 8 hours from now.
 
+    :param permissions: list of permissions, e.g. ['read:uk-intraday']
     :param end_datetime_utc: datetime, requested end time of forecast
     :return: datetime, end time of forecast, limited to max 8 hours from now
     """
 
-    if end_datetime_utc is None:
-        return datetime.now(UTC) + timedelta(hours=INTRADAY_LIMIT_HOURS)
-    else:
-        return min(end_datetime_utc, datetime.now(UTC) + timedelta(hours=INTRADAY_LIMIT_HOURS))
+    is_intraday_only_user = "read:uk-intraday" in permissions
+
+    if is_intraday_only_user:
+        if end_datetime_utc is None:
+            return datetime.now(UTC) + timedelta(hours=INTRADAY_LIMIT_HOURS)
+        else:
+            return min(end_datetime_utc, datetime.now(UTC) + timedelta(hours=INTRADAY_LIMIT_HOURS))
+
+    return end_datetime_utc
 
 
 def traces_sampler(sampling_context):
