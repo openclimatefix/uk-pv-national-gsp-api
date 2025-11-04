@@ -123,7 +123,9 @@ def get_start_datetime(
 
 
 def limit_end_datetime_by_permissions(
-    permissions: List[str], end_datetime_utc: Optional[datetime] = None
+    permissions: List[str],
+    end_datetime_utc: Optional[datetime] = None,
+    intraday_limit_hours: int = INTRADAY_LIMIT_HOURS,
 ):
     """
     Limit end datetime so that intraday users can receive forecast values max. 8 hours ahead of now.
@@ -133,6 +135,7 @@ def limit_end_datetime_by_permissions(
 
     :param permissions: list of permissions, e.g. ['read:uk-intraday']
     :param end_datetime_utc: datetime, requested end time of forecast
+    :param intraday_limit_hours: int, maximum number of hours allowed ahead of now for forecasts
     :return: datetime, end time of forecast, limited to max 8 hours from now
     """
 
@@ -140,9 +143,9 @@ def limit_end_datetime_by_permissions(
 
     if is_intraday_only_user:
         if end_datetime_utc is None:
-            return datetime.now(UTC) + timedelta(hours=INTRADAY_LIMIT_HOURS)
+            return datetime.now(UTC) + timedelta(hours=intraday_limit_hours)
         else:
-            return min(end_datetime_utc, datetime.now(UTC) + timedelta(hours=INTRADAY_LIMIT_HOURS))
+            return min(end_datetime_utc, datetime.now(UTC) + timedelta(hours=intraday_limit_hours))
 
     return end_datetime_utc
 

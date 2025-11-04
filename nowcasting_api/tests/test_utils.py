@@ -173,13 +173,6 @@ def test_remove_duplicate_values():
     assert f_remove[0].forecast_values[1].expected_power_generation_megawatts == 3.0
 
 
-@pytest.fixture(autouse=True)
-def _fix_intraday_limit_hours(monkeypatch):
-    # set default limit hours to 8 hours, regardless of what is set in the environment
-    monkeypatch.setattr(utils, "INTRADAY_LIMIT_HOURS", 8)
-    yield
-
-
 @freeze_time("2025-04-01 12:00:00")
 @pytest.mark.parametrize(
     "permissions,end_in,expected",
@@ -211,7 +204,7 @@ def _fix_intraday_limit_hours(monkeypatch):
     ],
 )
 def test_limit_end_datetime_intraday(permissions, end_in, expected):
-    out = limit_end_datetime_by_permissions(permissions, end_in)
+    out = limit_end_datetime_by_permissions(permissions, end_in, 8)
     assert out == expected
 
 
@@ -246,10 +239,8 @@ def test_limit_end_datetime_intraday(permissions, end_in, expected):
     ],
 )
 def test_limit_end_datetime_intraday__diff_limit_hours(permissions, end_in, expected):
-    utils.INTRADAY_LIMIT_HOURS = 4
-    out = utils.limit_end_datetime_by_permissions(permissions, end_in)
+    out = utils.limit_end_datetime_by_permissions(permissions, end_in, 4)
     assert out == expected
-    utils.INTRADAY_LIMIT_HOURS = 8
 
 
 def test_limit_end_datetime_intraday__none_permissions():
