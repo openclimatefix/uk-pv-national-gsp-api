@@ -86,6 +86,10 @@ def cache_response(func):
         session = route_variables.get("session", None)
         user = route_variables.get("user", None)
         request = route_variables.get("request", None)
+        # get permissions from user to save with request
+        if user is not None and hasattr(user, "permissions"):
+            permissions = user.permissions
+            route_variables["permissions"] = permissions
         save_api_call_to_db(session=session, user=user, request=request)
 
         # drop session and user
