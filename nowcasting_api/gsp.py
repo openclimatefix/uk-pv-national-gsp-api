@@ -33,6 +33,7 @@ from utils import (
     floor_30_minutes_dt,
     format_datetime,
     get_start_datetime,
+    limit_end_datetime_by_permissions,
     limiter,
 )
 
@@ -101,6 +102,9 @@ def get_all_available_forecasts(
     start_datetime_utc = format_datetime(start_datetime_utc)
     end_datetime_utc = format_datetime(end_datetime_utc)
     creation_limit_utc = format_datetime(creation_limit_utc)
+
+    permissions = user.permissions if user is not None else []
+    end_datetime_utc = limit_end_datetime_by_permissions(permissions, end_datetime_utc)
 
     # by default, don't get any data in the past if more than one gsp
     if start_datetime_utc is None and (gsp_ids is None or len(gsp_ids) > 1):
@@ -281,6 +285,9 @@ def get_forecasts_data_for_a_specific_gsp(
     start_datetime_utc = format_datetime(start_datetime_utc)
     end_datetime_utc = format_datetime(end_datetime_utc)
     creation_limit_utc = format_datetime(creation_limit_utc)
+
+    permissions = user.permissions if user is not None else []
+    end_datetime_utc = limit_end_datetime_by_permissions(permissions, end_datetime_utc)
 
     if gsp_id > GSP_TOTAL:
         return Response(None, status.HTTP_204_NO_CONTENT)

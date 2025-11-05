@@ -32,6 +32,7 @@ from utils import (
     filter_forecast_values,
     format_datetime,
     format_plevels,
+    limit_end_datetime_by_permissions,
     limiter,
     remove_duplicate_values,
 )
@@ -127,6 +128,9 @@ def get_national_forecast(
     start_datetime_utc = format_datetime(start_datetime_utc)
     end_datetime_utc = format_datetime(end_datetime_utc)
     creation_limit_utc = format_datetime(creation_limit_utc)
+
+    permissions = user.permissions if user is not None else []
+    end_datetime_utc = limit_end_datetime_by_permissions(permissions, end_datetime_utc)
 
     model_name = model_names_external_to_internal.get(model_name)
 

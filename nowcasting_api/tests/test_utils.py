@@ -1,8 +1,9 @@
 """ Utils functions for test """
 
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 
+import pytest
 from freezegun import freeze_time
 from nowcasting_datamodel.models.forecast import (
     Forecast,
@@ -12,11 +13,13 @@ from nowcasting_datamodel.models.forecast import (
     MLModel,
 )
 
+from nowcasting_api import utils
 from nowcasting_api.pydantic_models import NationalForecastValue
 from nowcasting_api.utils import (
     floor_30_minutes_dt,
     format_plevels,
     get_start_datetime,
+    limit_end_datetime_by_permissions,
     remove_duplicate_values,
     traces_sampler,
 )
@@ -168,3 +171,78 @@ def test_remove_duplicate_values():
     assert f_remove[0].forecast_values[0].expected_power_generation_megawatts == 1
     assert f_remove[0].forecast_values[1].target_time == dt2
     assert f_remove[0].forecast_values[1].expected_power_generation_megawatts == 3.0
+
+
+@freeze_time("2025-04-01 12:00:00")
+@pytest.mark.parametrize(
+    "permissions,end_in,expected",
+    [
+        # Intraday user, no end: capped to now + 8h
+        (["read:uk-intraday"], None, datetime(2025, 4, 1, 20, 0, 0, tzinfo=UTC)),
+        # Intraday user, end after cap: clipped
+        (
+            ["read:uk-intraday"],
+            datetime(2025, 4, 1, 22, 0, 0, tzinfo=UTC),
+            datetime(2025, 4, 1, 20, 0, 0, tzinfo=UTC),
+        ),
+        # Intraday user, end before cap: unchanged
+        (
+            ["read:uk-intraday"],
+            datetime(2025, 4, 1, 13, 0, 0, tzinfo=UTC),
+            datetime(2025, 4, 1, 13, 0, 0, tzinfo=UTC),
+        ),
+        # Non-intraday user, no end: stays None
+        (["read:uk"], None, None),
+        # Non-intraday user, end set: unchanged
+        (
+            ["read:uk"],
+            datetime(2025, 4, 1, 22, 0, 0, tzinfo=UTC),
+            datetime(2025, 4, 1, 22, 0, 0, tzinfo=UTC),
+        ),
+        # No permissions: stays None
+        ([], None, None),
+    ],
+)
+def test_limit_end_datetime_intraday(permissions, end_in, expected):
+    out = limit_end_datetime_by_permissions(permissions, end_in, 8)
+    assert out == expected
+
+
+@freeze_time("2025-04-01 12:00:00")
+@pytest.mark.parametrize(
+    "permissions,end_in,expected",
+    [
+        # Intraday user, no end: capped to now + 4h
+        (["read:uk-intraday"], None, datetime(2025, 4, 1, 16, 0, 0, tzinfo=UTC)),
+        # Intraday user, end after cap: clipped
+        (
+            ["read:uk-intraday"],
+            datetime(2025, 4, 1, 22, 0, 0, tzinfo=UTC),
+            datetime(2025, 4, 1, 16, 0, 0, tzinfo=UTC),
+        ),
+        # Intraday user, end before cap: unchanged
+        (
+            ["read:uk-intraday"],
+            datetime(2025, 4, 1, 13, 0, 0, tzinfo=UTC),
+            datetime(2025, 4, 1, 13, 0, 0, tzinfo=UTC),
+        ),
+        # Non-intraday user, no end: stays None
+        (["read:uk"], None, None),
+        # Non-intraday user, end set: unchanged
+        (
+            ["read:uk"],
+            datetime(2025, 4, 1, 22, 0, 0, tzinfo=UTC),
+            datetime(2025, 4, 1, 22, 0, 0, tzinfo=UTC),
+        ),
+        # No permissions: stays None
+        ([], None, None),
+    ],
+)
+def test_limit_end_datetime_intraday__diff_limit_hours(permissions, end_in, expected):
+    out = utils.limit_end_datetime_by_permissions(permissions, end_in, 4)
+    assert out == expected
+
+
+def test_limit_end_datetime_intraday__none_permissions():
+    with pytest.raises(TypeError):
+        assert utils.limit_end_datetime_by_permissions(None, None) is None
