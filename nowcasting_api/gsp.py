@@ -103,7 +103,7 @@ def get_all_available_forecasts(
     end_datetime_utc = format_datetime(end_datetime_utc)
     creation_limit_utc = format_datetime(creation_limit_utc)
 
-    permissions = user.permissions if user is not None else []
+    permissions = getattr(user, "permissions", [])
     end_datetime_utc = limit_end_datetime_by_permissions(permissions, end_datetime_utc)
 
     # by default, don't get any data in the past if more than one gsp
@@ -286,7 +286,7 @@ def get_forecasts_data_for_a_specific_gsp(
     end_datetime_utc = format_datetime(end_datetime_utc)
     creation_limit_utc = format_datetime(creation_limit_utc)
 
-    permissions = user.permissions if user is not None else []
+    permissions = getattr(user, "permissions", [])
     end_datetime_utc = limit_end_datetime_by_permissions(permissions, end_datetime_utc)
 
     if gsp_id > GSP_TOTAL:

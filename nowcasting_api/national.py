@@ -129,7 +129,7 @@ def get_national_forecast(
     end_datetime_utc = format_datetime(end_datetime_utc)
     creation_limit_utc = format_datetime(creation_limit_utc)
 
-    permissions = user.permissions if user is not None else []
+    permissions = getattr(user, "permissions", [])
     end_datetime_utc = limit_end_datetime_by_permissions(permissions, end_datetime_utc)
 
     model_name = model_names_external_to_internal.get(model_name)
