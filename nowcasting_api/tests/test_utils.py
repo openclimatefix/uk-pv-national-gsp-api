@@ -243,6 +243,8 @@ def test_limit_end_datetime_intraday__diff_limit_hours(permissions, end_in, expe
     assert out == expected
 
 
+@freeze_time("2025-04-01 12:00:00")
 def test_limit_end_datetime_intraday__none_permissions():
-    with pytest.raises(TypeError):
-        assert utils.limit_end_datetime_by_permissions(None, None) is None
+    end_datetime = datetime(2025, 4, 1, 22, 0, 0, tzinfo=UTC)
+    out = utils.limit_end_datetime_by_permissions([], end_datetime, 8)
+    assert out is end_datetime
