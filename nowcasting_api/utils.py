@@ -140,7 +140,10 @@ def limit_end_datetime_by_permissions(
     :return: datetime, end time of forecast, limited to max 8 hours from now
     """
     if permissions is None or len(permissions) == 0:
-        sentry_sdk.capture_message("User has no permissions.")
+        sentry_sdk.capture_message(
+            "User has no permissions during limit_end_datetime_by_permissions check;"
+            "by default, users should have at least one role, so check in Auth0."
+        )
         return end_datetime_utc
 
     is_intraday_only_user = "read:uk-intraday" in permissions
