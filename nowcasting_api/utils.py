@@ -5,6 +5,7 @@ from datetime import UTC, datetime, timedelta
 from typing import List, Optional, Union
 
 import numpy as np
+import sentry_sdk
 import structlog
 from nowcasting_datamodel.models import Forecast
 from pydantic_models import NationalForecastValue
@@ -138,6 +139,9 @@ def limit_end_datetime_by_permissions(
     :param intraday_limit_hours: int, maximum number of hours allowed ahead of now for forecasts
     :return: datetime, end time of forecast, limited to max 8 hours from now
     """
+    if permissions is None or len(permissions) == 0:
+        sentry_sdk.capture_message("User has no permissions.")
+        return end_datetime_utc
 
     is_intraday_only_user = "read:uk-intraday" in permissions
 
