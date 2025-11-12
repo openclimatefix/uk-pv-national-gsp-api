@@ -8,6 +8,10 @@
 [![ease of contribution: medium](https://img.shields.io/badge/ease%20of%20contribution:%20medium-f4900c)](https://github.com/openclimatefix#how-easy-is-it-to-get-involved)
 [![Test Docker image](https://github.com/openclimatefix/uk-pv-national-gsp-api/actions/workflows/test-docker.yaml/badge.svg)](https://github.com/openclimatefix/uk-pv-national-gsp-api/actions/workflows/test-docker.yaml)
 
+> [!WARNING]
+> This repo will soon be deprecated in favour of [quartz-api](https://github.com/openclimatefix/quartz-api)
+
+
 API for hosting nowcasting solar predictions. This is for GSP and National forecasts in the UK.
 
 We use [FastAPI](https://fastapi.tiangolo.com/).
