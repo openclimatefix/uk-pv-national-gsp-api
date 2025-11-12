@@ -83,44 +83,55 @@ def format_datetime(datetime_str: str = None):
         return datetime_output
 
 
+# --- Refactored start_datetime logic ---
+def _parse_n_history_days(n_history_days: Optional[Union[str, int]]) -> tuple[int, bool]:
+    """Return (int days, is_yesterday) from n_history_days input."""
+    if n_history_days is None:
+        n_history_days = os.getenv("N_HISTORY_DAYS", "yesterday")
+    if n_history_days == "yesterday":
+        return 1, True
+    return int(n_history_days), False
+
+
+def _get_yesterday_midnight_utc() -> datetime:
+    """Return yesterday at midnight Europe/London, in UTC."""
+    dt = datetime.now(tz=europe_london_tz).date() - timedelta(days=1)
+    dt = datetime.combine(dt, datetime.min.time())
+    dt = europe_london_tz.localize(dt)
+    return dt.astimezone(utc)
+
+
 def get_start_datetime(
     n_history_days: Optional[Union[str, int]] = None,
-    start_datetime: Optional[datetime] = None,
     days: Optional[int] = 3,
 ) -> datetime:
     """
-    Get the start datetime for the query
+    Always compute and return the start datetime for the query.
 
-    By default we get yesterdays morning at midnight,
-    we 'N_HISTORY_DAYS' use env var to get number of days
-
-    :param n_history_days: n_history
-    :param start_datetime: optional start datetime for the query.
-     If not set, after now, or set to over three days ago
-     defaults to N_HISTORY_DAYS env var, which defaults to yesterday.
-    :param days: number of days limit the data by
-    :return: start datetime
+    - If 'yesterday', returns yesterday at midnight (Europe/London) in UTC.
+    - Otherwise, returns floored 6-hour interval N days ago.
     """
+    n_days, is_yesterday = _parse_n_history_days(n_history_days)
+    if is_yesterday:
+        return _get_yesterday_midnight_utc()
+    dt = datetime.now(tz=europe_london_tz) - timedelta(days=n_days)
+    dt = floor_6_hours_dt(dt)
+    return dt.astimezone(utc)
 
+
+def validate_start_datetime(
+    start_datetime: Optional[datetime],
+    n_history_days: Optional[Union[str, int]] = None,
+    days: int = 3,
+) -> datetime:
+    """
+    Validate or get a default start_datetime.
+    If start_datetime is None or too old, return a default using get_start_datetime.
+    """
     now = datetime.now(tz=utc)
-
     if start_datetime is None or now - start_datetime > timedelta(days=days):
-        if n_history_days is None:
-            n_history_days = os.getenv("N_HISTORY_DAYS", "yesterday")
-
-        # get at most 2 days of data.
-        if n_history_days == "yesterday":
-            start_datetime = datetime.now(tz=europe_london_tz).date() - timedelta(days=1)
-            start_datetime = datetime.combine(start_datetime, datetime.min.time())
-            start_datetime = europe_london_tz.localize(start_datetime)
-            start_datetime = start_datetime.astimezone(utc)
-        else:
-            start_datetime = datetime.now(tz=europe_london_tz) - timedelta(days=int(n_history_days))
-            start_datetime = floor_6_hours_dt(start_datetime)
-            start_datetime = start_datetime.astimezone(utc)
-        return start_datetime
-    else:
-        return start_datetime
+        return get_start_datetime(n_history_days, days)
+    return start_datetime
 
 
 def limit_end_datetime_by_permissions(
