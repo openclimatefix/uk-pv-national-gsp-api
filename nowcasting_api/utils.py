@@ -7,6 +7,7 @@ from typing import List, Optional, Union
 import numpy as np
 import sentry_sdk
 import structlog
+from auth_utils import auth
 from nowcasting_datamodel.models import Forecast
 from pydantic_models import NationalForecastValue
 from pytz import timezone
@@ -139,6 +140,9 @@ def limit_end_datetime_by_permissions(
     :param intraday_limit_hours: int, maximum number of hours allowed ahead of now for forecasts
     :return: datetime, end time of forecast, limited to max 8 hours from now
     """
+    if auth is None:
+        return end_datetime_utc
+
     if permissions is None or len(permissions) == 0:
         sentry_sdk.capture_message(
             "User has no permissions during limit_end_datetime_by_permissions check;"
