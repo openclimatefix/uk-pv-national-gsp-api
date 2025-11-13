@@ -7,10 +7,12 @@ from datetime import timedelta
 
 import sentry_sdk
 import structlog
+from auth_utils import auth
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import FileResponse
+from fastapi.security import HTTPAuthorizationCredentials, SecurityScopes
 from gsp import router as gsp_router
 from national import router as national_router
 from redoc_theme import get_redoc_html_with_theme
@@ -54,6 +56,7 @@ sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN"),
     environment=os.getenv("ENVIRONMENT", "local"),
     traces_sampler=traces_sampler,
+    send_default_pii=True,
 )
 sentry_sdk.set_tag("app_name", "quartz-solar-api")
 sentry_sdk.set_tag("version", version)
@@ -203,6 +206,36 @@ async def add_process_time_header(request: Request, call_next):
     process_time = str(time.time() - start_time)
     logger.info(f"Process Time {process_time} {request.url}")
     response.headers["X-Process-Time"] = process_time
+
+    return response
+
+
+@app.middleware("http")
+async def add_user_details_to_sentry(request: Request, call_next):
+    """Middleware to add user details to Sentry for HTTP requests."""
+    # Try to get user and set in Sentry
+    if auth is not None:
+        try:
+            # Get credentials from the authorization header
+            authorization = request.headers.get("Authorization")
+            if authorization and authorization.startswith("Bearer "):
+                token = authorization.replace("Bearer ", "")
+                credentials = HTTPAuthorizationCredentials(scheme="Bearer", credentials=token)
+                user = await auth.get_user(SecurityScopes([]), credentials)
+                if user:
+                    # Set user in Sentry
+                    sentry_sdk.set_user(
+                        {
+                            "id": getattr(user, "id", None),
+                            "email": getattr(user, "email", None),
+                            "username": getattr(user, "username", None),
+                        }
+                    )
+        except Exception as e:
+            # Don't fail the request if user extraction fails
+            logger.debug(f"Could not extract user for Sentry: {e}")
+
+    response = await call_next(request)
 
     return response
 
