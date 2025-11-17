@@ -139,6 +139,7 @@ def limit_end_datetime_by_permissions(
     :param intraday_limit_hours: int, maximum number of hours allowed ahead of now for forecasts
     :return: datetime, end time of forecast, limited to max 8 hours from now
     """
+
     if permissions is None or len(permissions) == 0:
         sentry_sdk.capture_message(
             "User has no permissions during limit_end_datetime_by_permissions check;"
@@ -148,11 +149,12 @@ def limit_end_datetime_by_permissions(
 
     is_intraday_only_user = "read:uk-intraday" in permissions
 
+    intraday_max_allowed = datetime.now(UTC) + timedelta(hours=intraday_limit_hours)
     if is_intraday_only_user:
         if end_datetime_utc is None:
-            return datetime.now(UTC) + timedelta(hours=intraday_limit_hours)
+            return intraday_max_allowed
         else:
-            return min(end_datetime_utc, datetime.now(UTC) + timedelta(hours=intraday_limit_hours))
+            return min(end_datetime_utc, intraday_max_allowed)
 
     return end_datetime_utc
 
