@@ -7,7 +7,7 @@ def get_redoc_html_with_theme(
     *,
     openapi_url: str = "./openapi.json",
     title: str,
-    redoc_js_url: str = "https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js",
+    redoc_js_url: str = "https://cdn.redoc.ly/redoc/v2.5.1/bundles/redoc.standalone.js",
     redoc_favicon_url: str = "/favicon.ico",
     with_google_fonts: bool = True,
 ) -> HTMLResponse:
