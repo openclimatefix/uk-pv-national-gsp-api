@@ -180,6 +180,9 @@ def get_forecasts_from_database(
 
         start_datetime = get_start_datetime(start_datetime=start_datetime_utc)
 
+        if end_datetime_utc is None and start_datetime_utc is not None:
+            end_datetime_utc = start_datetime_utc + timedelta(days=7)
+
         forecasts = get_all_gsp_ids_latest_forecast(
             session=session,
             start_target_time=start_datetime,
