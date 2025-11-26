@@ -206,9 +206,7 @@ def get_national_forecast(
             model_name=model_name,
         )
 
-    logger.debug(
-        f"Got national forecasts with {len(forecast_values)} forecast values. "
-    )
+    logger.debug(f"Got national forecasts with {len(forecast_values)} forecast values. ")
 
     if trend_adjuster_on:
         logger.debug(f"Now adjusting by at most {adjust_limit} MW")
@@ -217,9 +215,7 @@ def get_national_forecast(
 
     if not get_plevels:
         logger.debug("Not getting plevels")
-        national_forecast_values = [
-            NationalForecastValue(**f.__dict__) for f in forecast_values
-        ]
+        national_forecast_values = [NationalForecastValue(**f.__dict__) for f in forecast_values]
     else:
         logger.debug("Getting plevels")
         # change to NationalForecastValue
@@ -274,9 +270,7 @@ def get_national_pvlive(
     - **regime**: can choose __in-day__ or __day-after__
 
     """
-    logger.info(
-        f"Get national PV Live estimates values " f"for regime {regime} for  {user}"
-    )
+    logger.info(f"Get national PV Live estimates values " f"for regime {regime} for  {user}")
 
     return get_truth_values_for_a_specific_gsp_from_database(
         session=session, gsp_id=0, regime=regime
@@ -348,9 +342,7 @@ def get_elexon_forecast(
             logger.error("KeyError: %s. Data: %s", str(e), row)
             raise HTTPException(status_code=500, detail="Internal Server Error")
         except Exception as e:
-            logger.error(
-                "Error during DataFrame to Model conversion: %s. Data: %s", str(e), row
-            )
+            logger.error("Error during DataFrame to Model conversion: %s. Data: %s", str(e), row)
             raise HTTPException(status_code=500, detail="Internal Server Error")
 
     result = SolarForecastResponse(data=forecast_values)

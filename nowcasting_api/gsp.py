@@ -102,9 +102,7 @@ def get_all_available_forecasts(
         if gsp_ids == "":
             gsp_ids = None
 
-    logger.info(
-        f"Get forecasts for all gsps. The option is {historic=} for user {user}"
-    )
+    logger.info(f"Get forecasts for all gsps. The option is {historic=} for user {user}")
 
     start_datetime_utc = format_datetime(start_datetime_utc)
     end_datetime_utc = format_datetime(end_datetime_utc)
@@ -148,9 +146,7 @@ def get_all_available_forecasts(
         creation_utc_limit=creation_limit_utc,
     )
 
-    logger.info(
-        f"Got forecasts for all gsps. The option is {historic=} for user {user}"
-    )
+    logger.info(f"Got forecasts for all gsps. The option is {historic=} for user {user}")
 
     if not compact:
         logger.info("Normalizing forecasts")
@@ -164,15 +160,11 @@ def get_all_available_forecasts(
 
         # adjust gsp_id 0
         idx = [
-            i
-            for i, forecasts in enumerate(forecasts.forecasts)
-            if forecasts.location.gsp_id == 0
+            i for i, forecasts in enumerate(forecasts.forecasts) if forecasts.location.gsp_id == 0
         ]
         if len(idx) > 0:
             logger.info(f"Adjusting forecast values for gsp id 0, {adjust_limit}")
-            forecasts.forecasts[idx[0]] = forecasts.forecasts[idx[0]].adjust(
-                limit=adjust_limit
-            )
+            forecasts.forecasts[idx[0]] = forecasts.forecasts[idx[0]].adjust(limit=adjust_limit)
         else:
             logger.debug("Not running adjuster as no gsp_id==0 were found")
 
@@ -294,9 +286,7 @@ def get_forecasts_data_for_a_specific_gsp(
     returns the latest forecast made 60 minutes before the target time)
     """
 
-    logger.info(
-        f"Get forecasts for gsp id {gsp_id} forecast of forecast with only values."
-    )
+    logger.info(f"Get forecasts for gsp id {gsp_id} forecast of forecast with only values.")
     logger.info(f"This is for user {user}")
 
     start_datetime_utc = format_datetime(start_datetime_utc)
@@ -309,15 +299,13 @@ def get_forecasts_data_for_a_specific_gsp(
     if gsp_id > GSP_TOTAL:
         return Response(None, status.HTTP_204_NO_CONTENT)
 
-    forecast_values_for_specific_gsp = (
-        get_latest_forecast_values_for_a_specific_gsp_from_database(
-            session=session,
-            gsp_id=gsp_id,
-            forecast_horizon_minutes=forecast_horizon_minutes,
-            start_datetime_utc=start_datetime_utc,
-            end_datetime_utc=end_datetime_utc,
-            creation_utc_limit=creation_limit_utc,
-        )
+    forecast_values_for_specific_gsp = get_latest_forecast_values_for_a_specific_gsp_from_database(
+        session=session,
+        gsp_id=gsp_id,
+        forecast_horizon_minutes=forecast_horizon_minutes,
+        start_datetime_utc=start_datetime_utc,
+        end_datetime_utc=end_datetime_utc,
+        creation_utc_limit=creation_limit_utc,
     )
 
     if gsp_id == 0:
@@ -372,9 +360,7 @@ def get_truths_for_all_gsps(
     if isinstance(gsp_ids, str):
         gsp_ids = [int(gsp_id) for gsp_id in gsp_ids.split(",")]
 
-    logger.info(
-        f"Get PV Live estimates values for all gsp id and regime {regime} for user {user}"
-    )
+    logger.info(f"Get PV Live estimates values for all gsp id and regime {regime} for user {user}")
 
     start_datetime_utc = format_datetime(start_datetime_utc)
     end_datetime_utc = format_datetime(end_datetime_utc)
