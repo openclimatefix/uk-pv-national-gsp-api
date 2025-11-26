@@ -1,7 +1,9 @@
 # UK PV National and GSP API
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+
 [![All Contributors](https://img.shields.io/badge/all_contributors-23-orange.svg?style=flat-square)](#contributors-)
+
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![tags badge](https://img.shields.io/github/v/tag/openclimatefix/uk-pv-national-gsp-api?include_prereleases&sort=semver&color=FFAC5F)](https://github.com/openclimatefix/uk-pv-national-gsp-api/tags)
@@ -10,7 +12,6 @@
 
 > [!WARNING]
 > This repo will soon be deprecated in favour of [quartz-api](https://github.com/openclimatefix/quartz-api)
-
 
 API for hosting nowcasting solar predictions. This is for GSP and National forecasts in the UK.
 
@@ -25,14 +26,15 @@ docker pull openclimatefix/nowcasting_api:latest
 ```
 
 You will need to set the following environment variables:
+
 - `AUTH0_DOMAIN` - The Auth0 domain which can be collected from the Applications/Applications tab. It should be something like
-'XXXXXXX.eu.auth0.com'
+  'XXXXXXX.eu.auth0.com'
 - `AUTH0_API_AUDIENCE` - THE Auth0 api audience, this can be collected from the Applications/APIs tab. It should be something like
-`https://XXXXXXXXXX.eu.auth0.com/api/v2/`
+  `https://XXXXXXXXXX.eu.auth0.com/api/v2/`
 - `DB_URL`- The Forecast database URL used to get GSP forecast data
 - `ORIGINS` - Endpoints that are valid CORS origins. See [FastAPI documentation](https://fastapi.tiangolo.com/tutorial/cors/).
 - `N_HISTORY_DAYS` - Default is just to load data from today and yesterday,
-    but we can set this to 5, if we want the api always to return 5 days of data
+  but we can set this to 5, if we want the api always to return 5 days of data
 - `ADJUST_MW_LIMIT` - the maximum the api is allowed to adjust the national forecast by
 - `FAKE` - This allows fake data to be used, rather than connecting to a database
 - `QUERY_WAIT_SECONDS` - The number of seconds to wait for an on going query
@@ -43,8 +45,10 @@ You will need to set the following environment variables:
 Note you will need a database set up at `DB_URL`. This should use the datamodel in [nowcasting_datamodel](https://github.com/openclimatefix/nowcasting_datamodel)
 
 There are several optional environment variables:
+
 - `N_CALLS_PER_HOUR` - API rate limit for most endpoints. Defaults to 3600 (1 per second).
 - `N_SLOW_CALLS_PER_HOUR` - API rate limit for slow endpoints. Defaults to 60 (1 per minute).
+- `N_TOTAL_CALLS_PER_HOUR` - Total API calls per hour per user. Defaults to 1000.
 
 ## Documentation
 
@@ -55,6 +59,7 @@ This is automatically generated from the code.
 
 This can be done it two different ways: With Python or with Docker.
 The Docker method is preferred, because:
+
 - a) this should be more replicable and less prone to odd behaviors;
 - b) it also sets up a CRON service that generates new data periodically, to resemble the "real" forecast service.
 
@@ -70,7 +75,8 @@ source venv/bin/activate
 ### Running the API
 
 #### Option 1: Docker
- 🟢 __Preferred method__
+
+🟢 **Preferred method**
 
 1. Make sure docker is installed on your system.
 2. Use `docker compose up`
@@ -82,6 +88,7 @@ source venv/bin/activate
    periodically seed new fake data, currently set to every 15 minutes.
 
 #### Option 2: Running docker with a local version of [nowcasting_datamodel](https://github.com/openclimatefix/nowcasting_datamodel)
+
 1. Clone the [nowcasting_datamodel](https://github.com/openclimatefix/nowcasting_datamodel) repository
 2. Comment out the `nowcasting_datamodel` line in the `requirements.txt` file
 3. Run `docker compose up --file docker-compose-local-datamodel.yml` in the main directory, with the
@@ -95,9 +102,10 @@ source venv/bin/activate
 #### Option 3: Running the API with a local database (deprecated, but possible if unable to use Docker, may require some troubleshooting)
 
 To set up the API with a local database, you will need to:
- - start your own local postgres instance on your machine
- - set `DB_URL` to your local postgres instance in the `.env` file
- - run the following commands to install required packages, create the tables in your local postgres instance, and populate them with fake data:
+
+- start your own local postgres instance on your machine
+- set `DB_URL` to your local postgres instance in the `.env` file
+- run the following commands to install required packages, create the tables in your local postgres instance, and populate them with fake data:
 
 ```bash
 pip install -r requirements.txt
@@ -105,7 +113,9 @@ python script/fake_data.py
 cd nowcasting_api
 uvicorn main:app --reload
 ```
+
 When running locally:
+
 1. You will now be able to access it on `http://localhost:8000`
 2. The API should restart automatically when you make changes to the code, but the fake
    data currently is static. To seed new fake data, just manually restart the API.
@@ -113,6 +123,7 @@ When running locally:
 ### Running the test suite
 
 To run tests use the following command
+
 ```bash
 docker stop $(docker ps -a -q)
 docker-compose -f test-docker-compose.yml build
@@ -120,7 +131,9 @@ docker-compose -f test-docker-compose.yml run api
 ```
 
 ### Routes to SQL tables
+
 #### National
+
 ```mermaid
   graph TD;
       N1(national/forecast) --> Q1;
@@ -136,6 +149,7 @@ docker-compose -f test-docker-compose.yml run api
 ```
 
 #### GSP
+
 ```mermaid
   graph TD;
 
@@ -160,7 +174,6 @@ docker-compose -f test-docker-compose.yml run api
 
 ```
 
-
 ## FAQ
 
 ### What is a N hour forecast?
@@ -168,15 +181,13 @@ docker-compose -f test-docker-compose.yml run api
 Some users want to know what the forecast was like N hours ago. We can do this by setting
 `forecast_hoirzon_minutes` in the API.
 Because the API provider forecasts in the future and historic values, it is useful to define this behaviour for N hour forecast.
-- future: A forecast that was made N hours ago for the future.
-For example, if its now 2025-01-01 12:00, the future will show a forecast made at 2025-01-01 08:00, from now to 2025-01-02 20:00 (a 36 hour forecast)
-- past: Forecast values that were made N hours before the target time.
-For example, a target_time of 2025-01-01 11:00 will show a forecast value made at 2025-01-01 07:00.
 
+- future: A forecast that was made N hours ago for the future.
+  For example, if its now 2025-01-01 12:00, the future will show a forecast made at 2025-01-01 08:00, from now to 2025-01-02 20:00 (a 36 hour forecast)
+- past: Forecast values that were made N hours before the target time.
+  For example, a target_time of 2025-01-01 11:00 will show a forecast value made at 2025-01-01 07:00.
 
 ![N hour foreacst](./nhourforecast.png)
-
-
 
 ## Contributing and community
 
@@ -187,9 +198,7 @@ For example, a target_time of 2025-01-01 11:00 will show a forecast value made a
 - Check out the [OCF blog](https://openclimatefix.org/blog) for updates
 - Follow OCF on [LinkedIn](https://uk.linkedin.com/company/open-climate-fix)
 
-
 ## Contributors
-
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
@@ -239,6 +248,6 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 ---
 
-*Part of the [Open Climate Fix](https://github.com/orgs/openclimatefix/people) community.*
+_Part of the [Open Climate Fix](https://github.com/orgs/openclimatefix/people) community._
 
 <img src="https://cdn.prod.website-files.com/62d92550f6774db58d441cca/6324a2038936ecda71599a8b_OCF_Logo_black_trans.png" style="background-color:white;" />

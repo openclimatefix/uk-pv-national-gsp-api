@@ -1,4 +1,4 @@
-"""Get Status from database """
+"""Get Status from database"""
 
 from datetime import datetime
 
@@ -13,7 +13,7 @@ from nowcasting_datamodel.read.read import (
 )
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm.session import Session
-from utils import N_CALLS_PER_HOUR, limiter
+from utils import N_CALLS_PER_HOUR, N_TOTAL_CALLS_PER_HOUR, limiter
 
 logger = structlog.stdlib.get_logger()
 
@@ -21,6 +21,7 @@ router = APIRouter()
 
 
 @router.get("/status", response_model=Status)
+@limiter.limit(f"{N_TOTAL_CALLS_PER_HOUR}/hour")
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_status(request: Request, session: Session = Depends(get_session)) -> Status:
     """### Get status for the database and forecasts
@@ -36,9 +37,12 @@ def get_status(request: Request, session: Session = Depends(get_session)) -> Sta
 
 
 @router.get("/check_last_forecast_run", include_in_schema=False)
+@limiter.limit(f"{N_TOTAL_CALLS_PER_HOUR}/hour")
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def check_last_forecast(
-    request: Request, session: Session = Depends(get_session), model_name: str | None = None
+    request: Request,
+    session: Session = Depends(get_session),
+    model_name: str | None = None,
 ) -> datetime:
     """Check to that a forecast has run with in the last 2 hours"""
 
@@ -68,9 +72,13 @@ def check_last_forecast(
 
 
 @router.get("/update_last_data", include_in_schema=False)
+@limiter.limit(f"{N_TOTAL_CALLS_PER_HOUR}/hour")
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def update_last_data(
-    request: Request, component: str, file: str = None, session: Session = Depends(get_session)
+    request: Request,
+    component: str,
+    file: str = None,
+    session: Session = Depends(get_session),
 ) -> datetime:
     """Update InputDataLastUpdatedSQL table"""
 

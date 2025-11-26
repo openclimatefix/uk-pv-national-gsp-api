@@ -29,6 +29,7 @@ from pydantic_models import (
 from sqlalchemy.orm.session import Session
 from utils import (
     N_CALLS_PER_HOUR,
+    N_TOTAL_CALLS_PER_HOUR,
     filter_forecast_values,
     format_datetime,
     format_plevels,
@@ -78,6 +79,7 @@ class ModelName(str, Enum):
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
+@limiter.limit(f"{N_TOTAL_CALLS_PER_HOUR}/hour")
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_national_forecast(
     request: Request,
@@ -276,14 +278,17 @@ def get_national_pvlive(
 
 
 @router.get("/elexon", summary="Get elexon Solar Forecast")
+@limiter.limit(f"{N_TOTAL_CALLS_PER_HOUR}/hour")
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_elexon_forecast(
     request: Request,
     start_datetime_utc: datetime = Query(
-        default=datetime.utcnow() - timedelta(days=3), description="Start date and time in UTC"
+        default=datetime.utcnow() - timedelta(days=3),
+        description="Start date and time in UTC",
     ),
     end_datetime_utc: datetime = Query(
-        default=datetime.utcnow() + timedelta(days=3), description="End date and time in UTC"
+        default=datetime.utcnow() + timedelta(days=3),
+        description="End date and time in UTC",
     ),
     process_type: str = Query("Day Ahead", description="Process type"),
 ):

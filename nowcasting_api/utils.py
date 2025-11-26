@@ -1,4 +1,4 @@
-""" Utils functions for main.py """
+"""Utils functions for main.py"""
 
 import os
 from datetime import UTC, datetime, timedelta
@@ -21,6 +21,9 @@ utc = timezone("UTC")
 limiter = Limiter(key_func=get_remote_address)
 N_CALLS_PER_HOUR = os.getenv("N_CALLS_PER_HOUR", 3600)  # 1 call per second
 N_SLOW_CALLS_PER_HOUR = os.getenv("N_SLOW_CALLS_PER_HOUR", 60)  # 1 call per minute
+N_TOTAL_CALLS_PER_HOUR = int(
+    os.getenv("N_TOTAL_CALLS_PER_HOUR", 1000)
+)  # Total API calls per hour per user
 INTRADAY_LIMIT_HOURS = float(os.getenv("INTRADAY_LIMIT_HOURS", 8))
 
 
