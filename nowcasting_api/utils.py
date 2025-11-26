@@ -1,4 +1,4 @@
-""" Utils functions for main.py """
+"""Utils functions for main.py"""
 
 import os
 from datetime import UTC, datetime, timedelta
@@ -21,6 +21,9 @@ utc = timezone("UTC")
 limiter = Limiter(key_func=get_remote_address)
 N_CALLS_PER_HOUR = os.getenv("N_CALLS_PER_HOUR", 3600)  # 1 call per second
 N_SLOW_CALLS_PER_HOUR = os.getenv("N_SLOW_CALLS_PER_HOUR", 60)  # 1 call per minute
+N_TOTAL_CALLS_PER_HOUR = int(
+    os.getenv("N_TOTAL_CALLS_PER_HOUR", 1000)
+)  # Total API calls per hour per user
 INTRADAY_LIMIT_HOURS = float(os.getenv("INTRADAY_LIMIT_HOURS", 8))
 
 
@@ -110,12 +113,16 @@ def get_start_datetime(
 
         # get at most 2 days of data.
         if n_history_days == "yesterday":
-            start_datetime = datetime.now(tz=europe_london_tz).date() - timedelta(days=1)
+            start_datetime = datetime.now(tz=europe_london_tz).date() - timedelta(
+                days=1
+            )
             start_datetime = datetime.combine(start_datetime, datetime.min.time())
             start_datetime = europe_london_tz.localize(start_datetime)
             start_datetime = start_datetime.astimezone(utc)
         else:
-            start_datetime = datetime.now(tz=europe_london_tz) - timedelta(days=int(n_history_days))
+            start_datetime = datetime.now(tz=europe_london_tz) - timedelta(
+                days=int(n_history_days)
+            )
             start_datetime = floor_6_hours_dt(start_datetime)
             start_datetime = start_datetime.astimezone(utc)
         return start_datetime
@@ -232,7 +239,9 @@ def filter_forecast_values(
     :return:
     """
     if start_datetime_utc is not None or end_datetime_utc is not None:
-        logger.info(f"Filtering forecasts from {start_datetime_utc} to {end_datetime_utc}")
+        logger.info(
+            f"Filtering forecasts from {start_datetime_utc} to {end_datetime_utc}"
+        )
         forecasts_filtered = []
         for forecast in forecasts:
             forecast_values = forecast.forecast_values
@@ -278,7 +287,9 @@ def remove_duplicate_values(forecasts: List[Forecast]) -> List[Forecast]:
         else:
             # create a dict of {target_times:forecast_values}
             # note we reverse the order so that the top value is keep
-            distinct_times_dict = {fv.target_time: fv for fv in forecast.forecast_values[::-1]}
+            distinct_times_dict = {
+                fv.target_time: fv for fv in forecast.forecast_values[::-1]
+            }
             # change back to a list
             forecast_values = [v for k, v in distinct_times_dict.items()]
 

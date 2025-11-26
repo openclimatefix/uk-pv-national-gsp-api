@@ -1,4 +1,4 @@
-"""Get GSP boundary data from eso """
+"""Get GSP boundary data from eso"""
 
 from typing import List, Optional
 
@@ -10,7 +10,7 @@ from fastapi import APIRouter, Depends, Request, Security
 from fastapi_auth0 import Auth0User
 from nowcasting_datamodel.models import GSPYield, Location
 from sqlalchemy.orm.session import Session
-from utils import N_CALLS_PER_HOUR, limiter
+from utils import N_CALLS_PER_HOUR, N_TOTAL_CALLS_PER_HOUR, limiter
 
 # flake8: noqa: E501
 logger = structlog.stdlib.get_logger()
@@ -29,6 +29,7 @@ NationalYield = GSPYield
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
+@limiter.limit(f"{N_TOTAL_CALLS_PER_HOUR}/hour")
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_system_details(
     request: Request,
