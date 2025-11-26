@@ -206,12 +206,6 @@ def get_forecasts_from_database(
         else:
             start_created_utc = creation_utc_limit - timedelta(hours=12)
 
-        # Setting the end_datetime_utc reduces the query to the database
-        # Note that creation_utc_limit and start_datetime_utc are both not None, 
-        # Our forecast are at most 36 hours.
-        if end_datetime_utc is None and start_datetime_utc is not None:
-            end_datetime_utc = start_datetime_utc + timedelta(days=7)
-
         forecasts = get_all_gsp_ids_latest_forecast(
             session=session,
             start_created_utc=start_created_utc,
@@ -327,6 +321,12 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
             creation_utc_limit = datetime.now(tz=timezone.utc) - timedelta(
                 minutes=forecast_horizon_minutes
             )
+
+        # Setting the end_datetime_utc reduces the query to the database
+        # Note that creation_utc_limit and start_datetime_utc are both not None, 
+        # Our forecast are at most 36 hours.
+        if end_datetime_utc is None and start_datetime_utc is not None:
+            end_datetime_utc = start_datetime_utc + timedelta(days=7)
 
         forecast_values = get_forecast_values(
             session=session,
