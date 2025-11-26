@@ -323,7 +323,7 @@ def get_latest_forecast_values_for_a_specific_gsp_from_database(
             )
 
         # Setting the end_datetime_utc reduces the query to the database
-        # Note that creation_utc_limit and start_datetime_utc are both not None, 
+        # Note that creation_utc_limit and start_datetime_utc are both not None,
         # Our forecast are at most 36 hours.
         if end_datetime_utc is None and start_datetime_utc is not None:
             end_datetime_utc = start_datetime_utc + timedelta(days=7)
