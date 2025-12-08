@@ -1,4 +1,4 @@
-""" Utils functions for main.py """
+"""Utils functions for main.py"""
 
 import os
 from datetime import UTC, datetime, timedelta
