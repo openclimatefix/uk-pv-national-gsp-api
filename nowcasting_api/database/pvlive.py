@@ -30,7 +30,7 @@ def get_gsp_yield_values(
     :return: list of gsp yields
     """
 
-    start_datetime_utc = get_start_datetime(start_datetime=start_datetime_utc)
+    start_datetime_utc = validate_start_datetime(start_datetime_utc)
     if regime is None:
         regime = "in-day"
 
