@@ -1,6 +1,6 @@
 opencv-contrib-python-headless
 fastapi==0.116.1
-uvicorn[standard]
+uvicorn[standard]==0.40.0
 pydantic
 numpy
 requests
