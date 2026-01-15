@@ -1,4 +1,4 @@
-"""Get GSP boundary data from eso """
+"""Get GSP boundary data from eso"""
 
 import os
 from datetime import datetime, timezone
@@ -13,7 +13,10 @@ from database import (
     get_session,
     get_truth_values_for_a_specific_gsp_from_database,
 )
-from database.forecast import get_forecast_values_all_compact, get_forecasts_and_forecast_values
+from database.forecast import (
+    get_forecast_values_all_compact,
+    get_forecasts_and_forecast_values,
+)
 from database.pvlive import get_gsp_yield_values
 from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, Request, Security, status
@@ -30,6 +33,7 @@ from sqlalchemy.orm.session import Session
 from utils import (
     N_CALLS_PER_HOUR,
     N_SLOW_CALLS_PER_HOUR,
+    N_TOTAL_CALLS_PER_HOUR,
     floor_30_minutes_dt,
     format_datetime,
     get_start_datetime,
@@ -59,6 +63,7 @@ NationalYield = GSPYield
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
+@limiter.limit(f"{N_TOTAL_CALLS_PER_HOUR}/hour")
 @limiter.limit(f"{N_SLOW_CALLS_PER_HOUR}/hour")
 def get_all_available_forecasts(
     request: Request,
@@ -174,6 +179,7 @@ def get_all_available_forecasts(
     responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
 @cache_response
+@limiter.limit(f"{N_TOTAL_CALLS_PER_HOUR}/hour")
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_forecasts_for_a_specific_gsp_old_route(
     request: Request,
@@ -200,6 +206,7 @@ def get_forecasts_for_a_specific_gsp_old_route(
     responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
 @cache_response
+@limiter.limit(f"{N_TOTAL_CALLS_PER_HOUR}/hour")
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_forecasts_for_a_specific_gsp(
     request: Request,
@@ -319,6 +326,7 @@ def get_forecasts_data_for_a_specific_gsp(
     dependencies=[Depends(get_auth_implicit_scheme())],
 )
 @cache_response
+@limiter.limit(f"{N_TOTAL_CALLS_PER_HOUR}/hour")
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_truths_for_all_gsps(
     request: Request,
@@ -375,6 +383,7 @@ def get_truths_for_all_gsps(
     responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
 @cache_response
+@limiter.limit(f"{N_TOTAL_CALLS_PER_HOUR}/hour")
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_truths_for_a_specific_gsp_old_route(
     request: Request,
@@ -402,6 +411,7 @@ def get_truths_for_a_specific_gsp_old_route(
     responses={status.HTTP_204_NO_CONTENT: {"model": None}},
 )
 @cache_response
+@limiter.limit(f"{N_TOTAL_CALLS_PER_HOUR}/hour")
 @limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
 def get_truths_for_a_specific_gsp(
     request: Request,
