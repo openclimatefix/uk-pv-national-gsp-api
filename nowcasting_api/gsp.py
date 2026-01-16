@@ -93,8 +93,8 @@ def get_all_available_forecasts(
     """
 
     if isinstance(gsp_ids, str):
-        gsp_ids = [int(gsp_id) for gsp_id in gsp_ids.split(",")]
-        if gsp_ids == "":
+        gsp_ids = [int(gsp_id) for gsp_id in gsp_ids.split(",") if gsp_ids != ""]
+        if gsp_ids == []:
             gsp_ids = None
 
     logger.info(f"Get forecasts for all gsps. The option is {historic=} for user {user}")
@@ -350,7 +350,7 @@ def get_truths_for_all_gsps(
     """
 
     if isinstance(gsp_ids, str):
-        gsp_ids = [int(gsp_id) for gsp_id in gsp_ids.split(",")]
+        gsp_ids = [int(gsp_id) for gsp_id in gsp_ids.split(",") if gsp_ids != ""]
 
     logger.info(f"Get PV Live estimates values for all gsp id and regime {regime} for user {user}")
 
