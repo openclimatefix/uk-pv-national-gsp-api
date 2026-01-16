@@ -198,7 +198,7 @@ if os.getenv("APITALLY_CLIENT_ID"):
     app.add_middleware(
         ApitallyMiddleware,
         client_id=os.getenv("APITALLY_CLIENT_ID"),
-        env=os.getenv("ENVIRONMENT", "dev"), 
+        env=os.getenv("ENVIRONMENT", "dev"),
     )
 
 app.state.limiter = limiter
