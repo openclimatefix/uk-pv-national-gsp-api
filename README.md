@@ -1,7 +1,7 @@
 # UK PV National and GSP API
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-23-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-24-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![tags badge](https://img.shields.io/github/v/tag/openclimatefix/uk-pv-national-gsp-api?include_prereleases&sort=semver&color=FFAC5F)](https://github.com/openclimatefix/uk-pv-national-gsp-api/tags)
@@ -228,6 +228,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/yuvraajnarula"><img src="https://avatars.githubusercontent.com/u/49155095?v=4?s=100" width="100px;" alt="Yuvraaj Narula"/><br /><sub><b>Yuvraaj Narula</b></sub></a><br /><a href="https://github.com/openclimatefix/uk-pv-national-gsp-api/commits?author=yuvraajnarula" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/jchanke"><img src="https://avatars.githubusercontent.com/u/17882756?v=4?s=100" width="100px;" alt="Joseph Chan"/><br /><sub><b>Joseph Chan</b></sub></a><br /><a href="https://github.com/openclimatefix/uk-pv-national-gsp-api/commits?author=jchanke" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ArkVex"><img src="https://avatars.githubusercontent.com/u/159469387?v=4?s=100" width="100px;" alt="Ayush Singh"/><br /><sub><b>Ayush Singh</b></sub></a><br /><a href="https://github.com/openclimatefix/uk-pv-national-gsp-api/commits?author=ArkVex" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
