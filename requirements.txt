@@ -20,3 +20,4 @@ pathy==0.10.3
 fsspec
 s3fs
 elexonpy
+apitally[fastapi]

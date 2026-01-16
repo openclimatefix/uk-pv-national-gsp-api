@@ -7,6 +7,7 @@ from datetime import timedelta
 
 import sentry_sdk
 import structlog
+from apitally.fastapi import ApitallyMiddleware
 from auth_utils import auth
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -193,6 +194,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+if os.getenv("APITALLY_CLIENT_ID"):
+    app.add_middleware(
+        ApitallyMiddleware,
+        client_id=os.getenv("APITALLY_CLIENT_ID"),
+        env=os.getenv("ENVIRONMENT", "dev"), 
+    )
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
