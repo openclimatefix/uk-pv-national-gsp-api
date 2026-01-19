@@ -1,4 +1,4 @@
-"""Get Status from database """
+"""Get Status from database"""
 
 from datetime import datetime
 

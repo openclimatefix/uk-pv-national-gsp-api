@@ -1,4 +1,4 @@
-""" pydantic models for API"""
+"""pydantic models for API"""
 
 import logging
 import os

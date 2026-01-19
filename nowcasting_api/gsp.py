@@ -1,4 +1,4 @@
-"""Get GSP boundary data from eso """
+"""Get GSP boundary data from eso"""
 
 import os
 from datetime import datetime, timezone
