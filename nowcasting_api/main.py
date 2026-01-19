@@ -1,4 +1,4 @@
-""" Main FastAPI app """
+"""Main FastAPI app"""
 
 import logging
 import os

@@ -1,4 +1,4 @@
-""" Test for main app """
+"""Test for main app"""
 
 from nowcasting_api.main import version
 

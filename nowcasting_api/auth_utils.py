@@ -1,4 +1,4 @@
-""" Authentical  objects """
+"""Authentical  objects"""
 
 import os
 
