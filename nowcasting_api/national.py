@@ -142,16 +142,11 @@ def get_national_forecast(
                 detail="Can not set forecast_horizon_minutes when including metadata",
             )
 
-        if creation_limit_utc is None:
-            historic = True
-        else:
-            historic = False
-
         forecast = get_latest_forecast_for_gsps(
             session=session,
             gsp_ids=[0],
             model_name=model_name,
-            historic=historic,
+            historic=False,
             preload_children=True,
             start_target_time=start_datetime_utc,
             end_target_time=end_datetime_utc,
@@ -164,23 +159,7 @@ def get_national_forecast(
         if forecast.initialization_datetime_utc is None:
             forecast.initialization_datetime_utc = forecast.forecast_creation_time
 
-        if historic:
-            # make sure forecast.forecast_value_latest are order by target_time and created_utc desc
-            # this means we get a list of target times descending, and for each target time
-            # the most recent created_utc value is at the top
-            forecast.forecast_values_latest = sorted(
-                forecast.forecast_values_latest,
-                key=lambda x: x.created_utc,
-                reverse=True,
-            )
-            forecast.forecast_values_latest = sorted(
-                forecast.forecast_values_latest,
-                key=lambda x: x.target_time,
-            )
-
-            forecast = NationalForecast.from_orm_latest(forecast)
-        else:
-            forecast = NationalForecast.from_orm(forecast)
+        forecast = NationalForecast.from_orm(forecast)
 
         forecasts = filter_forecast_values(
             forecasts=[forecast],
