@@ -21,3 +21,4 @@ fsspec
 s3fs
 elexonpy
 apitally[fastapi]
+pytz
