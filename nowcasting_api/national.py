@@ -118,6 +118,9 @@ def get_national_forecast(
     The forecast is adjusted depending on trends in the last week.
     This should remove systematic errors.
     Warning if set to False, the forecast accuracy will likely decrease.
+    - **include_metadata**: optional, default is False.
+    If True, the response will include metadata about the forecast.
+    Note you can only go 7 days back at the moment.
 
     Returns:
         dict: The national forecast data.
