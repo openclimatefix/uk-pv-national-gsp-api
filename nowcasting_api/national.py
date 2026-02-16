@@ -120,7 +120,7 @@ def get_national_forecast(
     Warning if set to False, the forecast accuracy will likely decrease.
     - **include_metadata**: optional, default is False.
     If True, the response will include metadata about the forecast.
-    Note you can only go 7 days back at the moment.
+    Note you can only go 3 days back at the moment.
 
     Returns:
         dict: The national forecast data.
