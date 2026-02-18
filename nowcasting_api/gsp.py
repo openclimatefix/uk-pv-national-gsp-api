@@ -167,33 +167,6 @@ def get_all_available_forecasts(
 
 
 @router.get(
-    "/forecast/{gsp_id}",
-    response_model=Union[Forecast, List[ForecastValue]],
-    dependencies=[Depends(get_auth_implicit_scheme())],
-    include_in_schema=False,
-    responses={status.HTTP_204_NO_CONTENT: {"model": None}},
-)
-@cache_response
-@limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
-def get_forecasts_for_a_specific_gsp_old_route(
-    request: Request,
-    gsp_id: int,
-    session: Session = Depends(get_session),
-    forecast_horizon_minutes: Optional[int] = None,
-    user: Auth0User = Security(get_user()),
-) -> Union[Forecast, List[ForecastValue]]:
-    """Redirects old API route to new route /v0/solar/GB/gsp/{gsp_id}/forecast"""
-
-    return get_forecasts_data_for_a_specific_gsp(
-        request=request,
-        gsp_id=gsp_id,
-        session=session,
-        forecast_horizon_minutes=forecast_horizon_minutes,
-        user=user,
-    )
-
-
-@router.get(
     "/{gsp_id}/forecast",
     response_model=Union[Forecast, List[ForecastValue]],
     dependencies=[Depends(get_auth_implicit_scheme())],
@@ -364,33 +337,6 @@ def get_truths_for_all_gsps(
         end_datetime_utc=end_datetime_utc,
         compact=compact,
         gsp_ids=gsp_ids,
-    )
-
-
-@router.get(
-    "/pvlive/{gsp_id}",
-    response_model=List[GSPYield],
-    dependencies=[Depends(get_auth_implicit_scheme())],
-    include_in_schema=False,
-    responses={status.HTTP_204_NO_CONTENT: {"model": None}},
-)
-@cache_response
-@limiter.limit(f"{N_CALLS_PER_HOUR}/hour")
-def get_truths_for_a_specific_gsp_old_route(
-    request: Request,
-    gsp_id: int,
-    regime: Optional[str] = None,
-    session: Session = Depends(get_session),
-    user: Auth0User = Security(get_user()),
-) -> List[GSPYield]:
-    """Redirects old API route to new route /v0/solar/GB/gsp/{gsp_id}/pvlive"""
-
-    return get_truths_for_a_specific_gsp(
-        request=request,
-        gsp_id=gsp_id,
-        regime=regime,
-        session=session,
-        user=user,
     )
 
 
