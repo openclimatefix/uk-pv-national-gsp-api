@@ -12,7 +12,7 @@ from auth_utils import auth
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, ORJSONResponse
 from fastapi.security import HTTPAuthorizationCredentials, SecurityScopes
 from gsp import router as gsp_router
 from national import router as national_router
@@ -178,7 +178,7 @@ Here a few use cases for of the Quartz Solar API routes.
     ```https://api.quartz.solar/v0/solar/GB/national/pvlive```
 
 """
-app = FastAPI(docs_url="/swagger", redoc_url=None)
+app = FastAPI(docs_url="/swagger", redoc_url=None, default_response_class=ORJSONResponse)
 
 # origins = os.getenv("ORIGINS",
 # "https://*.nowcasting.io,

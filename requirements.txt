@@ -22,3 +22,5 @@ s3fs
 elexonpy
 apitally[fastapi]
 pytz
+uvloop 
+httptools
