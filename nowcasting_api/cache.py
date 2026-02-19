@@ -7,6 +7,7 @@ from datetime import datetime, timedelta, timezone
 from functools import wraps
 
 import structlog
+from apitally.fastapi import set_consumer
 from database import save_api_call_to_db
 
 logger = structlog.stdlib.get_logger()
@@ -91,6 +92,9 @@ def cache_response(func):
             permissions = user.permissions
             route_variables["permissions"] = permissions
         save_api_call_to_db(session=session, user=user, request=request)
+
+        if user is not None:
+            set_consumer(request, identifier=user.email if hasattr(user, "email") else "unknown")
 
         # drop session and user
         for var in ["session", "user", "request"]:
