@@ -124,10 +124,11 @@ def cache_response(func):
 
             # run the route
             currently_running[route_variables] = True
-            cache[route_variables] = func(*args, **kwargs)
+            result = func(*args, **kwargs)
+            cache[route_variables] = result
             currently_running.pop(route_variables, None)
 
-            return cache[route_variables]
+            return result
 
         # 1.2 [removed cache staleness check as is now covered by TTLCache expiry]
 
