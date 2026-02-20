@@ -199,6 +199,11 @@ if os.getenv("APITALLY_CLIENT_ID"):
         ApitallyMiddleware,
         client_id=os.getenv("APITALLY_CLIENT_ID"),
         env="uk-national-" + os.getenv("ENVIRONMENT", "local"),
+        enable_request_logging=True,
+        log_request_headers=True,
+        log_request_body=True,
+        log_response_body=True,
+        capture_logs=True,
     )
 
 app.state.limiter = limiter
