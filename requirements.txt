@@ -25,3 +25,4 @@ pytz
 uvloop
 httptools
 orjson
+cachetools
