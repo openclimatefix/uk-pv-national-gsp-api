@@ -1,10 +1,10 @@
 opencv-contrib-python-headless
-fastapi==0.116.1
-uvicorn[standard]==0.40.0
+fastapi==0.133.0
+uvicorn[standard]==0.41.0
 pydantic
 numpy
 requests
-nowcasting_datamodel==1.7.0
+nowcasting_datamodel==1.7.6
 sqlalchemy
 psycopg2-binary
 geopandas
