@@ -1,4 +1,4 @@
-""" Tests for the pvlive database functions.
+"""Tests for the pvlive database functions.
 
 Other tests are covered in test_gsp.py amd test_national.py
 """
