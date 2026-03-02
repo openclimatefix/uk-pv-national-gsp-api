@@ -3,6 +3,7 @@
 import logging
 import os
 import time
+import tracemalloc
 from datetime import timedelta
 
 import sentry_sdk
@@ -61,6 +62,8 @@ sentry_sdk.init(
 )
 sentry_sdk.set_tag("app_name", "quartz-solar-api")
 sentry_sdk.set_tag("version", version)
+
+tracemalloc.start()
 
 # noqa: E501
 description = """
@@ -302,6 +305,14 @@ def redoc_html():
     return get_redoc_html_with_theme(
         title=title,
     )
+
+
+@app.get("/debug/memory", include_in_schema=False)
+def memory_snapshot():
+    """Get current memory allocations per line responsible"""
+    snapshot = tracemalloc.take_snapshot()
+    top = snapshot.statistics("lineno")[:20]
+    return [{"file": str(s.traceback), "size_mb": s.size / 1024 / 1024} for s in top]
 
 
 # OpenAPI (ReDoc) custom theme
