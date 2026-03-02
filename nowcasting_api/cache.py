@@ -1,4 +1,4 @@
-""" Caching utils for api"""
+"""Caching utils for api"""
 
 import json
 import os
