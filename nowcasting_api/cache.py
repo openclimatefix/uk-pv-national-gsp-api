@@ -9,6 +9,7 @@ import structlog
 from apitally.fastapi import set_consumer
 from cachetools import TTLCache
 from database import save_api_call_to_db
+from fastapi.encoders import jsonable_encoder
 
 logger = structlog.stdlib.get_logger()
 
@@ -125,7 +126,7 @@ def cache_response(func):
             # run the route
             currently_running[route_variables] = True
             result = func(*args, **kwargs)
-            cache[route_variables] = result
+            cache[route_variables] = jsonable_encoder(result)
             currently_running.pop(route_variables, None)
 
             return result
