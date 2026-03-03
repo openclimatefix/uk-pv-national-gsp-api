@@ -32,7 +32,7 @@ def cache_response(func):
             return {"message": "Hello World"}
     ```
     """
-    cache = TTLCache(maxsize=128, ttl=cache_time_seconds)
+    cache = TTLCache(maxsize=512, ttl=cache_time_seconds)
     currently_running = {}
 
     @wraps(func)
