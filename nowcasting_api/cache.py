@@ -123,11 +123,12 @@ def cache_response(func):
 
             # run the route
             currently_running[route_variables] = True
-            result = func(*args, **kwargs)
-            cache[route_variables] = jsonable_encoder(result)
-            currently_running.pop(route_variables, None)
-
-            return result
+            try:
+                result = func(*args, **kwargs)
+                cache[route_variables] = jsonable_encoder(result)
+                return result
+            finally:
+                currently_running.pop(route_variables, None)
 
         # 1.2 [removed cache staleness check as is now covered by TTLCache expiry]
 
