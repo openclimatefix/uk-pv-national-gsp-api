@@ -8,7 +8,6 @@ from functools import wraps
 import structlog
 from apitally.fastapi import set_consumer
 from cachetools import TTLCache
-from database import save_api_call_to_db
 from fastapi.encoders import jsonable_encoder
 
 logger = structlog.stdlib.get_logger()
@@ -45,20 +44,19 @@ def cache_response(func):
         # we don't want to use the cache for different variables
         route_variables = kwargs.copy()
 
-        # save route variables to db
-        session = route_variables.get("session", None)
         user = route_variables.get("user", None)
         request = route_variables.get("request", None)
-        # get permissions from user to save with request
+
+        # set Apitally consumer for per-user metrics
+        if user is not None and request is not None:
+            set_consumer(request, identifier=user.email if hasattr(user, "email") else "unknown")
+
+        # get permissions from user to include in cache key
         if user is not None and hasattr(user, "permissions"):
             permissions = user.permissions
             route_variables["permissions"] = permissions
-        save_api_call_to_db(session=session, user=user, request=request)
 
-        if user is not None:
-            set_consumer(request, identifier=user.email if hasattr(user, "email") else "unknown")
-
-        # drop session and user
+        # drop non-serializable objects from cache key
         for var in ["session", "user", "request"]:
             if var in route_variables:
                 route_variables.pop(var)
