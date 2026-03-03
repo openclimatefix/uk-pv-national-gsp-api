@@ -40,8 +40,8 @@ def test_read_latest_status(db_session):
     assert returned_status.message == status.message
     assert returned_status.status == status.status
 
-    assert len(db_session.query(APIRequestSQL).all()) == 1
-    assert len(db_session.query(UserSQL).all()) == 1
+    assert len(db_session.query(APIRequestSQL).all()) == 0
+    assert len(db_session.query(UserSQL).all()) == 0
 
 
 @freeze_time("2023-01-01")

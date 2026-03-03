@@ -4,7 +4,7 @@ from datetime import datetime
 
 import fsspec
 import structlog
-from database import get_latest_status_from_database, get_session, save_api_call_to_db
+from database import get_latest_status_from_database, get_session
 from fastapi import APIRouter, Depends, HTTPException, Request
 from nowcasting_datamodel.models import ForecastSQL, GSPYieldSQL, MLModelSQL, Status
 from nowcasting_datamodel.read.read import (
@@ -29,8 +29,6 @@ def get_status(request: Request, session: Session = Depends(get_session)) -> Sta
     route is where the OCF team communicates the forecast status to users.
 
     """
-    save_api_call_to_db(session=session, request=request)
-
     logger.debug("Get status")
     return get_latest_status_from_database(session=session)
 
@@ -41,8 +39,6 @@ def check_last_forecast(
     request: Request, session: Session = Depends(get_session), model_name: str | None = None
 ) -> datetime:
     """Check to that a forecast has run with in the last 2 hours"""
-
-    save_api_call_to_db(session=session, request=request)
 
     logger.debug("Check to see when the last forecast run was ")
 
@@ -73,8 +69,6 @@ def update_last_data(
     request: Request, component: str, file: str = None, session: Session = Depends(get_session)
 ) -> datetime:
     """Update InputDataLastUpdatedSQL table"""
-
-    save_api_call_to_db(session=session, request=request)
 
     assert component in ["gsp", "nwp", "satellite"]
 
