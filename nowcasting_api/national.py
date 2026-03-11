@@ -235,6 +235,13 @@ def get_national_forecast(
     if include_metadata:
         # return full forecast object
         forecast.forecast_values = national_forecast_values
+        # NationalForecast.from_orm_latest() returns a base Forecast instance (not NationalForecast)
+        # because Forecast.model_validate() hardcodes `return Forecast(...)` instead
+        # of `return cls(...)`.
+        # We must reconstruct as NationalForecast so jsonable_encoder uses the NationalForecastValue
+        # schema (which includes plevels). Without this, cached responses omit plevels entirely.
+        if not isinstance(forecast, NationalForecast):
+            forecast = NationalForecast.model_construct(**forecast.__dict__)
         return forecast
     else:
         return national_forecast_values
