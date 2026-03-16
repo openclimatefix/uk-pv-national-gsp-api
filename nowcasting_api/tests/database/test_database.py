@@ -1,4 +1,4 @@
-""" Test for main app """
+"""Test for main app"""
 
 from freezegun import freeze_time
 from nowcasting_datamodel.read.read import national_gb_label
